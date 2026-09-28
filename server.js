@@ -9,17 +9,20 @@ const users = new Map();
 const sockets = new Map();
 
 // Temporary RAM-only message metadata.
-// Media itself is NOT saved to disk.
+// Actual media is NOT saved to disk.
 const serverMessages = new Map();
 
 
-// =========================
+// ==============================
 // HTTP SERVER
-// =========================
+// ==============================
 
 const server = http.createServer((req, res) => {
 
-  // User lookup
+  // ------------------------------
+  // USER LOOKUP
+  // ------------------------------
+
   if (req.url.startsWith("/api/user/")) {
 
     const id = decodeURIComponent(
@@ -46,7 +49,10 @@ const server = http.createServer((req, res) => {
   }
 
 
-  // Health check
+  // ------------------------------
+  // HEALTH CHECK
+  // ------------------------------
+
   if (req.url === "/health") {
 
     res.writeHead(200, {
@@ -62,9 +68,9 @@ const server = http.createServer((req, res) => {
   }
 
 
-  // =========================
-  // SERVE CLIENT
-  // =========================
+  // ------------------------------
+  // WEBSITE FILES
+  // ------------------------------
 
   let requestPath = req.url.split("?")[0];
 
@@ -72,22 +78,21 @@ const server = http.createServer((req, res) => {
     requestPath = "/index.html";
   }
 
+  // Prevent directory traversal
   requestPath = path.normalize(requestPath);
 
-  // IMPORTANT:
-  // GitHub/Render structure is:
-  //
-  // FriendChat-server/
-  // ├── server.js
-  // ├── package.json
-  // └── client/
-  //     ├── index.html
-  //     ├── app.js
-  //     └── style.css
+  while (
+    requestPath.startsWith("/") ||
+    requestPath.startsWith("\\")
+  ) {
+    requestPath = requestPath.slice(1);
+  }
 
+  // IMPORTANT:
+  // index.html, app.js and style.css
+  // are directly beside server.js
   const filePath = path.join(
     __dirname,
-    "client",
     requestPath
   );
 
@@ -115,36 +120,45 @@ const server = http.createServer((req, res) => {
 
     const contentTypes = {
 
-      ".html": "text/html; charset=utf-8",
+      ".html":
+        "text/html; charset=utf-8",
 
-      ".js": "application/javascript; charset=utf-8",
+      ".js":
+        "application/javascript; charset=utf-8",
 
-      ".css": "text/css; charset=utf-8",
+      ".css":
+        "text/css; charset=utf-8",
 
-      ".json": "application/json",
+      ".json":
+        "application/json",
 
-      ".png": "image/png",
+      ".png":
+        "image/png",
 
-      ".jpg": "image/jpeg",
+      ".jpg":
+        "image/jpeg",
 
-      ".jpeg": "image/jpeg",
+      ".jpeg":
+        "image/jpeg",
 
-      ".gif": "image/gif",
+      ".gif":
+        "image/gif",
 
-      ".svg": "image/svg+xml",
+      ".svg":
+        "image/svg+xml",
 
-      ".webp": "image/webp",
+      ".webp":
+        "image/webp",
 
-      ".ico": "image/x-icon"
+      ".ico":
+        "image/x-icon"
     };
 
 
     res.writeHead(200, {
-
       "Content-Type":
         contentTypes[ext] ||
         "application/octet-stream"
-
     });
 
     res.end(data);
@@ -154,24 +168,26 @@ const server = http.createServer((req, res) => {
 });
 
 
-// =========================
+// ==============================
 // WEBSOCKET SERVER
-// =========================
+// ==============================
 
 const wss = new WebSocket.Server({
   server
 });
 
 
-// =========================
+// ==============================
 // SEND TO USER
-// =========================
+// ==============================
 
 function sendToUser(id, payload) {
 
-  const userId = String(id).toUpperCase();
+  const userId =
+    String(id).toUpperCase();
 
-  const socket = sockets.get(userId);
+  const socket =
+    sockets.get(userId);
 
   if (
     socket &&
@@ -189,9 +205,9 @@ function sendToUser(id, payload) {
 }
 
 
-// =========================
+// ==============================
 // WEBSOCKET CONNECTION
-// =========================
+// ==============================
 
 wss.on("connection", socket => {
 
@@ -207,21 +223,24 @@ wss.on("connection", socket => {
       );
 
 
-      // =========================
+      // ==========================
       // REGISTER
-      // =========================
+      // ==========================
 
       if (msg.type === "register") {
 
         const user = {
 
-          id: String(
-            msg.userId
-          ).toUpperCase(),
+          id:
+            String(
+              msg.userId
+            ).toUpperCase(),
 
-          name: String(
-            msg.name || "Friend"
-          )
+          name:
+            String(
+              msg.name || "Friend"
+            )
+
         };
 
 
@@ -241,8 +260,12 @@ wss.on("connection", socket => {
 
         socket.send(
           JSON.stringify({
+
             type: "registered",
-            userId: user.id
+
+            userId:
+              user.id
+
           })
         );
 
@@ -256,29 +279,34 @@ wss.on("connection", socket => {
       }
 
 
-      // =========================
-      // TEXT MESSAGE
-      // =========================
+      // ==========================
+      // TEXT CHAT
+      // ==========================
 
       if (msg.type === "chat") {
 
         const record = {
 
-          id: String(msg.id),
+          id:
+            String(msg.id),
 
-          from: String(
-            msg.from
-          ).toUpperCase(),
+          from:
+            String(
+              msg.from
+            ).toUpperCase(),
 
-          to: String(
-            msg.to
-          ).toUpperCase(),
+          to:
+            String(
+              msg.to
+            ).toUpperCase(),
 
-          type: "chat",
+          type:
+            "chat",
 
           time:
             Number(msg.time) ||
             Date.now()
+
         };
 
 
@@ -295,15 +323,19 @@ wss.on("connection", socket => {
 
               type: "chat",
 
-              id: record.id,
+              id:
+                record.id,
 
-              from: record.from,
+              from:
+                record.from,
 
-              text: String(
-                msg.text || ""
-              ).slice(0, 5000),
+              text:
+                String(
+                  msg.text || ""
+                ).slice(0, 5000),
 
-              time: record.time
+              time:
+                record.time
 
             }
           );
@@ -319,7 +351,8 @@ wss.on("connection", socket => {
           socket.send(
             JSON.stringify({
 
-              type: "delivery_error",
+              type:
+                "delivery_error",
 
               reason:
                 "Friend is offline",
@@ -329,31 +362,36 @@ wss.on("connection", socket => {
 
             })
           );
+
         }
 
         return;
       }
 
 
-      // =========================
+      // ==========================
       // MEDIA
-      // =========================
+      // ==========================
 
       if (msg.type === "media") {
 
         const record = {
 
-          id: String(msg.id),
+          id:
+            String(msg.id),
 
-          from: String(
-            msg.from
-          ).toUpperCase(),
+          from:
+            String(
+              msg.from
+            ).toUpperCase(),
 
-          to: String(
-            msg.to
-          ).toUpperCase(),
+          to:
+            String(
+              msg.to
+            ).toUpperCase(),
 
-          type: "media",
+          type:
+            "media",
 
           mediaType:
             String(
@@ -376,12 +414,12 @@ wss.on("connection", socket => {
           time:
             Number(msg.time) ||
             Date.now()
+
         };
 
 
-        // Only metadata is kept.
-        // Actual media is immediately
-        // forwarded and not stored.
+        // Only metadata is stored.
+        // The actual media is not saved.
 
         serverMessages.set(
           record.id,
@@ -394,11 +432,14 @@ wss.on("connection", socket => {
             record.to,
             {
 
-              type: "media",
+              type:
+                "media",
 
-              id: record.id,
+              id:
+                record.id,
 
-              from: record.from,
+              from:
+                record.from,
 
               mediaType:
                 record.mediaType,
@@ -450,9 +491,9 @@ wss.on("connection", socket => {
       }
 
 
-      // =========================
+      // ==========================
       // DELIVERED
-      // =========================
+      // ==========================
 
       if (msg.type === "delivered") {
 
@@ -468,7 +509,8 @@ wss.on("connection", socket => {
             record.from,
             {
 
-              type: "delivered",
+              type:
+                "delivered",
 
               messageId:
                 record.id
@@ -482,9 +524,9 @@ wss.on("connection", socket => {
       }
 
 
-      // =========================
-      // READ
-      // =========================
+      // ==========================
+      // READ / SEEN
+      // ==========================
 
       if (msg.type === "read") {
 
@@ -503,7 +545,8 @@ wss.on("connection", socket => {
             record.from,
             {
 
-              type: "read",
+              type:
+                "read",
 
               messageId:
                 record.id
@@ -517,9 +560,9 @@ wss.on("connection", socket => {
       }
 
 
-      // =========================
+      // ==========================
       // REACTION
-      // =========================
+      // ==========================
 
       if (msg.type === "reaction") {
 
@@ -542,9 +585,11 @@ wss.on("connection", socket => {
             record.from,
             {
 
-              type: "reaction",
+              type:
+                "reaction",
 
-              messageId: id,
+              messageId:
+                id,
 
               reaction:
                 record.reaction,
@@ -560,9 +605,11 @@ wss.on("connection", socket => {
             record.to,
             {
 
-              type: "reaction",
+              type:
+                "reaction",
 
-              messageId: id,
+              messageId:
+                id,
 
               reaction:
                 record.reaction,
@@ -579,9 +626,9 @@ wss.on("connection", socket => {
       }
 
 
-      // =========================
+      // ==========================
       // UNSEND
-      // =========================
+      // ==========================
 
       if (msg.type === "unsend") {
 
@@ -601,9 +648,11 @@ wss.on("connection", socket => {
             record.to,
             {
 
-              type: "unsend",
+              type:
+                "unsend",
 
-              messageId: id
+              messageId:
+                id
 
             }
           );
@@ -614,9 +663,9 @@ wss.on("connection", socket => {
       }
 
 
-      // =========================
+      // ==========================
       // DELETE
-      // =========================
+      // ==========================
 
       if (
         msg.type === "server_delete"
@@ -641,7 +690,8 @@ wss.on("connection", socket => {
               type:
                 "server_delete",
 
-              messageId: id
+              messageId:
+                id
 
             }
           );
@@ -664,9 +714,9 @@ wss.on("connection", socket => {
   });
 
 
-  // =========================
+  // ==========================
   // DISCONNECT
-  // =========================
+  // ==========================
 
   socket.on("close", () => {
 
@@ -694,9 +744,9 @@ wss.on("connection", socket => {
 });
 
 
-// =========================
+// ==============================
 // START SERVER
-// =========================
+// ==============================
 
 server.listen(
   PORT,
