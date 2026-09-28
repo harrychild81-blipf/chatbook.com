@@ -1,0 +1,62 @@
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#eef2f7;color:#172033}
+button,input{font:inherit}
+button{border:0;border-radius:12px;padding:12px 16px;background:#2563eb;color:#fff;cursor:pointer}
+button.secondary{background:#e8edf5;color:#172033}
+button.small{padding:8px 10px;font-size:13px}
+button.icon{font-size:25px;padding:5px 12px}
+button.back{background:transparent;color:#172033;font-size:25px;padding:4px}
+.app{max-width:520px;margin:0 auto;min-height:100vh;background:#fff}
+.screen{min-height:100vh}
+.hidden{display:none!important}
+.auth{display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(140deg,#dbeafe,#fff)}
+.card{width:100%;max-width:400px;padding:28px;border-radius:22px;background:#fff;box-shadow:0 10px 35px #00000012}
+.card.wide{max-width:none;margin:20px}
+.logo{width:64px;height:64px;border-radius:18px;background:#2563eb;color:#fff;display:grid;place-items:center;font-weight:bold;font-size:22px;margin-bottom:15px}
+h1,h2,p{margin-top:0}
+.muted{color:#6b7280}
+input{width:100%;padding:13px 14px;border:1px solid #d6dce6;border-radius:12px;margin:7px 0;outline:none}
+input:focus{border-color:#2563eb}
+.card>button{width:100%;margin-top:8px}
+.status{min-height:20px;margin-top:12px;color:#dc2626}
+header{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #e7ebf0}
+header>div:first-of-type{flex:1}
+header h2{margin:0}
+.profileRow{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #eef1f5}
+.profile{width:48px;height:48px;border-radius:50%;background:#2563eb;color:#fff;display:grid;place-items:center;font-weight:bold;font-size:19px}
+.profileRow>div:nth-child(2){flex:1}
+.search{margin:14px 18px;width:calc(100% - 36px)}
+.friendList{padding:0 18px 30px}
+.friend{display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid #eef1f5;cursor:pointer}
+.friend:hover{background:#f8fafc}
+.friend .avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#dbeafe;color:#1d4ed8;font-weight:bold}
+.friendInfo{flex:1}
+.friendInfo strong{display:block}
+.friendInfo small{color:#6b7280}
+.tabs{display:flex;gap:8px;margin-bottom:15px}
+.tabs button{flex:1}
+.messages{height:calc(100vh - 145px);overflow:auto;padding:18px;background:#f7f9fc}
+.msg{max-width:78%;padding:10px 13px;border-radius:16px;margin:8px 0;word-wrap:break-word}
+.msg.mine{margin-left:auto;background:#2563eb;color:#fff;border-bottom-right-radius:5px}
+.msg.theirs{background:#fff;border:1px solid #e7ebf0;border-bottom-left-radius:5px}
+.msg small{display:block;opacity:.65;margin-top:4px;font-size:10px}
+.msg img,.msg video{max-width:100%;border-radius:10px;margin-top:5px}
+.composer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);display:flex;gap:7px;padding:10px;background:#fff;border-top:1px solid #e7ebf0}
+.composer input{margin:0;flex:1}
+.composer button{padding:10px 13px}
+.mediaButton{display:grid;place-items:center;padding:0 10px;cursor:pointer}
+.smallText{font-size:13px}
+@media(min-width:521px){body{padding:20px 0}.app{border-radius:18px;overflow:hidden;box-shadow:0 10px 40px #0002}}
+.msgWrap{max-width:78%;margin:8px 0;position:relative;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+.msgWrap.mine{margin-left:auto}
+.msgWrap .msg{max-width:100%;margin:0}
+.ticks{margin-left:4px;font-weight:bold;letter-spacing:-2px}
+.ticks.read{color:#000000}
+.reactionBadge{position:absolute;right:8px;bottom:-11px;background:#fff;border:1px solid #e1e6ee;border-radius:12px;padding:1px 5px;font-size:13px;box-shadow:0 2px 5px #0001}
+.messageMenu{position:fixed;inset:0;background:#0006;z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.messageSheet{width:min(520px,100%);background:#fff;border-radius:20px 20px 0 0;padding:18px;box-shadow:0 -8px 30px #0003}
+.messageSheet strong{display:block;margin-bottom:10px}
+.reactionRow{display:flex;gap:8px;margin-bottom:12px}
+.reactionRow button{flex:1;background:#f1f5f9;color:#172033;font-size:22px;padding:10px 5px}
+.menuAction{width:100%;margin-top:8px;text-align:left}
+button.danger{background:#fee2e2;color:#b91c1c}
