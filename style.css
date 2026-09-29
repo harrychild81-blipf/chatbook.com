@@ -564,3 +564,90 @@ header > div {
     height: 12px;
   }
 }
+/* ===============================
+   STATUS INFORMATION
+   =============================== */
+
+.statusInfoButton {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #374151;
+  font-size: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statusInfoButton:hover {
+  background: #f3f4f6;
+}
+
+.statusInfo {
+  background: white;
+  margin: 10px 15px;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.10);
+  border: 1px solid #e5e7eb;
+}
+
+.statusInfoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.statusInfoClose {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #111827;
+  font-size: 20px;
+}
+
+.statusExplanation {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.statusExplanationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.statusExplanationItem p {
+  margin: 3px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.statusLegendDot {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  border-radius: 50%;
+  margin-top: 3px;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px #ddd;
+}
+
+.statusLegendDot.active {
+  background: #22c55e;
+}
+
+.statusLegendDot.busy {
+  background: #f59e0b;
+}
+
+.statusLegendDot.offline {
+  background: #9ca3af;
+}
