@@ -1,4 +1,3 @@
-```javascript
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -23,8 +22,12 @@ const profilePhotos = new Map();
 
 const server = http.createServer((req, res) => {
 
-  // Health check
+  // ===============================
+  // HEALTH CHECK
+  // ===============================
+
   if (req.url === "/health") {
+
     res.writeHead(200, {
       "Content-Type": "application/json"
     });
@@ -38,12 +41,17 @@ const server = http.createServer((req, res) => {
   }
 
 
-  // Find user by FriendChat ID
+  // ===============================
+  // FIND USER BY FRIENDCHAT ID
+  // ===============================
+
   if (req.url.startsWith("/api/user/")) {
 
     const id = decodeURIComponent(
       req.url.split("/api/user/")[1]
-    ).trim().toUpperCase();
+    )
+      .trim()
+      .toUpperCase();
 
     const user = users.get(id);
 
@@ -65,7 +73,10 @@ const server = http.createServer((req, res) => {
   }
 
 
-  // Raw presence API
+  // ===============================
+  // RAW PRESENCE API
+  // ===============================
+
   if (req.url === "/api/presence") {
 
     const result = {};
@@ -78,6 +89,7 @@ const server = http.createServer((req, res) => {
         online: info.online,
         chattingWith: info.chattingWith
       };
+
     }
 
     res.writeHead(200, {
@@ -98,7 +110,9 @@ const server = http.createServer((req, res) => {
 
     const id = decodeURIComponent(
       req.url.split("/api/profile-photo/")[1]
-    ).trim().toUpperCase();
+    )
+      .trim()
+      .toUpperCase();
 
     const photo = profilePhotos.get(id);
 
@@ -129,7 +143,10 @@ const server = http.createServer((req, res) => {
   }
 
 
-  // Serve website files
+  // ===============================
+  // SERVE WEBSITE FILES
+  // ===============================
+
   let requestedFile = req.url.split("?")[0];
 
   if (requestedFile === "/") {
@@ -140,7 +157,10 @@ const server = http.createServer((req, res) => {
     .normalize(requestedFile)
     .replace(/^(\.\.[\/\\])+/, "");
 
-  const filePath = path.join(__dirname, requestedFile);
+  const filePath = path.join(
+    __dirname,
+    requestedFile
+  );
 
 
   fs.readFile(filePath, (error, data) => {
@@ -197,6 +217,7 @@ const server = http.createServer((req, res) => {
 
       ".ico":
         "image/x-icon"
+
     };
 
 
@@ -255,6 +276,7 @@ function sendToUser(userId, payload) {
       );
 
     }
+
   }
 
   return false;
@@ -292,15 +314,11 @@ function getPresenceForViewer(viewerId) {
 
         status = "active";
 
-      }
-
-      else if (info.chattingWith) {
+      } else if (info.chattingWith) {
 
         status = "busy";
 
-      }
-
-      else {
+      } else {
 
         status = "active";
 
@@ -358,6 +376,7 @@ function broadcastPresence() {
     sendPresenceToViewer(id);
 
   }
+
 }
 
 
@@ -365,19 +384,28 @@ function broadcastPresence() {
 // BROADCAST PROFILE PHOTO
 // ===============================
 
-function broadcastProfilePhoto(userId, photo) {
+function broadcastProfilePhoto(
+  userId,
+  photoData
+) {
 
-  const senderId = String(userId)
-    .trim()
-    .toUpperCase();
+  const senderId =
+    String(userId)
+      .trim()
+      .toUpperCase();
 
-  for (const [id, socket] of sockets.entries()) {
 
-    // Don't send it back to the person
-    // who uploaded the photo.
+  for (
+    const [id, socket]
+    of sockets.entries()
+  ) {
+
+    // Don't send the photo back
+    // to the person who uploaded it.
     if (id === senderId) {
       continue;
     }
+
 
     if (
       socket &&
@@ -388,9 +416,22 @@ function broadcastProfilePhoto(userId, photo) {
 
         socket.send(
           JSON.stringify({
+
             type: "profile_photo",
+
             userId: senderId,
-            photo: photo
+
+            name: photoData.name,
+
+            mimeType:
+              photoData.mimeType,
+
+            data:
+              photoData.data,
+
+            time:
+              photoData.time
+
           })
         );
 
@@ -424,7 +465,10 @@ wss.on("connection", (socket) => {
   socket.isAlive = true;
 
 
-  // Pong received from browser
+  // =============================
+  // PONG
+  // =============================
+
   socket.on("pong", () => {
 
     socket.isAlive = true;
@@ -485,15 +529,20 @@ wss.on("connection", (socket) => {
             oldSocket.close();
 
           } catch (error) {
+
             // Ignore
+
           }
 
         }
 
 
         const user = {
+
           id: userId,
+
           name: name
+
         };
 
 
@@ -516,6 +565,7 @@ wss.on("connection", (socket) => {
         presence.set(
           userId,
           {
+
             id: userId,
 
             name: name,
@@ -523,56 +573,100 @@ wss.on("connection", (socket) => {
             online: true,
 
             chattingWith: null
+
           }
         );
 
 
-        // Tell this device registration worked
+        // Tell this device
+        // registration worked.
         socket.send(
           JSON.stringify({
+
             type: "registered",
 
             userId: userId
+
           })
         );
 
 
         // ===========================
-        // SEND EXISTING PROFILE PHOTO
+        // SEND THIS USER'S OWN PHOTO
         // ===========================
 
         const existingPhoto =
           profilePhotos.get(userId);
 
+
         if (existingPhoto) {
 
           socket.send(
             JSON.stringify({
+
               type: "profile_photo",
+
               userId: userId,
-              photo: existingPhoto
+
+              name:
+                existingPhoto.name,
+
+              mimeType:
+                existingPhoto.mimeType,
+
+              data:
+                existingPhoto.data,
+
+              time:
+                existingPhoto.time
+
             })
           );
 
         }
 
 
-        // Send all currently known
-        // profile photos to this user.
+        // ===========================
+        // SEND KNOWN PROFILE PHOTOS
+        // ===========================
+
         for (
-          const [photoUserId, photo]
+          const [
+            photoUserId,
+            photo
+          ]
           of profilePhotos.entries()
         ) {
 
-          if (photoUserId === userId) {
+          if (
+            photoUserId === userId
+          ) {
+
             continue;
+
           }
+
 
           socket.send(
             JSON.stringify({
+
               type: "profile_photo",
-              userId: photoUserId,
-              photo: photo
+
+              userId:
+                photoUserId,
+
+              name:
+                photo.name,
+
+              mimeType:
+                photo.mimeType,
+
+              data:
+                photo.data,
+
+              time:
+                photo.time
+
             })
           );
 
@@ -604,34 +698,41 @@ wss.on("connection", (socket) => {
         const userId =
           socket.userId;
 
+
         if (!userId) {
           return;
         }
 
 
-        const photo =
-          String(msg.photo || "");
+        const data =
+          String(msg.data || "");
 
 
-        // No photo
-        if (!photo) {
+        // No photo data
+        if (!data) {
           return;
         }
 
 
-        // Safety limit:
-        // approximately 5 MB JSON payload.
+        // Maximum profile photo size.
+        // Data URLs are larger than the
+        // original image, so allow up to
+        // approximately 10 MB of data.
         if (
-          photo.length >
-          7 * 1024 * 1024
+          data.length >
+          10 * 1024 * 1024
         ) {
 
           sendToUser(
             userId,
             {
-              type: "profile_photo_error",
+
+              type:
+                "profile_photo_error",
+
               reason:
                 "Profile photo is too large. Please choose a smaller image."
+
             }
           );
 
@@ -639,10 +740,37 @@ wss.on("connection", (socket) => {
         }
 
 
-        // Store temporarily in RAM.
+        // Store the photo temporarily
+        // in server RAM.
+        const photoData = {
+
+          data: data,
+
+          mimeType:
+            String(
+              msg.mimeType ||
+              "image/jpeg"
+            ),
+
+          name:
+            String(
+              msg.name ||
+              users.get(userId)?.name ||
+              "Friend"
+            ).trim(),
+
+          time:
+            Number(
+              msg.time ||
+              Date.now()
+            )
+
+        };
+
+
         profilePhotos.set(
           userId,
-          photo
+          photoData
         );
 
 
@@ -652,10 +780,10 @@ wss.on("connection", (socket) => {
         );
 
 
-        // Tell connected users.
+        // Send to currently connected users.
         broadcastProfilePhoto(
           userId,
-          photo
+          photoData
         );
 
 
@@ -771,6 +899,7 @@ wss.on("connection", (socket) => {
             Date.now(),
 
           read: false
+
         };
 
 
@@ -784,15 +913,21 @@ wss.on("connection", (socket) => {
           sendToUser(
             record.to,
             {
+
               type: "chat",
 
-              id: record.id,
+              id:
+                record.id,
 
-              from: record.from,
+              from:
+                record.from,
 
-              text: record.text,
+              text:
+                record.text,
 
-              time: record.time
+              time:
+                record.time
+
             }
           );
 
@@ -802,13 +937,16 @@ wss.on("connection", (socket) => {
           sendToUser(
             record.from,
             {
-              type: "delivery_error",
+
+              type:
+                "delivery_error",
 
               reason:
                 "Friend is offline",
 
               messageId:
                 record.id
+
             }
           );
 
@@ -838,10 +976,13 @@ wss.on("connection", (socket) => {
           sendToUser(
             socket.userId,
             {
-              type: "media_error",
+
+              type:
+                "media_error",
 
               reason:
                 "Media file is too large."
+
             }
           );
 
@@ -880,6 +1021,7 @@ wss.on("connection", (socket) => {
 
           data:
             msg.data || null
+
         };
 
 
@@ -896,11 +1038,14 @@ wss.on("connection", (socket) => {
 
               type: "media",
 
-              id: record.id,
+              id:
+                record.id,
 
-              from: record.from,
+              from:
+                record.from,
 
-              time: record.time,
+              time:
+                record.time,
 
               mediaType:
                 record.mediaType,
@@ -921,7 +1066,8 @@ wss.on("connection", (socket) => {
             record.from,
             {
 
-              type: "delivery_error",
+              type:
+                "delivery_error",
 
               reason:
                 "Friend is offline",
@@ -959,7 +1105,8 @@ wss.on("connection", (socket) => {
             record.from,
             {
 
-              type: "delivered",
+              type:
+                "delivered",
 
               messageId:
                 record.id
@@ -997,7 +1144,8 @@ wss.on("connection", (socket) => {
             record.from,
             {
 
-              type: "read",
+              type:
+                "read",
 
               messageId:
                 record.id
@@ -1040,9 +1188,11 @@ wss.on("connection", (socket) => {
             record.from,
             {
 
-              type: "reaction",
+              type:
+                "reaction",
 
-              messageId: id,
+              messageId:
+                id,
 
               reaction:
                 record.reaction,
@@ -1058,9 +1208,11 @@ wss.on("connection", (socket) => {
             record.to,
             {
 
-              type: "reaction",
+              type:
+                "reaction",
 
-              messageId: id,
+              messageId:
+                id,
 
               reaction:
                 record.reaction,
@@ -1101,9 +1253,11 @@ wss.on("connection", (socket) => {
             record.to,
             {
 
-              type: "unsend",
+              type:
+                "unsend",
 
-              messageId: id
+              messageId:
+                id
 
             }
           );
@@ -1140,9 +1294,11 @@ wss.on("connection", (socket) => {
             record.to,
             {
 
-              type: "server_delete",
+              type:
+                "server_delete",
 
-              messageId: id
+              messageId:
+                id
 
             }
           );
@@ -1293,7 +1449,10 @@ const heartbeatInterval =
   }, 30000);
 
 
-// Stop heartbeat cleanly
+// ===============================
+// STOP HEARTBEAT CLEANLY
+// ===============================
+
 wss.on("close", () => {
 
   clearInterval(
@@ -1322,4 +1481,3 @@ server.listen(
 
   }
 );
-```
