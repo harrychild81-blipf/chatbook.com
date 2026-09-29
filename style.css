@@ -708,3 +708,52 @@ header > div {
 
   flex-shrink: 0;
 }
+/* =========================================================
+   FRIENDCHAT CHAT SCREEN - FIXED HEADER & INPUT
+   ========================================================= */
+
+/* Chat screen itself never scrolls */
+#chatScreen {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* Chat header stays at the top */
+#chatScreen .chatHeader {
+  flex-shrink: 0;
+}
+
+
+/* Messages are the ONLY scrolling area */
+#messages {
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  scroll-behavior: smooth;
+}
+
+
+/* Message input area stays at bottom */
+#chatScreen .chatInput,
+#chatScreen .inputArea,
+#chatScreen .messageInputArea {
+  flex-shrink: 0;
+}
+
+
+/* Prevent page itself from scrolling */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
