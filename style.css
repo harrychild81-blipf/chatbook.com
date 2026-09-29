@@ -757,3 +757,226 @@ body {
   height: 100%;
   overflow: hidden;
 }
+/* =========================
+   PROFILE SCREEN
+   ========================= */
+
+.profilePage {
+  padding: 20px;
+  padding-bottom: 100px;
+  text-align: center;
+  overflow-y: auto;
+}
+
+.bigProfile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.profileLarge {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: bold;
+  overflow: hidden;
+  border: 3px solid #ddd;
+}
+
+.profileLarge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.changePhotoButton {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #f0f0f0;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.changePhotoButton:hover {
+  background: #e2e2e2;
+}
+
+.profilePage h2 {
+  margin: 14px 0 5px;
+}
+
+.profilePage > button {
+  margin-top: 10px;
+}
+
+
+/* =========================
+   PROFILE MEDIA
+   ========================= */
+
+.profileMediaHeader {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.profileMediaHeader h3 {
+  margin: 0;
+}
+
+.uploadMediaButton {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #f0f0f0;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.uploadMediaButton:hover {
+  background: #e2e2e2;
+}
+
+.profileMediaGrid {
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.profileMediaGrid img,
+.profileMediaGrid video {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #eee;
+}
+
+
+/* =========================
+   BOTTOM NAVIGATION
+   ========================= */
+
+.bottomNav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 65px;
+
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+
+  background: white;
+  border-top: 1px solid #ddd;
+
+  z-index: 1000;
+}
+
+.bottomNav button {
+  flex: 1;
+
+  border: none;
+  background: transparent;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  cursor: pointer;
+}
+
+.bottomNav button span {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.bottomNav button small {
+  font-size: 12px;
+}
+
+.bottomNav button:hover {
+  background: #f5f5f5;
+}
+
+
+/* =========================
+   MOBILE PROFILE
+   ========================= */
+
+@media (max-width: 600px) {
+
+  .profilePage {
+    padding: 16px;
+    padding-bottom: 90px;
+  }
+
+  .profileLarge {
+    width: 95px;
+    height: 95px;
+    font-size: 36px;
+  }
+
+  .profileMediaGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+}
+
+
+/* =========================
+   CHAT SCREEN FIX
+   ========================= */
+
+#chatScreen {
+  height: 100vh;
+  height: 100dvh;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+}
+
+#chatScreen > header {
+  flex-shrink: 0;
+}
+
+#messages {
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+#chatScreen .composer {
+  flex-shrink: 0;
+}
+
+
+/* Keep page from moving when chat grows */
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
