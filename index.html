@@ -1,75 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FriendChat</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>FriendChat</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 </head>
 
 <body>
 
 <div class="app">
 
-  <section id="loginScreen" class="screen auth">
+  <!-- =========================
+       LOGIN SCREEN
+       ========================= -->
+
+  <section
+    id="loginScreen"
+    class="screen auth"
+  >
+
     <div class="card">
-      <div class="logo">FC</div>
-      <h1>FriendChat</h1>
-      <p class="muted">Private chat for your friends</p>
 
-      <input id="loginEmail" type="email" placeholder="Email">
-      <input id="loginPassword" type="password" placeholder="Password">
+      <div class="logo">
+        FC
+      </div>
 
-      <button onclick="login()">Log in</button>
-      <button class="secondary" onclick="showSignup()">Create account</button>
+      <h1>
+        FriendChat
+      </h1>
 
-      <p id="loginStatus" class="status"></p>
+      <p class="muted">
+        Private chat for your friends
+      </p>
+
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="Email"
+      >
+
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="Password"
+      >
+
+      <button onclick="login()">
+        Log in
+      </button>
+
+      <button
+        class="secondary"
+        onclick="showSignup()"
+      >
+        Create account
+      </button>
+
+      <p
+        id="loginStatus"
+        class="status"
+      ></p>
+
     </div>
+
   </section>
 
 
-  <section id="signupScreen" class="screen auth hidden">
+  <!-- =========================
+       SIGNUP SCREEN
+       ========================= -->
+
+  <section
+    id="signupScreen"
+    class="screen auth hidden"
+  >
+
     <div class="card">
-      <div class="logo">FC</div>
-      <h1>Create account</h1>
 
-      <input id="signupName" placeholder="Your name">
-      <input id="signupEmail" type="email" placeholder="Email">
-      <input id="signupPassword" type="password" placeholder="Password (6+ characters)">
+      <div class="logo">
+        FC
+      </div>
 
-      <button onclick="signup()">Create account</button>
-      <button class="secondary" onclick="showLogin()">Back to login</button>
+      <h1>
+        Create account
+      </h1>
 
-      <p id="signupStatus" class="status"></p>
+      <input
+        id="signupName"
+        placeholder="Your name"
+      >
+
+      <input
+        id="signupEmail"
+        type="email"
+        placeholder="Email"
+      >
+
+      <input
+        id="signupPassword"
+        type="password"
+        placeholder="Password (6+ characters)"
+      >
+
+      <button onclick="signup()">
+        Create account
+      </button>
+
+      <button
+        class="secondary"
+        onclick="showLogin()"
+      >
+        Back to login
+      </button>
+
+      <p
+        id="signupStatus"
+        class="status"
+      ></p>
+
     </div>
+
   </section>
 
 
-  <section id="homeScreen" class="screen hidden">
+  <!-- =========================
+       HOME SCREEN
+       ========================= -->
+
+  <section
+    id="homeScreen"
+    class="screen hidden"
+  >
 
     <header>
+
       <div>
-        <h2>FriendChat</h2>
+        <h2>
+          FriendChat
+        </h2>
+
         <small id="myIdLabel"></small>
       </div>
 
-      <button class="icon" onclick="showAdd()">＋</button>
+      <!-- STATUS INFO BUTTON -->
+
+      <button
+        class="statusInfoButton"
+        onclick="toggleStatusInfo()"
+        title="Status information"
+      >
+        ⓘ
+      </button>
+
+      <button
+        class="icon"
+        onclick="showAdd()"
+      >
+        ＋
+      </button>
+
     </header>
 
 
-    <div class="profileRow">
-      <div id="profileCircle" class="profile">?</div>
+    <!-- =========================
+         STATUS EXPLANATION
+         ========================= -->
 
-      <div>
-        <strong id="myName"></strong>
-        <div class="muted">
-          Your ID: <span id="myId"></span>
-        </div>
+    <div
+      id="statusInfo"
+      class="statusInfo hidden"
+    >
+
+      <div class="statusInfoHeader">
+
+        <strong>
+          Status
+        </strong>
+
+        <button
+          class="statusInfoClose"
+          onclick="toggleStatusInfo()"
+        >
+          ×
+        </button>
+
       </div>
 
-      <button class="small secondary" onclick="logout()">Log out</button>
+
+      <div class="statusExplanation">
+
+        <div class="statusExplanationItem">
+
+          <span class="statusLegendDot active"></span>
+
+          <div>
+            <strong>
+              Active
+            </strong>
+
+            <p>
+              The person is online and available.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="statusExplanationItem">
+
+          <span class="statusLegendDot busy"></span>
+
+          <div>
+            <strong>
+              Busy
+            </strong>
+
+            <p>
+              The person is online and currently chatting with someone else.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="statusExplanationItem">
+
+          <span class="statusLegendDot offline"></span>
+
+          <div>
+            <strong>
+              Offline
+            </strong>
+
+            <p>
+              The person is not currently connected to FriendChat.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
 
+
+    <!-- =========================
+         PROFILE
+         ========================= -->
+
+    <div class="profileRow">
+
+      <div
+        id="profileCircle"
+        class="profile"
+      >
+        ?
+      </div>
+
+      <div class="profileInfo">
+
+        <strong id="myName"></strong>
+
+        <div class="muted">
+          Your ID:
+          <span id="myId"></span>
+        </div>
+
+      </div>
+
+      <button
+        class="small secondary"
+        onclick="logout()"
+      >
+        Log out
+      </button>
+
+    </div>
+
+
+    <!-- SEARCH -->
 
     <input
       id="search"
@@ -78,47 +298,57 @@
       oninput="renderFriends()"
     >
 
-    <div id="friendList" class="friendList"></div>
+
+    <!-- FRIEND LIST -->
+
+    <div
+      id="friendList"
+      class="friendList"
+    ></div>
 
   </section>
 
 
-  <section id="addScreen" class="screen hidden">
+  <!-- =========================
+       ADD FRIEND SCREEN
+       ========================= -->
+
+  <section
+    id="addScreen"
+    class="screen hidden"
+  >
 
     <header>
-      <button class="back" onclick="showHome()">←</button>
-      <h2>Add</h2>
+
+      <button
+        class="back"
+        onclick="showHome()"
+      >
+        ←
+      </button>
+
+      <h2>
+        Add Friend
+      </h2>
+
     </header>
 
 
     <div class="card wide">
-
-      <div class="tabs">
-        <button
-          id="friendTab"
-          onclick="selectAddType('friend')"
-        >
-          Add Friend
-        </button>
-
-        <button
-          id="groupTab"
-          class="secondary"
-          onclick="selectAddType('group')"
-        >
-          Join Group
-        </button>
-      </div>
-
 
       <input
         id="addId"
         placeholder="Enter Friend ID"
       >
 
-      <button onclick="addById()">Continue</button>
+      <button onclick="addById()">
+        Add Friend
+      </button>
 
-      <p id="addStatus" class="status"></p>
+      <p
+        id="addStatus"
+        class="status"
+      ></p>
 
       <p class="muted smallText">
         Example: FC-ABC123
@@ -129,22 +359,56 @@
   </section>
 
 
-  <section id="chatScreen" class="screen hidden">
+  <!-- =========================
+       CHAT SCREEN
+       ========================= -->
+
+  <section
+    id="chatScreen"
+    class="screen hidden"
+  >
 
     <header>
-      <button class="back" onclick="showHome()">←</button>
+
+      <button
+        class="back"
+        onclick="showHome()"
+      >
+        ←
+      </button>
 
       <div>
-        <h2 id="chatName">Chat</h2>
+
+        <h2 id="chatName">
+          Chat
+        </h2>
+
         <small id="chatId"></small>
+
       </div>
+
     </header>
 
 
-    <div id="messages" class="messages"></div>
+    <!-- MESSAGES -->
 
+    <div
+      id="messages"
+      class="messages"
+    ></div>
+
+
+    <!-- MESSAGE COMPOSER -->
 
     <div class="composer">
+
+      <button
+        class="emojiButton"
+        onclick="toggleEmojiPicker()"
+      >
+        😊
+      </button>
+
 
       <input
         id="messageInput"
@@ -152,10 +416,12 @@
         onkeydown="if(event.key==='Enter') sendMessage()"
       >
 
+
       <label
         class="mediaButton"
         title="Send photo/video"
       >
+
         📎
 
         <input
@@ -165,24 +431,44 @@
           hidden
           onchange="sendMedia()"
         >
+
       </label>
 
-      <button onclick="sendMessage()">Send</button>
+
+      <button onclick="sendMessage()">
+        Send
+      </button>
 
     </div>
+
+
+    <!-- EMOJI PICKER -->
+
+    <div
+      id="emojiPicker"
+      class="emojiPicker hidden"
+    ></div>
 
   </section>
 
 </div>
 
 
-<!-- Message reaction / action menu -->
+<!-- =========================
+     MESSAGE MENU
+     ========================= -->
 
-<div id="messageMenu" class="messageMenu hidden">
+<div
+  id="messageMenu"
+  class="messageMenu hidden"
+>
 
   <div class="messageSheet">
 
-    <strong>React to message</strong>
+    <strong>
+      React to message
+    </strong>
+
 
     <input
       id="selectedMessageId"
@@ -198,6 +484,16 @@
       <button onclick="reactToMessage('😮')">😮</button>
       <button onclick="reactToMessage('😢')">😢</button>
       <button onclick="reactToMessage('😡')">😡</button>
+      <button onclick="reactToMessage('🔥')">🔥</button>
+      <button onclick="reactToMessage('😍')">😍</button>
+      <button onclick="reactToMessage('😭')">😭</button>
+      <button onclick="reactToMessage('🤣')">🤣</button>
+      <button onclick="reactToMessage('😎')">😎</button>
+      <button onclick="reactToMessage('🥰')">🥰</button>
+      <button onclick="reactToMessage('🎉')">🎉</button>
+      <button onclick="reactToMessage('👏')">👏</button>
+      <button onclick="reactToMessage('💀')">💀</button>
+      <button onclick="reactToMessage('👎')">👎</button>
 
     </div>
 
@@ -230,7 +526,31 @@
 </div>
 
 
+<!-- =========================
+     STATUS INFO JAVASCRIPT
+     ========================= -->
+
+<script>
+
+function toggleStatusInfo() {
+
+  const box = document.getElementById("statusInfo");
+
+  if (!box) {
+    return;
+  }
+
+  box.classList.toggle("hidden");
+
+}
+
+</script>
+
+
+<!-- YOUR MAIN APP -->
+
 <script src="app.js"></script>
 
 </body>
+
 </html>
