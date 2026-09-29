@@ -1,10 +1,6 @@
-/* =========================================================
-   FRIENDCHAT - COMPLETE APP.JS
-   ========================================================= */
-
-// =========================================================
-// SERVER CONNECTION
-// =========================================================
+// ==========================================
+// FRIENDCHAT - APP.JS
+// ==========================================
 
 const API =
   location.protocol === "https:"
@@ -13,176 +9,211 @@ const API =
 
 let socket = null;
 
-
-// =========================================================
-// APP STATE
-// =========================================================
-
-let currentUser = null;
-let friends = [];
-let currentChatUserId = null;
-let selectedMessageId = null;
-
-let chats = {};
-
-
-// =========================================================
-// LOCAL STORAGE
-// =========================================================
-
-function loadAccount() {
-  try {
-    return JSON.parse(
-      localStorage.getItem("friendchat_account")
-    );
-  } catch {
-    return null;
-  }
-}
-
-
-function saveAccount(account) {
-  localStorage.setItem(
-    "friendchat_account",
-    JSON.stringify(account)
+let currentUser =
+  JSON.parse(
+    localStorage.getItem("friendchatUser") || "null"
   );
-}
 
-
-function loadFriends() {
-  try {
-    friends =
-      JSON.parse(
-        localStorage.getItem("friendchat_friends")
-      ) || [];
-  } catch {
-    friends = [];
-  }
-}
-
-
-function saveFriends() {
-  localStorage.setItem(
-    "friendchat_friends",
-    JSON.stringify(friends)
+let friends =
+  JSON.parse(
+    localStorage.getItem("friendchatFriends") || "[]"
   );
-}
+
+let currentChat = null;
+
+let addType = "friend";
+
+let longPressTimer = null;
 
 
-function loadChats() {
-  try {
-    chats =
-      JSON.parse(
-        localStorage.getItem("friendchat_chats")
-      ) || {};
-  } catch {
-    chats = {};
-  }
-}
+// ==========================================
+// SCREEN FUNCTIONS
+// ==========================================
 
-
-function saveChats() {
-  localStorage.setItem(
-    "friendchat_chats",
-    JSON.stringify(chats)
-  );
-}
-
-
-// =========================================================
-// SCREEN HELPERS
-// =========================================================
-
-function hideAllScreens() {
-
+function hideAll() {
   document
     .querySelectorAll(".screen")
-    .forEach(screen => {
-      screen.classList.add("hidden");
-    });
-
+    .forEach(x => x.classList.add("hidden"));
 }
 
 
 function showLogin() {
-
-  hideAllScreens();
+  hideAll();
 
   document
     .getElementById("loginScreen")
     .classList.remove("hidden");
-
 }
 
 
 function showSignup() {
-
-  hideAllScreens();
+  hideAll();
 
   document
     .getElementById("signupScreen")
     .classList.remove("hidden");
-
 }
 
 
 function showHome() {
-
-  hideAllScreens();
+  hideAll();
 
   document
     .getElementById("homeScreen")
     .classList.remove("hidden");
 
-  currentChatUserId = null;
+  loadUserUI();
 
-  sendPresence(null);
+  renderFriends();
 
-  updateHome();
-
+  connectSocket();
 }
 
 
 function showAdd() {
-
-  hideAllScreens();
+  hideAll();
 
   document
     .getElementById("addScreen")
     .classList.remove("hidden");
 
+  selectAddType("friend");
 }
 
 
-// =========================================================
+function showChat(friend) {
+
+  currentChat = friend;
+
+  hideAll();
+
+  document
+    .getElementById("chatScreen")
+    .classList.remove("hidden");
+
+  document.getElementById("chatName").textContent =
+    friend.name;
+
+  document.getElementById("chatId").textContent =
+    friend.id;
+
+  renderMessages();
+
+  connectSocket();
+
+  // Tell server that we are chatting
+  sendPresence(friend.id);
+
+  // Mark received messages as seen
+  markChatSeen(friend.id);
+}
+
+
+// ==========================================
+// LOCAL STORAGE
+// ==========================================
+
+function saveFriends() {
+
+  localStorage.setItem(
+    "friendchatFriends",
+    JSON.stringify(friends)
+  );
+}
+
+
+function getChatKey(id) {
+
+  return "friendchatChat_" + id;
+}
+
+
+function getMessages(id) {
+
+  return JSON.parse(
+    localStorage.getItem(
+      getChatKey(id)
+    ) || "[]"
+  );
+}
+
+
+function saveMessages(id, msgs) {
+
+  localStorage.setItem(
+    getChatKey(id),
+    JSON.stringify(msgs)
+  );
+}
+
+
+function makeMessageId() {
+
+  return (
+    "MSG-" +
+    Date.now().toString(36) +
+    "-" +
+    Math.random()
+      .toString(36)
+      .slice(2, 8)
+  );
+}
+
+
+// ==========================================
+// USER UI
+// ==========================================
+
+function loadUserUI() {
+
+  if (!currentUser) return;
+
+  const myName =
+    document.getElementById("myName");
+
+  const myId =
+    document.getElementById("myId");
+
+  const myIdLabel =
+    document.getElementById("myIdLabel");
+
+  const profileCircle =
+    document.getElementById("profileCircle");
+
+
+  if (myName)
+    myName.textContent =
+      currentUser.name;
+
+  if (myId)
+    myId.textContent =
+      currentUser.id;
+
+  if (myIdLabel)
+    myIdLabel.textContent =
+      currentUser.id;
+
+  if (profileCircle)
+    profileCircle.textContent =
+      currentUser.name[0].toUpperCase();
+}
+
+
+// ==========================================
 // ACCOUNT
-// =========================================================
+// ==========================================
 
-function generateFriendId() {
+function makeId() {
 
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-  let code = "";
-
-  for (let i = 0; i < 6; i++) {
-
-    code +=
-      chars[
-        Math.floor(
-          Math.random() * chars.length
-        )
-      ];
-
-  }
-
-  return "FC-" + code;
+  return (
+    "FC-" +
+    Math.random()
+      .toString(36)
+      .substring(2, 8)
+      .toUpperCase()
+  );
 }
 
-
-// =========================================================
-// SIGNUP
-// =========================================================
 
 function signup() {
 
@@ -196,7 +227,8 @@ function signup() {
     document
       .getElementById("signupEmail")
       .value
-      .trim();
+      .trim()
+      .toLowerCase();
 
   const password =
     document
@@ -210,19 +242,10 @@ function signup() {
     );
 
 
-  if (!name) {
+  if (!name || !email || !password) {
 
     status.textContent =
-      "Enter your name.";
-
-    return;
-  }
-
-
-  if (!email || !email.includes("@")) {
-
-    status.textContent =
-      "Enter a valid email.";
+      "Please fill everything.";
 
     return;
   }
@@ -237,44 +260,39 @@ function signup() {
   }
 
 
-  const account = {
+  const user = {
 
-    id: generateFriendId(),
+    name,
 
-    name: name,
+    email,
 
-    email: email,
+    password,
 
-    password: password
+    id: makeId()
 
   };
 
 
-  saveAccount(account);
-
-  currentUser = account;
-
-  friends = [];
-
-  chats = {};
-
-  saveFriends();
-
-  saveChats();
+  currentUser = user;
 
 
-  updateHome();
+  localStorage.setItem(
+    "friendchatUser",
+    JSON.stringify(user)
+  );
 
-  connectSocket();
 
-  showHome();
+  status.textContent =
+    "Account created. Your ID is " +
+    user.id;
 
+
+  setTimeout(
+    showHome,
+    700
+  );
 }
 
-
-// =========================================================
-// LOGIN
-// =========================================================
 
 function login() {
 
@@ -282,12 +300,19 @@ function login() {
     document
       .getElementById("loginEmail")
       .value
-      .trim();
+      .trim()
+      .toLowerCase();
 
   const password =
     document
       .getElementById("loginPassword")
       .value;
+
+
+  const saved =
+    localStorage.getItem(
+      "friendchatUser"
+    );
 
 
   const status =
@@ -296,159 +321,387 @@ function login() {
     );
 
 
-  const account =
-    loadAccount();
-
-
-  if (!account) {
+  if (!saved) {
 
     status.textContent =
-      "No account found on this device.";
+      "No account on this device. Create one first.";
+
+    return;
+  }
+
+
+  const user =
+    JSON.parse(saved);
+
+
+  if (
+    email === user.email &&
+    password === user.password
+  ) {
+
+    currentUser = user;
+
+    showHome();
+
+  } else {
+
+    status.textContent =
+      "Incorrect email or password.";
+  }
+}
+
+
+function logout() {
+
+  currentUser = null;
+
+  currentChat = null;
+
+
+  if (socket) {
+
+    try {
+      socket.close();
+    } catch (e) {}
+
+  }
+
+
+  socket = null;
+
+  showLogin();
+}
+
+
+// ==========================================
+// ADD FRIEND
+// ==========================================
+
+function selectAddType(type) {
+
+  addType = type;
+
+
+  document.getElementById(
+    "friendTab"
+  ).className =
+    type === "friend"
+      ? ""
+      : "secondary";
+
+
+  document.getElementById(
+    "groupTab"
+  ).className =
+    type === "group"
+      ? ""
+      : "secondary";
+
+
+  document.getElementById(
+    "addId"
+  ).placeholder =
+    type === "friend"
+      ? "Enter Friend ID"
+      : "Enter Group ID";
+}
+
+
+async function addById() {
+
+  const id =
+    document
+      .getElementById("addId")
+      .value
+      .trim()
+      .toUpperCase();
+
+
+  const status =
+    document.getElementById(
+      "addStatus"
+    );
+
+
+  if (!id) {
+
+    status.textContent =
+      "Enter an ID.";
+
+    return;
+  }
+
+
+  if (addType === "group") {
+
+    status.textContent =
+      "Group IDs will be enabled in the next server update.";
 
     return;
   }
 
 
   if (
-    email !== account.email ||
-    password !== account.password
+    !currentUser ||
+    id === currentUser.id
   ) {
 
     status.textContent =
-      "Incorrect email or password.";
+      "You cannot add yourself.";
 
     return;
   }
 
 
-  currentUser = account;
-
-  loadFriends();
-
-  loadChats();
-
-  updateHome();
-
-  connectSocket();
-
-  showHome();
-
-}
+  status.textContent =
+    "Checking ID...";
 
 
-// =========================================================
-// LOGOUT
-// =========================================================
+  try {
 
-function logout() {
+    const res =
+      await fetch(
+        `/api/user/${encodeURIComponent(id)}`
+      );
 
-  sendPresence(null);
+
+    const data =
+      await res.json();
 
 
-  if (socket) {
+    if (!data.found) {
 
-    socket.close();
+      status.textContent =
+        "Friend not found.";
 
-    socket = null;
+      return;
+    }
 
+
+    if (
+      friends.some(
+        f => f.id === data.user.id
+      )
+    ) {
+
+      status.textContent =
+        "Already added.";
+
+      return;
+    }
+
+
+    friends.push(
+      data.user
+    );
+
+
+    saveFriends();
+
+
+    status.textContent =
+      `Added ${data.user.name}!`;
+
+
+    document.getElementById(
+      "addId"
+    ).value = "";
+
+
+    setTimeout(
+      showHome,
+      700
+    );
+
+
+  } catch (e) {
+
+    status.textContent =
+      "Server connection failed.";
   }
-
-
-  currentUser = null;
-
-  currentChatUserId = null;
-
-  showLogin();
-
 }
 
 
-// =========================================================
-// HOME
-// =========================================================
+// ==========================================
+// ESCAPE HTML
+// ==========================================
 
-function updateHome() {
+function escapeHtml(s) {
 
-  if (!currentUser) {
+  return String(s).replace(
+    /[&<>"']/g,
+
+    c => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[c])
+  );
+}
+
+
+// ==========================================
+// PRESENCE
+// ==========================================
+
+window.friendChatPresence = {};
+
+
+function sendPresence(chatWith = null) {
+
+  if (
+    !socket ||
+    socket.readyState !== WebSocket.OPEN
+  ) {
+
     return;
   }
 
 
-  const name =
-    document.getElementById(
-      "myName"
-    );
+  socket.send(
+    JSON.stringify({
 
-  const id =
-    document.getElementById(
-      "myId"
-    );
+      type: "presence_chat",
 
-  const idLabel =
-    document.getElementById(
-      "myIdLabel"
-    );
+      chatWith:
+        chatWith || null
 
-  const profile =
-    document.getElementById(
-      "profileCircle"
-    );
-
-
-  if (name) {
-    name.textContent =
-      currentUser.name;
-  }
-
-
-  if (id) {
-    id.textContent =
-      currentUser.id;
-  }
-
-
-  if (idLabel) {
-    idLabel.textContent =
-      currentUser.id;
-  }
-
-
-  if (profile) {
-
-    profile.textContent =
-      currentUser.name
-        .charAt(0)
-        .toUpperCase();
-
-  }
-
-
-  renderFriends();
-
+    })
+  );
 }
 
 
-// =========================================================
-// WEBSOCKET CONNECTION
-// =========================================================
+function renderFriends() {
+
+  const list =
+    document.getElementById(
+      "friendList"
+    );
+
+
+  if (!list) return;
+
+
+  const q =
+    (
+      document.getElementById(
+        "search"
+      )?.value || ""
+    ).toLowerCase();
+
+
+  const filtered =
+    friends.filter(
+      f =>
+        f.name
+          .toLowerCase()
+          .includes(q) ||
+
+        f.id
+          .toLowerCase()
+          .includes(q)
+    );
+
+
+  if (!filtered.length) {
+
+    list.innerHTML =
+      '<p class="muted">No friends yet. Press ＋ to add someone.</p>';
+
+    return;
+  }
+
+
+  list.innerHTML =
+    filtered
+      .map(friend => {
+
+        const presence =
+          window.friendChatPresence[
+            friend.id
+          ];
+
+
+        const status =
+          presence?.status ||
+          "offline";
+
+
+        let statusText =
+          "Offline";
+
+
+        if (status === "active")
+          statusText = "Active";
+
+        if (status === "busy")
+          statusText = "Busy";
+
+
+        return `
+
+          <div
+            class="friend"
+            onclick='showChat(${JSON.stringify(friend)})'
+          >
+
+            <div class="avatar">
+              ${escapeHtml(
+                friend.name[0].toUpperCase()
+              )}
+            </div>
+
+            <div class="friendInfo">
+
+              <strong>
+                ${escapeHtml(friend.name)}
+              </strong>
+
+              <small>
+                ${escapeHtml(friend.id)}
+              </small>
+
+              <small
+                class="presenceText ${status}"
+              >
+                <span
+                  class="presenceDot ${status}"
+                ></span>
+                ${statusText}
+              </small>
+
+            </div>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+}
+
+
+// ==========================================
+// WEBSOCKET
+// ==========================================
 
 function connectSocket() {
 
-  if (!currentUser) {
+  if (!currentUser)
     return;
-  }
 
 
-  // Close old connection first
+  if (
+    socket &&
+    (
+      socket.readyState === WebSocket.OPEN ||
+      socket.readyState === WebSocket.CONNECTING
+    )
+  ) {
 
-  if (socket) {
-
-    try {
-      socket.close();
-    } catch {}
-
-    socket = null;
-
+    return;
   }
 
 
@@ -458,12 +711,13 @@ function connectSocket() {
   );
 
 
-  socket = new WebSocket(API);
+  socket =
+    new WebSocket(API);
 
 
-  // -------------------------------------------------------
-  // OPEN
-  // -------------------------------------------------------
+  // ========================================
+  // CONNECTED
+  // ========================================
 
   socket.onopen = () => {
 
@@ -487,218 +741,331 @@ function connectSocket() {
     );
 
 
-    // Tell server current presence
+    // Tell server current chat
+    setTimeout(() => {
 
-    sendPresence(
-      currentChatUserId
-    );
+      if (
+        currentChat
+      ) {
+
+        sendPresence(
+          currentChat.id
+        );
+
+      } else {
+
+        sendPresence(null);
+
+      }
+
+    }, 200);
 
   };
 
 
-  // -------------------------------------------------------
-  // MESSAGE
-  // -------------------------------------------------------
+  // ========================================
+  // MESSAGE RECEIVED
+  // ========================================
 
-  socket.onmessage = async (event) => {
+  socket.onmessage = event => {
+
+    let msg;
+
 
     try {
 
-      const msg =
-        JSON.parse(event.data);
+      msg =
+        JSON.parse(
+          event.data
+        );
 
+    } catch (e) {
 
       console.log(
-        "Server message:",
-        msg
+        "Invalid server message"
+      );
+
+      return;
+    }
+
+
+    // ======================================
+    // REGISTERED
+    // ======================================
+
+    if (
+      msg.type === "registered"
+    ) {
+
+      console.log(
+        "Registered as:",
+        msg.userId
+      );
+
+      return;
+    }
+
+
+    // ======================================
+    // PRESENCE
+    // ======================================
+
+    if (
+      msg.type === "presence"
+    ) {
+
+      window.friendChatPresence =
+        msg.users || {};
+
+
+      renderFriends();
+
+
+      // Update currently open chat status
+      if (currentChat) {
+
+        updateChatPresence(
+          currentChat.id
+        );
+
+      }
+
+
+      return;
+    }
+
+
+    // ======================================
+    // TEXT MESSAGE
+    // ======================================
+
+    if (
+      msg.type === "chat"
+    ) {
+
+      const list =
+        getMessages(
+          msg.from
+        );
+
+
+      if (
+        !list.some(
+          m =>
+            m.id === msg.id
+        )
+      ) {
+
+        list.push({
+
+          id:
+            msg.id,
+
+          from:
+            msg.from,
+
+          text:
+            msg.text,
+
+          time:
+            msg.time ||
+            Date.now(),
+
+          mine:
+            false,
+
+          status:
+            "received",
+
+          reaction:
+            null
+
+        });
+
+      }
+
+
+      saveMessages(
+        msg.from,
+        list
       );
 
 
-      // -----------------------------------------------
-      // REGISTERED
-      // -----------------------------------------------
+      // Tell sender message arrived
+      if (
+        socket &&
+        socket.readyState === WebSocket.OPEN
+      ) {
 
-      if (msg.type === "registered") {
+        socket.send(
+          JSON.stringify({
 
-        console.log(
-          "Registered with server:",
-          msg.userId
+            type: "delivered",
+
+            messageId:
+              msg.id,
+
+            from:
+              msg.from,
+
+            to:
+              currentUser.id
+
+          })
         );
 
-        return;
       }
 
 
-      // -----------------------------------------------
-      // PRESENCE
-      // -----------------------------------------------
+      // If this chat is currently open,
+      // immediately mark message as seen.
+      if (
+        currentChat &&
+        currentChat.id === msg.from
+      ) {
 
-      if (msg.type === "presence") {
-
-        updatePresence(
-          msg.users || {}
+        markOneRead(
+          msg.from,
+          msg.id
         );
 
-        return;
+
+        if (
+          socket &&
+          socket.readyState === WebSocket.OPEN
+        ) {
+
+          socket.send(
+            JSON.stringify({
+
+              type: "read",
+
+              messageId:
+                msg.id,
+
+              to:
+                msg.from
+
+            })
+          );
+
+        }
+
+
+        renderMessages();
+
+      } else {
+
+        renderMessages();
+
       }
 
 
-      // -----------------------------------------------
-      // TEXT MESSAGE
-      // -----------------------------------------------
-
-      if (msg.type === "chat") {
-
-        receiveMessage(msg);
-
-        return;
-      }
+      return;
+    }
 
 
-      // -----------------------------------------------
-      // MEDIA
-      // -----------------------------------------------
+    // ======================================
+    // DELIVERED / READ
+    // ======================================
 
-      if (msg.type === "media") {
+    if (
+      msg.type === "delivered" ||
+      msg.type === "read"
+    ) {
 
-        receiveMedia(msg);
-
-        return;
-      }
-
-
-      // -----------------------------------------------
-      // DELIVERED
-      // -----------------------------------------------
-
-      if (msg.type === "delivered") {
-
-        updateMessageStatus(
-          msg.messageId,
-          "delivered"
-        );
-
-        return;
-      }
-
-
-      // -----------------------------------------------
-      // READ
-      // -----------------------------------------------
-
-      if (msg.type === "read") {
-
-        updateMessageStatus(
-          msg.messageId,
-          "read"
-        );
-
-        return;
-      }
-
-
-      // -----------------------------------------------
-      // REACTION
-      // -----------------------------------------------
-
-      if (msg.type === "reaction") {
-
-        updateReaction(
-          msg.messageId,
-          msg.reaction
-        );
-
-        return;
-      }
-
-
-      // -----------------------------------------------
-      // UNSEND
-      // -----------------------------------------------
-
-      if (msg.type === "unsend") {
-
-        removeMessage(
-          msg.messageId
-        );
-
-        return;
-      }
-
-
-      // -----------------------------------------------
-      // DELETE
-      // -----------------------------------------------
-
-      if (msg.type === "server_delete") {
-
-        removeMessage(
-          msg.messageId
-        );
-
-        return;
-      }
-
-
-      // -----------------------------------------------
-      // DELIVERY ERROR
-      // -----------------------------------------------
-
-      if (msg.type === "delivery_error") {
-
-        console.log(
-          "Delivery error:",
-          msg.reason
-        );
-
-        return;
-      }
-
-
-      // -----------------------------------------------
-      // MEDIA ERROR
-      // -----------------------------------------------
-
-      if (msg.type === "media_error") {
-
-        alert(
-          msg.reason ||
-          "Media could not be sent."
-        );
-
-        return;
-      }
-
-
-    } catch (error) {
-
-      console.error(
-        "WebSocket message error:",
-        error
+      updateMessageStatus(
+        msg.messageId,
+        msg.type
       );
 
+
+      return;
+    }
+
+
+    // ======================================
+    // REACTION
+    // ======================================
+
+    if (
+      msg.type === "reaction"
+    ) {
+
+      updateReaction(
+        msg.messageId,
+        msg.reaction,
+        msg.from
+      );
+
+
+      return;
+    }
+
+
+    // ======================================
+    // UNSEND
+    // ======================================
+
+    if (
+      msg.type === "unsend"
+    ) {
+
+      removeMessageEverywhere(
+        msg.messageId
+      );
+
+
+      return;
+    }
+
+
+    // ======================================
+    // DELETE
+    // ======================================
+
+    if (
+      msg.type === "server_delete"
+    ) {
+
+      removeMessageEverywhere(
+        msg.messageId
+      );
+
+
+      return;
+    }
+
+
+    // ======================================
+    // DELIVERY ERROR
+    // ======================================
+
+    if (
+      msg.type === "delivery_error"
+    ) {
+
+      console.log(
+        "Delivery error:",
+        msg.reason
+      );
+
+
+      updateMessageStatus(
+        msg.messageId,
+        "sent"
+      );
+
+
+      return;
     }
 
   };
 
 
-  // -------------------------------------------------------
-  // ERROR
-  // -------------------------------------------------------
-
-  socket.onerror = (error) => {
-
-    console.error(
-      "FriendChat WebSocket error:",
-      error
-    );
-
-  };
-
-
-  // -------------------------------------------------------
+  // ========================================
   // CLOSED
-  // -------------------------------------------------------
+  // ========================================
 
   socket.onclose = () => {
 
@@ -706,469 +1073,106 @@ function connectSocket() {
       "FriendChat WebSocket disconnected"
     );
 
-  };
 
-}
+    socket = null;
 
 
-// =========================================================
-// PRESENCE
-// =========================================================
+    // Locally show friends offline
+    // until connection returns.
+    window.friendChatPresence = {};
 
-function getPresence(userId) {
-
-  const saved =
-    window.friendChatPresence || {};
-
-  return (
-    saved[
-      String(userId).toUpperCase()
-    ] || {
-      status: "offline"
-    }
-  );
-
-}
-
-
-function presenceLabel(status) {
-
-  if (status === "active") {
-    return "Active";
-  }
-
-  if (status === "busy") {
-    return "Busy";
-  }
-
-  return "Offline";
-
-}
-
-
-function updatePresence(users) {
-
-  window.friendChatPresence =
-    users || {};
-
-  renderFriends();
-
-  // Update open chat header
-
-  if (currentChatUserId) {
-
-    const user =
-      getPresence(
-        currentChatUserId
-      );
-
-    const chatStatus =
-      document.getElementById(
-        "chatStatus"
-      );
-
-    if (chatStatus) {
-
-      chatStatus.textContent =
-        presenceLabel(
-          user.status
-        );
-
-    }
-
-  }
-
-}
-
-
-function sendPresence(chatWith) {
-
-  if (
-    !socket ||
-    socket.readyState !== WebSocket.OPEN
-  ) {
-    return;
-  }
-
-
-  socket.send(
-    JSON.stringify({
-
-      type: "presence_chat",
-
-      chatWith:
-        chatWith
-          ? String(chatWith).toUpperCase()
-          : null
-
-    })
-  );
-
-}
-
-
-// =========================================================
-// FRIEND LIST
-// =========================================================
-
-function renderFriends() {
-
-  const list =
-    document.getElementById(
-      "friendList"
-    );
-
-
-  if (!list) {
-    return;
-  }
-
-
-  const search =
-    (
-      document.getElementById(
-        "search"
-      )?.value || ""
-    )
-      .toLowerCase()
-      .trim();
-
-
-  list.innerHTML = "";
-
-
-  const filtered =
-    friends.filter(friend => {
-
-      return (
-        friend.name
-          .toLowerCase()
-          .includes(search) ||
-
-        friend.id
-          .toLowerCase()
-          .includes(search)
-      );
-
-    });
-
-
-  if (filtered.length === 0) {
-
-    list.innerHTML = `
-      <div class="muted" style="padding:20px;text-align:center;">
-        No friends yet.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  filtered.forEach(friend => {
-
-    const presence =
-      getPresence(
-        friend.id
-      );
-
-
-    const status =
-      presence.status ||
-      "offline";
-
-
-    const item =
-      document.createElement(
-        "div"
-      );
-
-    item.className =
-      "friendItem";
-
-
-    item.onclick = () => {
-
-      openChat(friend);
-
-    };
-
-
-    item.innerHTML = `
-
-      <div class="friendAvatar">
-
-        ${escapeHtml(
-          friend.name
-            .charAt(0)
-            .toUpperCase()
-        )}
-
-        <span
-          class="presenceDot ${status}"
-        ></span>
-
-      </div>
-
-      <div class="friendInfo">
-
-        <div class="friendName">
-          ${escapeHtml(friend.name)}
-        </div>
-
-        <div class="friendId">
-          ${escapeHtml(friend.id)}
-        </div>
-
-        <div
-          class="presenceText ${status}"
-        >
-          ${presenceLabel(status)}
-        </div>
-
-      </div>
-
-    `;
-
-
-    list.appendChild(item);
-
-  });
-
-}
-
-
-// =========================================================
-// ADD FRIEND
-// =========================================================
-
-async function addById() {
-
-  const input =
-    document.getElementById(
-      "addId"
-    );
-
-  const status =
-    document.getElementById(
-      "addStatus"
-    );
-
-
-  const id =
-    input.value
-      .trim()
-      .toUpperCase();
-
-
-  if (!id) {
-
-    status.textContent =
-      "Enter a Friend ID.";
-
-    return;
-  }
-
-
-  if (
-    currentUser &&
-    id === currentUser.id
-  ) {
-
-    status.textContent =
-      "You cannot add yourself.";
-
-    return;
-  }
-
-
-  if (
-    friends.some(
-      friend =>
-        friend.id === id
-    )
-  ) {
-
-    status.textContent =
-      "This friend is already added.";
-
-    return;
-  }
-
-
-  try {
-
-    const protocol =
-      location.protocol === "https:"
-        ? "https:"
-        : "http:";
-
-
-    const response =
-      await fetch(
-        `${protocol}//${location.host}/api/user/${encodeURIComponent(id)}`
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (!data.found) {
-
-      status.textContent =
-        "Friend not found. Ask them to open FriendChat first.";
-
-      return;
-    }
-
-
-    friends.push({
-
-      id: data.user.id,
-
-      name: data.user.name
-
-    });
-
-
-    saveFriends();
 
     renderFriends();
 
 
-    status.textContent =
-      "Friend added successfully!";
+    // Try reconnecting
+    // after a few seconds.
+    setTimeout(() => {
+
+      if (
+        currentUser &&
+        !socket
+      ) {
+
+        connectSocket();
+
+      }
+
+    }, 3000);
+
+  };
 
 
-    input.value = "";
+  // ========================================
+  // ERROR
+  // ========================================
 
+  socket.onerror = error => {
 
-  } catch (error) {
-
-    console.error(
-      "Add friend error:",
+    console.log(
+      "WebSocket error:",
       error
     );
 
-
-    status.textContent =
-      "Could not connect to server.";
-
-  }
-
+  };
 }
 
 
-// =========================================================
-// OPEN CHAT
-// =========================================================
+// ==========================================
+// UPDATE CHAT HEADER PRESENCE
+// ==========================================
 
-function openChat(friend) {
+function updateChatPresence(friendId) {
 
-  currentChatUserId =
-    friend.id;
-
-
-  hideAllScreens();
-
-
-  document
-    .getElementById("chatScreen")
-    .classList.remove("hidden");
+  const info =
+    window.friendChatPresence[
+      friendId
+    ];
 
 
-  const chatName =
-    document.getElementById(
-      "chatName"
-    );
-
-  const chatId =
+  const header =
     document.getElementById(
       "chatId"
     );
 
 
-  chatName.textContent =
-    friend.name;
+  if (!header)
+    return;
 
 
-  chatId.innerHTML = `
-    ${escapeHtml(friend.id)}
-    <span
-      id="chatStatus"
-      class="muted"
-      style="margin-left:8px;"
-    >
-      ${presenceLabel(
-        getPresence(friend.id).status
-      )}
-    </span>
-  `;
+  if (!info) {
 
+    header.textContent =
+      friendId;
 
-  if (!chats[currentChatUserId]) {
-
-    chats[currentChatUserId] = [];
-
+    return;
   }
 
 
-  renderMessages();
+  let status =
+    "Offline";
 
 
-  sendPresence(
-    currentChatUserId
-  );
+  if (info.status === "active")
+    status = "Active";
 
+  if (info.status === "busy")
+    status = "Busy";
+
+
+  header.innerHTML =
+    `${escapeHtml(friendId)}
+     <span class="chatPresence ${info.status}">
+       ${status}
+     </span>`;
 }
 
 
-// =========================================================
-// MESSAGE ID
-// =========================================================
-
-function generateMessageId() {
-
-  return (
-    Date.now().toString(36) +
-    "-" +
-    Math.random()
-      .toString(36)
-      .slice(2)
-  );
-
-}
-
-
-// =========================================================
+// ==========================================
 // SEND TEXT MESSAGE
-// =========================================================
+// ==========================================
 
 function sendMessage() {
-
-  if (!currentUser) {
-    return;
-  }
-
-
-  if (!currentChatUserId) {
-    return;
-  }
-
-
-  if (
-    !socket ||
-    socket.readyState !== WebSocket.OPEN
-  ) {
-
-    alert(
-      "Not connected to FriendChat server."
-    );
-
-    return;
-  }
-
 
   const input =
     document.getElementById(
@@ -1180,7 +1184,28 @@ function sendMessage() {
     input.value.trim();
 
 
-  if (!text) {
+  if (
+    !text ||
+    !currentChat ||
+    !currentUser
+  ) {
+
+    return;
+  }
+
+
+  if (
+    !socket ||
+    socket.readyState !== WebSocket.OPEN
+  ) {
+
+    alert(
+      "Not connected to the server."
+    );
+
+
+    connectSocket();
+
     return;
   }
 
@@ -1188,791 +1213,617 @@ function sendMessage() {
   const message = {
 
     id:
-      generateMessageId(),
+      makeMessageId(),
+
+    type:
+      "chat",
 
     from:
       currentUser.id,
 
     to:
-      currentChatUserId,
+      currentChat.id,
 
     text:
       text,
 
     time:
-      Date.now(),
-
-    status:
-      "sent",
-
-    mine:
-      true
+      Date.now()
 
   };
 
 
-  if (!chats[currentChatUserId]) {
-
-    chats[currentChatUserId] = [];
-
-  }
-
-
-  chats[currentChatUserId].push(
-    message
+  // Send to server
+  socket.send(
+    JSON.stringify(message)
   );
 
 
-  saveChats();
+  // Save locally
+  const list =
+    getMessages(
+      currentChat.id
+    );
 
-  renderMessages();
+
+  list.push({
+
+    id:
+      message.id,
+
+    from:
+      currentUser.id,
+
+    text:
+      message.text,
+
+    time:
+      message.time,
+
+    mine:
+      true,
+
+    status:
+      "sent",
+
+    reaction:
+      null
+
+  });
 
 
-  socket.send(
-    JSON.stringify({
-
-      type: "chat",
-
-      id:
-        message.id,
-
-      from:
-        message.from,
-
-      to:
-        message.to,
-
-      text:
-        message.text,
-
-      time:
-        message.time
-
-    })
+  saveMessages(
+    currentChat.id,
+    list
   );
 
 
   input.value = "";
 
+
+  renderMessages();
 }
 
 
-// =========================================================
-// RECEIVE TEXT MESSAGE
-// =========================================================
-
-function receiveMessage(msg) {
-
-  const from =
-    String(msg.from).toUpperCase();
-
-
-  if (!chats[from]) {
-
-    chats[from] = [];
-
-  }
-
-
-  const message = {
-
-    id:
-      msg.id,
-
-    from:
-      from,
-
-    to:
-      currentUser.id,
-
-    text:
-      msg.text,
-
-    time:
-      msg.time,
-
-    status:
-      "delivered",
-
-    mine:
-      false
-
-  };
-
-
-  const alreadyExists =
-    chats[from].some(
-      item =>
-        item.id === message.id
-    );
-
-
-  if (!alreadyExists) {
-
-    chats[from].push(
-      message
-    );
-
-  }
-
-
-  saveChats();
-
-
-  if (
-    currentChatUserId === from
-  ) {
-
-    renderMessages();
-
-
-    // Tell sender message was delivered
-
-    sendDelivered(
-      message.id
-    );
-
-
-    // Tell sender it was read
-
-    sendRead(
-      message.id
-    );
-
-  } else {
-
-    sendDelivered(
-      message.id
-    );
-
-  }
-
-}
-
-
-// =========================================================
-// DELIVERED
-// =========================================================
-
-function sendDelivered(messageId) {
-
-  if (
-    !socket ||
-    socket.readyState !== WebSocket.OPEN
-  ) {
-    return;
-  }
-
-
-  socket.send(
-    JSON.stringify({
-
-      type: "delivered",
-
-      messageId:
-        messageId
-
-    })
-  );
-
-}
-
-
-// =========================================================
-// READ
-// =========================================================
-
-function sendRead(messageId) {
-
-  if (
-    !socket ||
-    socket.readyState !== WebSocket.OPEN
-  ) {
-    return;
-  }
-
-
-  socket.send(
-    JSON.stringify({
-
-      type: "read",
-
-      messageId:
-        messageId
-
-    })
-  );
-
-}
-
-
-// =========================================================
+// ==========================================
 // MESSAGE STATUS
-// =========================================================
+// ==========================================
 
 function updateMessageStatus(
-  messageId,
+  id,
   status
 ) {
 
   for (
-    const chatId in chats
+    const friend of friends
   ) {
 
-    const messages =
-      chats[chatId];
-
-
-    const message =
-      messages.find(
-        item =>
-          item.id === messageId
+    const list =
+      getMessages(
+        friend.id
       );
 
 
-    if (message) {
+    const message =
+      list.find(
+        x =>
+          x.id === id
+      );
+
+
+    if (!message)
+      continue;
+
+
+    // IMPORTANT:
+    // "read" is the black ✓✓ state.
+    if (status === "read") {
 
       message.status =
-        status;
+        "read";
 
     }
 
+    else if (
+      status === "delivered"
+    ) {
+
+      // Don't allow delivered to
+      // overwrite an already-read message.
+      if (
+        message.status !== "read"
+      ) {
+
+        message.status =
+          "delivered";
+
+      }
+
+    }
+
+
+    saveMessages(
+      friend.id,
+      list
+    );
+
+
+    if (
+      currentChat &&
+      currentChat.id === friend.id
+    ) {
+
+      renderMessages();
+
+    }
+
+
+    return;
   }
-
-
-  saveChats();
-
-
-  if (currentChatUserId) {
-
-    renderMessages();
-
-  }
-
 }
 
 
-// =========================================================
+// ==========================================
+// MARK ONE MESSAGE AS READ
+// ==========================================
+
+function markOneRead(
+  friendId,
+  id
+) {
+
+  const list =
+    getMessages(
+      friendId
+    );
+
+
+  const message =
+    list.find(
+      x =>
+        x.id === id
+    );
+
+
+  if (!message)
+    return;
+
+
+  message.status =
+    "read";
+
+
+  saveMessages(
+    friendId,
+    list
+  );
+}
+
+
+// ==========================================
+// MARK WHOLE CHAT AS SEEN
+// ==========================================
+
+function markChatSeen(
+  friendId
+) {
+
+  const list =
+    getMessages(
+      friendId
+    );
+
+
+  let changed = false;
+
+
+  list.forEach(message => {
+
+    if (
+      !message.mine &&
+      message.status !== "read"
+    ) {
+
+      message.status =
+        "read";
+
+      changed = true;
+
+
+      if (
+        socket &&
+        socket.readyState === WebSocket.OPEN
+      ) {
+
+        socket.send(
+          JSON.stringify({
+
+            type:
+              "read",
+
+            messageId:
+              message.id,
+
+            to:
+              friendId
+
+          })
+        );
+
+      }
+
+    }
+
+  });
+
+
+  if (changed) {
+
+    saveMessages(
+      friendId,
+      list
+    );
+
+  }
+
+
+  renderMessages();
+}
+
+
+// ==========================================
+// MESSAGE TICKS
+// ==========================================
+//
+// sent      = ✓
+// delivered = ✓✓
+// read      = BLACK ✓✓
+// ==========================================
+
+function statusTicks(message) {
+
+  if (!message.mine)
+    return "";
+
+
+  // SEEN / READ
+  // Force black color directly so it
+  // works even if another CSS rule
+  // overrides .ticks.
+  if (
+    message.status === "read"
+  ) {
+
+    return `
+      <span
+        class="ticks read"
+        style="
+          color:#000000 !important;
+          font-weight:700;
+          opacity:1;
+        "
+      >✓✓</span>
+    `;
+
+  }
+
+
+  // DELIVERED
+  if (
+    message.status === "delivered"
+  ) {
+
+    return `
+      <span
+        class="ticks delivered"
+      >✓✓</span>
+    `;
+
+  }
+
+
+  // SENT
+  return `
+    <span
+      class="ticks sent"
+    >✓</span>
+  `;
+}
+
+
+// ==========================================
 // RENDER MESSAGES
-// =========================================================
+// ==========================================
 
 function renderMessages() {
 
-  const container =
+  const box =
     document.getElementById(
       "messages"
     );
 
 
-  if (!container) {
+  if (!box)
+    return;
+
+
+  if (!currentChat) {
+
+    box.innerHTML = "";
+
     return;
   }
 
 
-  container.innerHTML = "";
+  const list =
+    getMessages(
+      currentChat.id
+    );
 
 
-  if (!currentChatUserId) {
+  if (!list.length) {
+
+    box.innerHTML =
+      '<p class="muted">No messages yet. Say hello!</p>';
+
     return;
   }
 
 
-  const messages =
-    chats[currentChatUserId] ||
-    [];
+  box.innerHTML =
+    list
+      .map(message => {
+
+        const safeId =
+          escapeHtml(
+            message.id
+          );
 
 
-  messages.forEach(message => {
+        const time =
+          new Date(
+            message.time
+          ).toLocaleTimeString(
+            [],
+            {
+              hour:
+                "2-digit",
 
-    const bubble =
-      document.createElement(
-        "div"
-      );
-
-
-    bubble.className =
-      "message " +
-      (
-        message.mine
-          ? "mine"
-          : "theirs"
-      );
+              minute:
+                "2-digit"
+            }
+          );
 
 
-    bubble.dataset.messageId =
-      message.id;
+        return `
 
+          <div
+            class="msgWrap ${
+              message.mine
+                ? "mine"
+                : "theirs"
+            }"
 
-    let content = "";
+            data-id="${safeId}"
 
+            oncontextmenu="
+              openMessageMenu('${safeId}');
+              return false;
+            "
 
-    if (message.media) {
+            ontouchstart="
+              startLongPress(
+                '${safeId}',
+                event
+              )
+            "
 
-      if (
-        message.mediaType ===
-        "image"
-      ) {
+            ontouchend="
+              cancelLongPress()
+            "
 
-        content =
-          `<img src="${message.media}" alt="Photo">`;
+            ontouchmove="
+              cancelLongPress()
+            "
+          >
 
-      } else {
+            <div
+              class="msg ${
+                message.mine
+                  ? "mine"
+                  : "theirs"
+              }"
+            >
 
-        content =
-          `<video controls src="${message.media}"></video>`;
-
-      }
-
-    } else {
-
-      content =
-        escapeHtml(
-          message.text || ""
-        );
-
-    }
-
-
-    let status = "";
-
-
-    if (message.mine) {
-
-      if (message.status === "read") {
-
-        status =
-          '<span class="messageStatus">✓✓</span>';
-
-      } else if (
-        message.status === "delivered"
-      ) {
-
-        status =
-          '<span class="messageStatus">✓✓</span>';
-
-      } else {
-
-        status =
-          '<span class="messageStatus">✓</span>';
-
-      }
-
-    }
-
-
-    const time =
-      new Date(
-        message.time
-      ).toLocaleTimeString(
-        [],
-        {
-          hour: "2-digit",
-          minute: "2-digit"
-        }
-      );
-
-
-    bubble.innerHTML = `
-
-      <div>
-        ${content}
-      </div>
-
-      <div class="messageTime">
-
-        ${time}
-
-        ${status}
-
-      </div>
-
-      ${
-        message.reaction
-          ? `
-            <span class="messageReaction">
               ${escapeHtml(
-                message.reaction
+                message.text
               )}
-            </span>
-          `
-          : ""
-      }
 
-    `;
+              <small>
 
+                ${time}
 
-    bubble.addEventListener(
-      "contextmenu",
-      event => {
+                ${statusTicks(
+                  message
+                )}
 
-        event.preventDefault();
+              </small>
 
-        openMessageMenu(
-          message.id
-        );
 
-      }
-    );
+              ${
+                message.reaction
+                  ? `
+                    <span
+                      class="reactionBadge"
+                    >
+                      ${escapeHtml(
+                        message.reaction
+                      )}
+                    </span>
+                  `
+                  : ""
+              }
 
+            </div>
 
-    container.appendChild(
-      bubble
-    );
+          </div>
 
-  });
-
-
-  container.scrollTop =
-    container.scrollHeight;
-
-}
-
-
-// =========================================================
-// MEDIA
-// =========================================================
-
-async function sendMedia() {
-
-  if (!currentUser) {
-    return;
-  }
-
-
-  if (!currentChatUserId) {
-    return;
-  }
-
-
-  if (
-    !socket ||
-    socket.readyState !== WebSocket.OPEN
-  ) {
-
-    alert(
-      "Not connected to server."
-    );
-
-    return;
-  }
-
-
-  const input =
-    document.getElementById(
-      "mediaInput"
-    );
-
-
-  const file =
-    input.files[0];
-
-
-  if (!file) {
-    return;
-  }
-
-
-  /*
-    Keep the existing safety limit.
-  */
-
-  if (
-    file.size >
-    20 * 1024 * 1024
-  ) {
-
-    alert(
-      "File is too large. Maximum 20 MB."
-    );
-
-    input.value = "";
-
-    return;
-  }
-
-
-  const reader =
-    new FileReader();
-
-
-  reader.onload = () => {
-
-    const mediaType =
-      file.type.startsWith("image/")
-        ? "image"
-        : "video";
-
-
-    const message = {
-
-      id:
-        generateMessageId(),
-
-      from:
-        currentUser.id,
-
-      to:
-        currentChatUserId,
-
-      time:
-        Date.now(),
-
-      media:
-        reader.result,
-
-      mediaType:
-        mediaType,
-
-      fileName:
-        file.name,
-
-      status:
-        "sent",
-
-      mine:
-        true
-
-    };
-
-
-    if (!chats[currentChatUserId]) {
-
-      chats[currentChatUserId] = [];
-
-    }
-
-
-    chats[currentChatUserId].push(
-      message
-    );
-
-
-    saveChats();
-
-    renderMessages();
-
-
-    socket.send(
-      JSON.stringify({
-
-        type: "media",
-
-        id:
-          message.id,
-
-        from:
-          message.from,
-
-        to:
-          message.to,
-
-        time:
-          message.time,
-
-        mediaType:
-          message.mediaType,
-
-        fileName:
-          message.fileName,
-
-        data:
-          message.media
+        `;
 
       })
-    );
+      .join("");
 
 
-    input.value = "";
-
-  };
-
-
-  reader.readAsDataURL(file);
-
+  box.scrollTop =
+    box.scrollHeight;
 }
 
 
-// =========================================================
-// RECEIVE MEDIA
-// =========================================================
+// ==========================================
+// LONG PRESS
+// ==========================================
 
-function receiveMedia(msg) {
-
-  const from =
-    String(msg.from).toUpperCase();
-
-
-  if (!chats[from]) {
-
-    chats[from] = [];
-
-  }
-
-
-  const message = {
-
-    id:
-      msg.id,
-
-    from:
-      from,
-
-    to:
-      currentUser.id,
-
-    time:
-      msg.time,
-
-    media:
-      msg.data,
-
-    mediaType:
-      msg.mediaType,
-
-    fileName:
-      msg.fileName,
-
-    status:
-      "delivered",
-
-    mine:
-      false
-
-  };
-
-
-  const exists =
-    chats[from].some(
-      item =>
-        item.id === message.id
-    );
-
-
-  if (!exists) {
-
-    chats[from].push(
-      message
-    );
-
-  }
-
-
-  saveChats();
-
-
-  if (
-    currentChatUserId === from
-  ) {
-
-    renderMessages();
-
-  }
-
-
-  sendDelivered(
-    message.id
-  );
-
-}
-
-
-// =========================================================
-// REACTIONS
-// =========================================================
-
-function openMessageMenu(
-  messageId
+function startLongPress(
+  id,
+  e
 ) {
 
-  selectedMessageId =
-    messageId;
+  longPressTimer =
+    setTimeout(
+      () => {
+
+        openMessageMenu(id);
+
+      },
+      550
+    );
+}
 
 
-  const hidden =
-    document.getElementById(
-      "selectedMessageId"
+function cancelLongPress() {
+
+  if (
+    longPressTimer
+  ) {
+
+    clearTimeout(
+      longPressTimer
     );
 
-
-  if (hidden) {
-
-    hidden.value =
-      messageId;
-
+    longPressTimer =
+      null;
   }
+}
 
 
-  document
-    .getElementById("messageMenu")
-    .classList.remove("hidden");
+// ==========================================
+// MESSAGE MENU
+// ==========================================
 
+function openMessageMenu(id) {
+
+  cancelLongPress();
+
+
+  const message =
+    findMessage(id);
+
+
+  if (!message)
+    return;
+
+
+  document.getElementById(
+    "selectedMessageId"
+  ).value = id;
+
+
+  document.getElementById(
+    "messageMenu"
+  ).classList.remove(
+    "hidden"
+  );
 }
 
 
 function closeMessageMenu() {
 
-  document
-    .getElementById("messageMenu")
-    .classList.add("hidden");
-
-  selectedMessageId = null;
-
+  document.getElementById(
+    "messageMenu"
+  ).classList.add(
+    "hidden"
+  );
 }
 
 
+function findMessage(id) {
+
+  if (!currentChat)
+    return null;
+
+
+  return getMessages(
+    currentChat.id
+  ).find(
+    m =>
+      m.id === id
+  );
+}
+
+
+// ==========================================
+// REACTION
+// ==========================================
+
 function reactToMessage(
-  reaction
+  emoji
 ) {
 
-  if (!selectedMessageId) {
+  const id =
+    document.getElementById(
+      "selectedMessageId"
+    ).value;
+
+
+  const message =
+    findMessage(id);
+
+
+  if (!message)
     return;
-  }
 
 
-  const messageId =
-    selectedMessageId;
+  message.reaction =
+    emoji;
 
 
-  for (
-    const chatId in chats
-  ) {
-
-    const message =
-      chats[chatId].find(
-        item =>
-          item.id === messageId
-      );
-
-
-    if (message) {
-
-      message.reaction =
-        reaction;
-
-    }
-
-  }
-
-
-  saveChats();
+  saveMessages(
+    currentChat.id,
+    getMessages(
+      currentChat.id
+    )
+  );
 
 
   if (
     socket &&
-    socket.readyState ===
-      WebSocket.OPEN
+    socket.readyState === WebSocket.OPEN
   ) {
 
     socket.send(
       JSON.stringify({
 
-        type: "reaction",
+        type:
+          "reaction",
 
         messageId:
-          messageId,
+          id,
+
+        to:
+          currentChat.id,
 
         reaction:
-          reaction
+          emoji
 
       })
     );
@@ -1980,189 +1831,64 @@ function reactToMessage(
   }
 
 
-  renderMessages();
-
   closeMessageMenu();
 
-}
-
-
-function updateReaction(
-  messageId,
-  reaction
-) {
-
-  for (
-    const chatId in chats
-  ) {
-
-    const message =
-      chats[chatId].find(
-        item =>
-          item.id === messageId
-      );
-
-
-    if (message) {
-
-      message.reaction =
-        reaction;
-
-    }
-
-  }
-
-
-  saveChats();
-
-
   renderMessages();
-
 }
 
 
-// =========================================================
+// ==========================================
 // UNSEND
-// =========================================================
+// ==========================================
 
 function unsendMessage() {
 
-  if (!selectedMessageId) {
-    return;
-  }
-
-
   const id =
-    selectedMessageId;
+    document.getElementById(
+      "selectedMessageId"
+    ).value;
 
 
-  let found = false;
+  const message =
+    findMessage(id);
 
 
-  for (
-    const chatId in chats
-  ) {
-
-    const messages =
-      chats[chatId];
-
-
-    const index =
-      messages.findIndex(
-        message =>
-          message.id === id &&
-          message.mine
-      );
-
-
-    if (index !== -1) {
-
-      messages.splice(
-        index,
-        1
-      );
-
-      found = true;
-
-    }
-
-  }
-
-
-  if (found) {
-
-    saveChats();
-
-    renderMessages();
-
-
-    if (
-      socket &&
-      socket.readyState ===
-        WebSocket.OPEN
-    ) {
-
-      socket.send(
-        JSON.stringify({
-
-          type: "unsend",
-
-          messageId:
-            id
-
-        })
-      );
-
-    }
-
-  }
-
-
-  closeMessageMenu();
-
-}
-
-
-// =========================================================
-// DELETE
-// =========================================================
-
-function deleteMessage() {
-
-  if (!selectedMessageId) {
+  if (!message)
     return;
-  }
 
 
-  const id =
-    selectedMessageId;
+  const list =
+    getMessages(
+      currentChat.id
+    )
+    .filter(
+      x =>
+        x.id !== id
+    );
 
 
-  for (
-    const chatId in chats
-  ) {
-
-    const messages =
-      chats[chatId];
-
-
-    const index =
-      messages.findIndex(
-        message =>
-          message.id === id
-      );
-
-
-    if (index !== -1) {
-
-      messages.splice(
-        index,
-        1
-      );
-
-    }
-
-  }
-
-
-  saveChats();
-
-  renderMessages();
+  saveMessages(
+    currentChat.id,
+    list
+  );
 
 
   if (
     socket &&
-    socket.readyState ===
-      WebSocket.OPEN
+    socket.readyState === WebSocket.OPEN
   ) {
 
     socket.send(
       JSON.stringify({
 
-        type: "server_delete",
+        type:
+          "unsend",
 
         messageId:
-          id
+          id,
+
+        to:
+          currentChat.id
 
       })
     );
@@ -2172,241 +1898,257 @@ function deleteMessage() {
 
   closeMessageMenu();
 
+  renderMessages();
 }
 
 
-// =========================================================
-// REMOVE MESSAGE
-// =========================================================
+// ==========================================
+// DELETE
+// ==========================================
 
-function removeMessage(
-  messageId
-) {
+function deleteMessage() {
 
-  for (
-    const chatId in chats
-  ) {
-
-    chats[chatId] =
-      chats[chatId].filter(
-        message =>
-          message.id !== messageId
-      );
-
-  }
-
-
-  saveChats();
-
-
-  if (currentChatUserId) {
-
-    renderMessages();
-
-  }
-
-}
-
-
-// =========================================================
-// EMOJI PICKER
-// =========================================================
-
-const emojis = [
-
-  "😀",
-  "😂",
-  "🤣",
-  "😊",
-  "😍",
-  "🥰",
-  "😘",
-  "😎",
-  "😭",
-  "😢",
-  "😡",
-  "😮",
-  "😱",
-  "🤔",
-  "🙄",
-  "👍",
-  "👎",
-  "👏",
-  "🔥",
-  "❤️",
-  "💀",
-  "🎉",
-  "🙏",
-  "💯"
-
-];
-
-
-function toggleEmojiPicker() {
-
-  const picker =
+  const id =
     document.getElementById(
-      "emojiPicker"
+      "selectedMessageId"
+    ).value;
+
+
+  const message =
+    findMessage(id);
+
+
+  if (!message)
+    return;
+
+
+  const list =
+    getMessages(
+      currentChat.id
+    )
+    .filter(
+      x =>
+        x.id !== id
     );
 
 
-  if (!picker) {
-    return;
-  }
+  saveMessages(
+    currentChat.id,
+    list
+  );
 
 
   if (
-    picker.children.length === 0
+    socket &&
+    socket.readyState === WebSocket.OPEN
   ) {
 
-    emojis.forEach(emoji => {
+    socket.send(
+      JSON.stringify({
 
-      const button =
-        document.createElement(
-          "button"
-        );
+        type:
+          "server_delete",
 
+        messageId:
+          id,
 
-      button.textContent =
-        emoji;
+        to:
+          currentChat.id
 
-
-      button.onclick = () => {
-
-        const input =
-          document.getElementById(
-            "messageInput"
-          );
-
-
-        input.value +=
-          emoji;
-
-
-        input.focus();
-
-      };
-
-
-      picker.appendChild(
-        button
-      );
-
-    });
+      })
+    );
 
   }
 
 
-  picker.classList.toggle(
-    "hidden"
-  );
+  closeMessageMenu();
 
+  renderMessages();
 }
 
 
-// =========================================================
-// ESCAPE HTML
-// =========================================================
+// ==========================================
+// REMOVE MESSAGE EVERYWHERE
+// ==========================================
 
-function escapeHtml(value) {
+function removeMessageEverywhere(
+  id
+) {
 
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
-}
-
-
-// =========================================================
-// AUTOMATIC PRESENCE REFRESH
-// =========================================================
-
-setInterval(() => {
-
-  if (
-    !socket ||
-    socket.readyState !==
-      WebSocket.OPEN
+  for (
+    const friend of friends
   ) {
-    return;
-  }
 
-
-  socket.send(
-    JSON.stringify({
-
-      type: "presence_chat",
-
-      chatWith:
-        currentChatUserId
-          ? String(
-              currentChatUserId
-            ).toUpperCase()
-          : null
-
-    })
-  );
-
-}, 10000);
-
-
-// =========================================================
-// CLOSE MESSAGE MENU WHEN CLICKING OUTSIDE
-// =========================================================
-
-document.addEventListener(
-  "click",
-  event => {
-
-    const menu =
-      document.getElementById(
-        "messageMenu"
+    const list =
+      getMessages(
+        friend.id
       );
 
 
     if (
-      menu &&
-      event.target === menu
+      list.some(
+        m =>
+          m.id === id
+      )
     ) {
 
-      closeMessageMenu();
+      saveMessages(
+        friend.id,
+
+        list.filter(
+          m =>
+            m.id !== id
+        )
+      );
+
+
+      if (
+        currentChat &&
+        currentChat.id === friend.id
+      ) {
+
+        renderMessages();
+
+      }
+
+
+      return;
+    }
+  }
+}
+
+
+// ==========================================
+// UPDATE REACTION
+// ==========================================
+
+function updateReaction(
+  id,
+  reaction,
+  from
+) {
+
+  for (
+    const friend of friends
+  ) {
+
+    const list =
+      getMessages(
+        friend.id
+      );
+
+
+    const message =
+      list.find(
+        x =>
+          x.id === id
+      );
+
+
+    if (!message)
+      continue;
+
+
+    message.reaction =
+      reaction;
+
+
+    saveMessages(
+      friend.id,
+      list
+    );
+
+
+    if (
+      currentChat &&
+      currentChat.id === friend.id
+    ) {
+
+      renderMessages();
 
     }
 
+
+    return;
   }
-);
+}
 
 
-// =========================================================
+// ==========================================
+// MEDIA
+// ==========================================
+
+function sendMedia() {
+
+  alert(
+    "Photo/video sending will be added after basic text messaging is tested."
+  );
+}
+
+
+// ==========================================
+// SEARCH
+// ==========================================
+
+const searchBox =
+  document.getElementById(
+    "search"
+  );
+
+
+if (searchBox) {
+
+  searchBox.addEventListener(
+    "input",
+    renderFriends
+  );
+
+}
+
+
+// ==========================================
+// MESSAGE INPUT ENTER
+// ==========================================
+
+const messageInput =
+  document.getElementById(
+    "messageInput"
+  );
+
+
+if (messageInput) {
+
+  messageInput.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Enter" &&
+        !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+        sendMessage();
+
+      }
+
+    }
+  );
+
+}
+
+
+// ==========================================
 // START APP
-// =========================================================
+// ==========================================
 
-(() => {
+if (currentUser) {
 
-  currentUser =
-    loadAccount();
+  showHome();
 
+} else {
 
-  loadFriends();
+  showLogin();
 
-  loadChats();
-
-
-  if (currentUser) {
-
-    updateHome();
-
-    connectSocket();
-
-    showHome();
-
-  } else {
-
-    showLogin();
-
-  }
-
-})();
+}
