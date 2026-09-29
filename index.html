@@ -256,7 +256,7 @@
 
 
     <!-- =========================
-         PROFILE
+         PROFILE PREVIEW
          ========================= -->
 
     <div class="profileRow">
@@ -451,6 +451,197 @@
 
   </section>
 
+
+  <!-- =========================
+       PROFILE SCREEN
+       ========================= -->
+
+  <section
+    id="profileScreen"
+    class="screen hidden"
+  >
+
+    <header>
+
+      <button
+        class="back"
+        onclick="showHome()"
+      >
+        ←
+      </button>
+
+      <h2>
+        Profile
+      </h2>
+
+    </header>
+
+
+    <div class="profilePage">
+
+
+      <!-- LARGE PROFILE PHOTO -->
+
+      <div class="bigProfile">
+
+        <div
+          id="profilePhotoLarge"
+          class="profileLarge"
+        >
+          ?
+        </div>
+
+
+        <!-- CHANGE PHOTO -->
+
+        <label class="changePhotoButton">
+
+          Change photo
+
+          <input
+            id="profilePhotoInput"
+            type="file"
+            accept="image/*"
+            hidden
+            onchange="changeProfilePhoto()"
+          >
+
+        </label>
+
+      </div>
+
+
+      <!-- NAME -->
+
+      <h2
+        id="profilePageName"
+      ></h2>
+
+
+      <!-- FRIENDCHAT ID -->
+
+      <p class="muted">
+
+        FriendChat ID:
+
+        <span
+          id="profilePageId"
+        ></span>
+
+      </p>
+
+
+      <!-- EDIT NAME -->
+
+      <button
+        onclick="editProfileName()"
+      >
+        Edit profile
+      </button>
+
+
+      <!-- =========================
+           MY MEDIA
+           ========================= -->
+
+      <div class="profileMediaHeader">
+
+        <h3>
+          My Media
+        </h3>
+
+
+        <label class="uploadMediaButton">
+
+          + Upload media
+
+          <input
+            id="profileMediaInput"
+            type="file"
+            accept="image/*,video/*"
+            hidden
+            onchange="uploadProfileMedia()"
+          >
+
+        </label>
+
+      </div>
+
+
+      <!-- MEDIA GRID -->
+
+      <div
+        id="profileMediaGrid"
+        class="profileMediaGrid"
+      ></div>
+
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       BOTTOM NAVIGATION
+       ========================= -->
+
+  <nav
+    id="bottomNav"
+    class="bottomNav hidden"
+  >
+
+    <!-- CHATS -->
+
+    <button
+      onclick="showHome()"
+    >
+
+      <span>
+        💬
+      </span>
+
+      <small>
+        Chats
+      </small>
+
+    </button>
+
+
+    <!-- FRIENDS -->
+
+    <button
+      onclick="showHome()"
+    >
+
+      <span>
+        👥
+      </span>
+
+      <small>
+        Friends
+      </small>
+
+    </button>
+
+
+    <!-- PROFILE -->
+
+    <button
+      onclick="showProfile()"
+    >
+
+      <span>
+        👤
+      </span>
+
+      <small>
+        Profile
+      </small>
+
+    </button>
+
+  </nav>
+
 </div>
 
 
@@ -547,7 +738,9 @@ function toggleStatusInfo() {
 </script>
 
 
-<!-- YOUR MAIN APP -->
+<!-- =========================
+     MAIN APP
+     ========================= -->
 
 <script src="app.js"></script>
 
