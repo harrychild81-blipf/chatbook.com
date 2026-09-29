@@ -1,3 +1,4 @@
+```javascript
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -10,6 +11,10 @@ const users = new Map();
 const sockets = new Map();
 const serverMessages = new Map();
 const presence = new Map();
+
+// Profile photos currently known to the server.
+// These are temporary RAM data and disappear when the server restarts.
+const profilePhotos = new Map();
 
 
 // ===============================
@@ -85,6 +90,45 @@ const server = http.createServer((req, res) => {
   }
 
 
+  // ===============================
+  // GET PROFILE PHOTO
+  // ===============================
+
+  if (req.url.startsWith("/api/profile-photo/")) {
+
+    const id = decodeURIComponent(
+      req.url.split("/api/profile-photo/")[1]
+    ).trim().toUpperCase();
+
+    const photo = profilePhotos.get(id);
+
+    if (!photo) {
+
+      res.writeHead(404, {
+        "Content-Type": "application/json"
+      });
+
+      res.end(JSON.stringify({
+        found: false
+      }));
+
+      return;
+    }
+
+    res.writeHead(200, {
+      "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify({
+      found: true,
+      userId: id,
+      photo: photo
+    }));
+
+    return;
+  }
+
+
   // Serve website files
   let requestedFile = req.url.split("?")[0];
 
@@ -103,7 +147,10 @@ const server = http.createServer((req, res) => {
 
     if (error) {
 
-      console.log("File not found:", filePath);
+      console.log(
+        "File not found:",
+        filePath
+      );
 
       res.writeHead(404, {
         "Content-Type": "text/plain"
@@ -115,7 +162,8 @@ const server = http.createServer((req, res) => {
     }
 
 
-    const extension = path.extname(filePath).toLowerCase();
+    const extension =
+      path.extname(filePath).toLowerCase();
 
 
     const contentTypes = {
@@ -237,7 +285,6 @@ function getPresenceForViewer(viewerId) {
 
     if (info.online) {
 
-      // Friend is chatting with THIS viewer
       if (
         info.chattingWith &&
         info.chattingWith === viewer
@@ -247,19 +294,18 @@ function getPresenceForViewer(viewerId) {
 
       }
 
-      // Friend is chatting with somebody else
       else if (info.chattingWith) {
 
         status = "busy";
 
       }
 
-      // Online but not chatting
       else {
 
         status = "active";
 
       }
+
     }
 
 
@@ -272,6 +318,7 @@ function getPresenceForViewer(viewerId) {
       status: status
 
     };
+
   }
 
 
@@ -311,6 +358,55 @@ function broadcastPresence() {
     sendPresenceToViewer(id);
 
   }
+}
+
+
+// ===============================
+// BROADCAST PROFILE PHOTO
+// ===============================
+
+function broadcastProfilePhoto(userId, photo) {
+
+  const senderId = String(userId)
+    .trim()
+    .toUpperCase();
+
+  for (const [id, socket] of sockets.entries()) {
+
+    // Don't send it back to the person
+    // who uploaded the photo.
+    if (id === senderId) {
+      continue;
+    }
+
+    if (
+      socket &&
+      socket.readyState === WebSocket.OPEN
+    ) {
+
+      try {
+
+        socket.send(
+          JSON.stringify({
+            type: "profile_photo",
+            userId: senderId,
+            photo: photo
+          })
+        );
+
+      } catch (error) {
+
+        console.log(
+          "Profile photo send error:",
+          error.message
+        );
+
+      }
+
+    }
+
+  }
+
 }
 
 
@@ -370,9 +466,6 @@ wss.on("connection", (socket) => {
         }
 
 
-        // If this user already has
-        // another connection, close
-        // the old connection safely.
         const oldSocket =
           sockets.get(userId);
 
@@ -388,10 +481,13 @@ wss.on("connection", (socket) => {
           );
 
           try {
+
             oldSocket.close();
+
           } catch (error) {
             // Ignore
           }
+
         }
 
 
@@ -441,6 +537,48 @@ wss.on("connection", (socket) => {
         );
 
 
+        // ===========================
+        // SEND EXISTING PROFILE PHOTO
+        // ===========================
+
+        const existingPhoto =
+          profilePhotos.get(userId);
+
+        if (existingPhoto) {
+
+          socket.send(
+            JSON.stringify({
+              type: "profile_photo",
+              userId: userId,
+              photo: existingPhoto
+            })
+          );
+
+        }
+
+
+        // Send all currently known
+        // profile photos to this user.
+        for (
+          const [photoUserId, photo]
+          of profilePhotos.entries()
+        ) {
+
+          if (photoUserId === userId) {
+            continue;
+          }
+
+          socket.send(
+            JSON.stringify({
+              type: "profile_photo",
+              userId: photoUserId,
+              photo: photo
+            })
+          );
+
+        }
+
+
         console.log(
           "Registered:",
           userId,
@@ -449,10 +587,77 @@ wss.on("connection", (socket) => {
         );
 
 
-        // IMPORTANT:
-        // Send current presence
-        // to everyone.
         broadcastPresence();
+
+        return;
+      }
+
+
+      // ===========================
+      // PROFILE PHOTO
+      // ===========================
+
+      if (
+        msg.type === "profile_photo"
+      ) {
+
+        const userId =
+          socket.userId;
+
+        if (!userId) {
+          return;
+        }
+
+
+        const photo =
+          String(msg.photo || "");
+
+
+        // No photo
+        if (!photo) {
+          return;
+        }
+
+
+        // Safety limit:
+        // approximately 5 MB JSON payload.
+        if (
+          photo.length >
+          7 * 1024 * 1024
+        ) {
+
+          sendToUser(
+            userId,
+            {
+              type: "profile_photo_error",
+              reason:
+                "Profile photo is too large. Please choose a smaller image."
+            }
+          );
+
+          return;
+        }
+
+
+        // Store temporarily in RAM.
+        profilePhotos.set(
+          userId,
+          photo
+        );
+
+
+        console.log(
+          "Profile photo updated:",
+          userId
+        );
+
+
+        // Tell connected users.
+        broadcastProfilePhoto(
+          userId,
+          photo
+        );
+
 
         return;
       }
@@ -502,14 +707,13 @@ wss.on("connection", (socket) => {
         }
 
 
-        // Only broadcast if status
-        // actually changed.
         if (
           info.chattingWith ===
           chatWith
         ) {
 
           return;
+
         }
 
 
@@ -977,14 +1181,8 @@ wss.on("connection", (socket) => {
     }
 
 
-    // IMPORTANT FIX:
-    // Only the CURRENT socket is
-    // allowed to mark the user offline.
-    //
-    // This prevents an old connection
-    // from incorrectly making Jatin
-    // appear offline.
-
+    // Only current socket can
+    // mark the user offline.
     if (
       sockets.get(userId) !== socket
     ) {
@@ -1050,10 +1248,6 @@ wss.on("connection", (socket) => {
 // ===============================
 // HEARTBEAT
 // ===============================
-//
-// This checks whether a browser
-// is actually still connected.
-//
 
 const heartbeatInterval =
   setInterval(() => {
@@ -1128,3 +1322,4 @@ server.listen(
 
   }
 );
+```
