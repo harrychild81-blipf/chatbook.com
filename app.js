@@ -2826,3 +2826,560 @@ document.addEventListener(
   }
 
 })();
+/* =========================================================
+   FRIENDCHAT PROFILE + LOCAL MEDIA
+========================================================= */
+
+const PROFILE_DB_NAME = "FriendChatProfileDB";
+const PROFILE_DB_VERSION = 1;
+const PROFILE_STORE = "profileMedia";
+
+function openProfileDB() {
+
+  return new Promise((resolve, reject) => {
+
+    const request = indexedDB.open(
+      PROFILE_DB_NAME,
+      PROFILE_DB_VERSION
+    );
+
+    request.onupgradeneeded = function(e) {
+
+      const db = e.target.result;
+
+      if (!db.objectStoreNames.contains(PROFILE_STORE)) {
+
+        db.createObjectStore(
+          PROFILE_STORE,
+          { keyPath: "id" }
+        );
+
+      }
+
+    };
+
+    request.onsuccess = () => {
+      resolve(request.result);
+    };
+
+    request.onerror = () => {
+      reject(request.error);
+    };
+
+  });
+
+}
+
+
+/* SAVE PROFILE MEDIA */
+
+async function saveProfileMediaLocal(media) {
+
+  const db = await openProfileDB();
+
+  return new Promise((resolve, reject) => {
+
+    const tx = db.transaction(
+      PROFILE_STORE,
+      "readwrite"
+    );
+
+    tx.objectStore(PROFILE_STORE).put(media);
+
+    tx.oncomplete = () => {
+
+      db.close();
+      resolve();
+
+    };
+
+    tx.onerror = () => {
+
+      db.close();
+      reject(tx.error);
+
+    };
+
+  });
+
+}
+
+
+/* GET PROFILE MEDIA */
+
+async function getProfileMediaLocal(id) {
+
+  const db = await openProfileDB();
+
+  return new Promise((resolve, reject) => {
+
+    const tx = db.transaction(
+      PROFILE_STORE,
+      "readonly"
+    );
+
+    const request =
+      tx.objectStore(PROFILE_STORE).get(id);
+
+    request.onsuccess = () => {
+
+      const result = request.result || null;
+
+      db.close();
+
+      resolve(result);
+
+    };
+
+    request.onerror = () => {
+
+      db.close();
+
+      reject(request.error);
+
+    };
+
+  });
+
+}
+
+
+/* GET ALL PROFILE MEDIA */
+
+async function getAllProfileMediaLocal() {
+
+  const db = await openProfileDB();
+
+  return new Promise((resolve, reject) => {
+
+    const tx = db.transaction(
+      PROFILE_STORE,
+      "readonly"
+    );
+
+    const request =
+      tx.objectStore(PROFILE_STORE).getAll();
+
+    request.onsuccess = () => {
+
+      const result = request.result || [];
+
+      db.close();
+
+      resolve(result);
+
+    };
+
+    request.onerror = () => {
+
+      db.close();
+
+      reject(request.error);
+
+    };
+
+  });
+
+}
+
+
+/* =========================================================
+   PROFILE SCREEN
+========================================================= */
+
+function showProfile() {
+
+  if (!currentUser) return;
+
+  document.querySelectorAll(".screen")
+    .forEach(x => x.classList.add("hidden"));
+
+  document
+    .getElementById("profileScreen")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("bottomNav")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("profilePageName")
+    .textContent = currentUser.name;
+
+  document
+    .getElementById("profilePageId")
+    .textContent = currentUser.id;
+
+  loadProfilePhoto();
+
+  renderProfileMedia();
+
+}
+
+
+/* =========================================================
+   PROFILE PHOTO
+========================================================= */
+
+async function changeProfilePhoto() {
+
+  const input =
+    document.getElementById("profilePhotoInput");
+
+  const file = input.files[0];
+
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+
+    alert("Please select an image.");
+
+    input.value = "";
+
+    return;
+
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+
+    alert("Profile photo must be under 10 MB.");
+
+    input.value = "";
+
+    return;
+
+  }
+
+  const id =
+    "profile-photo-" + currentUser.id;
+
+  await saveProfileMediaLocal({
+
+    id: id,
+
+    owner: currentUser.id,
+
+    type: "profilePhoto",
+
+    mimeType: file.type,
+
+    file: file,
+
+    time: Date.now()
+
+  });
+
+  loadProfilePhoto();
+
+  input.value = "";
+
+}
+
+
+/* LOAD PROFILE PHOTO */
+
+async function loadProfilePhoto() {
+
+  if (!currentUser) return;
+
+  const item =
+    await getProfileMediaLocal(
+      "profile-photo-" + currentUser.id
+    );
+
+  const large =
+    document.getElementById("profilePhotoLarge");
+
+  const small =
+    document.getElementById("profileCircle");
+
+  if (!item) {
+
+    large.textContent =
+      currentUser.name
+        ? currentUser.name.charAt(0).toUpperCase()
+        : "?";
+
+    small.textContent =
+      currentUser.name
+        ? currentUser.name.charAt(0).toUpperCase()
+        : "?";
+
+    return;
+
+  }
+
+  const url =
+    URL.createObjectURL(item.file);
+
+  large.innerHTML =
+    `<img src="${url}" alt="Profile photo">`;
+
+  small.innerHTML =
+    `<img src="${url}" alt="Profile photo">`;
+
+}
+
+
+/* =========================================================
+   EDIT NAME
+========================================================= */
+
+function editProfileName() {
+
+  if (!currentUser) return;
+
+  const newName =
+    prompt(
+      "Enter your new name:",
+      currentUser.name
+    );
+
+  if (!newName) return;
+
+  const name =
+    newName.trim();
+
+  if (!name) return;
+
+  currentUser.name = name;
+
+  localStorage.setItem(
+    "friendchat_account",
+    JSON.stringify(currentUser)
+  );
+
+  document
+    .getElementById("profilePageName")
+    .textContent = name;
+
+  document
+    .getElementById("myName")
+    .textContent = name;
+
+  document
+    .getElementById("myIdLabel")
+    .textContent = name;
+
+  if (socket &&
+      socket.readyState === WebSocket.OPEN) {
+
+    socket.send(JSON.stringify({
+
+      type: "register",
+
+      userId: currentUser.id,
+
+      name: name
+
+    }));
+
+  }
+
+}
+
+
+/* =========================================================
+   UPLOAD PROFILE MEDIA
+========================================================= */
+
+async function uploadProfileMedia() {
+
+  const input =
+    document.getElementById("profileMediaInput");
+
+  const file = input.files[0];
+
+  if (!file) return;
+
+  if (
+    !file.type.startsWith("image/") &&
+    !file.type.startsWith("video/")
+  ) {
+
+    alert("Please select a photo or video.");
+
+    input.value = "";
+
+    return;
+
+  }
+
+  if (file.size > 50 * 1024 * 1024) {
+
+    alert("Media must be under 50 MB.");
+
+    input.value = "";
+
+    return;
+
+  }
+
+
+  /* ASK PRIVACY */
+
+  const privacy =
+    prompt(
+      "Who can see this?\n\nType PUBLIC or FRIENDS",
+      "FRIENDS"
+    );
+
+  if (!privacy) {
+
+    input.value = "";
+
+    return;
+
+  }
+
+  const visibility =
+    privacy.toLowerCase() === "public"
+      ? "public"
+      : privacy.toLowerCase() === "friends"
+        ? "friends"
+        : null;
+
+  if (!visibility) {
+
+    alert("Please type PUBLIC or FRIENDS.");
+
+    input.value = "";
+
+    return;
+
+  }
+
+
+  const id =
+    "profile-media-" +
+    currentUser.id +
+    "-" +
+    Date.now();
+
+
+  /* SAVE ONLY ON THIS DEVICE */
+
+  await saveProfileMediaLocal({
+
+    id: id,
+
+    owner: currentUser.id,
+
+    type:
+      file.type.startsWith("image/")
+        ? "image"
+        : "video",
+
+    mimeType: file.type,
+
+    name: file.name,
+
+    size: file.size,
+
+    visibility: visibility,
+
+    file: file,
+
+    time: Date.now()
+
+  });
+
+
+  renderProfileMedia();
+
+  input.value = "";
+
+}
+
+
+/* =========================================================
+   DISPLAY PROFILE MEDIA
+========================================================= */
+
+async function renderProfileMedia() {
+
+  const grid =
+    document.getElementById(
+      "profileMediaGrid"
+    );
+
+  if (!grid) return;
+
+  const all =
+    await getAllProfileMediaLocal();
+
+  const media =
+    all.filter(item =>
+
+      item.owner === currentUser.id &&
+      item.type !== "profilePhoto"
+
+    );
+
+  if (!media.length) {
+
+    grid.innerHTML =
+      `<p class="muted">No media uploaded yet.</p>`;
+
+    return;
+
+  }
+
+
+  grid.innerHTML = "";
+
+  for (const item of media) {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "profileMediaItem";
+
+
+    const url =
+      URL.createObjectURL(item.file);
+
+
+    if (item.type === "image") {
+
+      div.innerHTML = `
+
+        <img
+          src="${url}"
+          alt="Profile media"
+        >
+
+        <span class="mediaPrivacy">
+          ${item.visibility === "public"
+            ? "🌎 Public"
+            : "👥 Friends"}
+        </span>
+
+      `;
+
+    } else {
+
+      div.innerHTML = `
+
+        <video
+          src="${url}"
+          controls
+          preload="metadata"
+        ></video>
+
+        <span class="mediaPrivacy">
+          ${item.visibility === "public"
+            ? "🌎 Public"
+            : "👥 Friends"}
+        </span>
+
+      `;
+
+    }
+
+    grid.appendChild(div);
+
+  }
+
+}
