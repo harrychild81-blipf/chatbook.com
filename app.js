@@ -1691,3 +1691,23 @@ document.addEventListener(
     showLogin();
   }
 })();
+// ===============================
+// AUTOMATIC PRESENCE REFRESH
+// ===============================
+
+setInterval(() => {
+  if (!socket || socket.readyState !== WebSocket.OPEN) {
+    return;
+  }
+
+  // Tell the server who we are currently chatting with.
+  // If no chat is open, send null.
+  socket.send(
+    JSON.stringify({
+      type: "presence_chat",
+      chatWith: currentChatUserId
+        ? String(currentChatUserId).toUpperCase()
+        : null
+    })
+  );
+}, 10000);
