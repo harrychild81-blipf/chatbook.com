@@ -394,6 +394,13 @@ function updateHome() {
   }
 
   renderFriends();
+
+  /*
+     Load our local profile photo
+     whenever home UI refreshes.
+  */
+
+  loadProfilePhoto();
 }
 
 
@@ -470,6 +477,16 @@ function connectSocket() {
         updatePresence(
           msg.users || {}
         );
+        return;
+      }
+
+
+      /* =====================================================
+         PROFILE PHOTO RECEIVED
+         ===================================================== */
+
+      if (msg.type === "profile_photo") {
+        receiveProfilePhoto(msg);
         return;
       }
 
@@ -750,9 +767,14 @@ function renderFriends() {
       openChat(friend);
     };
 
+
+    /*
+       Friend profile photo
+       will be loaded asynchronously.
+    */
+
     item.innerHTML = `
       <div class="friendAvatar">
-
         ${escapeHtml(
           friend.name
             .charAt(0)
@@ -762,7 +784,6 @@ function renderFriends() {
         <span
           class="presenceDot ${status}"
         ></span>
-
       </div>
 
       <div class="friendInfo">
@@ -805,7 +826,77 @@ function renderFriends() {
     `;
 
     list.appendChild(item);
+
+    loadFriendAvatarIntoItem(
+      friend.id,
+      item
+    );
   });
+}
+
+
+/* =========================================================
+   FRIEND AVATAR
+   ========================================================= */
+
+async function loadFriendAvatarIntoItem(
+  friendId,
+  item
+) {
+  try {
+    const profile =
+      await getFriendProfilePhoto(
+        friendId
+      );
+
+    if (!profile || !item) {
+      return;
+    }
+
+    const avatar =
+      item.querySelector(
+        ".friendAvatar"
+      );
+
+    if (!avatar) {
+      return;
+    }
+
+    const url =
+      URL.createObjectURL(
+        profile.file
+      );
+
+    const oldDot =
+      avatar.querySelector(
+        ".presenceDot"
+      );
+
+    const dotHTML =
+      oldDot
+        ? oldDot.outerHTML
+        : "";
+
+    avatar.innerHTML = `
+      <img
+        src="${url}"
+        alt="Profile photo"
+        style="
+          width:100%;
+          height:100%;
+          object-fit:cover;
+          border-radius:50%;
+        "
+      >
+      ${dotHTML}
+    `;
+
+  } catch (error) {
+    console.error(
+      "Could not load friend avatar:",
+      error
+    );
+  }
 }
 
 
@@ -2304,7 +2395,7 @@ function showProfile() {
 
 
 /* =========================================================
-   PROFILE PHOTO
+   CHANGE PROFILE PHOTO
    ========================================================= */
 
 async function changeProfilePhoto() {
@@ -2355,6 +2446,11 @@ async function changeProfilePhoto() {
     "profile-photo-" +
     currentUser.id;
 
+
+  /* =====================================================
+     SAVE PHOTO LOCALLY
+     ===================================================== */
+
   await saveProfileMediaLocal({
     id: id,
 
@@ -2374,14 +2470,78 @@ async function changeProfilePhoto() {
       Date.now()
   });
 
+
+  /* =====================================================
+     SHOW PHOTO IMMEDIATELY
+     ===================================================== */
+
   await loadProfilePhoto();
+
+
+  /* =====================================================
+     SEND PHOTO TO SERVER
+     ===================================================== */
+
+  if (
+    socket &&
+    socket.readyState ===
+      WebSocket.OPEN
+  ) {
+    const reader =
+      new FileReader();
+
+    reader.onload = () => {
+      try {
+        socket.send(
+          JSON.stringify({
+            type:
+              "profile_photo",
+
+            userId:
+              currentUser.id,
+
+            name:
+              currentUser.name,
+
+            mimeType:
+              file.type,
+
+            data:
+              reader.result,
+
+            time:
+              Date.now()
+          })
+        );
+
+        console.log(
+          "Profile photo sent to server."
+        );
+
+      } catch (error) {
+        console.error(
+          "Profile photo send error:",
+          error
+        );
+      }
+    };
+
+    reader.readAsDataURL(
+      file
+    );
+
+  } else {
+    console.log(
+      "Profile photo saved locally. Server is offline."
+    );
+  }
 
   input.value = "";
 }
 
 
 /* =========================================================
-   LOAD PROFILE PHOTO
+   LOAD OUR PROFILE PHOTO
    ========================================================= */
 
 async function loadProfilePhoto() {
@@ -2389,60 +2549,217 @@ async function loadProfilePhoto() {
     return;
   }
 
-  const item =
-    await getProfileMediaLocal(
-      "profile-photo-" +
-      currentUser.id
-    );
+  try {
+    const item =
+      await getProfileMediaLocal(
+        "profile-photo-" +
+          currentUser.id
+      );
 
-  const large =
-    document.getElementById(
-      "profilePhotoLarge"
-    );
+    const large =
+      document.getElementById(
+        "profilePhotoLarge"
+      );
 
-  const small =
-    document.getElementById(
-      "profileCircle"
-    );
+    const small =
+      document.getElementById(
+        "profileCircle"
+      );
 
-  if (!large && !small) {
-    return;
-  }
+    if (!large && !small) {
+      return;
+    }
 
-  if (!item) {
-    const first =
-      currentUser.name
-        ? currentUser.name
-            .charAt(0)
-            .toUpperCase()
-        : "?";
+    if (!item) {
+      const first =
+        currentUser.name
+          ? currentUser.name
+              .charAt(0)
+              .toUpperCase()
+          : "?";
+
+      if (large) {
+        large.textContent =
+          first;
+      }
+
+      if (small) {
+        small.textContent =
+          first;
+      }
+
+      return;
+    }
+
+    const url =
+      URL.createObjectURL(
+        item.file
+      );
 
     if (large) {
-      large.textContent =
-        first;
+      large.innerHTML =
+        `<img src="${url}" alt="Profile photo">`;
     }
 
     if (small) {
-      small.textContent =
-        first;
+      small.innerHTML =
+        `<img src="${url}" alt="Profile photo">`;
     }
+
+  } catch (error) {
+    console.error(
+      "Could not load profile photo:",
+      error
+    );
+  }
+}
+
+
+/* =========================================================
+   RECEIVE FRIEND PROFILE PHOTO
+   ========================================================= */
+
+async function receiveProfilePhoto(
+  msg
+) {
+  if (
+    !msg.userId ||
+    !msg.data
+  ) {
+    return;
+  }
+
+  const userId =
+    String(
+      msg.userId
+    ).toUpperCase();
+
+
+  /*
+     Ignore our own photo.
+  */
+
+  if (
+    currentUser &&
+    userId ===
+      String(
+        currentUser.id
+      ).toUpperCase()
+  ) {
+    return;
+  }
+
+
+  /*
+     Only save photos belonging
+     to people already in our
+     friend list.
+  */
+
+  const friend =
+    friends.find(
+      item =>
+        String(
+          item.id
+        ).toUpperCase() ===
+        userId
+    );
+
+  if (!friend) {
+    console.log(
+      "Ignoring profile photo from non-friend:",
+      userId
+    );
 
     return;
   }
 
-  const url =
-    URL.createObjectURL(
-      item.file
+
+  try {
+    /*
+       Convert data URL into Blob.
+    */
+
+    const response =
+      await fetch(
+        msg.data
+      );
+
+    const blob =
+      await response.blob();
+
+
+    /*
+       Save friend's photo locally.
+    */
+
+    await saveProfileMediaLocal({
+      id:
+        "friend-profile-photo-" +
+        userId,
+
+      owner:
+        userId,
+
+      type:
+        "friendProfilePhoto",
+
+      mimeType:
+        msg.mimeType ||
+        blob.type,
+
+      file:
+        blob,
+
+      time:
+        msg.time ||
+        Date.now()
+    });
+
+
+    console.log(
+      "Friend profile photo saved:",
+      userId
     );
 
-  if (large) {
-    large.innerHTML =
-      `<img src="${url}" alt="Profile photo">`;
-  }
 
-  if (small) {
-    small.innerHTML =
-      `<img src="${url}" alt="Profile photo">`;
+    /*
+       Refresh friend list.
+    */
+
+    renderFriends();
+
+  } catch (error) {
+    console.error(
+      "Could not save friend profile photo:",
+      error
+    );
+  }
+}
+
+
+/* =========================================================
+   GET FRIEND PROFILE PHOTO
+   ========================================================= */
+
+async function getFriendProfilePhoto(
+  friendId
+) {
+  try {
+    return await getProfileMediaLocal(
+      "friend-profile-photo-" +
+        String(
+          friendId
+        ).toUpperCase()
+    );
+
+  } catch (error) {
+    console.error(
+      "Friend profile photo error:",
+      error
+    );
+
+    return null;
   }
 }
 
@@ -2501,6 +2818,12 @@ function editProfileName() {
   }
 
   updateHome();
+
+
+  /*
+     Re-register with the
+     new name.
+  */
 
   if (
     socket &&
@@ -2575,7 +2898,9 @@ async function uploadProfileMedia() {
   }
 
 
-  /* PRIVACY */
+  /* =====================================================
+     PRIVACY
+     ===================================================== */
 
   const privacy =
     prompt(
@@ -2629,7 +2954,9 @@ async function uploadProfileMedia() {
     Date.now();
 
 
-  /* SAVE LOCALLY */
+  /* =====================================================
+     SAVE LOCALLY
+     ===================================================== */
 
   await saveProfileMediaLocal({
     id: id,
