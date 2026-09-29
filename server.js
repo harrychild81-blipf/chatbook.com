@@ -7,24 +7,13 @@ const PORT = process.env.PORT || 8080;
 
 const users = new Map();
 const sockets = new Map();
-
-// Temporary RAM-only message metadata.
-// Actual media is NOT saved to disk.
+const presence = new Map();
 const serverMessages = new Map();
-
-
-// ==============================
-// HTTP SERVER
-// ==============================
 
 const server = http.createServer((req, res) => {
 
-  // ------------------------------
-  // USER LOOKUP
-  // ------------------------------
-
+  // Find user
   if (req.url.startsWith("/api/user/")) {
-
     const id = decodeURIComponent(
       req.url.split("/api/user/")[1]
     ).toUpperCase();
@@ -48,13 +37,23 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Get all online statuses
+  if (req.url === "/api/presence") {
+    const result = {};
 
-  // ------------------------------
-  // HEALTH CHECK
-  // ------------------------------
+    for (const [id, data] of presence) {
+      result[id] = data.status;
+    }
+
+    res.writeHead(200, {
+      "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(result));
+    return;
+  }
 
   if (req.url === "/health") {
-
     res.writeHead(200, {
       "Content-Type": "application/json"
     });
@@ -67,137 +66,54 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  let file = req.url === "/" ? "/index.html" : req.url;
 
-  // ------------------------------
-  // WEBSITE FILES
-  // ------------------------------
+  file = path
+    .normalize(file)
+    .replace(/^(\.\.[\/\\])+/, "");
 
-  let requestPath = req.url.split("?")[0];
-
-  if (requestPath === "/") {
-    requestPath = "/index.html";
-  }
-
-  // Prevent directory traversal
-  requestPath = path.normalize(requestPath);
-
-  while (
-    requestPath.startsWith("/") ||
-    requestPath.startsWith("\\")
-  ) {
-    requestPath = requestPath.slice(1);
-  }
-
-  // IMPORTANT:
-  // index.html, app.js and style.css
-  // are directly beside server.js
-  const filePath = path.join(
-    __dirname,
-    requestPath
-  );
-
+  const filePath = path.join(__dirname, "..", "client", file);
 
   fs.readFile(filePath, (err, data) => {
 
     if (err) {
-
-      console.log(
-        "File not found:",
-        filePath
-      );
-
-      res.writeHead(404, {
-        "Content-Type": "text/plain"
-      });
-
-      res.end("Not Found");
-
+      res.writeHead(404);
+      res.end("Not found");
       return;
     }
 
+    const ext = path.extname(filePath);
 
-    const ext = path.extname(filePath).toLowerCase();
-
-    const contentTypes = {
-
-      ".html":
-        "text/html; charset=utf-8",
-
-      ".js":
-        "application/javascript; charset=utf-8",
-
-      ".css":
-        "text/css; charset=utf-8",
-
-      ".json":
-        "application/json",
-
-      ".png":
-        "image/png",
-
-      ".jpg":
-        "image/jpeg",
-
-      ".jpeg":
-        "image/jpeg",
-
-      ".gif":
-        "image/gif",
-
-      ".svg":
-        "image/svg+xml",
-
-      ".webp":
-        "image/webp",
-
-      ".ico":
-        "image/x-icon"
+    const types = {
+      ".html": "text/html",
+      ".js": "application/javascript",
+      ".css": "text/css"
     };
-
 
     res.writeHead(200, {
       "Content-Type":
-        contentTypes[ext] ||
-        "application/octet-stream"
+        types[ext] || "application/octet-stream"
     });
 
     res.end(data);
-
   });
-
 });
-
-
-// ==============================
-// WEBSOCKET SERVER
-// ==============================
 
 const wss = new WebSocket.Server({
   server
 });
 
-
-// ==============================
-// SEND TO USER
-// ==============================
-
 function sendToUser(id, payload) {
 
-  const userId =
-    String(id).toUpperCase();
-
-  const socket =
-    sockets.get(userId);
+  const socket = sockets.get(
+    String(id).toUpperCase()
+  );
 
   if (
     socket &&
     socket.readyState === WebSocket.OPEN
   ) {
-
-    socket.send(
-      JSON.stringify(payload)
-    );
-
+    socket.send(JSON.stringify(payload));
     return true;
   }
 
@@ -205,141 +121,148 @@ function sendToUser(id, payload) {
 }
 
 
-// ==============================
-// WEBSOCKET CONNECTION
-// ==============================
+// Send status to EVERY connected user
+function broadcastPresence() {
+
+  const list = {};
+
+  for (const [id, data] of presence) {
+    list[id] = data.status;
+  }
+
+  const payload = JSON.stringify({
+    type: "presence",
+    users: list
+  });
+
+  for (const socket of sockets.values()) {
+
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(payload);
+    }
+  }
+}
+
 
 wss.on("connection", socket => {
 
   console.log("Device connected");
 
-
   socket.on("message", raw => {
 
     try {
 
-      const msg = JSON.parse(
-        raw.toString()
-      );
+      const msg = JSON.parse(raw.toString());
 
-
-      // ==========================
+      // =========================
       // REGISTER
-      // ==========================
+      // =========================
 
       if (msg.type === "register") {
 
+        const id = String(
+          msg.userId
+        ).toUpperCase();
+
         const user = {
-
-          id:
-            String(
-              msg.userId
-            ).toUpperCase(),
-
-          name:
-            String(
-              msg.name || "Friend"
-            )
-
+          id,
+          name: String(
+            msg.name || "Friend"
+          )
         };
 
+        users.set(id, user);
+        sockets.set(id, socket);
 
-        users.set(
-          user.id,
-          user
-        );
+        socket.userId = id;
 
-        sockets.set(
-          user.id,
-          socket
-        );
+        // User starts as active
+        presence.set(id, {
+          status: "active",
+          chatWith: null
+        });
 
-        socket.userId =
-          user.id;
+        socket.send(JSON.stringify({
+          type: "registered",
+          userId: id
+        }));
 
-
-        socket.send(
-          JSON.stringify({
-
-            type: "registered",
-
-            userId:
-              user.id
-
-          })
-        );
-
+        broadcastPresence();
 
         console.log(
           "Registered:",
-          user.id
+          id
         );
 
         return;
       }
 
 
-      // ==========================
-      // TEXT CHAT
-      // ==========================
+      // =========================
+      // CHAT OPEN / BUSY
+      // =========================
+
+      if (msg.type === "presence_chat") {
+
+        if (!socket.userId) return;
+
+        const chatWith = msg.chatWith
+          ? String(msg.chatWith).toUpperCase()
+          : null;
+
+        const userPresence =
+          presence.get(socket.userId);
+
+        if (userPresence) {
+
+          userPresence.chatWith =
+            chatWith;
+
+          // If user is inside a chat,
+          // show BUSY to other people.
+          userPresence.status =
+            chatWith
+              ? "busy"
+              : "active";
+        }
+
+        broadcastPresence();
+
+        return;
+      }
+
+
+      // =========================
+      // CHAT MESSAGE
+      // =========================
 
       if (msg.type === "chat") {
 
         const record = {
-
-          id:
-            String(msg.id),
-
-          from:
-            String(
-              msg.from
-            ).toUpperCase(),
-
-          to:
-            String(
-              msg.to
-            ).toUpperCase(),
-
-          type:
-            "chat",
-
+          id: String(msg.id),
+          from: String(msg.from).toUpperCase(),
+          to: String(msg.to).toUpperCase(),
+          type: "chat",
           time:
             Number(msg.time) ||
             Date.now()
-
         };
-
 
         serverMessages.set(
           record.id,
           record
         );
 
-
         const delivered =
-          sendToUser(
-            record.to,
-            {
-
-              type: "chat",
-
-              id:
-                record.id,
-
-              from:
-                record.from,
-
-              text:
-                String(
-                  msg.text || ""
-                ).slice(0, 5000),
-
-              time:
-                record.time
-
-            }
-          );
-
+          sendToUser(record.to, {
+            type: "chat",
+            id: record.id,
+            from: record.from,
+            text: String(
+              msg.text || ""
+            ).slice(0, 5000),
+            time: record.time
+          });
 
         if (!delivered) {
 
@@ -347,153 +270,24 @@ wss.on("connection", socket => {
             record.id
           );
 
-
           socket.send(
             JSON.stringify({
-
-              type:
-                "delivery_error",
-
+              type: "delivery_error",
               reason:
                 "Friend is offline",
-
               messageId:
                 record.id
-
             })
           );
-
         }
 
         return;
       }
 
 
-      // ==========================
-      // MEDIA
-      // ==========================
-
-      if (msg.type === "media") {
-
-        const record = {
-
-          id:
-            String(msg.id),
-
-          from:
-            String(
-              msg.from
-            ).toUpperCase(),
-
-          to:
-            String(
-              msg.to
-            ).toUpperCase(),
-
-          type:
-            "media",
-
-          mediaType:
-            String(
-              msg.mediaType || ""
-            ),
-
-          mimeType:
-            String(
-              msg.mimeType || ""
-            ),
-
-          name:
-            String(
-              msg.name || ""
-            ),
-
-          size:
-            Number(msg.size) || 0,
-
-          time:
-            Number(msg.time) ||
-            Date.now()
-
-        };
-
-
-        // Only metadata is stored.
-        // The actual media is not saved.
-
-        serverMessages.set(
-          record.id,
-          record
-        );
-
-
-        const delivered =
-          sendToUser(
-            record.to,
-            {
-
-              type:
-                "media",
-
-              id:
-                record.id,
-
-              from:
-                record.from,
-
-              mediaType:
-                record.mediaType,
-
-              mimeType:
-                record.mimeType,
-
-              name:
-                record.name,
-
-              size:
-                record.size,
-
-              data:
-                msg.data,
-
-              time:
-                record.time
-
-            }
-          );
-
-
-        if (!delivered) {
-
-          serverMessages.delete(
-            record.id
-          );
-
-
-          socket.send(
-            JSON.stringify({
-
-              type:
-                "delivery_error",
-
-              reason:
-                "Friend is offline",
-
-              messageId:
-                record.id
-
-            })
-          );
-
-        }
-
-        return;
-      }
-
-
-      // ==========================
+      // =========================
       // DELIVERED
-      // ==========================
+      // =========================
 
       if (msg.type === "delivered") {
 
@@ -502,31 +296,24 @@ wss.on("connection", socket => {
             String(msg.messageId)
           );
 
-
         if (record) {
-
           sendToUser(
             record.from,
             {
-
-              type:
-                "delivered",
-
+              type: "delivered",
               messageId:
                 record.id
-
             }
           );
-
         }
 
         return;
       }
 
 
-      // ==========================
-      // READ / SEEN
-      // ==========================
+      // =========================
+      // READ
+      // =========================
 
       if (msg.type === "read") {
 
@@ -535,34 +322,27 @@ wss.on("connection", socket => {
             String(msg.messageId)
           );
 
-
         if (record) {
 
           record.read = true;
 
-
           sendToUser(
             record.from,
             {
-
-              type:
-                "read",
-
+              type: "read",
               messageId:
                 record.id
-
             }
           );
-
         }
 
         return;
       }
 
 
-      // ==========================
+      // =========================
       // REACTION
-      // ==========================
+      // =========================
 
       if (msg.type === "reaction") {
 
@@ -572,7 +352,6 @@ wss.on("connection", socket => {
         const record =
           serverMessages.get(id);
 
-
         if (record) {
 
           record.reaction =
@@ -580,55 +359,38 @@ wss.on("connection", socket => {
               msg.reaction || ""
             );
 
-
           sendToUser(
             record.from,
             {
-
-              type:
-                "reaction",
-
-              messageId:
-                id,
-
+              type: "reaction",
+              messageId: id,
               reaction:
                 record.reaction,
-
               from:
                 socket.userId
-
             }
           );
-
 
           sendToUser(
             record.to,
             {
-
-              type:
-                "reaction",
-
-              messageId:
-                id,
-
+              type: "reaction",
+              messageId: id,
               reaction:
                 record.reaction,
-
               from:
                 socket.userId
-
             }
           );
-
         }
 
         return;
       }
 
 
-      // ==========================
+      // =========================
       // UNSEND
-      // ==========================
+      // =========================
 
       if (msg.type === "unsend") {
 
@@ -638,38 +400,28 @@ wss.on("connection", socket => {
         const record =
           serverMessages.get(id);
 
-
         serverMessages.delete(id);
-
 
         if (record) {
 
           sendToUser(
             record.to,
             {
-
-              type:
-                "unsend",
-
-              messageId:
-                id
-
+              type: "unsend",
+              messageId: id
             }
           );
-
         }
 
         return;
       }
 
 
-      // ==========================
+      // =========================
       // DELETE
-      // ==========================
+      // =========================
 
-      if (
-        msg.type === "server_delete"
-      ) {
+      if (msg.type === "server_delete") {
 
         const id =
           String(msg.messageId);
@@ -677,76 +429,61 @@ wss.on("connection", socket => {
         const record =
           serverMessages.get(id);
 
-
         serverMessages.delete(id);
-
 
         if (record) {
 
           sendToUser(
             record.to,
             {
-
-              type:
-                "server_delete",
-
-              messageId:
-                id
-
+              type: "server_delete",
+              messageId: id
             }
           );
-
         }
 
         return;
       }
 
-
-    } catch (error) {
+    } catch (e) {
 
       console.log(
         "Invalid message:",
-        error.message
+        e.message
       );
-
     }
-
   });
 
 
-  // ==========================
+  // =========================
   // DISCONNECT
-  // ==========================
+  // =========================
 
   socket.on("close", () => {
 
     if (
       socket.userId &&
-      sockets.get(
-        socket.userId
-      ) === socket
+      sockets.get(socket.userId) === socket
     ) {
 
-      sockets.delete(
-        socket.userId
-      );
+      const id = socket.userId;
 
+      sockets.delete(id);
+
+      // Remove presence
+      presence.delete(id);
+
+      broadcastPresence();
 
       console.log(
         "Disconnected:",
-        socket.userId
+        id
       );
-
     }
-
   });
 
 });
 
-
-// ==============================
-// START SERVER
-// ==============================
 
 server.listen(
   PORT,
@@ -760,6 +497,5 @@ server.listen(
     console.log(
       `WebSocket server: ws://localhost:${PORT}`
     );
-
   }
 );
