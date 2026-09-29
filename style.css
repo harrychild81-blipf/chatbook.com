@@ -6,8 +6,15 @@
   box-sizing: border-box;
 }
 
+html,
 body {
+  width: 100%;
+  height: 100%;
   margin: 0;
+  overflow: hidden;
+}
+
+body {
   font-family: Arial, Helvetica, sans-serif;
   background: #f2f4f7;
   color: #111827;
@@ -40,7 +47,12 @@ button {
   min-height: 100vh;
 }
 
+/* ===============================
+   AUTH
+   =============================== */
+
 .auth {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,7 +70,7 @@ button {
   background: white;
   padding: 30px;
   border-radius: 18px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
 }
 
 .card.wide {
@@ -76,11 +88,14 @@ button {
   border-radius: 20px;
   background: #2563eb;
   color: white;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-size: 24px;
   font-weight: bold;
+
   margin: 0 auto 15px;
 }
 
@@ -101,8 +116,10 @@ input {
   width: 100%;
   padding: 13px 14px;
   margin: 7px 0;
+
   border: 1px solid #d1d5db;
   border-radius: 10px;
+
   outline: none;
   background: white;
 }
@@ -119,6 +136,7 @@ button {
   border: none;
   border-radius: 10px;
   padding: 12px 16px;
+
   background: #2563eb;
   color: white;
   font-weight: 600;
@@ -179,11 +197,15 @@ button.back {
 header {
   height: 65px;
   padding: 10px 18px;
+
   display: flex;
   align-items: center;
   gap: 12px;
+
   background: white;
   border-bottom: 1px solid #e5e7eb;
+
+  flex-shrink: 0;
 }
 
 header > div {
@@ -191,27 +213,34 @@ header > div {
 }
 
 /* ===============================
-   PROFILE
+   PROFILE ROW
    =============================== */
 
 .profileRow {
   background: white;
+
   display: flex;
   align-items: center;
   gap: 12px;
+
   padding: 15px 18px;
+
   border-bottom: 1px solid #e5e7eb;
 }
 
 .profile {
   width: 50px;
   height: 50px;
+
   border-radius: 50%;
+
   background: #2563eb;
   color: white;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-size: 20px;
   font-weight: bold;
 }
@@ -235,18 +264,25 @@ header > div {
    =============================== */
 
 .friendList {
-  padding: 5px 10px 20px;
+  padding: 5px 10px 90px;
 }
 
 .friendItem {
+  position: relative;
+
   background: white;
+
   display: flex;
   align-items: center;
   gap: 12px;
+
   padding: 13px;
   margin: 7px 5px;
+
   border-radius: 14px;
+
   cursor: pointer;
+
   transition: 0.15s;
 }
 
@@ -257,13 +293,18 @@ header > div {
 .friendAvatar {
   width: 48px;
   height: 48px;
+
   border-radius: 50%;
+
   background: #2563eb;
   color: white;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-weight: bold;
+
   position: relative;
   flex-shrink: 0;
 }
@@ -289,30 +330,34 @@ header > div {
 
 .presenceDot {
   position: absolute;
+
   width: 13px;
   height: 13px;
+
   border-radius: 50%;
+
   right: -1px;
   bottom: -1px;
+
   border: 2px solid white;
 }
 
-/* Active */
 .presenceDot.active {
   background: #22c55e;
 }
 
-/* Busy */
 .presenceDot.busy {
   background: #f59e0b;
 }
 
-/* Offline */
 .presenceDot.offline {
   background: #9ca3af;
 }
 
-/* Presence text */
+/* ===============================
+   PRESENCE TEXT
+   =============================== */
+
 .presenceText {
   font-size: 12px;
   margin-top: 3px;
@@ -331,26 +376,43 @@ header > div {
 }
 
 /* ===============================
-   CHAT
+   CHAT SCREEN
    =============================== */
 
 #chatScreen {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+
+  overflow: hidden;
+
   background: #eef2f7;
+
   display: flex;
   flex-direction: column;
 }
 
-#chatScreen header {
+#chatScreen > header {
   flex-shrink: 0;
 }
 
-.messages {
+.messages,
+#messages {
   flex: 1;
+
+  min-height: 0;
+
   overflow-y: auto;
+  overflow-x: hidden;
+
   padding: 15px;
+
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 /* ===============================
@@ -359,23 +421,31 @@ header > div {
 
 .message {
   max-width: 75%;
+
   padding: 9px 12px;
+
   border-radius: 14px;
+
   word-wrap: break-word;
+
   position: relative;
 }
 
 .message.mine {
   align-self: flex-end;
+
   background: #2563eb;
   color: white;
+
   border-bottom-right-radius: 4px;
 }
 
 .message.theirs {
   align-self: flex-start;
+
   background: white;
   color: #111827;
+
   border-bottom-left-radius: 4px;
 }
 
@@ -387,19 +457,39 @@ header > div {
 
 .messageStatus {
   font-size: 11px;
+  font-weight: 700;
   margin-left: 4px;
+}
+
+.readTicks {
+  color: #000000 !important;
+}
+
+.deliveredTicks {
+  color: #777777;
+}
+
+.sentTick {
+  color: #777777;
 }
 
 .messageReaction {
   display: inline-block;
+
   background: white;
   color: #111827;
+
   border-radius: 12px;
+
   padding: 2px 6px;
+
   font-size: 13px;
+
   position: absolute;
+
   bottom: -10px;
   right: 5px;
+
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
@@ -411,7 +501,9 @@ header > div {
 .message video {
   max-width: 250px;
   max-height: 300px;
+
   border-radius: 10px;
+
   display: block;
 }
 
@@ -421,11 +513,17 @@ header > div {
 
 .composer {
   display: flex;
+
   gap: 7px;
+
   align-items: center;
+
   padding: 10px;
+
   background: white;
+
   border-top: 1px solid #ddd;
+
   flex-shrink: 0;
 }
 
@@ -438,10 +536,13 @@ header > div {
 .mediaButton {
   width: 42px;
   height: 42px;
+
   padding: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border-radius: 50%;
 }
 
@@ -457,22 +558,34 @@ header > div {
 
 .emojiPicker {
   position: absolute;
+
   bottom: 70px;
   left: 10px;
   right: 10px;
+
   max-height: 220px;
+
   overflow-y: auto;
+
   background: white;
+
   border: 1px solid #ddd;
+
   border-radius: 15px;
+
   padding: 10px;
+
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+  z-index: 500;
 }
 
 .emojiPicker button {
   background: transparent;
   color: #111;
+
   font-size: 25px;
+
   padding: 6px;
 }
 
@@ -482,34 +595,48 @@ header > div {
 
 .messageMenu {
   position: fixed;
+
   inset: 0;
+
   background: rgba(0, 0, 0, 0.45);
+
   display: flex;
+
   align-items: flex-end;
   justify-content: center;
-  z-index: 1000;
+
+  z-index: 10000;
 }
 
 .messageSheet {
   width: 100%;
   max-width: 550px;
+
   background: white;
+
   border-radius: 20px 20px 0 0;
+
   padding: 20px;
+
   box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.2);
 }
 
 .reactionRow {
   display: flex;
+
   flex-wrap: wrap;
+
   gap: 6px;
+
   margin: 15px 0;
 }
 
 .reactionRow button {
   background: #f3f4f6;
   color: #111827;
+
   font-size: 20px;
+
   padding: 8px;
 }
 
@@ -525,6 +652,385 @@ header > div {
 .menuAction.secondary {
   background: #e5e7eb;
   color: #111827;
+}
+
+/* ===============================
+   STATUS INFORMATION
+   =============================== */
+
+.statusInfoButton {
+  width: 38px;
+  height: 38px;
+
+  padding: 0;
+
+  border-radius: 50%;
+
+  background: transparent;
+  color: #374151;
+
+  font-size: 23px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statusInfoButton:hover {
+  background: #f3f4f6;
+}
+
+.statusInfo {
+  background: white;
+
+  margin: 10px 15px;
+
+  padding: 15px;
+
+  border-radius: 15px;
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+
+  border: 1px solid #e5e7eb;
+}
+
+.statusInfoHeader {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+}
+
+.statusInfoClose {
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  border-radius: 50%;
+
+  background: #f3f4f6;
+  color: #111827;
+
+  font-size: 20px;
+}
+
+.statusExplanation {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.statusExplanationItem {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 12px;
+}
+
+.statusExplanationItem p {
+  margin: 3px 0 0;
+
+  color: #6b7280;
+
+  font-size: 13px;
+
+  line-height: 1.4;
+}
+
+.statusLegendDot {
+  width: 14px;
+  height: 14px;
+
+  min-width: 14px;
+
+  border-radius: 50%;
+
+  margin-top: 3px;
+
+  border: 2px solid white;
+
+  box-shadow: 0 0 0 1px #ddd;
+}
+
+.statusLegendDot.active {
+  background: #22c55e;
+}
+
+.statusLegendDot.busy {
+  background: #f59e0b;
+}
+
+.statusLegendDot.offline {
+  background: #9ca3af;
+}
+
+/* ===============================
+   UNREAD NOTIFICATION
+   =============================== */
+
+.unreadBadge {
+  margin-left: auto;
+
+  min-width: 21px;
+  height: 21px;
+
+  padding: 0 6px;
+
+  border-radius: 50px;
+
+  background: #ff3040;
+
+  color: white;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+/* ===============================
+   PROFILE SCREEN
+   =============================== */
+
+#profileScreen {
+  height: 100vh;
+  height: 100dvh;
+
+  overflow: hidden;
+
+  background: #f2f4f7;
+}
+
+.profilePage {
+  height: calc(100vh - 65px);
+  height: calc(100dvh - 65px);
+
+  padding: 20px;
+  padding-bottom: 100px;
+
+  text-align: center;
+
+  overflow-y: auto;
+}
+
+.bigProfile {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 10px;
+}
+
+.profileLarge {
+  width: 110px;
+  height: 110px;
+
+  border-radius: 50%;
+
+  background: #e5e7eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 42px;
+  font-weight: bold;
+
+  overflow: hidden;
+
+  border: 3px solid #ddd;
+}
+
+.profileLarge img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.changePhotoButton {
+  display: inline-block;
+
+  padding: 8px 14px;
+
+  border-radius: 8px;
+
+  background: #f0f0f0;
+
+  color: #111827;
+
+  cursor: pointer;
+
+  font-size: 14px;
+}
+
+.changePhotoButton:hover {
+  background: #e2e2e2;
+}
+
+.profilePage h2 {
+  margin: 14px 0 5px;
+}
+
+.profilePage > button {
+  margin-top: 10px;
+}
+
+/* ===============================
+   PROFILE MEDIA
+   =============================== */
+
+.profileMediaHeader {
+  margin-top: 30px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.profileMediaHeader h3 {
+  margin: 0;
+}
+
+.uploadMediaButton {
+  display: inline-block;
+
+  padding: 8px 12px;
+
+  border-radius: 8px;
+
+  background: #f0f0f0;
+
+  color: #111827;
+
+  cursor: pointer;
+
+  font-size: 14px;
+}
+
+.uploadMediaButton:hover {
+  background: #e2e2e2;
+}
+
+.profileMediaGrid {
+  margin-top: 15px;
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 6px;
+}
+
+.profileMediaGrid img,
+.profileMediaGrid video {
+  width: 100%;
+
+  aspect-ratio: 1 / 1;
+
+  object-fit: cover;
+
+  border-radius: 8px;
+
+  background: #eee;
+}
+
+/* ===============================
+   BOTTOM NAVIGATION
+   =============================== */
+
+#bottomNav {
+  position: fixed !important;
+
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  width: 100% !important;
+
+  height: 65px !important;
+
+  display: flex !important;
+
+  align-items: stretch !important;
+  justify-content: space-around !important;
+
+  background: #ffffff !important;
+
+  border-top: 1px solid #dcdcdc !important;
+
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08) !important;
+
+  z-index: 99999 !important;
+}
+
+/*
+   IMPORTANT:
+   When JavaScript wants to show the bar,
+   it must remove the "hidden" class.
+*/
+
+#bottomNav.hidden {
+  display: none !important;
+}
+
+#bottomNav button {
+  flex: 1 !important;
+
+  height: 65px !important;
+
+  border: none !important;
+
+  border-radius: 0 !important;
+
+  background: transparent !important;
+
+  color: #111827 !important;
+
+  display: flex !important;
+
+  flex-direction: column !important;
+
+  align-items: center !important;
+
+  justify-content: center !important;
+
+  gap: 3px !important;
+
+  padding: 5px !important;
+
+  cursor: pointer !important;
+}
+
+#bottomNav button:hover {
+  background: #f5f5f5 !important;
+}
+
+#bottomNav button span {
+  font-size: 22px !important;
+  line-height: 1 !important;
+}
+
+#bottomNav button small {
+  font-size: 12px !important;
+  color: #374151 !important;
 }
 
 /* ===============================
@@ -563,364 +1069,6 @@ header > div {
     width: 12px;
     height: 12px;
   }
-}
-/* ===============================
-   STATUS INFORMATION
-   =============================== */
-
-.statusInfoButton {
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: #374151;
-  font-size: 23px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.statusInfoButton:hover {
-  background: #f3f4f6;
-}
-
-.statusInfo {
-  background: white;
-  margin: 10px 15px;
-  padding: 15px;
-  border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.10);
-  border: 1px solid #e5e7eb;
-}
-
-.statusInfoHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.statusInfoClose {
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  border-radius: 50%;
-  background: #f3f4f6;
-  color: #111827;
-  font-size: 20px;
-}
-
-.statusExplanation {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.statusExplanationItem {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.statusExplanationItem p {
-  margin: 3px 0 0;
-  color: #6b7280;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.statusLegendDot {
-  width: 14px;
-  height: 14px;
-  min-width: 14px;
-  border-radius: 50%;
-  margin-top: 3px;
-  border: 2px solid white;
-  box-shadow: 0 0 0 1px #ddd;
-}
-
-.statusLegendDot.active {
-  background: #22c55e;
-}
-
-.statusLegendDot.busy {
-  background: #f59e0b;
-}
-
-.statusLegendDot.offline {
-  background: #9ca3af;
-}
-/* =========================================================
-   FRIENDCHAT - MESSAGE STATUS
-   ========================================================= */
-
-.messageStatus {
-  font-weight: 700;
-  margin-left: 4px;
-}
-
-/* Message has been READ */
-.readTicks {
-  color: #000000 !important;
-}
-
-/* Message has been DELIVERED */
-.deliveredTicks {
-  color: #777777;
-}
-
-/* Message has only been SENT */
-.sentTick {
-  color: #777777;
-}
-
-
-/* =========================================================
-   FRIENDCHAT - UNREAD NOTIFICATION
-   ========================================================= */
-
-.friendItem {
-  position: relative;
-}
-
-.unreadBadge {
-  margin-left: auto;
-
-  min-width: 21px;
-  height: 21px;
-
-  padding: 0 6px;
-
-  border-radius: 50px;
-
-  background: #ff3040;
-  color: #ffffff;
-
-  font-size: 12px;
-  font-weight: 700;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  box-sizing: border-box;
-
-  flex-shrink: 0;
-}
-/* =========================================================
-   FRIENDCHAT CHAT SCREEN - FIXED HEADER & INPUT
-   ========================================================= */
-
-/* Chat screen itself never scrolls */
-#chatScreen {
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-
-  display: flex;
-  flex-direction: column;
-}
-
-
-/* Chat header stays at the top */
-#chatScreen .chatHeader {
-  flex-shrink: 0;
-}
-
-
-/* Messages are the ONLY scrolling area */
-#messages {
-  flex: 1;
-  min-height: 0;
-
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  -webkit-overflow-scrolling: touch;
-
-  scroll-behavior: smooth;
-}
-
-
-/* Message input area stays at bottom */
-#chatScreen .chatInput,
-#chatScreen .inputArea,
-#chatScreen .messageInputArea {
-  flex-shrink: 0;
-}
-
-
-/* Prevent page itself from scrolling */
-html,
-body {
-  height: 100%;
-  overflow: hidden;
-}
-/* =========================
-   PROFILE SCREEN
-   ========================= */
-
-.profilePage {
-  padding: 20px;
-  padding-bottom: 100px;
-  text-align: center;
-  overflow-y: auto;
-}
-
-.bigProfile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.profileLarge {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 42px;
-  font-weight: bold;
-  overflow: hidden;
-  border: 3px solid #ddd;
-}
-
-.profileLarge img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.changePhotoButton {
-  display: inline-block;
-  padding: 8px 14px;
-  border-radius: 8px;
-  background: #f0f0f0;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.changePhotoButton:hover {
-  background: #e2e2e2;
-}
-
-.profilePage h2 {
-  margin: 14px 0 5px;
-}
-
-.profilePage > button {
-  margin-top: 10px;
-}
-
-
-/* =========================
-   PROFILE MEDIA
-   ========================= */
-
-.profileMediaHeader {
-  margin-top: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.profileMediaHeader h3 {
-  margin: 0;
-}
-
-.uploadMediaButton {
-  display: inline-block;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: #f0f0f0;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.uploadMediaButton:hover {
-  background: #e2e2e2;
-}
-
-.profileMediaGrid {
-  margin-top: 15px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-}
-
-.profileMediaGrid img,
-.profileMediaGrid video {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 8px;
-  background: #eee;
-}
-
-
-/* =========================
-   BOTTOM NAVIGATION
-   ========================= */
-
-.bottomNav {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  height: 65px;
-
-  display: flex;
-  align-items: stretch;
-  justify-content: space-around;
-
-  background: white;
-  border-top: 1px solid #ddd;
-
-  z-index: 1000;
-}
-
-.bottomNav button {
-  flex: 1;
-
-  border: none;
-  background: transparent;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  gap: 3px;
-
-  cursor: pointer;
-}
-
-.bottomNav button span {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.bottomNav button small {
-  font-size: 12px;
-}
-
-.bottomNav button:hover {
-  background: #f5f5f5;
-}
-
-
-/* =========================
-   MOBILE PROFILE
-   ========================= */
-
-@media (max-width: 600px) {
 
   .profilePage {
     padding: 16px;
@@ -937,46 +1085,19 @@ body {
     grid-template-columns: repeat(3, 1fr);
   }
 
-}
+  #bottomNav {
+    height: 65px !important;
+  }
 
+  #bottomNav button {
+    height: 65px !important;
+  }
 
-/* =========================
-   CHAT SCREEN FIX
-   ========================= */
+  #bottomNav button span {
+    font-size: 22px !important;
+  }
 
-#chatScreen {
-  height: 100vh;
-  height: 100dvh;
-
-  overflow: hidden;
-
-  display: flex;
-  flex-direction: column;
-}
-
-#chatScreen > header {
-  flex-shrink: 0;
-}
-
-#messages {
-  flex: 1;
-  min-height: 0;
-
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  -webkit-overflow-scrolling: touch;
-}
-
-#chatScreen .composer {
-  flex-shrink: 0;
-}
-
-
-/* Keep page from moving when chat grows */
-
-html,
-body {
-  height: 100%;
-  overflow: hidden;
+  #bottomNav button small {
+    font-size: 11px !important;
+  }
 }
