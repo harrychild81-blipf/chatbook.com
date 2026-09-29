@@ -1,62 +1,566 @@
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#eef2f7;color:#172033}
-button,input{font:inherit}
-button{border:0;border-radius:12px;padding:12px 16px;background:#2563eb;color:#fff;cursor:pointer}
-button.secondary{background:#e8edf5;color:#172033}
-button.small{padding:8px 10px;font-size:13px}
-button.icon{font-size:25px;padding:5px 12px}
-button.back{background:transparent;color:#172033;font-size:25px;padding:4px}
-.app{max-width:520px;margin:0 auto;min-height:100vh;background:#fff}
-.screen{min-height:100vh}
-.hidden{display:none!important}
-.auth{display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(140deg,#dbeafe,#fff)}
-.card{width:100%;max-width:400px;padding:28px;border-radius:22px;background:#fff;box-shadow:0 10px 35px #00000012}
-.card.wide{max-width:none;margin:20px}
-.logo{width:64px;height:64px;border-radius:18px;background:#2563eb;color:#fff;display:grid;place-items:center;font-weight:bold;font-size:22px;margin-bottom:15px}
-h1,h2,p{margin-top:0}
-.muted{color:#6b7280}
-input{width:100%;padding:13px 14px;border:1px solid #d6dce6;border-radius:12px;margin:7px 0;outline:none}
-input:focus{border-color:#2563eb}
-.card>button{width:100%;margin-top:8px}
-.status{min-height:20px;margin-top:12px;color:#dc2626}
-header{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #e7ebf0}
-header>div:first-of-type{flex:1}
-header h2{margin:0}
-.profileRow{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #eef1f5}
-.profile{width:48px;height:48px;border-radius:50%;background:#2563eb;color:#fff;display:grid;place-items:center;font-weight:bold;font-size:19px}
-.profileRow>div:nth-child(2){flex:1}
-.search{margin:14px 18px;width:calc(100% - 36px)}
-.friendList{padding:0 18px 30px}
-.friend{display:flex;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid #eef1f5;cursor:pointer}
-.friend:hover{background:#f8fafc}
-.friend .avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#dbeafe;color:#1d4ed8;font-weight:bold}
-.friendInfo{flex:1}
-.friendInfo strong{display:block}
-.friendInfo small{color:#6b7280}
-.tabs{display:flex;gap:8px;margin-bottom:15px}
-.tabs button{flex:1}
-.messages{height:calc(100vh - 145px);overflow:auto;padding:18px;background:#f7f9fc}
-.msg{max-width:78%;padding:10px 13px;border-radius:16px;margin:8px 0;word-wrap:break-word}
-.msg.mine{margin-left:auto;background:#2563eb;color:#fff;border-bottom-right-radius:5px}
-.msg.theirs{background:#fff;border:1px solid #e7ebf0;border-bottom-left-radius:5px}
-.msg small{display:block;opacity:.65;margin-top:4px;font-size:10px}
-.msg img,.msg video{max-width:100%;border-radius:10px;margin-top:5px}
-.composer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);display:flex;gap:7px;padding:10px;background:#fff;border-top:1px solid #e7ebf0}
-.composer input{margin:0;flex:1}
-.composer button{padding:10px 13px}
-.mediaButton{display:grid;place-items:center;padding:0 10px;cursor:pointer}
-.smallText{font-size:13px}
-@media(min-width:521px){body{padding:20px 0}.app{border-radius:18px;overflow:hidden;box-shadow:0 10px 40px #0002}}
-.msgWrap{max-width:78%;margin:8px 0;position:relative;user-select:none;-webkit-user-select:none;touch-action:pan-y}
-.msgWrap.mine{margin-left:auto}
-.msgWrap .msg{max-width:100%;margin:0}
-.ticks{margin-left:4px;font-weight:bold;letter-spacing:-2px}
-.ticks.read{color:#000000}
-.reactionBadge{position:absolute;right:8px;bottom:-11px;background:#fff;border:1px solid #e1e6ee;border-radius:12px;padding:1px 5px;font-size:13px;box-shadow:0 2px 5px #0001}
-.messageMenu{position:fixed;inset:0;background:#0006;z-index:50;display:flex;align-items:flex-end;justify-content:center}
-.messageSheet{width:min(520px,100%);background:#fff;border-radius:20px 20px 0 0;padding:18px;box-shadow:0 -8px 30px #0003}
-.messageSheet strong{display:block;margin-bottom:10px}
-.reactionRow{display:flex;gap:8px;margin-bottom:12px}
-.reactionRow button{flex:1;background:#f1f5f9;color:#172033;font-size:22px;padding:10px 5px}
-.menuAction{width:100%;margin-top:8px;text-align:left}
-button.danger{background:#fee2e2;color:#b91c1c}
+/* ===============================
+   FRIENDCHAT - COMPLETE CSS
+   =============================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f2f4f7;
+  color: #111827;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.app {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ===============================
+   SCREENS
+   =============================== */
+
+.screen {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.auth {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #e8f0ff, #f8faff);
+}
+
+/* ===============================
+   CARDS
+   =============================== */
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.10);
+}
+
+.card.wide {
+  max-width: 600px;
+  margin: 25px auto;
+}
+
+/* ===============================
+   LOGO
+   =============================== */
+
+.logo {
+  width: 65px;
+  height: 65px;
+  border-radius: 20px;
+  background: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 auto 15px;
+}
+
+h1 {
+  text-align: center;
+  margin: 5px 0;
+}
+
+h2 {
+  margin: 0;
+}
+
+/* ===============================
+   INPUTS
+   =============================== */
+
+input {
+  width: 100%;
+  padding: 13px 14px;
+  margin: 7px 0;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  outline: none;
+  background: white;
+}
+
+input:focus {
+  border-color: #2563eb;
+}
+
+/* ===============================
+   BUTTONS
+   =============================== */
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+button.small {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+button.icon {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 25px;
+}
+
+button.back {
+  background: transparent;
+  color: #111827;
+  font-size: 25px;
+  padding: 5px 10px;
+}
+
+/* ===============================
+   TEXT
+   =============================== */
+
+.muted {
+  color: #6b7280;
+}
+
+.smallText {
+  font-size: 13px;
+}
+
+.status {
+  min-height: 20px;
+  margin-top: 10px;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+/* ===============================
+   HEADER
+   =============================== */
+
+header {
+  height: 65px;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+header > div {
+  flex: 1;
+}
+
+/* ===============================
+   PROFILE
+   =============================== */
+
+.profileRow {
+  background: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.profileInfo {
+  flex: 1;
+}
+
+/* ===============================
+   SEARCH
+   =============================== */
+
+.search {
+  margin: 15px;
+  width: calc(100% - 30px);
+  background: white;
+}
+
+/* ===============================
+   FRIEND LIST
+   =============================== */
+
+.friendList {
+  padding: 5px 10px 20px;
+}
+
+.friendItem {
+  background: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px;
+  margin: 7px 5px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.friendItem:hover {
+  background: #f3f4f6;
+}
+
+.friendAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.friendInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.friendName {
+  font-weight: bold;
+}
+
+.friendId {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+/* ===============================
+   PRESENCE DOT
+   =============================== */
+
+.presenceDot {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  right: -1px;
+  bottom: -1px;
+  border: 2px solid white;
+}
+
+/* Active */
+.presenceDot.active {
+  background: #22c55e;
+}
+
+/* Busy */
+.presenceDot.busy {
+  background: #f59e0b;
+}
+
+/* Offline */
+.presenceDot.offline {
+  background: #9ca3af;
+}
+
+/* Presence text */
+.presenceText {
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.presenceText.active {
+  color: #16a34a;
+}
+
+.presenceText.busy {
+  color: #d97706;
+}
+
+.presenceText.offline {
+  color: #6b7280;
+}
+
+/* ===============================
+   CHAT
+   =============================== */
+
+#chatScreen {
+  background: #eef2f7;
+  display: flex;
+  flex-direction: column;
+}
+
+#chatScreen header {
+  flex-shrink: 0;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ===============================
+   MESSAGE BUBBLES
+   =============================== */
+
+.message {
+  max-width: 75%;
+  padding: 9px 12px;
+  border-radius: 14px;
+  word-wrap: break-word;
+  position: relative;
+}
+
+.message.mine {
+  align-self: flex-end;
+  background: #2563eb;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message.theirs {
+  align-self: flex-start;
+  background: white;
+  color: #111827;
+  border-bottom-left-radius: 4px;
+}
+
+.messageTime {
+  font-size: 10px;
+  opacity: 0.65;
+  margin-top: 4px;
+}
+
+.messageStatus {
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.messageReaction {
+  display: inline-block;
+  background: white;
+  color: #111827;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 13px;
+  position: absolute;
+  bottom: -10px;
+  right: 5px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* ===============================
+   MEDIA MESSAGES
+   =============================== */
+
+.message img,
+.message video {
+  max-width: 250px;
+  max-height: 300px;
+  border-radius: 10px;
+  display: block;
+}
+
+/* ===============================
+   COMPOSER
+   =============================== */
+
+.composer {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  padding: 10px;
+  background: white;
+  border-top: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.composer input {
+  flex: 1;
+  margin: 0;
+}
+
+.emojiButton,
+.mediaButton {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.mediaButton {
+  background: #e5e7eb;
+  color: #111827;
+  font-size: 20px;
+}
+
+/* ===============================
+   EMOJI PICKER
+   =============================== */
+
+.emojiPicker {
+  position: absolute;
+  bottom: 70px;
+  left: 10px;
+  right: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.emojiPicker button {
+  background: transparent;
+  color: #111;
+  font-size: 25px;
+  padding: 6px;
+}
+
+/* ===============================
+   MESSAGE MENU
+   =============================== */
+
+.messageMenu {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.messageSheet {
+  width: 100%;
+  max-width: 550px;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  padding: 20px;
+  box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.2);
+}
+
+.reactionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 15px 0;
+}
+
+.reactionRow button {
+  background: #f3f4f6;
+  color: #111827;
+  font-size: 20px;
+  padding: 8px;
+}
+
+.menuAction {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.menuAction.danger {
+  background: #dc2626;
+}
+
+.menuAction.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+/* ===============================
+   MOBILE
+   =============================== */
+
+@media (max-width: 600px) {
+
+  .card {
+    padding: 25px 20px;
+    border-radius: 15px;
+  }
+
+  header {
+    padding: 10px 12px;
+  }
+
+  .message {
+    max-width: 85%;
+  }
+
+  .message img,
+  .message video {
+    max-width: 220px;
+  }
+
+  .composer {
+    padding: 7px;
+  }
+
+  .composer button {
+    padding: 10px;
+  }
+
+  .presenceDot {
+    width: 12px;
+    height: 12px;
+  }
+}
