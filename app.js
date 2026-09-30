@@ -2,21 +2,12 @@
    FRIENDCHAT - CLEAN WORKING APP.JS
    ========================================================= */
 
-/* =========================================================
-   SERVER
-   ========================================================= */
-
 const API =
   location.protocol === "https:"
     ? `wss://${location.host}`
     : `ws://${location.hostname}:8080`;
 
 let socket = null;
-
-
-/* =========================================================
-   APP STATE
-   ========================================================= */
 
 let currentUser = null;
 let friends = [];
@@ -26,7 +17,7 @@ let selectedMessageId = null;
 
 
 /* =========================================================
-   LOCAL STORAGE
+   STORAGE
    ========================================================= */
 
 function loadAccount() {
@@ -34,11 +25,10 @@ function loadAccount() {
     return JSON.parse(
       localStorage.getItem("friendchat_account")
     );
-  } catch (e) {
+  } catch {
     return null;
   }
 }
-
 
 function saveAccount(account) {
   localStorage.setItem(
@@ -47,18 +37,16 @@ function saveAccount(account) {
   );
 }
 
-
 function loadFriends() {
   try {
     friends =
       JSON.parse(
         localStorage.getItem("friendchat_friends")
       ) || [];
-  } catch (e) {
+  } catch {
     friends = [];
   }
 }
-
 
 function saveFriends() {
   localStorage.setItem(
@@ -67,18 +55,16 @@ function saveFriends() {
   );
 }
 
-
 function loadChats() {
   try {
     chats =
       JSON.parse(
         localStorage.getItem("friendchat_chats")
       ) || {};
-  } catch (e) {
+  } catch {
     chats = {};
   }
 }
-
 
 function saveChats() {
   localStorage.setItem(
@@ -89,7 +75,7 @@ function saveChats() {
 
 
 /* =========================================================
-   UTILITY
+   HELPERS
    ========================================================= */
 
 function escapeHtml(value) {
@@ -101,25 +87,36 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
-
 function generateFriendId() {
   const chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-  let code = "";
+  let result = "";
 
   for (let i = 0; i < 6; i++) {
-    code += chars[
-      Math.floor(Math.random() * chars.length)
-    ];
+    result +=
+      chars[
+        Math.floor(Math.random() * chars.length)
+      ];
   }
 
-  return "FC-" + code;
+  return "FC-" + result;
+}
+
+function generateMessageId() {
+  return (
+    "msg-" +
+    Date.now() +
+    "-" +
+    Math.random()
+      .toString(36)
+      .substring(2, 10)
+  );
 }
 
 
 /* =========================================================
-   SCREEN CONTROL
+   SCREEN NAVIGATION
    ========================================================= */
 
 function hideAllScreens() {
@@ -130,7 +127,6 @@ function hideAllScreens() {
     });
 }
 
-
 function showBottomNav() {
   const nav =
     document.getElementById("bottomNav");
@@ -140,7 +136,6 @@ function showBottomNav() {
   }
 }
 
-
 function hideBottomNav() {
   const nav =
     document.getElementById("bottomNav");
@@ -149,7 +144,6 @@ function hideBottomNav() {
     nav.classList.add("hidden");
   }
 }
-
 
 function showLogin() {
   hideAllScreens();
@@ -163,7 +157,6 @@ function showLogin() {
   }
 }
 
-
 function showSignup() {
   hideAllScreens();
   hideBottomNav();
@@ -176,13 +169,7 @@ function showSignup() {
   }
 }
 
-
 function showHome() {
-  if (!currentUser) {
-    showLogin();
-    return;
-  }
-
   hideAllScreens();
   showBottomNav();
 
@@ -200,7 +187,6 @@ function showHome() {
   updateHome();
 }
 
-
 function showAdd() {
   hideAllScreens();
   hideBottomNav();
@@ -212,7 +198,6 @@ function showAdd() {
     screen.classList.remove("hidden");
   }
 }
-
 
 function closeAdd() {
   showHome();
@@ -237,20 +222,8 @@ function signup() {
     const status =
       document.getElementById("signupStatus");
 
-    if (
-      !nameInput ||
-      !emailInput ||
-      !passwordInput
-    ) {
-      console.error(
-        "Signup HTML elements missing."
-      );
-
-      if (status) {
-        status.textContent =
-          "Signup form error.";
-      }
-
+    if (!nameInput || !emailInput || !passwordInput) {
+      console.error("Signup HTML elements missing");
       return;
     }
 
@@ -264,37 +237,39 @@ function signup() {
       passwordInput.value;
 
     if (!name) {
-      status.textContent =
-        "Enter your name.";
+      if (status) {
+        status.textContent =
+          "Enter your name.";
+      }
       return;
     }
 
-    if (
-      !email ||
-      !email.includes("@")
-    ) {
-      status.textContent =
-        "Enter a valid email.";
+    if (!email || !email.includes("@")) {
+      if (status) {
+        status.textContent =
+          "Enter a valid email.";
+      }
       return;
     }
 
     if (password.length < 6) {
-      status.textContent =
-        "Password must be at least 6 characters.";
+      if (status) {
+        status.textContent =
+          "Password must be at least 6 characters.";
+      }
       return;
     }
 
     const account = {
       id: generateFriendId(),
-      name: name,
-      email: email,
-      password: password
+      name,
+      email,
+      password
     };
 
     saveAccount(account);
 
     currentUser = account;
-
     friends = [];
     chats = {};
 
@@ -305,26 +280,8 @@ function signup() {
     connectSocket();
     showHome();
 
-    console.log(
-      "Account created:",
-      account.id
-    );
-
   } catch (error) {
-    console.error(
-      "SIGNUP ERROR:",
-      error
-    );
-
-    const status =
-      document.getElementById(
-        "signupStatus"
-      );
-
-    if (status) {
-      status.textContent =
-        "Signup error. Check Console.";
-    }
+    console.error("SIGNUP ERROR:", error);
   }
 }
 
@@ -344,19 +301,8 @@ function login() {
     const status =
       document.getElementById("loginStatus");
 
-    if (
-      !emailInput ||
-      !passwordInput
-    ) {
-      console.error(
-        "Login HTML elements missing."
-      );
-
-      if (status) {
-        status.textContent =
-          "Login form error.";
-      }
-
+    if (!emailInput || !passwordInput) {
+      console.error("Login HTML elements missing");
       return;
     }
 
@@ -367,46 +313,41 @@ function login() {
       passwordInput.value;
 
     if (!email) {
-      status.textContent =
-        "Enter your email.";
+      if (status) {
+        status.textContent =
+          "Enter your email.";
+      }
       return;
     }
 
     if (!password) {
-      status.textContent =
-        "Enter your password.";
+      if (status) {
+        status.textContent =
+          "Enter your password.";
+      }
       return;
     }
 
-    const account =
-      loadAccount();
-
-    console.log(
-      "Account found:",
-      account
-    );
+    const account = loadAccount();
 
     if (!account) {
-      status.textContent =
-        "No account found on this device.";
+      if (status) {
+        status.textContent =
+          "No account found on this device.";
+      }
       return;
     }
 
     if (
       email.toLowerCase() !==
-      String(account.email).toLowerCase()
-    ) {
-      status.textContent =
-        "Incorrect email or password.";
-      return;
-    }
-
-    if (
+      String(account.email).toLowerCase() ||
       password !==
       String(account.password)
     ) {
-      status.textContent =
-        "Incorrect email or password.";
+      if (status) {
+        status.textContent =
+          "Incorrect email or password.";
+      }
       return;
     }
 
@@ -416,31 +357,11 @@ function login() {
     loadChats();
 
     updateHome();
-
     connectSocket();
-
     showHome();
 
-    console.log(
-      "LOGIN SUCCESS:",
-      currentUser.id
-    );
-
   } catch (error) {
-    console.error(
-      "LOGIN ERROR:",
-      error
-    );
-
-    const status =
-      document.getElementById(
-        "loginStatus"
-      );
-
-    if (status) {
-      status.textContent =
-        "Login error. Press F12 and check Console.";
-    }
+    console.error("LOGIN ERROR:", error);
   }
 }
 
@@ -450,10 +371,12 @@ function login() {
    ========================================================= */
 
 function logout() {
+  sendPresence(null);
+
   if (socket) {
     try {
       socket.close();
-    } catch (e) {}
+    } catch {}
 
     socket = null;
   }
@@ -485,9 +408,7 @@ function updateHome() {
     document.getElementById("myIdLabel");
 
   const profile =
-    document.getElementById(
-      "profileCircle"
-    );
+    document.getElementById("profileCircle");
 
   if (name) {
     name.textContent =
@@ -521,7 +442,6 @@ function updateHome() {
   }
 
   renderFriends();
-  loadProfilePhoto();
 }
 
 
@@ -537,20 +457,15 @@ function connectSocket() {
   if (socket) {
     try {
       socket.close();
-    } catch (e) {}
+    } catch {}
   }
 
-  console.log(
-    "Connecting:",
-    API
-  );
+  console.log("Connecting:", API);
 
   socket = new WebSocket(API);
 
-  socket.onopen = function () {
-    console.log(
-      "FriendChat WebSocket connected"
-    );
+  socket.onopen = () => {
+    console.log("FriendChat connected");
 
     socket.send(
       JSON.stringify({
@@ -560,42 +475,67 @@ function connectSocket() {
       })
     );
 
-    sendPresence(
-      currentChatUserId
-    );
+    sendPresence(currentChatUserId);
   };
 
 
-  socket.onmessage = async function (event) {
+  socket.onmessage = async event => {
     try {
       const msg =
         JSON.parse(event.data);
 
-      console.log(
-        "Server:",
-        msg
-      );
+      console.log("SERVER:", msg);
+
+
+      /* REGISTERED */
 
       if (msg.type === "registered") {
-        return;
-      }
-
-      if (msg.type === "presence") {
-        updatePresence(
-          msg.users || {}
+        console.log(
+          "Registered:",
+          msg.userId
         );
         return;
       }
+
+
+      /* PRESENCE */
+
+      if (msg.type === "presence") {
+        window.friendChatPresence =
+          msg.users || {};
+
+        renderFriends();
+
+        if (currentChatUserId) {
+          const status =
+            getPresence(
+              currentChatUserId
+            ).status;
+
+          const chatStatus =
+            document.getElementById(
+              "chatStatus"
+            );
+
+          if (chatStatus) {
+            chatStatus.textContent =
+              presenceLabel(status);
+          }
+        }
+
+        return;
+      }
+
+
+      /* CHAT */
 
       if (msg.type === "chat") {
         receiveMessage(msg);
         return;
       }
 
-      if (msg.type === "media") {
-        receiveMedia(msg);
-        return;
-      }
+
+      /* DELIVERED */
 
       if (msg.type === "delivered") {
         updateMessageStatus(
@@ -605,6 +545,9 @@ function connectSocket() {
         return;
       }
 
+
+      /* READ */
+
       if (msg.type === "read") {
         updateMessageStatus(
           msg.messageId,
@@ -612,6 +555,9 @@ function connectSocket() {
         );
         return;
       }
+
+
+      /* REACTION */
 
       if (msg.type === "reaction") {
         updateReaction(
@@ -621,12 +567,18 @@ function connectSocket() {
         return;
       }
 
+
+      /* UNSEND */
+
       if (msg.type === "unsend") {
         removeMessage(
           msg.messageId
         );
         return;
       }
+
+
+      /* DELETE */
 
       if (msg.type === "server_delete") {
         removeMessage(
@@ -635,9 +587,29 @@ function connectSocket() {
         return;
       }
 
-      if (
-        msg.type === "profile_photo"
-      ) {
+
+      /* MEDIA */
+
+      if (msg.type === "media") {
+        receiveMedia(msg);
+        return;
+      }
+
+
+      /* MEDIA ERROR */
+
+      if (msg.type === "media_error") {
+        alert(
+          msg.reason ||
+          "Media could not be sent."
+        );
+        return;
+      }
+
+
+      /* PROFILE PHOTO */
+
+      if (msg.type === "profile_photo") {
         receiveProfilePhoto(msg);
         return;
       }
@@ -651,7 +623,7 @@ function connectSocket() {
   };
 
 
-  socket.onerror = function (error) {
+  socket.onerror = error => {
     console.error(
       "WebSocket error:",
       error
@@ -659,9 +631,9 @@ function connectSocket() {
   };
 
 
-  socket.onclose = function () {
+  socket.onclose = () => {
     console.log(
-      "WebSocket disconnected"
+      "FriendChat disconnected"
     );
   };
 }
@@ -670,28 +642,6 @@ function connectSocket() {
 /* =========================================================
    PRESENCE
    ========================================================= */
-
-function sendPresence(chatWith) {
-  if (
-    !socket ||
-    socket.readyState !==
-      WebSocket.OPEN
-  ) {
-    return;
-  }
-
-  socket.send(
-    JSON.stringify({
-      type: "presence_chat",
-
-      chatWith:
-        chatWith
-          ? String(chatWith).toUpperCase()
-          : null
-    })
-  );
-}
-
 
 function getPresence(userId) {
   const users =
@@ -706,7 +656,6 @@ function getPresence(userId) {
   );
 }
 
-
 function presenceLabel(status) {
   if (status === "active") {
     return "Active";
@@ -719,29 +668,24 @@ function presenceLabel(status) {
   return "Offline";
 }
 
-
-function updatePresence(users) {
-  window.friendChatPresence =
-    users || {};
-
-  renderFriends();
-
-  if (currentChatUserId) {
-    const status =
-      getPresence(
-        currentChatUserId
-      ).status;
-
-    const element =
-      document.getElementById(
-        "chatStatus"
-      );
-
-    if (element) {
-      element.textContent =
-        presenceLabel(status);
-    }
+function sendPresence(chatWith) {
+  if (
+    !socket ||
+    socket.readyState !==
+      WebSocket.OPEN
+  ) {
+    return;
   }
+
+  socket.send(
+    JSON.stringify({
+      type: "presence_chat",
+      chatWith:
+        chatWith
+          ? String(chatWith).toUpperCase()
+          : null
+    })
+  );
 }
 
 
@@ -750,10 +694,11 @@ function updatePresence(users) {
    ========================================================= */
 
 function getUnreadCount(friendId) {
+  const id =
+    String(friendId).toUpperCase();
+
   const list =
-    chats[
-      String(friendId).toUpperCase()
-    ] || [];
+    chats[id] || [];
 
   return list.filter(
     message =>
@@ -765,9 +710,7 @@ function getUnreadCount(friendId) {
 
 function renderFriends() {
   const list =
-    document.getElementById(
-      "friendList"
-    );
+    document.getElementById("friendList");
 
   if (!list) {
     return;
@@ -775,9 +718,8 @@ function renderFriends() {
 
   const search =
     (
-      document.getElementById(
-        "search"
-      )?.value || ""
+      document.getElementById("search")
+        ?.value || ""
     )
       .toLowerCase()
       .trim();
@@ -785,16 +727,14 @@ function renderFriends() {
   list.innerHTML = "";
 
   const filtered =
-    friends.filter(friend => {
-      return (
-        friend.name
-          .toLowerCase()
-          .includes(search) ||
-        friend.id
-          .toLowerCase()
-          .includes(search)
-      );
-    });
+    friends.filter(friend =>
+      String(friend.name)
+        .toLowerCase()
+        .includes(search) ||
+      String(friend.id)
+        .toLowerCase()
+        .includes(search)
+    );
 
   if (!filtered.length) {
     list.innerHTML = `
@@ -810,22 +750,21 @@ function renderFriends() {
   }
 
   filtered.forEach(friend => {
-    const status =
-      getPresence(friend.id)
-        .status || "offline";
-
-    const unread =
-      getUnreadCount(friend.id);
-
     const item =
       document.createElement("div");
 
     item.className =
       "friendItem";
 
-    item.onclick = function () {
+    item.onclick = () =>
       openChat(friend);
-    };
+
+    const status =
+      getPresence(friend.id).status ||
+      "offline";
+
+    const unread =
+      getUnreadCount(friend.id);
 
     item.innerHTML = `
       <div
@@ -834,15 +773,13 @@ function renderFriends() {
           width:56px;
           height:56px;
           min-width:56px;
-          min-height:56px;
           max-width:56px;
-          max-height:56px;
           border-radius:50%;
           overflow:hidden;
-          position:relative;
           display:flex;
           align-items:center;
           justify-content:center;
+          position:relative;
         "
       >
         ${escapeHtml(
@@ -857,7 +794,6 @@ function renderFriends() {
       </div>
 
       <div class="friendInfo">
-
         <div class="friendName">
           ${escapeHtml(friend.name)}
         </div>
@@ -869,7 +805,6 @@ function renderFriends() {
         <div class="presenceText ${status}">
           ${presenceLabel(status)}
         </div>
-
       </div>
 
       ${
@@ -884,17 +819,7 @@ function renderFriends() {
     `;
 
     list.appendChild(item);
-
-    loadFriendAvatarIntoItem(
-      friend.id,
-      item
-    );
   });
-}
-
-
-function searchFriends() {
-  renderFriends();
 }
 
 
@@ -909,7 +834,7 @@ async function addById() {
   const status =
     document.getElementById("addStatus");
 
-  if (!input || !status) {
+  if (!input) {
     return;
   }
 
@@ -919,8 +844,10 @@ async function addById() {
       .toUpperCase();
 
   if (!id) {
-    status.textContent =
-      "Enter a Friend ID.";
+    if (status) {
+      status.textContent =
+        "Enter a Friend ID.";
+    }
     return;
   }
 
@@ -935,7 +862,8 @@ async function addById() {
 
   if (
     friends.some(
-      friend => friend.id === id
+      friend =>
+        String(friend.id).toUpperCase() === id
     )
   ) {
     status.textContent =
@@ -957,44 +885,54 @@ async function addById() {
     const data =
       await response.json();
 
+    console.log(
+      "USER LOOKUP:",
+      data
+    );
+
     if (
       !response.ok ||
-      !data ||
-      !data.found
+      !data.found ||
+      !data.user
     ) {
       status.textContent =
         "Friend ID not found.";
       return;
     }
 
+    /* IMPORTANT:
+       SERVER RETURNS data.user.name
+    */
+
     const friend = {
-      id: String(
-        data.userId || id
-      ).toUpperCase(),
+      id:
+        String(data.user.id)
+          .toUpperCase(),
 
       name:
-        data.name || "Friend"
+        data.user.name ||
+        "Friend"
     };
 
     friends.push(friend);
 
     saveFriends();
 
-    input.value = "";
+    renderFriends();
 
     status.textContent =
       `${friend.name} added successfully.`;
 
-    renderFriends();
+    input.value = "";
 
   } catch (error) {
     console.error(
-      "Add friend error:",
+      "ADD FRIEND ERROR:",
       error
     );
 
     status.textContent =
-      "Could not find friend.";
+      "Could not connect to server.";
   }
 }
 
@@ -1009,9 +947,7 @@ function openChat(friend) {
   }
 
   currentChatUserId =
-    String(
-      friend.id
-    ).toUpperCase();
+    String(friend.id).toUpperCase();
 
   hideAllScreens();
   hideBottomNav();
@@ -1022,70 +958,83 @@ function openChat(friend) {
     );
 
   if (screen) {
-    screen.classList.remove(
-      "hidden"
-    );
+    screen.classList.remove("hidden");
   }
 
-  const name =
+  const chatName =
     document.getElementById(
       "chatName"
     );
 
-  const id =
+  const chatId =
     document.getElementById(
       "chatId"
     );
 
-  const status =
-    document.getElementById(
-      "chatStatus"
-    );
-
-  if (name) {
-    name.textContent =
+  if (chatName) {
+    chatName.textContent =
       friend.name;
   }
 
-  if (id) {
-    id.textContent =
-      friend.id;
+  if (chatId) {
+    chatId.innerHTML = `
+      ${escapeHtml(friend.id)}
+      <span
+        id="chatStatus"
+        class="muted"
+        style="margin-left:8px;"
+      >
+        ${presenceLabel(
+          getPresence(friend.id).status
+        )}
+      </span>
+    `;
   }
 
-  if (status) {
-    status.textContent =
-      presenceLabel(
-        getPresence(
-          friend.id
-        ).status
-      );
+  if (!chats[currentChatUserId]) {
+    chats[currentChatUserId] = [];
   }
+
+  /* Mark incoming messages as read */
+
+  chats[currentChatUserId].forEach(
+    message => {
+      if (
+        !message.mine &&
+        message.status !== "read"
+      ) {
+        message.status = "read";
+
+        sendRead(
+          message.id
+        );
+      }
+    }
+  );
+
+  saveChats();
 
   renderMessages();
-
-  markMessagesRead(
-    currentChatUserId
-  );
 
   sendPresence(
     currentChatUserId
   );
 
-  loadChatHeaderAvatar(
-    friend.id
-  );
+  renderFriends();
 }
 
 
 function backFromChat() {
   currentChatUserId = null;
+
   sendPresence(null);
+
   showHome();
 }
 
 
 /* =========================================================
-   SEND MESSAGE
+   SEND TEXT
    ========================================================= */
 
 function sendMessage() {
@@ -1113,13 +1062,7 @@ function sendMessage() {
   }
 
   const message = {
-    id:
-      "msg-" +
-      Date.now() +
-      "-" +
-      Math.random()
-        .toString(36)
-        .slice(2),
+    id: generateMessageId(),
 
     from:
       currentUser.id,
@@ -1127,34 +1070,27 @@ function sendMessage() {
     to:
       currentChatUserId,
 
-    text:
-      text,
+    text,
 
     time:
       Date.now(),
 
-    mine:
-      true,
+    mine: true,
 
-    status:
-      "sent",
+    status: "sent",
 
-    type:
-      "text",
+    reaction: null,
 
-    reaction:
-      null
+    type: "text"
   };
 
-  if (
-    !chats[currentChatUserId]
-  ) {
+  if (!chats[currentChatUserId]) {
     chats[currentChatUserId] = [];
   }
 
-  chats[
-    currentChatUserId
-  ].push(message);
+  chats[currentChatUserId].push(
+    message
+  );
 
   saveChats();
 
@@ -1163,31 +1099,44 @@ function sendMessage() {
   renderMessages();
 
   if (
-    socket &&
-    socket.readyState ===
+    !socket ||
+    socket.readyState !==
       WebSocket.OPEN
   ) {
-    socket.send(
-      JSON.stringify({
-        type: "chat",
-
-        messageId:
-          message.id,
-
-        from:
-          currentUser.id,
-
-        to:
-          currentChatUserId,
-
-        text:
-          text,
-
-        time:
-          message.time
-      })
+    console.log(
+      "Socket not connected."
     );
+    return;
   }
+
+  /* IMPORTANT:
+     Send BOTH id and messageId.
+     This makes it compatible with old/new server code.
+  */
+
+  socket.send(
+    JSON.stringify({
+      type: "chat",
+
+      id:
+        message.id,
+
+      messageId:
+        message.id,
+
+      from:
+        currentUser.id,
+
+      to:
+        currentChatUserId,
+
+      text:
+        text,
+
+      time:
+        message.time
+    })
+  );
 }
 
 
@@ -1201,31 +1150,29 @@ function receiveMessage(msg) {
   }
 
   const from =
-    String(
-      msg.from
-    ).toUpperCase();
+    String(msg.from)
+      .toUpperCase();
 
   const messageId =
     msg.messageId ||
     msg.id ||
-    "msg-" + Date.now();
+    generateMessageId();
 
   if (!chats[from]) {
     chats[from] = [];
   }
 
-  const exists =
+  const alreadyExists =
     chats[from].some(
       message =>
-        message.id ===
-        messageId
+        message.id === messageId
     );
 
-  if (exists) {
+  if (alreadyExists) {
     return;
   }
 
-  chats[from].push({
+  const message = {
     id:
       messageId,
 
@@ -1247,51 +1194,92 @@ function receiveMessage(msg) {
     status:
       "delivered",
 
-    type:
-      "text",
-
     reaction:
-      null
-  });
+      null,
+
+    type:
+      "text"
+  };
+
+  chats[from].push(
+    message
+  );
 
   saveChats();
+
+  /*
+    Tell sender that message reached this device.
+  */
+
+  sendDelivered(
+    messageId
+  );
 
   if (
     currentChatUserId ===
     from
   ) {
+    message.status =
+      "read";
+
+    saveChats();
+
     renderMessages();
-    markMessagesRead(from);
+
+    sendRead(
+      messageId
+    );
   } else {
     renderFriends();
-  }
-
-  if (
-    socket &&
-    socket.readyState ===
-      WebSocket.OPEN
-  ) {
-    socket.send(
-      JSON.stringify({
-        type: "delivered",
-
-        messageId:
-          messageId,
-
-        to:
-          from,
-
-        from:
-          currentUser.id
-      })
-    );
   }
 }
 
 
 /* =========================================================
-   MESSAGE STATUS
+   DELIVERY / READ
    ========================================================= */
+
+function sendDelivered(messageId) {
+  if (
+    !socket ||
+    socket.readyState !==
+      WebSocket.OPEN
+  ) {
+    return;
+  }
+
+  socket.send(
+    JSON.stringify({
+      type:
+        "delivered",
+
+      messageId:
+        messageId
+    })
+  );
+}
+
+
+function sendRead(messageId) {
+  if (
+    !socket ||
+    socket.readyState !==
+      WebSocket.OPEN
+  ) {
+    return;
+  }
+
+  socket.send(
+    JSON.stringify({
+      type:
+        "read",
+
+      messageId:
+        messageId
+    })
+  );
+}
+
 
 function updateMessageStatus(
   messageId,
@@ -1318,62 +1306,9 @@ function updateMessageStatus(
 
   if (changed) {
     saveChats();
+
     renderMessages();
   }
-}
-
-
-function markMessagesRead(
-  friendId
-) {
-  const id =
-    String(
-      friendId
-    ).toUpperCase();
-
-  const list =
-    chats[id] || [];
-
-  let changed = false;
-
-  list.forEach(message => {
-    if (
-      !message.mine &&
-      message.status !== "read"
-    ) {
-      message.status =
-        "read";
-
-      changed = true;
-
-      if (
-        socket &&
-        socket.readyState ===
-          WebSocket.OPEN
-      ) {
-        socket.send(
-          JSON.stringify({
-            type: "read",
-
-            messageId:
-              message.id,
-
-            to:
-              id,
-
-            from:
-              currentUser.id
-          })
-        );
-      }
-    }
-  });
-
-  if (changed) {
-    saveChats();
-  }
-
-  renderMessages();
 }
 
 
@@ -1397,9 +1332,8 @@ function renderMessages() {
   }
 
   const list =
-    chats[
-      currentChatUserId
-    ] || [];
+    chats[currentChatUserId] ||
+    [];
 
   container.innerHTML = "";
 
@@ -1421,66 +1355,55 @@ function renderMessages() {
     bubble.className =
       "messageBubble";
 
+
+    /* MEDIA */
+
     if (
-      message.type === "media"
+      message.type ===
+      "media"
     ) {
       if (
         message.mediaType ===
         "image"
       ) {
-        const img =
-          document.createElement("img");
-
-        img.src =
-          message.data;
-
-        img.className =
-          "chatMedia";
-
-        img.alt =
-          "Image";
-
-        bubble.appendChild(img);
-
+        bubble.innerHTML = `
+          <img
+            src="${message.data}"
+            class="chatMedia"
+            alt="Image"
+          >
+        `;
       } else {
-        const video =
-          document.createElement("video");
-
-        video.src =
-          message.data;
-
-        video.className =
-          "chatMedia";
-
-        video.controls =
-          true;
-
-        video.playsInline =
-          true;
-
-        bubble.appendChild(video);
+        bubble.innerHTML = `
+          <video
+            src="${message.data}"
+            class="chatMedia"
+            controls
+            playsinline
+          ></video>
+        `;
       }
-
     } else {
-      const text =
-        document.createElement("div");
-
-      text.textContent =
+      bubble.textContent =
         message.text || "";
-
-      bubble.appendChild(text);
     }
 
+
+    /* TIME */
+
     const time =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     time.className =
       "messageTime";
 
+    const date =
+      new Date(message.time);
+
     time.textContent =
-      new Date(
-        message.time
-      ).toLocaleTimeString(
+      date.toLocaleTimeString(
         [],
         {
           hour: "2-digit",
@@ -1488,9 +1411,14 @@ function renderMessages() {
         }
       );
 
+
+    /* DOUBLE TICK */
+
     if (message.mine) {
       const ticks =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
 
       ticks.className =
         "messageTicks";
@@ -1503,8 +1431,10 @@ function renderMessages() {
           "✓✓";
 
         ticks.style.color =
-          "black";
+          "#000000";
 
+        ticks.style.fontWeight =
+          "bold";
       } else if (
         message.status ===
         "delivered"
@@ -1512,19 +1442,36 @@ function renderMessages() {
         ticks.textContent =
           "✓✓";
 
+        ticks.style.color =
+          "#555";
       } else {
         ticks.textContent =
           "✓";
+
+        ticks.style.color =
+          "#555";
       }
 
-      time.appendChild(ticks);
+      ticks.style.marginLeft =
+        "5px";
+
+      time.appendChild(
+        ticks
+      );
     }
 
-    bubble.appendChild(time);
+    bubble.appendChild(
+      time
+    );
+
+
+    /* REACTION */
 
     if (message.reaction) {
       const reaction =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       reaction.className =
         "messageReaction";
@@ -1537,11 +1484,17 @@ function renderMessages() {
       );
     }
 
-    row.appendChild(bubble);
+
+    row.appendChild(
+      bubble
+    );
+
+
+    /* RIGHT CLICK */
 
     row.addEventListener(
       "contextmenu",
-      function (event) {
+      event => {
         event.preventDefault();
 
         openMessageMenu(
@@ -1550,31 +1503,41 @@ function renderMessages() {
       }
     );
 
+
+    /* LONG PRESS */
+
     let timer = null;
 
     row.addEventListener(
       "touchstart",
-      function () {
+      () => {
         timer =
-          setTimeout(
-            function () {
-              openMessageMenu(
-                message.id
-              );
-            },
-            500
-          );
+          setTimeout(() => {
+            openMessageMenu(
+              message.id
+            );
+          }, 500);
       }
     );
 
     row.addEventListener(
       "touchend",
-      function () {
+      () => {
         clearTimeout(timer);
       }
     );
 
-    container.appendChild(row);
+    row.addEventListener(
+      "touchmove",
+      () => {
+        clearTimeout(timer);
+      }
+    );
+
+
+    container.appendChild(
+      row
+    );
   });
 
   container.scrollTop =
@@ -1603,7 +1566,6 @@ function openMessageMenu(
     );
   }
 }
-
 
 function closeMessageMenu() {
   selectedMessageId =
@@ -1636,11 +1598,8 @@ function sendReaction(
     return;
   }
 
-  const messageId =
-    selectedMessageId;
-
   updateReaction(
-    messageId,
+    selectedMessageId,
     reaction
   );
 
@@ -1651,13 +1610,11 @@ function sendReaction(
   ) {
     socket.send(
       JSON.stringify({
-        type: "reaction",
+        type:
+          "reaction",
 
         messageId:
-          messageId,
-
-        to:
-          currentChatUserId,
+          selectedMessageId,
 
         reaction:
           reaction
@@ -1667,7 +1624,6 @@ function sendReaction(
 
   closeMessageMenu();
 }
-
 
 function updateReaction(
   messageId,
@@ -1689,6 +1645,7 @@ function updateReaction(
   );
 
   saveChats();
+
   renderMessages();
 }
 
@@ -1706,23 +1663,22 @@ function unsendMessage() {
   }
 
   const list =
-    chats[
-      currentChatUserId
-    ] || [];
+    chats[currentChatUserId] ||
+    [];
 
-  const index =
-    list.findIndex(
-      message =>
-        message.id ===
+  const message =
+    list.find(
+      item =>
+        item.id ===
         selectedMessageId
     );
 
-  if (index === -1) {
+  if (!message) {
     closeMessageMenu();
     return;
   }
 
-  if (!list[index].mine) {
+  if (!message.mine) {
     alert(
       "You can only unsend your own message."
     );
@@ -1734,10 +1690,18 @@ function unsendMessage() {
   const id =
     selectedMessageId;
 
-  list.splice(
-    index,
-    1
-  );
+  const index =
+    list.findIndex(
+      item =>
+        item.id === id
+    );
+
+  if (index !== -1) {
+    list.splice(
+      index,
+      1
+    );
+  }
 
   saveChats();
 
@@ -1748,13 +1712,11 @@ function unsendMessage() {
   ) {
     socket.send(
       JSON.stringify({
-        type: "unsend",
+        type:
+          "unsend",
 
         messageId:
-          id,
-
-        to:
-          currentChatUserId
+          id
       })
     );
   }
@@ -1777,18 +1739,17 @@ function deleteMessage() {
     return;
   }
 
-  const list =
-    chats[
-      currentChatUserId
-    ] || [];
-
   const id =
     selectedMessageId;
 
+  const list =
+    chats[currentChatUserId] ||
+    [];
+
   const index =
     list.findIndex(
-      message =>
-        message.id === id
+      item =>
+        item.id === id
     );
 
   if (index !== -1) {
@@ -1807,13 +1768,11 @@ function deleteMessage() {
   ) {
     socket.send(
       JSON.stringify({
-        type: "server_delete",
+        type:
+          "server_delete",
 
         messageId:
-          id,
-
-        to:
-          currentChatUserId
+          id
       })
     );
   }
@@ -1840,7 +1799,124 @@ function removeMessage(
   );
 
   saveChats();
+
   renderMessages();
+}
+
+
+/* =========================================================
+   EMOJI PICKER
+   ========================================================= */
+
+const FRIENDCHAT_EMOJIS = [
+  "😀","😃","😄","😁","😆","😅",
+  "😂","🤣","😊","😇","🙂","🙃",
+  "😉","😌","😍","🥰","😘","😗",
+  "😋","😛","😎","🤩","🥳","😏",
+  "😐","😑","😶","🙄","😬","🤔",
+  "😴","😷","🤗","🤭","🤫","🤥",
+  "😮","😯","😲","😳","🥺","😭",
+  "😢","😡","🤬","😱","😨","😰",
+  "👍","👎","👏","🙏","💪","❤️",
+  "🧡","💛","💚","💙","💜","🖤",
+  "🤍","🔥","✨","🎉","💯","😂"
+];
+
+function buildEmojiPicker() {
+  const picker =
+    document.getElementById(
+      "emojiPicker"
+    );
+
+  if (!picker) {
+    return;
+  }
+
+  picker.innerHTML = "";
+
+  picker.style.display =
+    "grid";
+
+  picker.style.gridTemplateColumns =
+    "repeat(8, 1fr)";
+
+  picker.style.gap =
+    "5px";
+
+  picker.style.padding =
+    "10px";
+
+  picker.style.maxHeight =
+    "220px";
+
+  picker.style.overflowY =
+    "auto";
+
+  FRIENDCHAT_EMOJIS.forEach(
+    emoji => {
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.type =
+        "button";
+
+      button.textContent =
+        emoji;
+
+      button.style.fontSize =
+        "24px";
+
+      button.style.border =
+        "none";
+
+      button.style.background =
+        "transparent";
+
+      button.style.cursor =
+        "pointer";
+
+      button.onclick = () =>
+        addEmoji(emoji);
+
+      picker.appendChild(
+        button
+      );
+    }
+  );
+}
+
+function toggleEmojiPicker() {
+  const picker =
+    document.getElementById(
+      "emojiPicker"
+    );
+
+  if (!picker) {
+    return;
+  }
+
+  buildEmojiPicker();
+
+  picker.classList.toggle(
+    "hidden"
+  );
+}
+
+function addEmoji(emoji) {
+  const input =
+    document.getElementById(
+      "messageInput"
+    );
+
+  if (!input) {
+    return;
+  }
+
+  input.value += emoji;
+
+  input.focus();
 }
 
 
@@ -1897,15 +1973,10 @@ function sendMedia() {
   const reader =
     new FileReader();
 
-  reader.onload = function () {
+  reader.onload = () => {
     const message = {
       id:
-        "media-" +
-        Date.now() +
-        "-" +
-        Math.random()
-          .toString(36)
-          .slice(2),
+        generateMessageId(),
 
       from:
         currentUser.id,
@@ -1940,21 +2011,16 @@ function sendMedia() {
         null
     };
 
-    if (
-      !chats[
-        currentChatUserId
-      ]
-    ) {
-      chats[
-        currentChatUserId
-      ] = [];
+    if (!chats[currentChatUserId]) {
+      chats[currentChatUserId] = [];
     }
 
-    chats[
-      currentChatUserId
-    ].push(message);
+    chats[currentChatUserId].push(
+      message
+    );
 
     saveChats();
+
     renderMessages();
 
     if (
@@ -1964,7 +2030,11 @@ function sendMedia() {
     ) {
       socket.send(
         JSON.stringify({
-          type: "media",
+          type:
+            "media",
+
+          id:
+            message.id,
 
           messageId:
             message.id,
@@ -1988,10 +2058,6 @@ function sendMedia() {
             message.data
         })
       );
-    } else {
-      alert(
-        "Server is not connected."
-      );
     }
 
     input.value = "";
@@ -2002,19 +2068,14 @@ function sendMedia() {
 
 
 function receiveMedia(msg) {
-  if (!currentUser) {
-    return;
-  }
-
   const from =
-    String(
-      msg.from
-    ).toUpperCase();
+    String(msg.from)
+      .toUpperCase();
 
   const id =
     msg.messageId ||
     msg.id ||
-    "media-" + Date.now();
+    generateMessageId();
 
   if (!chats[from]) {
     chats[from] = [];
@@ -2030,20 +2091,24 @@ function receiveMedia(msg) {
   }
 
   chats[from].push({
-    id: id,
+    id,
 
-    from: from,
+    from,
 
-    to: currentUser.id,
+    to:
+      currentUser.id,
 
     time:
       msg.time || Date.now(),
 
-    mine: false,
+    mine:
+      false,
 
-    status: "delivered",
+    status:
+      "delivered",
 
-    type: "media",
+    type:
+      "media",
 
     mediaType:
       msg.mediaType,
@@ -2054,74 +2119,54 @@ function receiveMedia(msg) {
     data:
       msg.data,
 
-    reaction: null
+    reaction:
+      null
   });
 
   saveChats();
+
+  sendDelivered(id);
 
   if (
     currentChatUserId ===
     from
   ) {
-    renderMessages();
-    markMessagesRead(from);
+    markCurrentMessageRead(id);
   } else {
     renderFriends();
   }
+}
 
-  if (
-    socket &&
-    socket.readyState ===
-      WebSocket.OPEN
-  ) {
-    socket.send(
-      JSON.stringify({
-        type: "delivered",
+function markCurrentMessageRead(id) {
+  const list =
+    chats[currentChatUserId] ||
+    [];
 
-        messageId:
-          id,
-
-        to:
-          from,
-
-        from:
-          currentUser.id
-      })
+  const message =
+    list.find(
+      item =>
+        item.id === id
     );
+
+  if (message) {
+    message.status =
+      "read";
   }
+
+  saveChats();
+
+  renderMessages();
+
+  sendRead(id);
 }
 
 
 /* =========================================================
-   EMOJI
+   SEARCH
    ========================================================= */
 
-function toggleEmojiPicker() {
-  const picker =
-    document.getElementById(
-      "emojiPicker"
-    );
-
-  if (picker) {
-    picker.classList.toggle(
-      "hidden"
-    );
-  }
-}
-
-
-function addEmoji(emoji) {
-  const input =
-    document.getElementById(
-      "messageInput"
-    );
-
-  if (!input) {
-    return;
-  }
-
-  input.value += emoji;
-  input.focus();
+function searchFriends() {
+  renderFriends();
 }
 
 
@@ -2141,12 +2186,13 @@ function setupMessageInput() {
 
   input.addEventListener(
     "keydown",
-    function (event) {
+    event => {
       if (
         event.key === "Enter" &&
         !event.shiftKey
       ) {
         event.preventDefault();
+
         sendMessage();
       }
     }
@@ -2155,171 +2201,67 @@ function setupMessageInput() {
 
 
 /* =========================================================
-   PROFILE DATABASE
+   ADD SCREEN
    ========================================================= */
 
-const PROFILE_DB_NAME =
-  "FriendChatProfileDB";
+function showAddFriendTab() {
+  const friendTab =
+    document.getElementById(
+      "addFriendTab"
+    );
 
-const PROFILE_DB_VERSION = 1;
+  const groupTab =
+    document.getElementById(
+      "joinGroupTab"
+    );
 
-const PROFILE_STORE =
-  "profileMedia";
+  if (friendTab) {
+    friendTab.classList.remove(
+      "hidden"
+    );
+  }
 
-
-function openProfileDB() {
-  return new Promise(
-    function (resolve, reject) {
-      const request =
-        indexedDB.open(
-          PROFILE_DB_NAME,
-          PROFILE_DB_VERSION
-        );
-
-      request.onupgradeneeded =
-        function (event) {
-          const db =
-            event.target.result;
-
-          if (
-            !db.objectStoreNames.contains(
-              PROFILE_STORE
-            )
-          ) {
-            db.createObjectStore(
-              PROFILE_STORE,
-              {
-                keyPath: "id"
-              }
-            );
-          }
-        };
-
-      request.onsuccess =
-        function () {
-          resolve(
-            request.result
-          );
-        };
-
-      request.onerror =
-        function () {
-          reject(
-            request.error
-          );
-        };
-    }
-  );
+  if (groupTab) {
+    groupTab.classList.add(
+      "hidden"
+    );
+  }
 }
 
+function showJoinGroupTab() {
+  const friendTab =
+    document.getElementById(
+      "addFriendTab"
+    );
 
-async function saveProfileMediaLocal(
-  media
-) {
-  const db =
-    await openProfileDB();
+  const groupTab =
+    document.getElementById(
+      "joinGroupTab"
+    );
 
-  return new Promise(
-    function (resolve, reject) {
-      const tx =
-        db.transaction(
-          PROFILE_STORE,
-          "readwrite"
-        );
+  if (friendTab) {
+    friendTab.classList.add(
+      "hidden"
+    );
+  }
 
-      tx.objectStore(
-        PROFILE_STORE
-      ).put(media);
-
-      tx.oncomplete =
-        function () {
-          db.close();
-          resolve();
-        };
-
-      tx.onerror =
-        function () {
-          db.close();
-          reject(tx.error);
-        };
-    }
-  );
+  if (groupTab) {
+    groupTab.classList.remove(
+      "hidden"
+    );
+  }
 }
 
+function joinGroup() {
+  const status =
+    document.getElementById(
+      "addStatus"
+    );
 
-async function getProfileMediaLocal(
-  id
-) {
-  const db =
-    await openProfileDB();
-
-  return new Promise(
-    function (resolve, reject) {
-      const tx =
-        db.transaction(
-          PROFILE_STORE,
-          "readonly"
-        );
-
-      const request =
-        tx.objectStore(
-          PROFILE_STORE
-        ).get(id);
-
-      request.onsuccess =
-        function () {
-          const result =
-            request.result;
-
-          db.close();
-
-          resolve(result);
-        };
-
-      request.onerror =
-        function () {
-          db.close();
-          reject(request.error);
-        };
-    }
-  );
-}
-
-
-async function getAllProfileMediaLocal() {
-  const db =
-    await openProfileDB();
-
-  return new Promise(
-    function (resolve, reject) {
-      const tx =
-        db.transaction(
-          PROFILE_STORE,
-          "readonly"
-        );
-
-      const request =
-        tx.objectStore(
-          PROFILE_STORE
-        ).getAll();
-
-      request.onsuccess =
-        function () {
-          const result =
-            request.result || [];
-
-          db.close();
-
-          resolve(result);
-        };
-
-      request.onerror =
-        function () {
-          db.close();
-          reject(request.error);
-        };
-    }
-  );
+  if (status) {
+    status.textContent =
+      "Group feature is coming soon.";
+  }
 }
 
 
@@ -2365,499 +2307,27 @@ function showProfile() {
     id.textContent =
       currentUser.id;
   }
-
-  loadProfilePhoto();
-  renderProfileMedia();
 }
-
-
-/* =========================================================
-   PROFILE PHOTO
-   ========================================================= */
-
-async function changeProfilePhoto() {
-  const input =
-    document.getElementById(
-      "profilePhotoInput"
-    );
-
-  if (!input || !currentUser) {
-    return;
-  }
-
-  const file =
-    input.files[0];
-
-  if (!file) {
-    return;
-  }
-
-  if (
-    !file.type.startsWith("image/")
-  ) {
-    alert(
-      "Please select an image."
-    );
-
-    input.value = "";
-    return;
-  }
-
-  if (
-    file.size >
-    10 * 1024 * 1024
-  ) {
-    alert(
-      "Profile photo must be under 10 MB."
-    );
-
-    input.value = "";
-    return;
-  }
-
-  await saveProfileMediaLocal({
-    id:
-      "profile-photo-" +
-      currentUser.id,
-
-    owner:
-      currentUser.id,
-
-    type:
-      "profilePhoto",
-
-    mimeType:
-      file.type,
-
-    file:
-      file,
-
-    time:
-      Date.now()
-  });
-
-  await loadProfilePhoto();
-
-  if (
-    socket &&
-    socket.readyState ===
-      WebSocket.OPEN
-  ) {
-    const reader =
-      new FileReader();
-
-    reader.onload =
-      function () {
-        socket.send(
-          JSON.stringify({
-            type:
-              "profile_photo",
-
-            userId:
-              currentUser.id,
-
-            name:
-              currentUser.name,
-
-            mimeType:
-              file.type,
-
-            data:
-              reader.result,
-
-            photo:
-              reader.result,
-
-            time:
-              Date.now()
-          })
-        );
-      };
-
-    reader.readAsDataURL(file);
-  }
-
-  input.value = "";
-}
-
-
-async function loadProfilePhoto() {
-  if (!currentUser) {
-    return;
-  }
-
-  let item = null;
-
-  try {
-    item =
-      await getProfileMediaLocal(
-        "profile-photo-" +
-        currentUser.id
-      );
-  } catch (e) {
-    console.error(
-      "Profile photo error:",
-      e
-    );
-  }
-
-  const initial =
-    currentUser.name
-      ? currentUser.name
-          .charAt(0)
-          .toUpperCase()
-      : "?";
-
-  const large =
-    document.getElementById(
-      "profilePhotoLarge"
-    );
-
-  const circle =
-    document.getElementById(
-      "profileCircle"
-    );
-
-  if (large) {
-    large.style.width = "110px";
-    large.style.height = "110px";
-    large.style.minWidth = "110px";
-    large.style.minHeight = "110px";
-    large.style.maxWidth = "110px";
-    large.style.maxHeight = "110px";
-    large.style.borderRadius = "50%";
-    large.style.overflow = "hidden";
-
-    if (item && item.file) {
-      const url =
-        URL.createObjectURL(
-          item.file
-        );
-
-      large.innerHTML = `
-        <img
-          src="${url}"
-          style="
-            width:110px;
-            height:110px;
-            object-fit:cover;
-            border-radius:50%;
-            display:block;
-          "
-        >
-      `;
-    } else {
-      large.textContent =
-        initial;
-    }
-  }
-
-  if (circle) {
-    circle.style.width = "56px";
-    circle.style.height = "56px";
-    circle.style.minWidth = "56px";
-    circle.style.minHeight = "56px";
-    circle.style.maxWidth = "56px";
-    circle.style.maxHeight = "56px";
-    circle.style.borderRadius = "50%";
-    circle.style.overflow = "hidden";
-
-    if (item && item.file) {
-      const url =
-        URL.createObjectURL(
-          item.file
-        );
-
-      circle.innerHTML = `
-        <img
-          src="${url}"
-          style="
-            width:56px;
-            height:56px;
-            object-fit:cover;
-            border-radius:50%;
-            display:block;
-          "
-        >
-      `;
-    } else {
-      circle.textContent =
-        initial;
-    }
-  }
-}
-
-
-/* =========================================================
-   FRIEND PROFILE PHOTO
-   ========================================================= */
-
-async function receiveProfilePhoto(msg) {
-  if (!msg || !msg.userId) {
-    return;
-  }
-
-  const userId =
-    String(
-      msg.userId
-    ).toUpperCase();
-
-  if (
-    currentUser &&
-    userId ===
-      String(
-        currentUser.id
-      ).toUpperCase()
-  ) {
-    return;
-  }
-
-  const isFriend =
-    friends.some(
-      friend =>
-        String(friend.id).toUpperCase() ===
-        userId
-    );
-
-  if (!isFriend) {
-    return;
-  }
-
-  const data =
-    msg.data ||
-    msg.photo;
-
-  if (!data) {
-    return;
-  }
-
-  try {
-    const response =
-      await fetch(data);
-
-    const blob =
-      await response.blob();
-
-    const friend =
-      friends.find(
-        item =>
-          String(item.id).toUpperCase() ===
-          userId
-      );
-
-    await saveProfileMediaLocal({
-      id:
-        "friend-profile-photo-" +
-        userId,
-
-      owner:
-        userId,
-
-      type:
-        "profilePhoto",
-
-      mimeType:
-        msg.mimeType ||
-        blob.type ||
-        "image/jpeg",
-
-      name:
-        msg.name ||
-        (friend
-          ? friend.name
-          : "Friend"),
-
-      file:
-        blob,
-
-      time:
-        msg.time ||
-        Date.now()
-    });
-
-    renderFriends();
-
-    if (
-      currentChatUserId ===
-      userId
-    ) {
-      loadChatHeaderAvatar(
-        userId
-      );
-    }
-
-  } catch (error) {
-    console.error(
-      "Friend photo error:",
-      error
-    );
-  }
-}
-
-
-async function getFriendProfilePhoto(
-  friendId
-) {
-  if (!friendId) {
-    return null;
-  }
-
-  try {
-    return await getProfileMediaLocal(
-      "friend-profile-photo-" +
-      String(friendId).toUpperCase()
-    );
-  } catch (e) {
-    return null;
-  }
-}
-
-
-async function loadFriendAvatarIntoItem(
-  friendId,
-  item
-) {
-  if (!item) {
-    return;
-  }
-
-  try {
-    const profile =
-      await getFriendProfilePhoto(
-        friendId
-      );
-
-    const avatar =
-      item.querySelector(
-        ".friendAvatar"
-      );
-
-    if (
-      !avatar ||
-      !profile ||
-      !profile.file
-    ) {
-      return;
-    }
-
-    const url =
-      URL.createObjectURL(
-        profile.file
-      );
-
-    avatar.innerHTML = `
-      <img
-        src="${url}"
-        style="
-          width:56px;
-          height:56px;
-          object-fit:cover;
-          border-radius:50%;
-          display:block;
-        "
-      >
-    `;
-
-  } catch (error) {
-    console.error(
-      "Friend avatar error:",
-      error
-    );
-  }
-}
-
-
-async function loadChatHeaderAvatar(
-  friendId
-) {
-  const holder =
-    document.getElementById(
-      "chatProfileCircle"
-    );
-
-  if (!holder) {
-    return;
-  }
-
-  const friend =
-    friends.find(
-      item =>
-        String(item.id).toUpperCase() ===
-        String(friendId).toUpperCase()
-    );
-
-  holder.style.width = "44px";
-  holder.style.height = "44px";
-  holder.style.minWidth = "44px";
-  holder.style.minHeight = "44px";
-  holder.style.maxWidth = "44px";
-  holder.style.maxHeight = "44px";
-  holder.style.borderRadius = "50%";
-  holder.style.overflow = "hidden";
-
-  holder.textContent =
-    friend
-      ? friend.name
-          .charAt(0)
-          .toUpperCase()
-      : "?";
-
-  const profile =
-    await getFriendProfilePhoto(
-      friendId
-    );
-
-  if (!profile || !profile.file) {
-    return;
-  }
-
-  const url =
-    URL.createObjectURL(
-      profile.file
-    );
-
-  holder.innerHTML = `
-    <img
-      src="${url}"
-      style="
-        width:44px;
-        height:44px;
-        object-fit:cover;
-        border-radius:50%;
-        display:block;
-      "
-    >
-  `;
-}
-
-
-/* =========================================================
-   EDIT PROFILE NAME
-   ========================================================= */
 
 function editProfileName() {
   if (!currentUser) {
     return;
   }
 
-  const value =
+  const newName =
     prompt(
       "Enter your new name:",
       currentUser.name
     );
 
-  if (value === null) {
+  if (newName === null) {
     return;
   }
 
   const name =
-    value.trim();
+    newName.trim();
 
   if (!name) {
-    alert(
-      "Name cannot be empty."
-    );
-
     return;
   }
 
@@ -2887,7 +2357,8 @@ function editProfileName() {
   ) {
     socket.send(
       JSON.stringify({
-        type: "register",
+        type:
+          "register",
 
         userId:
           currentUser.id,
@@ -2897,218 +2368,6 @@ function editProfileName() {
       })
     );
   }
-}
-
-
-/* =========================================================
-   PROFILE MEDIA
-   ========================================================= */
-
-async function uploadProfileMedia() {
-  const input =
-    document.getElementById(
-      "profileMediaInput"
-    );
-
-  if (!input || !currentUser) {
-    return;
-  }
-
-  const file =
-    input.files[0];
-
-  if (!file) {
-    return;
-  }
-
-  if (
-    !file.type.startsWith("image/") &&
-    !file.type.startsWith("video/")
-  ) {
-    alert(
-      "Please select an image or video."
-    );
-
-    input.value = "";
-    return;
-  }
-
-  if (
-    file.size >
-    50 * 1024 * 1024
-  ) {
-    alert(
-      "Media must be under 50 MB."
-    );
-
-    input.value = "";
-    return;
-  }
-
-  const answer =
-    prompt(
-      "Who can see this?\n\nType PUBLIC or FRIENDS",
-      "FRIENDS"
-    );
-
-  if (!answer) {
-    input.value = "";
-    return;
-  }
-
-  const visibility =
-    answer.trim().toLowerCase();
-
-  if (
-    visibility !== "public" &&
-    visibility !== "friends"
-  ) {
-    alert(
-      "Type PUBLIC or FRIENDS."
-    );
-
-    input.value = "";
-    return;
-  }
-
-  await saveProfileMediaLocal({
-    id:
-      "profile-media-" +
-      currentUser.id +
-      "-" +
-      Date.now(),
-
-    owner:
-      currentUser.id,
-
-    type:
-      file.type.startsWith("image/")
-        ? "image"
-        : "video",
-
-    mimeType:
-      file.type,
-
-    name:
-      file.name,
-
-    size:
-      file.size,
-
-    visibility:
-      visibility,
-
-    file:
-      file,
-
-    time:
-      Date.now()
-  });
-
-  await renderProfileMedia();
-
-  input.value = "";
-}
-
-
-async function renderProfileMedia() {
-  const grid =
-    document.getElementById(
-      "profileMediaGrid"
-    );
-
-  if (!grid || !currentUser) {
-    return;
-  }
-
-  let all = [];
-
-  try {
-    all =
-      await getAllProfileMediaLocal();
-  } catch (e) {
-    console.error(
-      "Profile media error:",
-      e
-    );
-
-    return;
-  }
-
-  const media =
-    all.filter(
-      item =>
-        item.owner ===
-          currentUser.id &&
-        item.type !==
-          "profilePhoto"
-    );
-
-  if (!media.length) {
-    grid.innerHTML = `
-      <p class="muted">
-        No media uploaded yet.
-      </p>
-    `;
-
-    return;
-  }
-
-  grid.innerHTML = "";
-
-  media.forEach(item => {
-    if (!item.file) {
-      return;
-    }
-
-    const url =
-      URL.createObjectURL(
-        item.file
-      );
-
-    const div =
-      document.createElement("div");
-
-    div.className =
-      "profileMediaItem";
-
-    if (
-      item.type === "image"
-    ) {
-      div.innerHTML = `
-        <img
-          src="${url}"
-          alt="Profile media"
-        >
-
-        <span class="mediaPrivacy">
-          ${
-            item.visibility === "public"
-              ? "🌎 Public"
-              : "👥 Friends"
-          }
-        </span>
-      `;
-    } else {
-      div.innerHTML = `
-        <video
-          src="${url}"
-          controls
-          playsinline
-        ></video>
-
-        <span class="mediaPrivacy">
-          ${
-            item.visibility === "public"
-              ? "🌎 Public"
-              : "👥 Friends"
-          }
-        </span>
-      `;
-    }
-
-    grid.appendChild(div);
-  });
 }
 
 
@@ -3131,180 +2390,12 @@ function toggleStatusInfo() {
 
 
 /* =========================================================
-   ADD TABS
-   ========================================================= */
-
-function showAddFriendTab() {
-  const friendTab =
-    document.getElementById(
-      "addFriendTab"
-    );
-
-  const groupTab =
-    document.getElementById(
-      "joinGroupTab"
-    );
-
-  if (friendTab) {
-    friendTab.classList.remove(
-      "hidden"
-    );
-  }
-
-  if (groupTab) {
-    groupTab.classList.add(
-      "hidden"
-    );
-  }
-}
-
-
-function showJoinGroupTab() {
-  const friendTab =
-    document.getElementById(
-      "addFriendTab"
-    );
-
-  const groupTab =
-    document.getElementById(
-      "joinGroupTab"
-    );
-
-  if (friendTab) {
-    friendTab.classList.add(
-      "hidden"
-    );
-  }
-
-  if (groupTab) {
-    groupTab.classList.remove(
-      "hidden"
-    );
-  }
-}
-
-
-function joinGroup() {
-  const status =
-    document.getElementById(
-      "addStatus"
-    );
-
-  if (status) {
-    status.textContent =
-      "Group feature is coming soon.";
-  }
-}
-
-
-/* =========================================================
-   PROFILE PHOTO REFRESH
-   ========================================================= */
-
-async function refreshFriendPhotos() {
-  for (const friend of friends) {
-    try {
-      const existing =
-        await getFriendProfilePhoto(
-          friend.id
-        );
-
-      if (existing) {
-        continue;
-      }
-
-      const protocol =
-        location.protocol === "https:"
-          ? "https:"
-          : "http:";
-
-      const response =
-        await fetch(
-          `${protocol}//${location.host}/api/profile-photo/${encodeURIComponent(friend.id)}`
-        );
-
-      if (!response.ok) {
-        continue;
-      }
-
-      const result =
-        await response.json();
-
-      if (
-        !result ||
-        !result.found ||
-        !result.photo
-      ) {
-        continue;
-      }
-
-      const data =
-        result.photo.data ||
-        result.photo.photo;
-
-      if (!data) {
-        continue;
-      }
-
-      const blob =
-        await (
-          await fetch(data)
-        ).blob();
-
-      await saveProfileMediaLocal({
-        id:
-          "friend-profile-photo-" +
-          friend.id,
-
-        owner:
-          friend.id,
-
-        type:
-          "profilePhoto",
-
-        mimeType:
-          result.photo.mimeType ||
-          blob.type ||
-          "image/jpeg",
-
-        name:
-          result.photo.name ||
-          friend.name,
-
-        file:
-          blob,
-
-        time:
-          result.photo.time ||
-          Date.now()
-      });
-
-    } catch (e) {
-      console.error(
-        "Friend photo refresh error:",
-        e
-      );
-    }
-  }
-
-  renderFriends();
-}
-
-
-/* =========================================================
-   ENTER KEY
-   ========================================================= */
-
-setupMessageInput;
-
-
-/* =========================================================
-   CLICK OUTSIDE MESSAGE MENU
+   MESSAGE MENU OUTSIDE CLICK
    ========================================================= */
 
 document.addEventListener(
   "click",
-  function (event) {
+  event => {
     const menu =
       document.getElementById(
         "messageMenu"
@@ -3331,42 +2422,194 @@ document.addEventListener(
 
 
 /* =========================================================
-   INITIALIZATION
+   PROFILE PHOTO PLACEHOLDER FUNCTIONS
+   ========================================================= */
+
+function changeProfilePhoto() {
+  const input =
+    document.getElementById(
+      "profilePhotoInput"
+    );
+
+  if (!input || !input.files[0]) {
+    return;
+  }
+
+  const file =
+    input.files[0];
+
+  if (
+    !file.type.startsWith(
+      "image/"
+    )
+  ) {
+    alert(
+      "Please select an image."
+    );
+
+    input.value = "";
+    return;
+  }
+
+  const reader =
+    new FileReader();
+
+  reader.onload = () => {
+    const circle =
+      document.getElementById(
+        "profileCircle"
+      );
+
+    const large =
+      document.getElementById(
+        "profilePhotoLarge"
+      );
+
+    const html = `
+      <img
+        src="${reader.result}"
+        style="
+          width:100%;
+          height:100%;
+          object-fit:cover;
+          border-radius:50%;
+          display:block;
+        "
+      >
+    `;
+
+    if (circle) {
+      circle.innerHTML =
+        html;
+    }
+
+    if (large) {
+      large.innerHTML =
+        html;
+    }
+
+    /*
+      Send photo to server.
+    */
+
+    if (
+      socket &&
+      socket.readyState ===
+        WebSocket.OPEN
+    ) {
+      socket.send(
+        JSON.stringify({
+          type:
+            "profile_photo",
+
+          userId:
+            currentUser.id,
+
+          name:
+            currentUser.name,
+
+          mimeType:
+            file.type,
+
+          data:
+            reader.result,
+
+          time:
+            Date.now()
+        })
+      );
+    }
+
+    input.value = "";
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function receiveProfilePhoto(msg) {
+  if (!msg) {
+    return;
+  }
+
+  /*
+    Refresh friend list.
+    The actual image can be retrieved
+    from the server when needed.
+  */
+
+  renderFriends();
+}
+
+
+/* =========================================================
+   PROFILE MEDIA PLACEHOLDER
+   ========================================================= */
+
+function uploadProfileMedia() {
+  const input =
+    document.getElementById(
+      "profileMediaInput"
+    );
+
+  if (!input || !input.files[0]) {
+    return;
+  }
+
+  alert(
+    "Profile media upload will be added separately."
+  );
+
+  input.value = "";
+}
+
+
+/* =========================================================
+   CALL PLACEHOLDERS
+   ========================================================= */
+
+function startVoiceCall(friendId) {
+  alert(
+    "Voice calling is not enabled yet."
+  );
+}
+
+function startVideoCall(friendId) {
+  alert(
+    "Video calling is not enabled yet."
+  );
+}
+
+function endCall() {}
+
+function acceptCall() {}
+
+function rejectCall() {}
+
+
+/* =========================================================
+   INITIALIZE
    ========================================================= */
 
 function initializeFriendChat() {
-  console.log(
-    "FriendChat starting..."
-  );
-
   currentUser =
     loadAccount();
 
   loadFriends();
   loadChats();
 
+  setupMessageInput();
+
   if (currentUser) {
     updateHome();
-    connectSocket();
-    showHome();
 
-    setTimeout(
-      function () {
-        refreshFriendPhotos();
-      },
-      1000
-    );
+    connectSocket();
+
+    showHome();
   } else {
     showLogin();
   }
-
-  setupMessageInput();
 }
 
-
-/* =========================================================
-   START
-   ========================================================= */
 
 if (
   document.readyState ===
@@ -3378,43 +2621,4 @@ if (
   );
 } else {
   initializeFriendChat();
-}
-
-
-/* =========================================================
-   SAFE PLACEHOLDERS
-   ========================================================= */
-
-function startVoiceCall(friendId) {
-  alert(
-    "Voice calling will be added next."
-  );
-}
-
-
-function startVideoCall(friendId) {
-  alert(
-    "Video calling will be added next."
-  );
-}
-
-
-function endCall() {
-  console.log(
-    "No active call."
-  );
-}
-
-
-function acceptCall() {
-  console.log(
-    "No incoming call."
-  );
-}
-
-
-function rejectCall() {
-  console.log(
-    "No incoming call."
-  );
 }
