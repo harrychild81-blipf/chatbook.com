@@ -2579,13 +2579,12 @@ async function changeProfilePhoto() {
     );
   }
 
-  input.value = "";
+input.value = "";
 }  }
 
 
   /* =====================================================
      PRIVACY
-     ===================================================== */
 
   const privacy =
     prompt(
