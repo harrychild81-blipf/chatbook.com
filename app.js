@@ -2584,13 +2584,119 @@ input.value = "";
 
 
   /* =====================================================
-     PRIVACY
+   /* =========================================================
+   CHANGE PROFILE PHOTO
+   ========================================================= */
 
-  const privacy =
-    prompt(
-      "Who can see this?\n\nType PUBLIC or FRIENDS",
-      "FRIENDS"
-    );
+async function changeProfilePhoto() {
+  const input = document.getElementById("profilePhotoInput");
+
+  if (!input || !currentUser) {
+    return;
+  }
+
+  const file = input.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  if (!file.type.startsWith("image/")) {
+    alert("Please select an image.");
+    input.value = "";
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    alert("Profile photo must be under 10 MB.");
+    input.value = "";
+    return;
+  }
+
+  const id = "profile-photo-" + currentUser.id;
+
+  await saveProfileMediaLocal({
+    id: id,
+    owner: currentUser.id,
+    type: "profilePhoto",
+    mimeType: file.type,
+    file: file,
+    time: Date.now()
+  });
+
+  await loadProfilePhoto();
+
+  if (
+    socket &&
+    socket.readyState === WebSocket.OPEN
+  ) {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      try {
+        socket.send(
+          JSON.stringify({
+            type: "profile_photo",
+            userId: currentUser.id,
+            name: currentUser.name,
+            mimeType: file.type,
+            photo: reader.result,
+            data: reader.result,
+            time: Date.now()
+          })
+        );
+      } catch (error) {
+        console.error(
+          "Profile photo send error:",
+          error
+        );
+      }
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  input.value = "";
+}
+
+
+/* =========================================================
+   UPLOAD PROFILE MEDIA
+   ========================================================= */
+
+async function uploadProfileMedia() {
+  const input =
+    document.getElementById("profileMediaInput");
+
+  if (!input || !currentUser) {
+    return;
+  }
+
+  const file = input.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  if (
+    !file.type.startsWith("image/") &&
+    !file.type.startsWith("video/")
+  ) {
+    alert("Please select an image or video.");
+    input.value = "";
+    return;
+  }
+
+  if (file.size > 50 * 1024 * 1024) {
+    alert("Media must be under 50 MB.");
+    input.value = "";
+    return;
+  }
+
+  const privacy = prompt(
+    "Who can see this?\n\nType PUBLIC or FRIENDS",
+    "FRIENDS"
+  );
 
   if (!privacy) {
     input.value = "";
@@ -2598,26 +2704,16 @@ input.value = "";
   }
 
   const privacyText =
-    privacy
-      .trim()
-      .toLowerCase();
+    privacy.trim().toLowerCase();
 
   let visibility = null;
 
-  if (
-    privacyText ===
-    "public"
-  ) {
-    visibility =
-      "public";
+  if (privacyText === "public") {
+    visibility = "public";
   }
 
-  if (
-    privacyText ===
-    "friends"
-  ) {
-    visibility =
-      "friends";
+  if (privacyText === "friends") {
+    visibility = "friends";
   }
 
   if (!visibility) {
@@ -2626,10 +2722,8 @@ input.value = "";
     );
 
     input.value = "";
-
     return;
   }
-
 
   const id =
     "profile-media-" +
@@ -2637,13 +2731,105 @@ input.value = "";
     "-" +
     Date.now();
 
-
-  /* =====================================================
-     SAVE LOCALLY
-     ===================================================== */
-
   await saveProfileMediaLocal({
     id: id,
+    owner: currentUser.id,
+
+    type: file.type.startsWith("image/")
+      ? "image"
+      : "video",
+
+    mimeType: file.type,
+    name: file.name,
+    size: file.size,
+    visibility: visibility,
+    file: file,
+    time: Date.now()
+  });
+
+  await renderProfileMedia();
+
+  input.value = "";
+}
+
+
+/* =========================================================
+   DISPLAY PROFILE MEDIA
+   ========================================================= */
+
+async function renderProfileMedia() {
+  const grid =
+    document.getElementById(
+      "profileMediaGrid"
+    );
+
+  if (!grid || !currentUser) {
+    return;
+  }
+
+  const all =
+    await getAllProfileMediaLocal();
+
+  const media =
+    all.filter(item =>
+      item.owner === currentUser.id &&
+      item.type !== "profilePhoto"
+    );
+
+  if (!media.length) {
+    grid.innerHTML =
+      `<p class="muted">No media uploaded yet.</p>`;
+    return;
+  }
+
+  grid.innerHTML = "";
+
+  for (const item of media) {
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "profileMediaItem";
+
+    const url =
+      URL.createObjectURL(item.file);
+
+    if (item.type === "image") {
+      div.innerHTML = `
+        <img
+          src="${url}"
+          alt="Profile media"
+        >
+
+        <span class="mediaPrivacy">
+          ${
+            item.visibility === "public"
+              ? "🌎 Public"
+              : "👥 Friends"
+          }
+        </span>
+      `;
+    } else {
+      div.innerHTML = `
+        <video
+          src="${url}"
+          controls
+          preload="metadata"
+        ></video>
+
+        <span class="mediaPrivacy">
+          ${
+            item.visibility === "public"
+              ? "🌎 Public"
+              : "👥 Friends"
+          }
+        </span>
+      `;
+    }
+
+    grid.appendChild(div);
+  }
+}
 
     owner:
       currentUser.id,
