@@ -1,6 +1,9 @@
 /* =========================================================
    FRIENDCHAT - COMPLETE APP.JS
-   FEATURES 1 - 11
+   ========================================================= */
+
+/* =========================================================
+   SERVER CONNECTION
    ========================================================= */
 
 const API =
@@ -8,19 +11,19 @@ const API =
     ? `wss://${location.host}`
     : `ws://${location.hostname}:8080`;
 
+let socket = null;
+
 
 /* =========================================================
-   STATE
+   APP STATE
    ========================================================= */
 
-let socket = null;
 let currentUser = null;
 let friends = [];
-let chats = {};
 let currentChatUserId = null;
 let selectedMessageId = null;
 
-const presenceState = {};
+let chats = {};
 
 
 /* =========================================================
@@ -87,17 +90,8 @@ function saveChats() {
 
 
 /* =========================================================
-   SCREEN CONTROL
+   BOTTOM NAVIGATION
    ========================================================= */
-
-function hideAllScreens() {
-  document
-    .querySelectorAll(".screen")
-    .forEach(screen => {
-      screen.classList.add("hidden");
-    });
-}
-
 
 function showBottomNav() {
   const nav =
@@ -116,6 +110,19 @@ function hideBottomNav() {
   if (nav) {
     nav.classList.add("hidden");
   }
+}
+
+
+/* =========================================================
+   SCREEN HELPERS
+   ========================================================= */
+
+function hideAllScreens() {
+  document
+    .querySelectorAll(".screen")
+    .forEach(screen => {
+      screen.classList.add("hidden");
+    });
 }
 
 
@@ -178,18 +185,17 @@ function showAdd() {
 
 
 /* =========================================================
-   FRIEND ID
+   ACCOUNT
    ========================================================= */
 
 function generateFriendId() {
-
   const chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-  let result = "";
+  let code = "";
 
   for (let i = 0; i < 6; i++) {
-    result +=
+    code +=
       chars[
         Math.floor(
           Math.random() * chars.length
@@ -197,7 +203,7 @@ function generateFriendId() {
       ];
   }
 
-  return "FC-" + result;
+  return "FC-" + code;
 }
 
 
@@ -206,135 +212,66 @@ function generateFriendId() {
    ========================================================= */
 
 function signup() {
+  const name =
+    document
+      .getElementById("signupName")
+      .value
+      .trim();
 
-  try {
+  const email =
+    document
+      .getElementById("signupEmail")
+      .value
+      .trim();
 
-    const nameInput =
-      document.getElementById(
-        "signupName"
-      );
+  const password =
+    document
+      .getElementById("signupPassword")
+      .value;
 
-    const emailInput =
-      document.getElementById(
-        "signupEmail"
-      );
-
-    const passwordInput =
-      document.getElementById(
-        "signupPassword"
-      );
-
-    const status =
-      document.getElementById(
-        "signupStatus"
-      );
-
-
-    if (
-      !nameInput ||
-      !emailInput ||
-      !passwordInput
-    ) {
-
-      if (status) {
-        status.textContent =
-          "Signup form error.";
-      }
-
-      return;
-    }
-
-
-    const name =
-      nameInput.value.trim();
-
-    const email =
-      emailInput.value.trim();
-
-    const password =
-      passwordInput.value;
-
-
-    if (!name) {
-      status.textContent =
-        "Enter your name.";
-      return;
-    }
-
-
-    if (
-      !email ||
-      !email.includes("@")
-    ) {
-      status.textContent =
-        "Enter a valid email.";
-      return;
-    }
-
-
-    if (
-      password.length < 6
-    ) {
-      status.textContent =
-        "Password must be at least 6 characters.";
-      return;
-    }
-
-
-    const account = {
-
-      id:
-        generateFriendId(),
-
-      name:
-        name,
-
-      email:
-        email,
-
-      password:
-        password
-
-    };
-
-
-    saveAccount(account);
-
-    currentUser =
-      account;
-
-    friends = [];
-
-    chats = {};
-
-    saveFriends();
-
-    saveChats();
-
-
-    updateHome();
-
-    connectSocket();
-
-    showHome();
-
-  } catch (error) {
-
-    console.error(
-      "SIGNUP ERROR:",
-      error
+  const status =
+    document.getElementById(
+      "signupStatus"
     );
 
-    const status =
-      document.getElementById(
-        "signupStatus"
-      );
-
-    if (status) {
-      status.textContent =
-        "Signup error. Check Console.";
-    }
+  if (!name) {
+    status.textContent =
+      "Enter your name.";
+    return;
   }
+
+  if (!email || !email.includes("@")) {
+    status.textContent =
+      "Enter a valid email.";
+    return;
+  }
+
+  if (password.length < 6) {
+    status.textContent =
+      "Password must be at least 6 characters.";
+    return;
+  }
+
+  const account = {
+    id: generateFriendId(),
+    name: name,
+    email: email,
+    password: password
+  };
+
+  saveAccount(account);
+
+  currentUser = account;
+
+  friends = [];
+  chats = {};
+
+  saveFriends();
+  saveChats();
+
+  updateHome();
+  connectSocket();
+  showHome();
 }
 
 
@@ -343,133 +280,48 @@ function signup() {
    ========================================================= */
 
 function login() {
+  const email =
+    document
+      .getElementById("loginEmail")
+      .value
+      .trim();
 
-  try {
+  const password =
+    document
+      .getElementById("loginPassword")
+      .value;
 
-    const emailInput =
-      document.getElementById(
-        "loginEmail"
-      );
-
-    const passwordInput =
-      document.getElementById(
-        "loginPassword"
-      );
-
-    const status =
-      document.getElementById(
-        "loginStatus"
-      );
-
-
-    if (
-      !emailInput ||
-      !passwordInput
-    ) {
-
-      if (status) {
-        status.textContent =
-          "Login form error.";
-      }
-
-      return;
-    }
-
-
-    const email =
-      emailInput.value.trim();
-
-    const password =
-      passwordInput.value;
-
-
-    if (!email) {
-      status.textContent =
-        "Enter your email.";
-      emailInput.focus();
-      return;
-    }
-
-
-    if (!password) {
-      status.textContent =
-        "Enter your password.";
-      passwordInput.focus();
-      return;
-    }
-
-
-    const account =
-      loadAccount();
-
-
-    if (!account) {
-
-      status.textContent =
-        "No account found on this device. Create an account first.";
-
-      return;
-    }
-
-
-    if (
-      email.toLowerCase() !==
-      String(
-        account.email
-      ).toLowerCase()
-    ) {
-
-      status.textContent =
-        "Incorrect email or password.";
-
-      return;
-    }
-
-
-    if (
-      password !==
-      String(
-        account.password
-      )
-    ) {
-
-      status.textContent =
-        "Incorrect email or password.";
-
-      return;
-    }
-
-
-    currentUser =
-      account;
-
-    loadFriends();
-
-    loadChats();
-
-    updateHome();
-
-    showHome();
-
-    connectSocket();
-
-  } catch (error) {
-
-    console.error(
-      "LOGIN ERROR:",
-      error
+  const status =
+    document.getElementById(
+      "loginStatus"
     );
 
-    const status =
-      document.getElementById(
-        "loginStatus"
-      );
+  const account =
+    loadAccount();
 
-    if (status) {
-      status.textContent =
-        "Login error. Check Console.";
-    }
+  if (!account) {
+    status.textContent =
+      "No account found on this device.";
+    return;
   }
+
+  if (
+    email !== account.email ||
+    password !== account.password
+  ) {
+    status.textContent =
+      "Incorrect email or password.";
+    return;
+  }
+
+  currentUser = account;
+
+  loadFriends();
+  loadChats();
+
+  updateHome();
+  connectSocket();
+  showHome();
 }
 
 
@@ -478,12 +330,9 @@ function login() {
    ========================================================= */
 
 function logout() {
-
   sendPresence(null);
 
-
   if (socket) {
-
     try {
       socket.close();
     } catch {}
@@ -491,90 +340,80 @@ function logout() {
     socket = null;
   }
 
-
   currentUser = null;
   currentChatUserId = null;
 
+  hideBottomNav();
   showLogin();
 }
 
 
 /* =========================================================
-   UPDATE HOME
+   HOME
    ========================================================= */
 
 function updateHome() {
-
   if (!currentUser) {
     return;
   }
 
-
   const name =
-    document.getElementById(
-      "myName"
-    );
+    document.getElementById("myName");
 
   const id =
-    document.getElementById(
-      "myId"
-    );
+    document.getElementById("myId");
 
   const idLabel =
-    document.getElementById(
-      "myIdLabel"
-    );
+    document.getElementById("myIdLabel");
 
   const profile =
     document.getElementById(
       "profileCircle"
     );
 
-
   if (name) {
     name.textContent =
       currentUser.name;
   }
-
 
   if (id) {
     id.textContent =
       currentUser.id;
   }
 
-
   if (idLabel) {
     idLabel.textContent =
       currentUser.id;
   }
 
-
   if (profile) {
-
     profile.textContent =
       currentUser.name
         .charAt(0)
         .toUpperCase();
   }
 
-
   renderFriends();
+
+  /*
+     Load our local profile photo
+     whenever home UI refreshes.
+  */
+
+  loadProfilePhoto();
 }
 
 
 /* =========================================================
-   WEBSOCKET
+   WEBSOCKET CONNECTION
    ========================================================= */
 
 function connectSocket() {
-
   if (!currentUser) {
     return;
   }
 
-
   if (socket) {
-
     try {
       socket.close();
     } catch {}
@@ -582,239 +421,170 @@ function connectSocket() {
     socket = null;
   }
 
-
   console.log(
-    "Connecting:",
+    "Connecting to:",
     API
   );
 
+  socket =
+    new WebSocket(API);
 
-  try {
 
-    socket =
-      new WebSocket(API);
+  /* OPEN */
 
-  } catch (error) {
-
-    console.error(
-      "WebSocket creation error:",
-      error
+  socket.onopen = () => {
+    console.log(
+      "FriendChat WebSocket connected"
     );
 
-    return;
-  }
+    socket.send(
+      JSON.stringify({
+        type: "register",
+        userId: currentUser.id,
+        name: currentUser.name
+      })
+    );
+
+    sendPresence(
+      currentChatUserId
+    );
+  };
 
 
-  socket.onopen =
-    function () {
+  /* MESSAGE */
 
-      console.log(
-        "WebSocket connected"
-      );
-
-
-      socket.send(
-        JSON.stringify({
-
-          type:
-            "register",
-
-          userId:
-            currentUser.id,
-
-          name:
-            currentUser.name
-
-        })
-      );
-
-
-      sendPresence(
-        currentChatUserId
-      );
-    };
-
-
-  socket.onclose =
-    function () {
+  socket.onmessage = async event => {
+    try {
+      const msg =
+        JSON.parse(event.data);
 
       console.log(
-        "WebSocket disconnected"
+        "Server message:",
+        msg
       );
-    };
 
 
-  socket.onerror =
-    function (error) {
+      if (msg.type === "registered") {
+        console.log(
+          "Registered with server:",
+          msg.userId
+        );
+        return;
+      }
 
+
+      if (msg.type === "presence") {
+        updatePresence(
+          msg.users || {}
+        );
+        return;
+      }
+
+
+      /* =====================================================
+         PROFILE PHOTO RECEIVED
+         ===================================================== */
+
+      if (msg.type === "profile_photo") {
+        receiveProfilePhoto(msg);
+        return;
+      }
+
+
+      if (msg.type === "chat") {
+        receiveMessage(msg);
+        return;
+      }
+
+
+      if (msg.type === "media") {
+        receiveMedia(msg);
+        return;
+      }
+
+
+      if (msg.type === "delivered") {
+        updateMessageStatus(
+          msg.messageId,
+          "delivered"
+        );
+        return;
+      }
+
+
+      if (msg.type === "read") {
+        updateMessageStatus(
+          msg.messageId,
+          "read"
+        );
+        return;
+      }
+
+
+      if (msg.type === "reaction") {
+        updateReaction(
+          msg.messageId,
+          msg.reaction
+        );
+        return;
+      }
+
+
+      if (msg.type === "unsend") {
+        removeMessage(
+          msg.messageId
+        );
+        return;
+      }
+
+
+      if (msg.type === "server_delete") {
+        removeMessage(
+          msg.messageId
+        );
+        return;
+      }
+
+
+      if (msg.type === "delivery_error") {
+        console.log(
+          "Delivery error:",
+          msg.reason
+        );
+        return;
+      }
+
+
+      if (msg.type === "media_error") {
+        alert(
+          msg.reason ||
+          "Media could not be sent."
+        );
+        return;
+      }
+
+    } catch (error) {
       console.error(
-        "WebSocket error:",
+        "WebSocket message error:",
         error
       );
-    };
+    }
+  };
 
 
-  socket.onmessage =
-    function (event) {
-
-      try {
-
-        const msg =
-          JSON.parse(
-            event.data
-          );
-
-        handleSocketMessage(
-          msg
-        );
-
-      } catch (error) {
-
-        console.error(
-          "Socket message error:",
-          error
-        );
-      }
-    };
-}
+  socket.onerror = error => {
+    console.error(
+      "FriendChat WebSocket error:",
+      error
+    );
+  };
 
 
-/* =========================================================
-   SOCKET MESSAGE HANDLER
-   ========================================================= */
-
-function handleSocketMessage(
-  msg
-) {
-
-  if (
-    !msg ||
-    !msg.type
-  ) {
-    return;
-  }
-
-
-  switch (msg.type) {
-
-    case "registered":
-
-      console.log(
-        "Registered:",
-        msg.userId
-      );
-
-      break;
-
-
-    case "presence":
-
-      handlePresence(
-        msg
-      );
-
-      break;
-
-
-    case "friend_request":
-
-      handleFriendRequest(
-        msg
-      );
-
-      break;
-
-
-    case "friend_added":
-
-      handleFriendAdded(
-        msg
-      );
-
-      break;
-
-
-    case "chat":
-    case "message":
-
-      receiveMessage(
-        msg
-      );
-
-      break;
-
-
-    case "delivered":
-    case "message_delivered":
-
-      updateMessageStatus(
-        msg.messageId,
-        "delivered"
-      );
-
-      break;
-
-
-    case "read":
-    case "message_seen":
-
-      updateMessageStatus(
-        msg.messageId,
-        "read"
-      );
-
-      break;
-
-
-    case "media":
-
-      receiveMedia(
-        msg
-      );
-
-      break;
-
-
-    case "reaction":
-
-      updateReaction(
-        msg.messageId,
-        msg.reaction
-      );
-
-      break;
-
-
-    case "unsend":
-
-      removeMessage(
-        msg.messageId
-      );
-
-      break;
-
-
-    case "delete_message":
-
-      removeMessage(
-        msg.messageId
-      );
-
-      break;
-
-
-    case "profile_photo":
-
-      break;
-
-
-    default:
-
-      console.log(
-        "Unknown message:",
-        msg
-      );
-  }
+  socket.onclose = () => {
+    console.log(
+      "FriendChat WebSocket disconnected"
+    );
+  };
 }
 
 
@@ -822,106 +592,61 @@ function handleSocketMessage(
    PRESENCE
    ========================================================= */
 
-function handlePresence(
-  msg
-) {
+function getPresence(userId) {
+  const saved =
+    window.friendChatPresence || {};
 
-  if (!msg.userId) {
-    return;
+  return (
+    saved[
+      String(userId).toUpperCase()
+    ] || {
+      status: "offline"
+    }
+  );
+}
+
+
+function presenceLabel(status) {
+  if (status === "active") {
+    return "Active";
   }
 
+  if (status === "busy") {
+    return "Busy";
+  }
 
-  const id =
-    String(
-      msg.userId
-    ).toUpperCase();
+  return "Offline";
+}
 
 
-  presenceState[id] = {
-
-    status:
-      msg.status ||
-      "offline",
-
-    chatWith:
-      msg.chatWith ||
-      null
-
-  };
-
+function updatePresence(users) {
+  window.friendChatPresence =
+    users || {};
 
   renderFriends();
 
+  if (currentChatUserId) {
+    const user =
+      getPresence(
+        currentChatUserId
+      );
 
-  if (
-    currentChatUserId ===
-    id
-  ) {
-
-    const status =
+    const chatStatus =
       document.getElementById(
         "chatStatus"
       );
 
-    if (status) {
-      status.textContent =
+    if (chatStatus) {
+      chatStatus.textContent =
         presenceLabel(
-          msg.status
+          user.status
         );
     }
   }
 }
 
 
-function getPresence(
-  id
-) {
-
-  return (
-    presenceState[
-      String(
-        id
-      ).toUpperCase()
-    ] || {
-
-      status:
-        "offline",
-
-      chatWith:
-        null
-    }
-  );
-}
-
-
-function presenceLabel(
-  status
-) {
-
-  if (
-    status ===
-    "active"
-  ) {
-    return "Active";
-  }
-
-
-  if (
-    status ===
-    "busy"
-  ) {
-    return "Busy";
-  }
-
-
-  return "Offline";
-}
-
-
-function sendPresence(
-  chatWith
-) {
-
+function sendPresence(chatWith) {
   if (
     !socket ||
     socket.readyState !==
@@ -930,12 +655,9 @@ function sendPresence(
     return;
   }
 
-
   socket.send(
     JSON.stringify({
-
-      type:
-        "presence_chat",
+      type: "presence_chat",
 
       chatWith:
         chatWith
@@ -943,9 +665,28 @@ function sendPresence(
               chatWith
             ).toUpperCase()
           : null
-
     })
   );
+}
+
+
+/* =========================================================
+   UNREAD MESSAGE COUNT
+   ========================================================= */
+
+function getUnreadCount(friendId) {
+  const id =
+    String(friendId).toUpperCase();
+
+  const chat =
+    chats[id] || [];
+
+  return chat.filter(message => {
+    return (
+      !message.mine &&
+      message.status !== "read"
+    );
+  }).length;
 }
 
 
@@ -954,28 +695,44 @@ function sendPresence(
    ========================================================= */
 
 function renderFriends() {
-
-  const container =
+  const list =
     document.getElementById(
-      "friendsList"
+      "friendList"
     );
 
-
-  if (!container) {
+  if (!list) {
     return;
   }
 
+  const search =
+    (
+      document.getElementById(
+        "search"
+      )?.value || ""
+    )
+      .toLowerCase()
+      .trim();
 
-  container.innerHTML = "";
+  list.innerHTML = "";
 
+  const filtered =
+    friends.filter(friend => {
+      return (
+        friend.name
+          .toLowerCase()
+          .includes(search) ||
+        friend.id
+          .toLowerCase()
+          .includes(search)
+      );
+    });
 
-  if (
-    friends.length ===
-    0
-  ) {
-
-    container.innerHTML = `
-      <div class="emptyState">
+  if (filtered.length === 0) {
+    list.innerHTML = `
+      <div
+        class="muted"
+        style="padding:20px;text-align:center;"
+      >
         No friends yet.
       </div>
     `;
@@ -983,81 +740,204 @@ function renderFriends() {
     return;
   }
 
+  filtered.forEach(friend => {
+    const presence =
+      getPresence(
+        friend.id
+      );
 
-  friends.forEach(
-    friend => {
+    const status =
+      presence.status ||
+      "offline";
 
-      const item =
-        document.createElement(
-          "div"
-        );
+    const unread =
+      getUnreadCount(
+        friend.id
+      );
 
+    const item =
+      document.createElement(
+        "div"
+      );
 
-      item.className =
-        "friendItem";
+    item.className =
+      "friendItem";
 
-
-      const initial =
-        friend.name
-          ? friend.name
-              .charAt(0)
-              .toUpperCase()
-          : "?";
-
-
-      const status =
-        getPresence(
-          friend.id
-        );
+    item.onclick = () => {
+      openChat(friend);
+    };
 
 
-      item.innerHTML = `
+    /*
+       Friend profile photo
+       will be loaded asynchronously.
+    */
 
-        <div class="friendAvatar">
+    item.innerHTML = `
+      <div
+        class="friendAvatar"
+        style="
+          width:56px;
+          height:56px;
+          min-width:56px;
+          min-height:56px;
+          max-width:56px;
+          max-height:56px;
+          border-radius:50%;
+          overflow:hidden;
+          position:relative;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+        "
+      >
+        ${escapeHtml(
+          friend.name
+            .charAt(0)
+            .toUpperCase()
+        )}
+
+        <span
+          class="presenceDot ${status}"
+        ></span>
+      </div>
+
+      <div class="friendInfo">
+
+        <div class="friendName">
           ${escapeHtml(
-            initial
+            friend.name
           )}
         </div>
 
-        <div class="friendInfo">
-
-          <div class="friendName">
-            ${escapeHtml(
-              friend.name
-            )}
-          </div>
-
-          <div class="friendId">
-            ${escapeHtml(
-              friend.id
-            )}
-          </div>
-
-          <div class="friendStatus">
-            ${presenceLabel(
-              status.status
-            )}
-          </div>
-
+        <div class="friendId">
+          ${escapeHtml(
+            friend.id
+          )}
         </div>
 
-      `;
+        <div
+          class="presenceText ${status}"
+        >
+          ${presenceLabel(
+            status
+          )}
+        </div>
+
+      </div>
+
+      ${
+        unread > 0
+          ? `
+            <div class="unreadBadge">
+              ${
+                unread > 9
+                  ? "9+"
+                  : unread
+              }
+            </div>
+          `
+          : ""
+      }
+    `;
+
+    list.appendChild(item);
+
+    loadFriendAvatarIntoItem(
+      friend.id,
+      item
+    );
+  });
+}
 
 
-      item.onclick =
-        function () {
+/* =========================================================
+   FRIEND AVATAR
+   ========================================================= */
 
-          openChat(
-            friend
-          );
-        };
-
-
-      container.appendChild(
-        item
+async function loadFriendAvatarIntoItem(
+  friendId,
+  item
+) {
+  try {
+    const profile =
+      await getFriendProfilePhoto(
+        friendId
       );
+
+    if (!item) {
+      return;
     }
-  );
+
+    const avatar =
+      item.querySelector(
+        ".friendAvatar"
+      );
+
+    if (!avatar) {
+      return;
+    }
+
+    /* Always keep the avatar circular and fixed-size. */
+    avatar.style.width = "56px";
+    avatar.style.height = "56px";
+    avatar.style.minWidth = "56px";
+    avatar.style.minHeight = "56px";
+    avatar.style.maxWidth = "56px";
+    avatar.style.maxHeight = "56px";
+    avatar.style.borderRadius = "50%";
+    avatar.style.overflow = "hidden";
+    avatar.style.position = "relative";
+    avatar.style.display = "flex";
+    avatar.style.alignItems = "center";
+    avatar.style.justifyContent = "center";
+
+    if (!profile || !profile.file) {
+      return;
+    }
+
+    const url =
+      URL.createObjectURL(
+        profile.file
+      );
+
+    const status =
+      getPresence(friendId).status ||
+      "offline";
+
+    avatar.innerHTML = `
+      <img
+        src="${url}"
+        alt="Profile photo"
+        style="
+          width:56px;
+          height:56px;
+          min-width:56px;
+          min-height:56px;
+          max-width:56px;
+          max-height:56px;
+          object-fit:cover;
+          border-radius:50%;
+          display:block;
+        "
+      >
+
+      <span
+        class="presenceDot ${status}"
+        style="
+          position:absolute;
+          right:0;
+          bottom:0;
+        "
+      ></span>
+    `;
+
+  } catch (error) {
+    console.error(
+      "Could not load friend avatar:",
+      error
+    );
+  }
 }
 
 
@@ -1066,7 +946,6 @@ function renderFriends() {
    ========================================================= */
 
 async function addById() {
-
   const input =
     document.getElementById(
       "addId"
@@ -1077,114 +956,72 @@ async function addById() {
       "addStatus"
     );
 
-
-  if (!input) {
-    return;
-  }
-
-
   const id =
     input.value
       .trim()
       .toUpperCase();
 
-
   if (!id) {
-
-    if (status) {
-      status.textContent =
-        "Enter a FriendChat ID.";
-    }
-
+    status.textContent =
+      "Enter a Friend ID.";
     return;
   }
-
 
   if (
     currentUser &&
-    id ===
-      String(
-        currentUser.id
-      ).toUpperCase()
+    id === currentUser.id
   ) {
-
     status.textContent =
       "You cannot add yourself.";
-
     return;
   }
-
 
   if (
     friends.some(
       friend =>
-        String(
-          friend.id
-        ).toUpperCase() ===
-        id
+        friend.id === id
     )
   ) {
-
     status.textContent =
       "This friend is already added.";
-
     return;
   }
 
-
   try {
-
     const protocol =
-      location.protocol ===
-      "https:"
+      location.protocol === "https:"
         ? "https:"
         : "http:";
-
 
     const response =
       await fetch(
         `${protocol}//${location.host}/api/user/${encodeURIComponent(id)}`
       );
 
-
     const data =
       await response.json();
 
-
     if (!data.found) {
-
       status.textContent =
         "Friend not found. Ask them to open FriendChat first.";
-
       return;
     }
 
-
     friends.push({
-
-      id:
-        data.user.id,
-
-      name:
-        data.user.name
-
+      id: data.user.id,
+      name: data.user.name
     });
-
 
     saveFriends();
 
     renderFriends();
 
-
     status.textContent =
       "Friend added successfully!";
 
-
     input.value = "";
 
-
   } catch (error) {
-
     console.error(
       "Add friend error:",
       error
@@ -1200,97 +1037,61 @@ async function addById() {
    OPEN CHAT
    ========================================================= */
 
-function openChat(
-  friend
-) {
-
+function openChat(friend) {
   currentChatUserId =
     String(
       friend.id
     ).toUpperCase();
 
-
   hideAllScreens();
 
   hideBottomNav();
 
-
-  const screen =
-    document.getElementById(
-      "chatScreen"
-    );
-
-
-  if (screen) {
-    screen.classList.remove(
-      "hidden"
-    );
-  }
-
+  document
+    .getElementById("chatScreen")
+    .classList.remove("hidden");
 
   const chatName =
     document.getElementById(
       "chatName"
     );
 
-
   const chatId =
     document.getElementById(
       "chatId"
     );
 
+  chatName.textContent =
+    friend.name;
 
-  if (chatName) {
-    chatName.textContent =
-      friend.name;
-  }
+  chatId.innerHTML = `
+    ${escapeHtml(
+      friend.id
+    )}
 
-
-  if (chatId) {
-
-    chatId.innerHTML = `
-      ${escapeHtml(
-        friend.id
+    <span
+      id="chatStatus"
+      class="muted"
+      style="margin-left:8px;"
+    >
+      ${presenceLabel(
+        getPresence(
+          friend.id
+        ).status
       )}
+    </span>
+  `;
 
-      <span
-        id="chatStatus"
-        class="muted"
-        style="margin-left:8px;"
-      >
-        ${presenceLabel(
-          getPresence(
-            friend.id
-          ).status
-        )}
-      </span>
-    `;
+  if (!chats[currentChatUserId]) {
+    chats[currentChatUserId] = [];
   }
 
-
-  if (
-    !chats[
-      currentChatUserId
-    ]
-  ) {
-
-    chats[
-      currentChatUserId
-    ] = [];
-  }
-
-
-  chats[
-    currentChatUserId
-  ].forEach(
-    message => {
-
+  chats[currentChatUserId]
+    .forEach(message => {
       if (
         !message.mine &&
-        message.status !==
-          "read"
+        message.status !== "read"
       ) {
-
         message.status =
           "read";
 
@@ -1298,9 +1099,7 @@ function openChat(
           message.id
         );
       }
-    }
-  );
-
+    });
 
   saveChats();
 
@@ -1309,6 +1108,8 @@ function openChat(
   sendPresence(
     currentChatUserId
   );
+
+  renderFriends();
 }
 
 
@@ -1317,10 +1118,8 @@ function openChat(
    ========================================================= */
 
 function generateMessageId() {
-
   return (
-    Date.now()
-      .toString(36) +
+    Date.now().toString(36) +
     "-" +
     Math.random()
       .toString(36)
@@ -1330,204 +1129,140 @@ function generateMessageId() {
 
 
 /* =========================================================
-   SEND TEXT
+   SEND TEXT MESSAGE
    ========================================================= */
 
 function sendMessage() {
-
-  if (
-    !currentUser ||
-    !currentChatUserId
-  ) {
+  if (!currentUser) {
     return;
   }
 
+  if (!currentChatUserId) {
+    return;
+  }
 
   if (
     !socket ||
     socket.readyState !==
       WebSocket.OPEN
   ) {
-
     alert(
       "Not connected to FriendChat server."
     );
-
     return;
   }
-
 
   const input =
     document.getElementById(
       "messageInput"
     );
 
-
-  if (!input) {
-    return;
-  }
-
-
   const text =
     input.value.trim();
-
 
   if (!text) {
     return;
   }
 
-
   const message = {
+    id: generateMessageId(),
 
-    id:
-      generateMessageId(),
+    from: currentUser.id,
 
-    from:
-      currentUser.id,
+    to: currentChatUserId,
 
-    to:
-      currentChatUserId,
+    text: text,
 
-    text:
-      text,
+    time: Date.now(),
 
-    time:
-      Date.now(),
+    status: "sent",
 
-    status:
-      "sent",
-
-    mine:
-      true
-
+    mine: true
   };
 
-
-  if (
-    !chats[
-      currentChatUserId
-    ]
-  ) {
-
-    chats[
-      currentChatUserId
-    ] = [];
+  if (!chats[currentChatUserId]) {
+    chats[currentChatUserId] = [];
   }
 
-
-  chats[
-    currentChatUserId
-  ].push(
+  chats[currentChatUserId].push(
     message
   );
-
 
   saveChats();
 
   renderMessages();
 
-
   socket.send(
     JSON.stringify({
+      type: "chat",
 
-      type:
-        "chat",
+      id: message.id,
 
-      id:
-        message.id,
+      from: message.from,
 
-      from:
-        message.from,
+      to: message.to,
 
-      to:
-        message.to,
+      text: message.text,
 
-      text:
-        message.text,
-
-      time:
-        message.time
-
+      time: message.time
     })
   );
-
 
   input.value = "";
 }
 
 
 /* =========================================================
-   RECEIVE TEXT
+   RECEIVE TEXT MESSAGE
    ========================================================= */
 
-function receiveMessage(
-  msg
-) {
-
+function receiveMessage(msg) {
   const from =
     String(
       msg.from
     ).toUpperCase();
 
-
   if (!chats[from]) {
     chats[from] = [];
   }
 
-
   const isOpen =
-    currentChatUserId ===
-    from;
-
+    currentChatUserId === from;
 
   const message = {
+    id: msg.id,
 
-    id:
-      msg.id,
+    from: from,
 
-    from:
-      from,
+    to: currentUser.id,
 
-    to:
-      currentUser.id,
+    text: msg.text,
 
-    text:
-      msg.text || "",
-
-    time:
-      msg.time || Date.now(),
+    time: msg.time,
 
     status:
       isOpen
         ? "read"
         : "delivered",
 
-    mine:
-      false
-
+    mine: false
   };
 
-
-  const exists =
+  const alreadyExists =
     chats[from].some(
       item =>
-        item.id ===
-        message.id
+        item.id === message.id
     );
 
-
-  if (!exists) {
+  if (!alreadyExists) {
     chats[from].push(
       message
     );
   }
 
-
   saveChats();
 
-
   if (isOpen) {
-
     renderMessages();
 
     sendDelivered(
@@ -1539,11 +1274,12 @@ function receiveMessage(
     );
 
   } else {
-
     sendDelivered(
       message.id
     );
   }
+
+  renderFriends();
 }
 
 
@@ -1551,10 +1287,7 @@ function receiveMessage(
    DELIVERED
    ========================================================= */
 
-function sendDelivered(
-  messageId
-) {
-
+function sendDelivered(messageId) {
   if (
     !socket ||
     socket.readyState !==
@@ -1563,16 +1296,10 @@ function sendDelivered(
     return;
   }
 
-
   socket.send(
     JSON.stringify({
-
-      type:
-        "delivered",
-
-      messageId:
-        messageId
-
+      type: "delivered",
+      messageId: messageId
     })
   );
 }
@@ -1582,10 +1309,7 @@ function sendDelivered(
    READ
    ========================================================= */
 
-function sendRead(
-  messageId
-) {
-
+function sendRead(messageId) {
   if (
     !socket ||
     socket.readyState !==
@@ -1594,55 +1318,54 @@ function sendRead(
     return;
   }
 
-
   socket.send(
     JSON.stringify({
-
-      type:
-        "read",
-
-      messageId:
-        messageId
-
+      type: "read",
+      messageId: messageId
     })
   );
 }
 
 
 /* =========================================================
-   STATUS
+   MESSAGE STATUS
    ========================================================= */
 
 function updateMessageStatus(
   messageId,
   status
 ) {
+  let changed = false;
 
   for (
     const chatId in chats
   ) {
+    const messages =
+      chats[chatId];
 
     const message =
-      chats[
-        chatId
-      ].find(
+      messages.find(
         item =>
-          item.id ===
-          messageId
+          item.id === messageId
       );
 
-
     if (message) {
-
       message.status =
         status;
+
+      changed = true;
     }
   }
 
+  if (changed) {
+    saveChats();
+  }
 
-  saveChats();
+  if (currentChatUserId) {
+    renderMessages();
+  }
 
-  renderMessages();
+  renderFriends();
 }
 
 
@@ -1651,249 +1374,187 @@ function updateMessageStatus(
    ========================================================= */
 
 function renderMessages() {
-
   const container =
     document.getElementById(
       "messages"
     );
 
-
   if (!container) {
     return;
   }
 
-
   container.innerHTML = "";
-
 
   if (!currentChatUserId) {
     return;
   }
 
-
   const messages =
-    chats[
-      currentChatUserId
-    ] || [];
+    chats[currentChatUserId] ||
+    [];
 
+  messages.forEach(message => {
+    const bubble =
+      document.createElement(
+        "div"
+      );
 
-  messages.forEach(
-    message => {
+    bubble.className =
+      "message " +
+      (
+        message.mine
+          ? "mine"
+          : "theirs"
+      );
 
-      const bubble =
-        document.createElement(
-          "div"
+    bubble.dataset.messageId =
+      message.id;
+
+    let content = "";
+
+    if (message.media) {
+      if (
+        message.mediaType ===
+        "image"
+      ) {
+        content =
+          `<img src="${message.media}" alt="Photo">`;
+      } else {
+        content =
+          `<video controls src="${message.media}"></video>`;
+      }
+
+    } else {
+      content =
+        escapeHtml(
+          message.text || ""
         );
+    }
 
+    let status = "";
 
-      bubble.className =
-        "message " +
-        (
-          message.mine
-            ? "mine"
-            : "theirs"
-        );
-
-
-      bubble.dataset.messageId =
-        message.id;
-
-
-      let content = "";
-
+    if (message.mine) {
 
       if (
-        message.media
+        message.status ===
+        "read"
       ) {
+        status =
+          '<span class="messageStatus readTicks">✓✓</span>';
 
-        if (
-          message.mediaType ===
-          "image"
-        ) {
-
-          content = `
-            <img
-              src="${message.media}"
-              alt="Photo"
-              style="
-                max-width:100%;
-                border-radius:10px;
-              "
-            >
-          `;
-
-        } else {
-
-          content = `
-            <video
-              controls
-              src="${message.media}"
-              style="
-                max-width:100%;
-              "
-            ></video>
-          `;
-        }
+      } else if (
+        message.status ===
+        "delivered"
+      ) {
+        status =
+          '<span class="messageStatus deliveredTicks">✓✓</span>';
 
       } else {
-
-        content =
-          escapeHtml(
-            message.text
-          );
+        status =
+          '<span class="messageStatus sentTick">✓</span>';
       }
-
-
-      let ticks = "";
-
-
-      if (
-        message.mine
-      ) {
-
-        if (
-          message.status ===
-          "read"
-        ) {
-
-          ticks =
-            '<span class="messageStatus readTicks">✓✓</span>';
-
-        } else if (
-          message.status ===
-          "delivered"
-        ) {
-
-          ticks =
-            '<span class="messageStatus deliveredTicks">✓✓</span>';
-
-        } else {
-
-          ticks =
-            '<span class="messageStatus sentTick">✓</span>';
-        }
-      }
-
-
-      const time =
-        new Date(
-          message.time
-        ).toLocaleTimeString(
-          [],
-          {
-            hour:
-              "2-digit",
-            minute:
-              "2-digit"
-          }
-        );
-
-
-      bubble.innerHTML = `
-
-        <div>
-          ${content}
-        </div>
-
-        <div class="messageTime">
-          ${time}
-          ${ticks}
-        </div>
-
-        ${
-          message.reaction
-            ? `
-              <span
-                class="messageReaction"
-              >
-                ${escapeHtml(
-                  message.reaction
-                )}
-              </span>
-            `
-            : ""
-        }
-
-      `;
-
-
-      /* RIGHT CLICK */
-
-      bubble.addEventListener(
-        "contextmenu",
-        function (event) {
-
-          event.preventDefault();
-
-          openMessageMenu(
-            message.id
-          );
-        }
-      );
-
-
-      /* LONG PRESS */
-
-      let timer = null;
-
-
-      bubble.addEventListener(
-        "touchstart",
-        function () {
-
-          timer =
-            setTimeout(
-              function () {
-
-                openMessageMenu(
-                  message.id
-                );
-
-              },
-              550
-            );
-        }
-      );
-
-
-      bubble.addEventListener(
-        "touchend",
-        function () {
-
-          if (timer) {
-
-            clearTimeout(
-              timer
-            );
-
-            timer = null;
-          }
-        }
-      );
-
-
-      bubble.addEventListener(
-        "touchmove",
-        function () {
-
-          if (timer) {
-
-            clearTimeout(
-              timer
-            );
-
-            timer = null;
-          }
-        }
-      );
-
-
-      container.appendChild(
-        bubble
-      );
     }
-  );
 
+    const time =
+      new Date(
+        message.time
+      ).toLocaleTimeString(
+        [],
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      );
+
+    bubble.innerHTML = `
+      <div>
+        ${content}
+      </div>
+
+      <div class="messageTime">
+        ${time}
+        ${status}
+      </div>
+
+      ${
+        message.reaction
+          ? `
+            <span
+              class="messageReaction"
+            >
+              ${escapeHtml(
+                message.reaction
+              )}
+            </span>
+          `
+          : ""
+      }
+    `;
+
+
+    /* RIGHT CLICK */
+
+    bubble.addEventListener(
+      "contextmenu",
+      event => {
+        event.preventDefault();
+
+        openMessageMenu(
+          message.id
+        );
+      }
+    );
+
+
+    /* LONG PRESS */
+
+    let longPressTimer = null;
+
+    bubble.addEventListener(
+      "touchstart",
+      () => {
+        longPressTimer =
+          setTimeout(() => {
+            openMessageMenu(
+              message.id
+            );
+          }, 550);
+      },
+      {
+        passive: true
+      }
+    );
+
+    bubble.addEventListener(
+      "touchend",
+      () => {
+        if (longPressTimer) {
+          clearTimeout(
+            longPressTimer
+          );
+
+          longPressTimer = null;
+        }
+      }
+    );
+
+    bubble.addEventListener(
+      "touchmove",
+      () => {
+        if (longPressTimer) {
+          clearTimeout(
+            longPressTimer
+          );
+
+          longPressTimer = null;
+        }
+      }
+    );
+
+    container.appendChild(
+      bubble
+    );
+  });
 
   container.scrollTop =
     container.scrollHeight;
@@ -1901,58 +1562,45 @@ function renderMessages() {
 
 
 /* =========================================================
-   SEND PHOTO / VIDEO
+   MEDIA
    ========================================================= */
 
-function sendMedia() {
-
-  if (
-    !currentUser ||
-    !currentChatUserId
-  ) {
+async function sendMedia() {
+  if (!currentUser) {
     return;
   }
 
+  if (!currentChatUserId) {
+    return;
+  }
 
   if (
     !socket ||
     socket.readyState !==
       WebSocket.OPEN
   ) {
-
     alert(
       "Not connected to server."
     );
-
     return;
   }
-
 
   const input =
     document.getElementById(
       "mediaInput"
     );
 
-
-  if (!input) {
-    return;
-  }
-
-
   const file =
     input.files[0];
-
 
   if (!file) {
     return;
   }
 
-
   if (
     file.size >
     20 * 1024 * 1024
   ) {
-
     alert(
       "File is too large. Maximum 20 MB."
     );
@@ -1962,159 +1610,112 @@ function sendMedia() {
     return;
   }
 
-
   const reader =
     new FileReader();
 
+  reader.onload = () => {
 
-  reader.onload =
-    function () {
+    const mediaType =
+      file.type.startsWith(
+        "image/"
+      )
+        ? "image"
+        : "video";
 
-      const mediaType =
-        file.type.startsWith(
-          "image/"
-        )
-          ? "image"
-          : "video";
+    const message = {
+      id: generateMessageId(),
 
+      from: currentUser.id,
 
-      const message = {
+      to: currentChatUserId,
 
-        id:
-          generateMessageId(),
+      time: Date.now(),
 
-        from:
-          currentUser.id,
+      media:
+        reader.result,
 
-        to:
-          currentChatUserId,
+      mediaType:
+        mediaType,
 
-        time:
-          Date.now(),
+      fileName:
+        file.name,
 
-        media:
-          reader.result,
+      status:
+        "sent",
 
-        mediaType:
-          mediaType,
-
-        fileName:
-          file.name,
-
-        status:
-          "sent",
-
-        mine:
-          true
-      };
-
-
-      if (
-        !chats[
-          currentChatUserId
-        ]
-      ) {
-
-        chats[
-          currentChatUserId
-        ] = [];
-      }
-
-
-      chats[
-        currentChatUserId
-      ].push(
-        message
-      );
-
-
-      saveChats();
-
-      renderMessages();
-
-
-      socket.send(
-        JSON.stringify({
-
-          type:
-            "media",
-
-          id:
-            message.id,
-
-          from:
-            message.from,
-
-          to:
-            message.to,
-
-          time:
-            message.time,
-
-          mediaType:
-            message.mediaType,
-
-          fileName:
-            message.fileName,
-
-          data:
-            message.media
-
-        })
-      );
-
-
-      input.value = "";
+      mine:
+        true
     };
 
+    if (!chats[currentChatUserId]) {
+      chats[currentChatUserId] = [];
+    }
 
-  reader.readAsDataURL(
-    file
-  );
+    chats[currentChatUserId].push(
+      message
+    );
+
+    saveChats();
+
+    renderMessages();
+
+    socket.send(
+      JSON.stringify({
+        type: "media",
+
+        id: message.id,
+
+        from: message.from,
+
+        to: message.to,
+
+        time: message.time,
+
+        mediaType:
+          message.mediaType,
+
+        fileName:
+          message.fileName,
+
+        data:
+          message.media
+      })
+    );
+
+    input.value = "";
+  };
+
+  reader.readAsDataURL(file);
 }
 
 
 /* =========================================================
-   RECEIVE PHOTO / VIDEO
+   RECEIVE MEDIA
    ========================================================= */
 
-function receiveMedia(
-  msg
-) {
-
+function receiveMedia(msg) {
   const from =
     String(
       msg.from
     ).toUpperCase();
 
-
   if (!chats[from]) {
     chats[from] = [];
   }
 
-
   const isOpen =
-    currentChatUserId ===
-    from;
-
+    currentChatUserId === from;
 
   const message = {
+    id: msg.id,
 
-    id:
-      msg.id,
+    from: from,
 
-    from:
-      from,
+    to: currentUser.id,
 
-    to:
-      currentUser.id,
+    time: msg.time,
 
-    time:
-      msg.time ||
-      Date.now(),
-
-    media:
-      msg.data,
+    media: msg.data,
 
     mediaType:
       msg.mediaType,
@@ -2127,10 +1728,8 @@ function receiveMedia(
         ? "read"
         : "delivered",
 
-    mine:
-      false
+    mine: false
   };
-
 
   const exists =
     chats[from].some(
@@ -2139,20 +1738,15 @@ function receiveMedia(
         message.id
     );
 
-
   if (!exists) {
-
     chats[from].push(
       message
     );
   }
 
-
   saveChats();
 
-
   if (isOpen) {
-
     renderMessages();
 
     sendRead(
@@ -2160,10 +1754,11 @@ function receiveMedia(
     );
   }
 
-
   sendDelivered(
     message.id
   );
+
+  renderFriends();
 }
 
 
@@ -2174,19 +1769,25 @@ function receiveMedia(
 function openMessageMenu(
   messageId
 ) {
-
   selectedMessageId =
     messageId;
 
+  const hidden =
+    document.getElementById(
+      "selectedMessageId"
+    );
+
+  if (hidden) {
+    hidden.value =
+      messageId;
+  }
 
   const menu =
     document.getElementById(
       "messageMenu"
     );
 
-
   if (menu) {
-
     menu.classList.remove(
       "hidden"
     );
@@ -2195,20 +1796,16 @@ function openMessageMenu(
 
 
 function closeMessageMenu() {
-
   const menu =
     document.getElementById(
       "messageMenu"
     );
 
-
   if (menu) {
-
     menu.classList.add(
       "hidden"
     );
   }
-
 
   selectedMessageId =
     null;
@@ -2222,62 +1819,48 @@ function closeMessageMenu() {
 function reactToMessage(
   reaction
 ) {
-
   if (!selectedMessageId) {
     return;
   }
 
-
-  const id =
+  const messageId =
     selectedMessageId;
-
 
   for (
     const chatId in chats
   ) {
-
     const message =
-      chats[
-        chatId
-      ].find(
+      chats[chatId].find(
         item =>
-          item.id === id
+          item.id ===
+          messageId
       );
 
-
     if (message) {
-
       message.reaction =
         reaction;
     }
   }
 
-
   saveChats();
-
 
   if (
     socket &&
     socket.readyState ===
       WebSocket.OPEN
   ) {
-
     socket.send(
       JSON.stringify({
-
-        type:
-          "reaction",
+        type: "reaction",
 
         messageId:
-          id,
+          messageId,
 
         reaction:
           reaction
-
       })
     );
   }
-
 
   renderMessages();
 
@@ -2289,32 +1872,27 @@ function updateReaction(
   messageId,
   reaction
 ) {
-
   for (
     const chatId in chats
   ) {
-
     const message =
-      chats[
-        chatId
-      ].find(
+      chats[chatId].find(
         item =>
           item.id ===
           messageId
       );
 
-
     if (message) {
-
       message.reaction =
         reaction;
     }
   }
 
-
   saveChats();
 
-  renderMessages();
+  if (currentChatUserId) {
+    renderMessages();
+  }
 }
 
 
@@ -2323,59 +1901,58 @@ function updateReaction(
    ========================================================= */
 
 function unsendMessage() {
-
   if (!selectedMessageId) {
     return;
   }
 
-
   const id =
     selectedMessageId;
 
+  let found = false;
 
   for (
     const chatId in chats
   ) {
+    const messages =
+      chats[chatId];
 
-    chats[
-      chatId
-    ] =
-      chats[
-        chatId
-      ].filter(
+    const index =
+      messages.findIndex(
         message =>
-          !(
-            message.id === id &&
-            message.mine
-          )
+          message.id === id &&
+          message.mine
       );
+
+    if (index !== -1) {
+      messages.splice(
+        index,
+        1
+      );
+
+      found = true;
+    }
   }
 
+  if (found) {
+    saveChats();
 
-  saveChats();
+    renderMessages();
 
-  renderMessages();
+    if (
+      socket &&
+      socket.readyState ===
+        WebSocket.OPEN
+    ) {
+      socket.send(
+        JSON.stringify({
+          type: "unsend",
 
-
-  if (
-    socket &&
-    socket.readyState ===
-      WebSocket.OPEN
-  ) {
-
-    socket.send(
-      JSON.stringify({
-
-        type:
-          "unsend",
-
-        messageId:
-          id
-
-      })
-    );
+          messageId:
+            id
+        })
+      );
+    }
   }
-
 
   closeMessageMenu();
 }
@@ -2386,89 +1963,80 @@ function unsendMessage() {
    ========================================================= */
 
 function deleteMessage() {
-
   if (!selectedMessageId) {
     return;
   }
 
-
   const id =
     selectedMessageId;
-
 
   for (
     const chatId in chats
   ) {
+    const messages =
+      chats[chatId];
 
-    chats[
-      chatId
-    ] =
-      chats[
-        chatId
-      ].filter(
+    const index =
+      messages.findIndex(
         message =>
-          message.id !== id
+          message.id === id
       );
-  }
 
+    if (index !== -1) {
+      messages.splice(
+        index,
+        1
+      );
+    }
+  }
 
   saveChats();
 
   renderMessages();
 
-
   if (
     socket &&
     socket.readyState ===
-      WebSocket.OPEN
-  ) {
-
+      WebSocket.OPEN  ) {
     socket.send(
       JSON.stringify({
-
-        type:
-          "server_delete",
+        type: "server_delete",
 
         messageId:
           id
-
       })
     );
   }
-
 
   closeMessageMenu();
 }
 
 
 /* =========================================================
-   REMOVE MESSAGE FROM RECEIVER
+   REMOVE MESSAGE
    ========================================================= */
 
 function removeMessage(
   messageId
 ) {
-
   for (
     const chatId in chats
   ) {
-
-    chats[
-      chatId
-    ] =
-      chats[
-        chatId
-      ].filter(
+    chats[chatId] =
+      chats[chatId].filter(
         message =>
           message.id !==
           messageId
       );
   }
 
-
   saveChats();
 
-  renderMessages();
+  if (currentChatUserId) {
+    renderMessages();
+  }
+
+  renderFriends();
 }
 
 
@@ -2477,7 +2045,6 @@ function removeMessage(
    ========================================================= */
 
 const emojis = [
-
   "😀",
   "😂",
   "🤣",
@@ -2501,96 +2068,45 @@ const emojis = [
   "💀",
   "🎉",
   "🙏",
-  "💯",
-  "🤣",
-  "😅",
-  "😉",
-  "😇",
-  "🤩",
-  "😴",
-  "🤯",
-  "🥳",
-  "😈",
-  "👀",
-  "💔",
-  "❤️‍🔥",
-  "✨",
-  "⭐",
-  "💪",
-  "🤝"
-
+  "💯"
 ];
 
 
 function toggleEmojiPicker() {
-
   const picker =
     document.getElementById(
       "emojiPicker"
     );
 
-
   if (!picker) {
     return;
   }
-
 
   if (
     picker.children.length ===
     0
   ) {
-
     emojis.forEach(
       emoji => {
-
         const button =
           document.createElement(
             "button"
           );
 
-
-        button.type =
-          "button";
-
-
         button.textContent =
           emoji;
 
+        button.onclick = () => {
+          const input =
+            document.getElementById(
+              "messageInput"
+            );
 
-        button.style.fontSize =
-          "22px";
+          input.value +=
+            emoji;
 
-
-        button.style.border =
-          "none";
-
-
-        button.style.background =
-          "transparent";
-
-
-        button.style.cursor =
-          "pointer";
-
-
-        button.onclick =
-          function () {
-
-            const input =
-              document.getElementById(
-                "messageInput"
-              );
-
-
-            if (input) {
-
-              input.value +=
-                emoji;
-
-              input.focus();
-            }
-          };
-
+          input.focus();
+        };
 
         picker.appendChild(
           button
@@ -2598,7 +2114,6 @@ function toggleEmojiPicker() {
       }
     );
   }
-
 
   picker.classList.toggle(
     "hidden"
@@ -2610,34 +2125,24 @@ function toggleEmojiPicker() {
    ESCAPE HTML
    ========================================================= */
 
-function escapeHtml(
-  value
-) {
-
-  return String(
-    value ?? ""
-  )
-
+function escapeHtml(value) {
+  return String(value)
     .replaceAll(
       "&",
       "&amp;"
     )
-
     .replaceAll(
       "<",
       "&lt;"
     )
-
     .replaceAll(
       ">",
       "&gt;"
     )
-
     .replaceAll(
       '"',
       "&quot;"
     )
-
     .replaceAll(
       "'",
       "&#039;"
@@ -2646,65 +2151,50 @@ function escapeHtml(
 
 
 /* =========================================================
-   AUTO PRESENCE
+   AUTOMATIC PRESENCE REFRESH
    ========================================================= */
 
-setInterval(
-  function () {
+setInterval(() => {
+  if (
+    !socket ||
+    socket.readyState !==
+      WebSocket.OPEN
+  ) {
+    return;
+  }
 
-    if (
-      !socket ||
-      socket.readyState !==
-        WebSocket.OPEN
-    ) {
-      return;
-    }
+  socket.send(
+    JSON.stringify({
+      type:
+        "presence_chat",
 
-
-    socket.send(
-      JSON.stringify({
-
-        type:
-          "presence_chat",
-
-        chatWith:
-          currentChatUserId
-            ? String(
-                currentChatUserId
-              ).toUpperCase()
-            : null
-
-      })
-    );
-
-  },
-  10000
-);
+      chatWith:
+        currentChatUserId
+          ? String(
+              currentChatUserId
+            ).toUpperCase()
+          : null
+    })
+  );
+}, 10000);
 
 
 /* =========================================================
-   CLOSE MENU WHEN CLICKING OUTSIDE
+   CLOSE MESSAGE MENU
    ========================================================= */
 
 document.addEventListener(
   "click",
-  function (event) {
-
+  event => {
     const menu =
       document.getElementById(
         "messageMenu"
       );
 
-
     if (
       menu &&
-      !menu.classList.contains(
-        "hidden"
-      ) &&
-      event.target ===
-        menu
+      event.target === menu
     ) {
-
       closeMessageMenu();
     }
   }
@@ -2712,61 +2202,593 @@ document.addEventListener(
 
 
 /* =========================================================
-   ENTER TO SEND
+   PROFILE DATABASE
    ========================================================= */
 
-document.addEventListener(
-  "keydown",
-  function (event) {
+const PROFILE_DB_NAME =
+  "FriendChatProfileDB";
 
-    if (
-      event.key !==
-      "Enter"
-    ) {
-      return;
+const PROFILE_DB_VERSION = 1;
+
+const PROFILE_STORE =
+  "profileMedia";
+
+
+function openProfileDB() {
+  return new Promise(
+    (resolve, reject) => {
+      const request =
+        indexedDB.open(
+          PROFILE_DB_NAME,
+          PROFILE_DB_VERSION
+        );
+
+      request.onupgradeneeded =
+        function (e) {
+          const db =
+            e.target.result;
+
+          if (
+            !db.objectStoreNames.contains(
+              PROFILE_STORE
+            )
+          ) {
+            db.createObjectStore(
+              PROFILE_STORE,
+              {
+                keyPath: "id"
+              }
+            );
+          }
+        };
+
+      request.onsuccess = () => {
+        resolve(
+          request.result
+        );
+      };
+
+      request.onerror = () => {
+        reject(
+          request.error
+        );
+      };
     }
+  );
+}
 
 
-    const input =
-      document.getElementById(
-        "messageInput"
+/* =========================================================
+   SAVE PROFILE MEDIA
+   ========================================================= */
+
+async function saveProfileMediaLocal(
+  media
+) {
+  const db =
+    await openProfileDB();
+
+  return new Promise(
+    (resolve, reject) => {
+      const tx =
+        db.transaction(
+          PROFILE_STORE,
+          "readwrite"
+        );
+
+      tx.objectStore(
+        PROFILE_STORE
+      ).put(media);
+
+      tx.oncomplete = () => {
+        db.close();
+        resolve();
+      };
+
+      tx.onerror = () => {
+        db.close();
+        reject(
+          tx.error
+        );
+      };
+    }
+  );
+}
+
+
+/* =========================================================
+   GET PROFILE MEDIA
+   ========================================================= */
+
+async function getProfileMediaLocal(
+  id
+) {
+  const db =
+    await openProfileDB();
+
+  return new Promise(
+    (resolve, reject) => {
+      const tx =
+        db.transaction(
+          PROFILE_STORE,
+          "readonly"
+        );
+
+      const request =
+        tx.objectStore(
+          PROFILE_STORE
+        ).get(id);
+
+      request.onsuccess = () => {
+        const result =
+          request.result ||
+          null;
+
+        db.close();
+
+        resolve(result);
+      };
+
+      request.onerror = () => {
+        db.close();
+
+        reject(
+          request.error
+        );
+      };
+    }
+  );
+}
+
+
+/* =========================================================
+   GET ALL PROFILE MEDIA
+   ========================================================= */
+
+async function getAllProfileMediaLocal() {
+  const db =
+    await openProfileDB();
+
+  return new Promise(
+    (resolve, reject) => {
+      const tx =
+        db.transaction(
+          PROFILE_STORE,
+          "readonly"
+        );
+
+      const request =
+        tx.objectStore(
+          PROFILE_STORE
+        ).getAll();
+
+      request.onsuccess = () => {
+        const result =
+          request.result ||
+          [];
+
+        db.close();
+
+        resolve(result);
+      };
+
+      request.onerror = () => {
+        db.close();
+
+        reject(
+          request.error
+        );
+      };
+    }
+  );
+}
+
+
+/* =========================================================
+   PROFILE SCREEN
+   ========================================================= */
+
+function showProfile() {
+  if (!currentUser) {
+    return;
+  }
+
+  hideAllScreens();
+
+  showBottomNav();
+
+  const screen =
+    document.getElementById(
+      "profileScreen"
+    );
+
+  if (screen) {
+    screen.classList.remove(
+      "hidden"
+    );
+  }
+
+  const name =
+    document.getElementById(
+      "profilePageName"
+    );
+
+  const id =
+    document.getElementById(
+      "profilePageId"
+    );
+
+  if (name) {
+    name.textContent =
+      currentUser.name;
+  }
+
+  if (id) {
+    id.textContent =
+      currentUser.id;
+  }
+
+  loadProfilePhoto();
+
+  renderProfileMedia();
+}
+
+
+/* =========================================================
+   CHANGE PROFILE PHOTO
+   ========================================================= */
+
+async function changeProfilePhoto() {
+  const input =
+    document.getElementById(
+      "profilePhotoInput"
+    );
+
+  if (!input) {
+    return;
+  }
+
+  const file =
+    input.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  if (
+    !file.type.startsWith(
+      "image/"
+    )
+  ) {
+    alert(
+      "Please select an image."
+    );
+
+    input.value = "";
+
+    return;
+  }
+
+  if (
+    file.size >
+    10 * 1024 * 1024
+  ) {
+    alert(
+      "Profile photo must be under 10 MB."
+    );
+
+    input.value = "";
+
+    return;
+  }
+
+  const id =
+    "profile-photo-" +
+    currentUser.id;
+
+
+  /* =====================================================
+     SAVE PHOTO LOCALLY
+     ===================================================== */
+
+  await saveProfileMediaLocal({
+    id: id,
+
+    owner:
+      currentUser.id,
+
+    type:
+      "profilePhoto",
+
+    mimeType:
+      file.type,
+
+    file:
+      file,
+
+    time:
+      Date.now()
+  });
+
+
+  /* =====================================================
+     SHOW PHOTO IMMEDIATELY
+     ===================================================== */
+
+  await loadProfilePhoto();
+
+
+  /* =====================================================
+     SEND PHOTO TO SERVER
+     ===================================================== */
+
+  if (
+    socket &&
+    socket.readyState ===
+      WebSocket.OPEN
+  ) {
+    const reader =
+      new FileReader();
+
+    reader.onload = () => {
+      try {
+        socket.send(
+          JSON.stringify({
+            type:
+              "profile_photo",
+
+            userId:
+              currentUser.id,
+
+            name:
+              currentUser.name,
+
+            mimeType:
+              file.type,
+
+            photo:
+              reader.result,
+
+            data:
+              reader.result,
+
+            time:
+              Date.now()
+          })
+        );
+
+        console.log(
+          "Profile photo sent to server."
+        );
+
+      } catch (error) {
+        console.error(
+          "Profile photo send error:",
+          error
+        );
+      }
+    };
+
+    reader.readAsDataURL(
+      file
+    );
+
+  } else {
+    console.log(
+      "Profile photo saved locally. Server is offline."
+    );
+  }
+
+  input.value = "";
+}  }
+
+
+  /* =====================================================
+     PRIVACY
+     ===================================================== */
+
+  const privacy =
+    prompt(
+      "Who can see this?\n\nType PUBLIC or FRIENDS",
+      "FRIENDS"
+    );
+
+  if (!privacy) {
+    input.value = "";
+    return;
+  }
+
+  const privacyText =
+    privacy
+      .trim()
+      .toLowerCase();
+
+  let visibility = null;
+
+  if (
+    privacyText ===
+    "public"
+  ) {
+    visibility =
+      "public";
+  }
+
+  if (
+    privacyText ===
+    "friends"
+  ) {
+    visibility =
+      "friends";
+  }
+
+  if (!visibility) {
+    alert(
+      "Please type PUBLIC or FRIENDS."
+    );
+
+    input.value = "";
+
+    return;
+  }
+
+
+  const id =
+    "profile-media-" +
+    currentUser.id +
+    "-" +
+    Date.now();
+
+
+  /* =====================================================
+     SAVE LOCALLY
+     ===================================================== */
+
+  await saveProfileMediaLocal({
+    id: id,
+
+    owner:
+      currentUser.id,
+
+    type:
+      file.type.startsWith(
+        "image/"
+      )
+        ? "image"
+        : "video",
+
+    mimeType:
+      file.type,
+
+    name:
+      file.name,
+
+    size:
+      file.size,
+
+    visibility:
+      visibility,
+
+    file:
+      file,
+
+    time:
+      Date.now()
+  });
+
+
+  await renderProfileMedia();
+
+  input.value = "";
+}
+
+
+/* =========================================================
+   DISPLAY PROFILE MEDIA
+   ========================================================= */
+
+async function renderProfileMedia() {
+  const grid =
+    document.getElementById(
+      "profileMediaGrid"
+    );
+
+  if (!grid || !currentUser) {
+    return;
+  }
+
+  const all =
+    await getAllProfileMediaLocal();
+
+  const media =
+    all.filter(item =>
+      item.owner ===
+        currentUser.id &&
+      item.type !==
+        "profilePhoto"
+    );
+
+  if (!media.length) {
+    grid.innerHTML =
+      `<p class="muted">No media uploaded yet.</p>`;
+
+    return;
+  }
+
+  grid.innerHTML = "";
+
+  for (
+    const item of media
+  ) {
+    const div =
+      document.createElement(
+        "div"
       );
 
+    div.className =
+      "profileMediaItem";
+
+    const url =
+      URL.createObjectURL(
+        item.file
+      );
 
     if (
-      document.activeElement ===
-      input
+      item.type ===
+      "image"
     ) {
+      div.innerHTML = `
+        <img
+          src="${url}"
+          alt="Profile media"
+        >
 
-      if (
-        !event.shiftKey
-      ) {
+        <span class="mediaPrivacy">
+          ${
+            item.visibility ===
+            "public"
+              ? "🌎 Public"
+              : "👥 Friends"
+          }
+        </span>
+      `;
+    } else {
+      div.innerHTML = `
+        <video
+          src="${url}"
+          controls
+          preload="metadata"
+        ></video>
 
-        event.preventDefault();
-
-        sendMessage();
-      }
+        <span class="mediaPrivacy">
+          ${
+            item.visibility ===
+            "public"
+              ? "🌎 Public"
+              : "👥 Friends"
+          }
+        </span>
+      `;
     }
+
+    grid.appendChild(
+      div
+    );
   }
-);
+}
 
 
 /* =========================================================
    START APP
    ========================================================= */
 
-(function () {
-
+(() => {
   currentUser =
     loadAccount();
 
   loadFriends();
-
   loadChats();
 
-
   if (currentUser) {
-
     updateHome();
 
     connectSocket();
@@ -2774,8 +2796,819 @@ document.addEventListener(
     showHome();
 
   } else {
-
     showLogin();
   }
 
+  initSpotify().catch(error => console.error("Spotify init error:", error));
 })();
+
+
+/* =========================================================
+   SPOTIFY INTEGRATION
+   =========================================================
+   IMPORTANT: replace SPOTIFY_CLIENT_ID with the Client ID
+   from your Spotify Developer app.
+*/
+
+const SPOTIFY_CLIENT_ID =
+  "PASTE_YOUR_SPOTIFY_CLIENT_ID_HERE";
+
+const SPOTIFY_SCOPES = [
+  "streaming",
+  "user-read-email",
+  "user-read-private",
+  "user-read-playback-state",
+  "user-modify-playback-state"
+].join(" ");
+
+let spotifyPlayer = null;
+let spotifyDeviceId = null;
+let spotifySdkReady = false;
+let spotifyState = null;
+let spotifyAccessToken = null;
+let spotifyRefreshToken = null;
+let spotifyExpiresAt = 0;
+
+const SPOTIFY_TOKEN_KEY =
+  "friendchat_spotify_token";
+
+const SPOTIFY_REFRESH_KEY =
+  "friendchat_spotify_refresh";
+
+const SPOTIFY_EXPIRES_KEY =
+  "friendchat_spotify_expires";
+
+const SPOTIFY_VERIFIER_KEY =
+  "friendchat_spotify_verifier";
+
+const SPOTIFY_STATE_KEY =
+  "friendchat_spotify_state";
+
+
+function spotifyRedirectUri() {
+  return (
+    window.location.origin +
+    window.location.pathname
+  );
+}
+
+
+function spotifyConfigReady() {
+  return (
+    SPOTIFY_CLIENT_ID &&
+    SPOTIFY_CLIENT_ID !==
+      "PASTE_YOUR_SPOTIFY_CLIENT_ID_HERE"
+  );
+}
+
+
+function randomString(
+  length = 64
+) {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+
+  const values =
+    new Uint8Array(
+      length
+    );
+
+  crypto.getRandomValues(
+    values
+  );
+
+  return Array.from(
+    values,
+    value =>
+      chars[
+        value % chars.length
+      ]
+  ).join("");
+}
+
+
+async function spotifySha256(
+  value
+) {
+  const data =
+    new TextEncoder().encode(
+      value
+    );
+
+  return crypto.subtle.digest(
+    "SHA-256",
+    data
+  );
+}
+
+
+function base64Url(
+  buffer
+) {
+  const bytes =
+    new Uint8Array(
+      buffer
+    );
+
+  let binary = "";
+
+  for (
+    const byte of bytes
+  ) {
+    binary +=
+      String.fromCharCode(
+        byte
+      );
+  }
+
+  return btoa(binary)
+    .replace(
+      /\+/g,
+      "-"
+    )
+    .replace(
+      /\//g,
+      "_"
+    )
+    .replace(
+      /=+$/,
+      ""
+    );
+}
+
+
+function loadSpotifyTokens() {
+  spotifyAccessToken =
+    localStorage.getItem(
+      SPOTIFY_TOKEN_KEY
+    ) || null;
+
+  spotifyRefreshToken =
+    localStorage.getItem(
+      SPOTIFY_REFRESH_KEY
+    ) || null;
+
+  spotifyExpiresAt =
+    Number(
+      localStorage.getItem(
+        SPOTIFY_EXPIRES_KEY
+      ) || 0
+    );
+}
+
+
+function saveSpotifyTokens(
+  data
+) {
+  spotifyAccessToken =
+    data.access_token ||
+    null;
+
+  if (
+    data.refresh_token
+  ) {
+    spotifyRefreshToken =
+      data.refresh_token;
+  }
+
+  spotifyExpiresAt =
+    Date.now() +
+    (
+      Number(
+        data.expires_in ||
+        3600
+      ) *
+      1000
+    );
+
+  if (
+    spotifyAccessToken
+  ) {
+    localStorage.setItem(
+      SPOTIFY_TOKEN_KEY,
+      spotifyAccessToken
+    );
+  }
+
+  if (
+    spotifyRefreshToken
+  ) {
+    localStorage.setItem(
+      SPOTIFY_REFRESH_KEY,
+      spotifyRefreshToken
+    );
+  }
+
+  localStorage.setItem(
+    SPOTIFY_EXPIRES_KEY,
+    String(
+      spotifyExpiresAt
+    )
+  );
+}
+
+
+function clearSpotifyTokens() {
+  spotifyAccessToken =
+    null;
+
+  spotifyRefreshToken =
+    null;
+
+  spotifyExpiresAt =
+    0;
+
+  localStorage.removeItem(
+    SPOTIFY_TOKEN_KEY
+  );
+
+  localStorage.removeItem(
+    SPOTIFY_REFRESH_KEY
+  );
+
+  localStorage.removeItem(
+    SPOTIFY_EXPIRES_KEY
+  );
+
+  localStorage.removeItem(
+    SPOTIFY_VERIFIER_KEY
+  );
+
+  localStorage.removeItem(
+    SPOTIFY_STATE_KEY
+  );
+}
+
+
+function updateSpotifyStatus(
+  text
+) {
+  const el =
+    document.getElementById(
+      "spotifyConnectionStatus"
+    );
+
+  if (el) {
+    el.textContent =
+      text;
+  }
+}
+
+
+function openSpotifyPanel() {
+  const panel =
+    document.getElementById(
+      "spotifyPanel"
+    );
+
+  if (panel) {
+    panel.classList.remove(
+      "hidden"
+    );
+  }
+
+  const button =
+    document.getElementById(
+      "spotifyOpenButton"
+    );
+
+  if (button) {
+    button.classList.remove(
+      "hidden"
+    );
+  }
+}
+
+
+function closeSpotifyPanel() {
+  const panel =
+    document.getElementById(
+      "spotifyPanel"
+    );
+
+  if (panel) {
+    panel.classList.add(
+      "hidden"
+    );
+  }
+
+  // IMPORTANT: closing this panel never pauses Spotify.
+}
+
+
+function toggleSpotifyPanel() {
+  const panel =
+    document.getElementById(
+      "spotifyPanel"
+    );
+
+  if (!panel) {
+    return;
+  }
+
+  if (
+    panel.classList.contains(
+      "hidden"
+    )
+  ) {
+    openSpotifyPanel();
+  } else {
+    closeSpotifyPanel();
+  }
+}
+
+
+async function loginWithSpotify() {
+  if (
+    !spotifyConfigReady()
+  ) {
+    updateSpotifyStatus(
+      "Spotify Client ID is missing"
+    );
+
+    const hint =
+      document.getElementById(
+        "spotifySetupHint"
+      );
+
+    if (hint) {
+      hint.textContent =
+        "Add your Spotify Client ID in app.js first.";
+    }
+
+    return;
+  }
+
+  const verifier =
+    randomString(96);
+
+  const challenge =
+    base64Url(
+      await spotifySha256(
+        verifier
+      )
+    );
+
+  const state =
+    randomString(32);
+
+  localStorage.setItem(
+    SPOTIFY_VERIFIER_KEY,
+    verifier
+  );
+
+  localStorage.setItem(
+    SPOTIFY_STATE_KEY,
+    state
+  );
+
+  const params =
+    new URLSearchParams({
+      response_type:
+        "code",
+
+      client_id:
+        SPOTIFY_CLIENT_ID,
+
+      scope:
+        SPOTIFY_SCOPES,
+
+      redirect_uri:
+        spotifyRedirectUri(),
+
+      state,
+
+      code_challenge_method:
+        "S256",
+
+      code_challenge:
+        challenge
+    });
+
+  window.location.href =
+    "https://accounts.spotify.com/authorize?" +
+    params.toString();
+}
+
+
+async function exchangeSpotifyCode(
+  code
+) {
+  const verifier =
+    localStorage.getItem(
+      SPOTIFY_VERIFIER_KEY
+    );
+
+  if (!verifier) {
+    throw new Error(
+      "Spotify login verifier is missing."
+    );
+  }
+
+  const body =
+    new URLSearchParams({
+      grant_type:
+        "authorization_code",
+
+      code,
+
+      redirect_uri:
+        spotifyRedirectUri(),
+
+      client_id:
+        SPOTIFY_CLIENT_ID,
+
+      code_verifier:
+        verifier
+    });
+
+  const response =
+    await fetch(
+      "https://accounts.spotify.com/api/token",
+      {
+        method:
+          "POST",
+
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded"
+        },
+
+        body
+      }
+    );
+
+  const data =
+    await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.error_description ||
+        "Spotify token exchange failed."
+    );
+  }
+
+  saveSpotifyTokens(
+    data
+  );
+
+  localStorage.removeItem(
+    SPOTIFY_VERIFIER_KEY
+  );
+
+  localStorage.removeItem(
+    SPOTIFY_STATE_KEY
+  );
+}
+
+
+async function refreshSpotifyAccessToken() {
+  if (
+    !spotifyRefreshToken
+  ) {
+    return false;
+  }
+
+  const body =
+    new URLSearchParams({
+      grant_type:
+        "refresh_token",
+
+      refresh_token:
+        spotifyRefreshToken,
+
+      client_id:
+        SPOTIFY_CLIENT_ID
+    });
+
+  const response =
+    await fetch(
+      "https://accounts.spotify.com/api/token",
+      {
+        method:
+          "POST",
+
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded"
+        },
+
+        body
+      }
+    );
+
+  if (!response.ok) {
+    clearSpotifyTokens();
+
+    return false;
+  }
+
+  const data =
+    await response.json();
+
+  saveSpotifyTokens(
+    data
+  );
+
+  return true;
+}
+
+
+async function getSpotifyAccessToken() {
+  loadSpotifyTokens();
+
+  if (
+    spotifyAccessToken &&
+    Date.now() <
+      spotifyExpiresAt -
+        60000
+  ) {
+    return spotifyAccessToken;
+  }
+
+  if (
+    await refreshSpotifyAccessToken()
+  ) {
+    return spotifyAccessToken;
+  }
+
+  return null;
+}
+
+
+async function spotifyApi(
+  path,
+  options = {}
+) {
+  const token =
+    await getSpotifyAccessToken();
+
+  if (!token) {
+    throw new Error(
+      "Spotify is not connected."
+    );
+  }
+
+  const headers = {
+    Authorization:
+      "Bearer " + token,
+
+    ...(options.headers || {})
+  };
+
+  let response =
+    await fetch(
+      "https://api.spotify.com/v1" +
+        path,
+      {
+        ...options,
+
+        headers
+      }
+    );
+
+  if (
+    response.status ===
+      401 &&
+    spotifyRefreshToken
+  ) {
+    if (
+      await refreshSpotifyAccessToken()
+    ) {
+      headers.Authorization =
+        "Bearer " +
+        spotifyAccessToken;
+
+      response =
+        await fetch(
+          "https://api.spotify.com/v1" +
+            path,
+          {
+            ...options,
+
+            headers
+          }
+        );
+    }
+  }
+
+  if (!response.ok) {
+    let message =
+      "Spotify request failed.";
+
+    try {
+      const error =
+        await response.json();
+
+      message =
+        error.error?.message ||
+        message;
+
+    } catch {}
+
+    throw new Error(
+      message
+    );
+  }
+
+  if (
+    response.status ===
+    204
+  ) {
+    return null;
+  }
+
+  return response.json();
+}
+
+
+async function searchSpotifyTracks() {
+  const input =
+    document.getElementById(
+      "spotifySearchInput"
+    );
+
+  const results =
+    document.getElementById(
+      "spotifySearchResults"
+    );
+
+  const query =
+    input?.value.trim();
+
+  if (
+    !query ||
+    !results
+  ) {
+    return;
+  }
+
+  results.innerHTML =
+    '<div class="spotifyLoading">Searching...</div>';
+
+  try {
+    const data =
+      await spotifyApi(
+        "/search?" +
+          new URLSearchParams({
+            q:
+              query,
+
+            type:
+              "track",
+
+            limit:
+              "10"
+          })
+      );
+
+    const tracks =
+      data.tracks?.items ||
+      [];
+
+    if (!tracks.length) {
+      results.innerHTML =
+        '<div class="spotifyEmpty">No songs found.</div>';
+
+      return;
+    }
+
+    results.innerHTML =
+      "";
+
+    tracks.forEach(
+      track => {
+        const row =
+          document.createElement(
+            "div"
+          );
+
+        row.className =
+          "spotifyResult";
+
+        const image =
+          track.album
+            ?.images?.[2]
+            ?.url ||
+          track.album
+            ?.images?.[0]
+            ?.url ||
+          "";
+
+        row.innerHTML = `
+          <img
+            src="${escapeHtml(
+              image
+            )}"
+            alt=""
+          >
+
+          <div class="spotifyResultText">
+            <strong>
+              ${escapeHtml(
+                track.name
+              )}
+            </strong>
+
+            <span>
+              ${escapeHtml(
+                (
+                  track.artists ||
+                  []
+                )
+                  .map(
+                    a =>
+                      a.name
+                  )
+                  .join(", ")
+              )}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onclick="playSpotifyTrack(${JSON.stringify(
+              track.uri
+            )})"
+          >
+            ▶
+          </button>
+        `;
+
+        results.appendChild(
+          row
+        );
+      }
+    );
+
+  } catch (error) {
+    console.error(
+      "Spotify search error:",
+      error
+    );
+
+    results.innerHTML =
+      `<div class="spotifyError">
+        ${escapeHtml(
+          error.message
+        )}
+      </div>`;
+  }
+}
+
+
+async function playSpotifyTrack(
+  uri
+) {
+  if (!spotifyDeviceId) {
+    updateSpotifyStatus(
+      "Spotify player is connecting..."
+    );
+
+    if (spotifyPlayer) {
+      await spotifyPlayer.connect();
+    }
+
+    if (!spotifyDeviceId) {
+      alert(
+        "Spotify player is not ready yet. Please wait a moment and try again."
+      );
+
+      return;
+    }
+  }
+
+  try {
+    await spotifyApi(
+      "/me/player/play?device_id=" +
+        encodeURIComponent(
+          spotifyDeviceId
+        ),
+      {
+        method:
+          "PUT",
+
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify({
+            uris: [uri]
+          })
+      }
+    );
+
+  } catch (error) {
+    console.error(
+      "Spotify playback error:",
+      error
+    );
+
+    alert(
+      error.message +
+        " If your account is not Premium, browser playback will not work."
+    );
+  }
+}
