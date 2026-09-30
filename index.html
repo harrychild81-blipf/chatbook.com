@@ -13,7 +13,7 @@
 
   <link
     rel="stylesheet"
-    href="style.css"
+    href="style.css?v=2"
   >
 </head>
 
@@ -48,19 +48,25 @@
         id="loginEmail"
         type="email"
         placeholder="Email"
+        autocomplete="email"
       >
 
       <input
         id="loginPassword"
         type="password"
         placeholder="Password"
+        autocomplete="current-password"
       >
 
-      <button onclick="login()">
+      <button
+        type="button"
+        onclick="login()"
+      >
         Log in
       </button>
 
       <button
+        type="button"
         class="secondary"
         onclick="showSignup()"
       >
@@ -98,26 +104,34 @@
 
       <input
         id="signupName"
+        type="text"
         placeholder="Your name"
+        autocomplete="name"
       >
 
       <input
         id="signupEmail"
         type="email"
         placeholder="Email"
+        autocomplete="email"
       >
 
       <input
         id="signupPassword"
         type="password"
         placeholder="Password (6+ characters)"
+        autocomplete="new-password"
       >
 
-      <button onclick="signup()">
+      <button
+        type="button"
+        onclick="signup()"
+      >
         Create account
       </button>
 
       <button
+        type="button"
         class="secondary"
         onclick="showLogin()"
       >
@@ -146,16 +160,20 @@
     <header>
 
       <div>
+
         <h2>
           FriendChat
         </h2>
 
         <small id="myIdLabel"></small>
+
       </div>
 
-      <!-- STATUS INFO BUTTON -->
+
+      <!-- STATUS INFO -->
 
       <button
+        type="button"
         class="statusInfoButton"
         onclick="toggleStatusInfo()"
         title="Status information"
@@ -163,9 +181,14 @@
         ⓘ
       </button>
 
+
+      <!-- ADD FRIEND -->
+
       <button
+        type="button"
         class="icon"
         onclick="showAdd()"
+        title="Add friend"
       >
         ＋
       </button>
@@ -189,6 +212,7 @@
         </strong>
 
         <button
+          type="button"
           class="statusInfoClose"
           onclick="toggleStatusInfo()"
         >
@@ -202,9 +226,12 @@
 
         <div class="statusExplanationItem">
 
-          <span class="statusLegendDot active"></span>
+          <span
+            class="statusLegendDot active"
+          ></span>
 
           <div>
+
             <strong>
               Active
             </strong>
@@ -212,6 +239,7 @@
             <p>
               The person is online and available.
             </p>
+
           </div>
 
         </div>
@@ -219,9 +247,12 @@
 
         <div class="statusExplanationItem">
 
-          <span class="statusLegendDot busy"></span>
+          <span
+            class="statusLegendDot busy"
+          ></span>
 
           <div>
+
             <strong>
               Busy
             </strong>
@@ -229,6 +260,7 @@
             <p>
               The person is online and currently chatting with someone else.
             </p>
+
           </div>
 
         </div>
@@ -236,9 +268,12 @@
 
         <div class="statusExplanationItem">
 
-          <span class="statusLegendDot offline"></span>
+          <span
+            class="statusLegendDot offline"
+          ></span>
 
           <div>
+
             <strong>
               Offline
             </strong>
@@ -246,6 +281,7 @@
             <p>
               The person is not currently connected to FriendChat.
             </p>
+
           </div>
 
         </div>
@@ -268,18 +304,24 @@
         ?
       </div>
 
+
       <div class="profileInfo">
 
         <strong id="myName"></strong>
 
         <div class="muted">
+
           Your ID:
+
           <span id="myId"></span>
+
         </div>
 
       </div>
 
+
       <button
+        type="button"
         class="small secondary"
         onclick="logout()"
       >
@@ -289,17 +331,22 @@
     </div>
 
 
-    <!-- SEARCH -->
+    <!-- =========================
+         SEARCH
+         ========================= -->
 
     <input
       id="search"
       class="search"
       placeholder="Search friends..."
+      autocomplete="off"
       oninput="renderFriends()"
     >
 
 
-    <!-- FRIEND LIST -->
+    <!-- =========================
+         FRIEND LIST
+         ========================= -->
 
     <div
       id="friendList"
@@ -321,6 +368,7 @@
     <header>
 
       <button
+        type="button"
         class="back"
         onclick="showHome()"
       >
@@ -338,10 +386,15 @@
 
       <input
         id="addId"
+        type="text"
         placeholder="Enter Friend ID"
+        autocomplete="off"
       >
 
-      <button onclick="addById()">
+      <button
+        type="button"
+        onclick="addById()"
+      >
         Add Friend
       </button>
 
@@ -371,11 +424,13 @@
     <header>
 
       <button
+        type="button"
         class="back"
         onclick="showHome()"
       >
         ←
       </button>
+
 
       <div>
 
@@ -390,7 +445,9 @@
     </header>
 
 
-    <!-- MESSAGES -->
+    <!-- =========================
+         MESSAGES
+         ========================= -->
 
     <div
       id="messages"
@@ -398,13 +455,17 @@
     ></div>
 
 
-    <!-- MESSAGE COMPOSER -->
+    <!-- =========================
+         MESSAGE COMPOSER
+         ========================= -->
 
     <div class="composer">
 
       <button
+        type="button"
         class="emojiButton"
         onclick="toggleEmojiPicker()"
+        title="Emoji"
       >
         😊
       </button>
@@ -412,8 +473,10 @@
 
       <input
         id="messageInput"
+        type="text"
         placeholder="Type a message..."
-        onkeydown="if(event.key==='Enter') sendMessage()"
+        autocomplete="off"
+        onkeydown="if(event.key === 'Enter') sendMessage()"
       >
 
 
@@ -435,14 +498,19 @@
       </label>
 
 
-      <button onclick="sendMessage()">
+      <button
+        type="button"
+        onclick="sendMessage()"
+      >
         Send
       </button>
 
     </div>
 
 
-    <!-- EMOJI PICKER -->
+    <!-- =========================
+         EMOJI PICKER
+         ========================= -->
 
     <div
       id="emojiPicker"
@@ -464,6 +532,7 @@
     <header>
 
       <button
+        type="button"
         class="back"
         onclick="showHome()"
       >
@@ -480,7 +549,9 @@
     <div class="profilePage">
 
 
-      <!-- LARGE PROFILE PHOTO -->
+      <!-- =========================
+           PROFILE PHOTO
+           ========================= -->
 
       <div class="bigProfile">
 
@@ -511,14 +582,18 @@
       </div>
 
 
-      <!-- NAME -->
+      <!-- =========================
+           PROFILE NAME
+           ========================= -->
 
       <h2
         id="profilePageName"
       ></h2>
 
 
-      <!-- FRIENDCHAT ID -->
+      <!-- =========================
+           FRIENDCHAT ID
+           ========================= -->
 
       <p class="muted">
 
@@ -531,9 +606,12 @@
       </p>
 
 
-      <!-- EDIT NAME -->
+      <!-- =========================
+           EDIT PROFILE
+           ========================= -->
 
       <button
+        type="button"
         onclick="editProfileName()"
       >
         Edit profile
@@ -568,7 +646,9 @@
       </div>
 
 
-      <!-- MEDIA GRID -->
+      <!-- =========================
+           MEDIA GRID
+           ========================= -->
 
       <div
         id="profileMediaGrid"
@@ -593,6 +673,7 @@
     <!-- CHATS -->
 
     <button
+      type="button"
       onclick="showHome()"
     >
 
@@ -610,6 +691,7 @@
     <!-- FRIENDS -->
 
     <button
+      type="button"
       onclick="showHome()"
     >
 
@@ -627,6 +709,7 @@
     <!-- PROFILE -->
 
     <button
+      type="button"
       onclick="showProfile()"
     >
 
@@ -669,27 +752,125 @@
 
     <div class="reactionRow">
 
-      <button onclick="reactToMessage('👍')">👍</button>
-      <button onclick="reactToMessage('❤️')">❤️</button>
-      <button onclick="reactToMessage('😂')">😂</button>
-      <button onclick="reactToMessage('😮')">😮</button>
-      <button onclick="reactToMessage('😢')">😢</button>
-      <button onclick="reactToMessage('😡')">😡</button>
-      <button onclick="reactToMessage('🔥')">🔥</button>
-      <button onclick="reactToMessage('😍')">😍</button>
-      <button onclick="reactToMessage('😭')">😭</button>
-      <button onclick="reactToMessage('🤣')">🤣</button>
-      <button onclick="reactToMessage('😎')">😎</button>
-      <button onclick="reactToMessage('🥰')">🥰</button>
-      <button onclick="reactToMessage('🎉')">🎉</button>
-      <button onclick="reactToMessage('👏')">👏</button>
-      <button onclick="reactToMessage('💀')">💀</button>
-      <button onclick="reactToMessage('👎')">👎</button>
+      <button
+        type="button"
+        onclick="reactToMessage('👍')"
+      >
+        👍
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('❤️')"
+      >
+        ❤️
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😂')"
+      >
+        😂
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😮')"
+      >
+        😮
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😢')"
+      >
+        😢
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😡')"
+      >
+        😡
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('🔥')"
+      >
+        🔥
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😍')"
+      >
+        😍
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😭')"
+      >
+        😭
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('🤣')"
+      >
+        🤣
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😎')"
+      >
+        😎
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('🥰')"
+      >
+        🥰
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('🎉')"
+      >
+        🎉
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('👏')"
+      >
+        👏
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('💀')"
+      >
+        💀
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('👎')"
+      >
+        👎
+      </button>
 
     </div>
 
 
+    <!-- UNSEND -->
+
     <button
+      type="button"
       class="menuAction"
       onclick="unsendMessage()"
     >
@@ -697,7 +878,10 @@
     </button>
 
 
+    <!-- DELETE -->
+
     <button
+      type="button"
       class="menuAction danger"
       onclick="deleteMessage()"
     >
@@ -705,7 +889,10 @@
     </button>
 
 
+    <!-- CANCEL -->
+
     <button
+      type="button"
       class="menuAction secondary"
       onclick="closeMessageMenu()"
     >
@@ -742,7 +929,13 @@ function toggleStatusInfo() {
      MAIN APP
      ========================= -->
 
-<script src="app.js"></script>
+<!--
+  ?v=2 forces the browser to load the newest app.js
+  instead of an old cached copy.
+-->
+<script
+  src="app.js?v=2"
+></script>
 
 </body>
 
