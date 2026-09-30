@@ -6,6 +6,19 @@ const WebSocket = require("ws");
 const PORT = process.env.PORT || 8080;
 
 /* =====================================================
+   FILE LOCATION
+   ===================================================== */
+
+// On Render:
+// index.html
+// app.js
+// style.css
+// server.js
+// are all in the same folder.
+
+const ROOT_DIR = __dirname;
+
+/* =====================================================
    MEMORY
 ===================================================== */
 
@@ -13,18 +26,6 @@ const users = new Map();
 const sockets = new Map();
 const messages = new Map();
 const profilePhotos = new Map();
-
-/* =====================================================
-   PATH
-===================================================== */
-
-// server.js is inside:
-// FriendChat/server/server.js
-//
-// index.html, app.js and style.css are inside:
-// FriendChat/
-
-const ROOT_DIR = path.resolve(__dirname, "..");
 
 /* =====================================================
    HELPERS
@@ -141,7 +142,7 @@ const server = http.createServer((req, res) => {
   }
 
   /* =================================================
-     USER API
+     USER
   ================================================= */
 
   if (pathname.startsWith("/api/user/")) {
@@ -178,7 +179,7 @@ const server = http.createServer((req, res) => {
   }
 
   /* =================================================
-     PROFILE PHOTO API
+     PROFILE PHOTO
   ================================================= */
 
   if (
@@ -219,13 +220,12 @@ const server = http.createServer((req, res) => {
 
   let requestedPath = pathname;
 
-  // Opening http://localhost:8080
-  // should load index.html
+  // / -> index.html
   if (requestedPath === "/") {
     requestedPath = "/index.html";
   }
 
-  // Remove leading slash
+  // Remove leading /
   requestedPath = requestedPath.replace(
     /^\/+/,
     ""
@@ -332,11 +332,11 @@ const server = http.createServer((req, res) => {
         ".webm":
           "video/webm",
 
-        ".wav":
-          "audio/wav",
-
         ".mp3":
-          "audio/mpeg"
+          "audio/mpeg",
+
+        ".wav":
+          "audio/wav"
       };
 
       res.writeHead(200, {
@@ -369,7 +369,7 @@ wss.on(
     socket.chatWith = null;
 
     /* =================================================
-       MESSAGE
+       MESSAGE HANDLER
     ================================================= */
 
     socket.on(
@@ -473,7 +473,7 @@ wss.on(
         }
 
         /* =============================================
-           USER MUST BE REGISTERED
+           MUST BE REGISTERED
         ============================================= */
 
         if (!socket.userId) {
@@ -512,7 +512,7 @@ wss.on(
         }
 
         /* =============================================
-           TEXT CHAT
+           TEXT MESSAGE
         ============================================= */
 
         if (
@@ -589,7 +589,7 @@ wss.on(
           const receiver =
             sockets.get(to);
 
-          /* Friend offline */
+          /* Receiver offline */
 
           if (
             !receiver ||
@@ -617,7 +617,7 @@ wss.on(
             return;
           }
 
-          /* Save temporary message */
+          /* Save message */
 
           messages.set(
             messageId,
@@ -641,7 +641,7 @@ wss.on(
             }
           );
 
-          /* Send to receiver */
+          /* Send message */
 
           const sent =
             sendSocket(
@@ -666,7 +666,7 @@ wss.on(
             );
 
           /* =========================================
-             DELIVERY
+             DELIVERY TICK
           ========================================= */
 
           if (sent) {
@@ -711,7 +711,7 @@ wss.on(
         }
 
         /* =============================================
-           DELIVERED
+           DELIVERED ACK
         ============================================= */
 
         if (
@@ -731,8 +731,6 @@ wss.on(
           if (!record) {
             return;
           }
-
-          /* Only receiver can confirm */
 
           if (
             socket.userId !==
@@ -786,8 +784,6 @@ wss.on(
           if (!record) {
             return;
           }
-
-          /* Only receiver can mark read */
 
           if (
             socket.userId !==
@@ -1029,8 +1025,6 @@ wss.on(
             return;
           }
 
-          /* Only sender */
-
           if (
             socket.userId !==
             record.from
@@ -1055,7 +1049,7 @@ wss.on(
         }
 
         /* =============================================
-           SERVER DELETE
+           DELETE
         ============================================= */
 
         if (
@@ -1168,8 +1162,6 @@ wss.on(
             photoData
           );
 
-          /* Send photo to connected users */
-
           for (
             const [
               otherId,
@@ -1245,7 +1237,7 @@ wss.on(
     );
 
     /* =================================================
-       SOCKET ERROR
+       ERROR
     ================================================= */
 
     socket.on(
@@ -1292,7 +1284,7 @@ setInterval(
 );
 
 /* =====================================================
-   START SERVER
+   START
 ===================================================== */
 
 server.listen(
@@ -1312,7 +1304,7 @@ server.listen(
     );
 
     console.log(
-      "Project folder:",
+      "Root directory:",
       ROOT_DIR
     );
 
