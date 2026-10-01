@@ -15,115 +15,12 @@
     rel="stylesheet"
     href="style.css?v=2"
   >
-
-<style>
-/* =========================
-   SPOTIFY UI
-   ========================= */
-.spotifyBackground{position:fixed;inset:0;z-index:-2;overflow:hidden;background:#111;pointer-events:none}
-.spotifyBackground img{position:absolute;inset:-30px;width:calc(100% + 60px);height:calc(100% + 60px);object-fit:cover;filter:blur(22px) saturate(1.18);transform:scale(1.08);opacity:.72}
-.spotifyBackground #spotifyBackgroundOverlay{position:absolute;inset:0;background:rgba(0,0,0,var(--spotify-overlay-opacity,.62));backdrop-filter:blur(2px)}
-body:has(.spotifyBackground:not(.hidden)){background:#080808}
-.app{position:relative;z-index:1}
-.spotifyOpenButton{position:fixed;left:10px;top:50%;transform:translateY(-50%);width:48px;height:48px;border:0;border-radius:50%;background:#1ed760;color:#fff;font-size:24px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:100000;cursor:pointer}
-.spotifyOpenButton:hover{transform:translateY(-50%) scale(1.06)}
-.spotifyPanel{position:fixed;right:18px;top:18px;width:min(390px,calc(100vw - 36px));max-height:calc(100vh - 36px);overflow:auto;background:rgba(18,18,18,.96);color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:100001;padding:16px}
-.spotifyPanelHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.spotifyPanelHeader>div{display:flex;flex-direction:column;gap:2px}.spotifyPanelHeader span{font-size:12px;color:#aaa}
-.spotifyCloseButton{border:0;background:transparent;color:#fff;font-size:28px;cursor:pointer}
-.spotifyLoginBox{text-align:center;padding:28px 12px}.spotifyBigIcon{font-size:52px;margin-bottom:10px}.spotifyLoginBox button,.spotifySearchRow button,.spotifyResult button{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;background:#1ed760;color:#081b0e;font-weight:700}
-.spotifyHint{font-size:12px;color:#ffcc66;margin-top:14px;line-height:1.4}
-.spotifyNowPlaying{display:flex;gap:12px;align-items:center;margin-bottom:16px}.spotifyCover{width:72px;height:72px;object-fit:cover;border-radius:10px;background:#333}.spotifyTrackText{display:flex;flex-direction:column;gap:5px;min-width:0}.spotifyTrackText strong,.spotifyTrackText span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.spotifyTrackText span{color:#bbb;font-size:13px}
-.spotifySearchRow{display:flex;gap:8px}.spotifySearchRow input{flex:1;min-width:0;border:1px solid #444;background:#242424;color:#fff;border-radius:10px;padding:11px 12px;outline:none}.spotifySearchRow input:focus{border-color:#1ed760}
-.spotifySearchResults{margin-top:12px;display:flex;flex-direction:column;gap:7px}.spotifyResult{display:flex;align-items:center;gap:9px;background:#222;border-radius:10px;padding:7px}.spotifyResult img{width:44px;height:44px;border-radius:6px;object-fit:cover;background:#333}.spotifyResultText{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.spotifyResultText strong,.spotifyResultText span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.spotifyResultText span{font-size:11px;color:#aaa}.spotifyResult button{padding:8px 10px}.spotifyLoading,.spotifyEmpty,.spotifyError{color:#aaa;font-size:13px;padding:10px;text-align:center}
-.spotifyControls{display:flex;justify-content:center;gap:12px;margin:16px 0}.spotifyControls button{width:44px;height:44px;border:0;border-radius:50%;background:#2b2b2b;color:#fff;font-size:18px;cursor:pointer}.spotifyControls button:nth-child(2){background:#1ed760;color:#061b0c;font-size:20px}.spotifyVolumeRow{display:flex;gap:8px;align-items:center}.spotifyVolumeRow input{flex:1;accent-color:#1ed760}.spotifyLogoutButton{margin-top:14px;width:100%;border:1px solid #444;background:transparent;color:#ddd;border-radius:10px;padding:9px;cursor:pointer}
-.spotifyMiniPlayer{position:fixed;right:18px;bottom:84px;z-index:100000;display:flex;align-items:center;gap:9px;width:min(280px,calc(100vw - 36px));padding:8px;background:rgba(20,20,20,.94);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);text-align:left;cursor:pointer}.spotifyMiniPlayer img{width:42px;height:42px;object-fit:cover;border-radius:6px;background:#333}.spotifyMiniPlayer span{display:flex;flex-direction:column;min-width:0}.spotifyMiniPlayer strong,.spotifyMiniPlayer small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.spotifyMiniPlayer small{color:#aaa;margin-top:2px}
-.hidden{display:none!important}
-@media(max-width:600px){.spotifyOpenButton{left:8px;width:44px;height:44px}.spotifyPanel{right:8px;top:8px;width:calc(100vw - 16px);max-height:calc(100vh - 16px)}.spotifyMiniPlayer{right:8px;bottom:74px}}
-</style>
 </head>
+
 
 <body>
 
 <div class="app">
-
-  <!-- =========================
-       SPOTIFY BACKGROUND
-       ========================= -->
-  <div id="spotifyBackground" class="spotifyBackground hidden" aria-hidden="true">
-    <img id="spotifyBackgroundImage" alt="">
-    <div id="spotifyBackgroundOverlay"></div>
-  </div>
-
-  <!-- Spotify quick button -->
-  <button
-    id="spotifyOpenButton"
-    class="spotifyOpenButton hidden"
-    type="button"
-    onclick="toggleSpotifyPanel()"
-    title="Spotify"
-    aria-label="Open Spotify"
-  >🎵</button>
-
-  <!-- =========================
-       SPOTIFY PLAYER PANEL
-       ========================= -->
-  <aside id="spotifyPanel" class="spotifyPanel hidden" aria-label="Spotify">
-    <div class="spotifyPanelHeader">
-      <div>
-        <strong>Spotify</strong>
-        <span id="spotifyConnectionStatus">Not connected</span>
-      </div>
-      <button type="button" class="spotifyCloseButton" onclick="closeSpotifyPanel()" title="Close">×</button>
-    </div>
-
-    <div id="spotifyLoginBox" class="spotifyLoginBox">
-      <div class="spotifyBigIcon">🎵</div>
-      <h3>Connect Spotify</h3>
-      <p class="muted">Log in with your Spotify account to play music in FriendChat.</p>
-      <button type="button" onclick="loginWithSpotify()">Log in with Spotify</button>
-      <p id="spotifySetupHint" class="spotifyHint"></p>
-    </div>
-
-    <div id="spotifyPlayerBox" class="hidden">
-      <div class="spotifyNowPlaying">
-        <img id="spotifyCover" src="" alt="Album cover" class="spotifyCover">
-        <div class="spotifyTrackText">
-          <strong id="spotifyTrackName">Nothing playing</strong>
-          <span id="spotifyArtistName">—</span>
-        </div>
-      </div>
-
-      <div class="spotifySearchRow">
-        <input id="spotifySearchInput" type="search" placeholder="Search songs..." autocomplete="off">
-        <button type="button" onclick="searchSpotifyTracks()">Search</button>
-      </div>
-
-      <div id="spotifySearchResults" class="spotifySearchResults"></div>
-
-      <div class="spotifyControls">
-        <button type="button" onclick="spotifyPrevious()" title="Previous">⏮</button>
-        <button type="button" id="spotifyPlayPause" onclick="spotifyTogglePlay()" title="Play/Pause">▶</button>
-        <button type="button" onclick="spotifyNext()" title="Next">⏭</button>
-      </div>
-
-      <div class="spotifyVolumeRow">
-        <span>🔊</span>
-        <input id="spotifyVolume" type="range" min="0" max="100" value="50" oninput="spotifySetVolume(this.value)">
-      </div>
-
-      <button type="button" class="spotifyLogoutButton" onclick="logoutSpotify()">Disconnect Spotify</button>
-    </div>
-  </aside>
-
-  <!-- Small player indicator remains after panel is closed -->
-  <button id="spotifyMiniPlayer" class="spotifyMiniPlayer hidden" type="button" onclick="openSpotifyPanel()">
-    <img id="spotifyMiniCover" alt="">
-    <span>
-      <strong id="spotifyMiniTitle">Spotify</strong>
-      <small id="spotifyMiniArtist">Not playing</small>
-    </span>
-  </button>
 
 
   <!-- =========================
@@ -186,6 +83,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     </div>
 
   </section>
+
 
 
   <!-- =========================
@@ -253,6 +151,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
   </section>
 
 
+
   <!-- =========================
        HOME SCREEN
        ========================= -->
@@ -299,6 +198,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
       </button>
 
     </header>
+
 
 
     <!-- =========================
@@ -396,6 +296,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     </div>
 
 
+
     <!-- =========================
          PROFILE PREVIEW
          ========================= -->
@@ -436,6 +337,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     </div>
 
 
+
     <!-- =========================
          SEARCH
          ========================= -->
@@ -449,6 +351,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     >
 
 
+
     <!-- =========================
          FRIEND LIST
          ========================= -->
@@ -459,6 +362,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     ></div>
 
   </section>
+
 
 
   <!-- =========================
@@ -517,6 +421,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
   </section>
 
 
+
   <!-- =========================
        CHAT SCREEN
        ========================= -->
@@ -550,6 +455,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     </header>
 
 
+
     <!-- =========================
          MESSAGES
          ========================= -->
@@ -558,6 +464,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
       id="messages"
       class="messages"
     ></div>
+
 
 
     <!-- =========================
@@ -613,6 +520,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     </div>
 
 
+
     <!-- =========================
          EMOJI PICKER
          ========================= -->
@@ -623,6 +531,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     ></div>
 
   </section>
+
 
 
   <!-- =========================
@@ -654,9 +563,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     <div class="profilePage">
 
 
-      <!-- =========================
-           PROFILE PHOTO
-           ========================= -->
+      <!-- PROFILE PHOTO -->
 
       <div class="bigProfile">
 
@@ -687,18 +594,16 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
       </div>
 
 
-      <!-- =========================
-           PROFILE NAME
-           ========================= -->
+
+      <!-- PROFILE NAME -->
 
       <h2
         id="profilePageName"
       ></h2>
 
 
-      <!-- =========================
-           FRIENDCHAT ID
-           ========================= -->
+
+      <!-- FRIENDCHAT ID -->
 
       <p class="muted">
 
@@ -711,9 +616,8 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
       </p>
 
 
-      <!-- =========================
-           EDIT PROFILE
-           ========================= -->
+
+      <!-- EDIT PROFILE -->
 
       <button
         type="button"
@@ -723,9 +627,8 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
       </button>
 
 
-      <!-- =========================
-           MY MEDIA
-           ========================= -->
+
+      <!-- MY MEDIA -->
 
       <div class="profileMediaHeader">
 
@@ -751,9 +654,8 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
       </div>
 
 
-      <!-- =========================
-           MEDIA GRID
-           ========================= -->
+
+      <!-- MEDIA GRID -->
 
       <div
         id="profileMediaGrid"
@@ -764,6 +666,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     </div>
 
   </section>
+
 
 
   <!-- =========================
@@ -831,6 +734,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
   </nav>
 
 </div>
+
 
 
 <!-- =========================
@@ -972,6 +876,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     </div>
 
 
+
     <!-- UNSEND -->
 
     <button
@@ -983,6 +888,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     </button>
 
 
+
     <!-- DELETE -->
 
     <button
@@ -992,6 +898,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
     >
       Delete
     </button>
+
 
 
     <!-- CANCEL -->
@@ -1007,6 +914,7 @@ body:has(.spotifyBackground:not(.hidden)){background:#080808}
   </div>
 
 </div>
+
 
 
 <!-- =========================
@@ -1030,20 +938,40 @@ function toggleStatusInfo() {
 </script>
 
 
-<!-- =========================
-     MAIN APP
-     ========================= -->
 
-<!-- Spotify SDK -->
+<!-- =====================================================
+     FRIENDCHAT SPOTIFY
+     ===================================================== -->
+
+<!-- Spotify Web Playback SDK -->
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
 
-<!--
-  ?v=3 forces the browser to load the newest app.js
-  instead of an old cached copy.
--->
-<script
-  src="app.js?v=3"
-></script>
+<!-- Spotify CSS -->
+<link
+  rel="stylesheet"
+  href="spotify/spotify.css"
+>
+
+
+<!-- Spotify API -->
+<script src="spotify/spotify-api.js"></script>
+
+
+<!-- Spotify Player -->
+<script src="spotify/spotify-player.js"></script>
+
+
+<!-- Spotify UI -->
+<script src="spotify/spotify.js"></script>
+
+
+
+<!-- =====================================================
+     MAIN FRIENDCHAT APP
+     ===================================================== -->
+
+<script src="app.js?v=4"></script>
+
 
 </body>
 
