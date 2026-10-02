@@ -22,8 +22,9 @@
     --fc-radius: 18px;
     --fc-ease: cubic-bezier(.22,1,.36,1);
 
-    /* FLOATING NAVIGATION */
+    /* FLOATING BAR */
     --fc-nav-width: 68px;
+    --fc-nav-left: 14px;
     --fc-nav-top: 20px;
     --fc-nav-bottom: 20px;
 }
@@ -46,7 +47,7 @@ body {
     margin: 0 !important;
     padding: 0 !important;
 
-    background: var(--fc-bg) !important;
+    background: var(--fc-bg);
     color: var(--fc-text);
 
     overflow-x: hidden;
@@ -64,18 +65,42 @@ textarea {
 
 
 /* =========================================================
-   MAIN APP
+   IMPORTANT:
+   DO NOT CHANGE FRIENDCHAT PAGE WIDTH
    ========================================================= */
 
 .app,
 #app {
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 100% !important;
-    min-height: 100vh !important;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
 
     margin: 0 !important;
     padding: 0 !important;
+
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   SCREENS
+   ========================================================= */
+
+#loginScreen,
+#signupScreen,
+#homeScreen,
+#addScreen,
+#chatScreen,
+#profileScreen {
+    box-sizing: border-box;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    left: auto !important;
+    right: auto !important;
+
+    transform: none !important;
 }
 
 
@@ -85,46 +110,28 @@ textarea {
 
 #loginScreen,
 #signupScreen {
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 100% !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
+    width: 100%;
+    min-width: 0;
 }
 
 
 /* =========================================================
    MAIN SCREENS
-   IMPORTANT:
-   These MUST remain full width.
-   The floating bar overlays them.
    ========================================================= */
 
 #homeScreen,
+#addScreen,
 #chatScreen,
-#profileScreen,
-#addScreen {
+#profileScreen {
+    position: relative;
 
-    position: relative !important;
+    width: 100%;
+    max-width: none;
 
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 100% !important;
-
-    min-height: 100vh !important;
+    min-height: 100vh;
 
     margin: 0 !important;
     padding-left: 0 !important;
-
-    left: 0 !important;
-
-    border: 0 !important;
-    border-radius: 0 !important;
-
-    box-shadow: none !important;
-
-    transform: none !important;
 }
 
 
@@ -133,16 +140,16 @@ textarea {
    ========================================================= */
 
 #homeScreen {
-
     background:
         radial-gradient(
             circle at 15% 0%,
             rgba(108,124,255,.08),
             transparent 28%
         ),
-        var(--fc-bg) !important;
+        var(--fc-bg);
 
-    overflow-y: auto !important;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 
@@ -151,79 +158,56 @@ textarea {
    ========================================================= */
 
 #homeScreen > header {
+    width: 100%;
 
-    width: 100% !important;
-
-    min-height: 86px !important;
+    min-height: 86px;
 
     margin: 0 !important;
 
-    padding: 20px 28px !important;
+    padding: 20px 28px;
 
-    border-radius: 0 !important;
+    border-radius: 0;
+    border: 0;
 
-    border: 0 !important;
+    border-bottom: 1px solid var(--fc-border);
 
-    border-bottom:
-        1px solid var(--fc-border) !important;
-
-    background:
-        rgba(7,10,16,.88) !important;
+    background: rgba(7,10,16,.88);
 
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
-
-    box-sizing: border-box !important;
 }
 
 
 /* =========================================================
    HOME CONTENT
+   IMPORTANT:
+   NO LEFT OFFSET FOR THE FLOATING BAR
    ========================================================= */
 
 #homeScreen .profileRow,
 #homeScreen .search,
 #homeScreen .friendList {
+    box-sizing: border-box;
 
-    width:
-        calc(100% - 48px) !important;
-
-    max-width: none !important;
-
-    margin-left:
-        24px !important;
-
-    margin-right:
-        24px !important;
-
-    box-sizing: border-box !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 
+
+/* Keep normal spacing without moving the whole website */
 
 #homeScreen .profileRow {
-
-    margin-top:
-        22px !important;
+    margin-top: 22px !important;
 }
-
 
 #homeScreen .search {
-
-    margin-top:
-        20px !important;
-
-    margin-bottom:
-        20px !important;
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
 }
 
-
 #homeScreen .friendList {
-
-    margin-top:
-        20px !important;
-
-    padding-bottom:
-        100px !important;
+    margin-top: 20px !important;
+    padding-bottom: 100px !important;
 }
 
 
@@ -232,23 +216,15 @@ textarea {
    ========================================================= */
 
 #homeScreen .friendItem {
-
-    width: 100% !important;
-
-    max-width: none !important;
-
     min-height: 88px;
 
     margin: 10px 0 !important;
 
-    border:
-        1px solid transparent !important;
+    border: 1px solid transparent;
 
-    border-radius:
-        18px !important;
+    border-radius: 18px;
 
-    background:
-        rgba(13,18,27,.86) !important;
+    background: rgba(13,18,27,.86);
 
     transition:
         transform .2s ease,
@@ -257,17 +233,12 @@ textarea {
         box-shadow .2s ease;
 }
 
-
 #homeScreen .friendItem:hover {
+    transform: translateX(4px);
 
-    transform:
-        translateX(4px);
+    background: var(--fc-panel-2);
 
-    background:
-        var(--fc-panel-2) !important;
-
-    border-color:
-        var(--fc-border) !important;
+    border-color: var(--fc-border);
 
     box-shadow:
         0 12px 35px rgba(0,0,0,.22);
@@ -275,13 +246,12 @@ textarea {
 
 
 /* =========================================================
-   REMOVE OLD SLIDE ARROW
+   REMOVE OLD ARROW
    ========================================================= */
 
 #fcNavToggle,
 .fc-nav-toggle,
 #fc-nav-toggle {
-
     display: none !important;
 
     visibility: hidden !important;
@@ -291,94 +261,76 @@ textarea {
 
 
 /* =========================================================
-   FLOATING VERTICAL NAVIGATION
-   IMPORTANT:
-   position: fixed means it DOES NOT take page space.
+   FLOATING VERTICAL BAR
+   =========================================================
+   
+   THIS IS THE IMPORTANT PART.
+
+   position: fixed
+   = bar is NOT part of FriendChat layout.
+
+   It will NOT:
+   - push FriendChat right
+   - resize FriendChat
+   - create margin
+   - create padding
+   - change page width
    ========================================================= */
 
 #fcCustomSidebar,
 .fc-sidebar,
 #fc-sidebar {
-
     position: fixed !important;
 
-    left:
-        14px !important;
+    left: var(--fc-nav-left) !important;
+    top: var(--fc-nav-top) !important;
+    bottom: var(--fc-nav-bottom) !important;
 
-    top:
-        var(--fc-nav-top) !important;
+    width: var(--fc-nav-width) !important;
+    height: auto !important;
 
-    bottom:
-        var(--fc-nav-bottom) !important;
+    margin: 0 !important;
+    padding: 10px 8px !important;
 
-    width:
-        var(--fc-nav-width) !important;
+    box-sizing: border-box !important;
 
-    height:
-        auto !important;
+    display: flex !important;
 
-    margin:
-        0 !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
 
-    padding:
-        10px 8px !important;
+    background: rgba(13,18,27,.96) !important;
 
-    box-sizing:
-        border-box !important;
+    border: 1px solid var(--fc-border) !important;
 
-    display:
-        flex !important;
-
-    flex-direction:
-        column !important;
-
-    align-items:
-        center !important;
-
-    justify-content:
-        flex-start !important;
-
-    background:
-        rgba(13,18,27,.96) !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius:
-        20px !important;
+    border-radius: 20px !important;
 
     box-shadow:
         0 18px 60px rgba(0,0,0,.48) !important;
 
-    backdrop-filter:
-        blur(20px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 
-    -webkit-backdrop-filter:
-        blur(20px);
+    z-index: 999999 !important;
 
-    z-index:
-        100020 !important;
+    transform: none !important;
 
-    transform:
-        none !important;
+    opacity: 1 !important;
 
-    opacity:
-        1 !important;
+    visibility: visible !important;
 
-    visibility:
-        visible !important;
+    pointer-events: auto !important;
 
-    pointer-events:
-        auto !important;
+    transition: none !important;
 
-    transition:
-        none !important;
+    overflow: hidden !important;
 }
 
 
 /* =========================================================
-   SIDEBAR OPEN STATE
-   No sliding.
+   OLD OPEN/CLOSED STATES
+   DO NOTHING
    ========================================================= */
 
 #fcCustomSidebar.open,
@@ -387,18 +339,19 @@ textarea {
 .fc-sidebar.fc-sidebar-open,
 #fc-sidebar.open,
 #fc-sidebar.fc-sidebar-open {
+    position: fixed !important;
 
-    transform:
-        none !important;
+    left: var(--fc-nav-left) !important;
+    top: var(--fc-nav-top) !important;
+    bottom: var(--fc-nav-bottom) !important;
 
-    opacity:
-        1 !important;
+    transform: none !important;
 
-    visibility:
-        visible !important;
+    opacity: 1 !important;
 
-    pointer-events:
-        auto !important;
+    visibility: visible !important;
+
+    pointer-events: auto !important;
 }
 
 
@@ -408,53 +361,35 @@ textarea {
 
 #fcCustomSidebar .fc-sidebar-brand,
 .fc-sidebar-brand {
+    width: 100% !important;
 
-    width:
-        100% !important;
+    display: flex !important;
 
-    display:
-        flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-    align-items:
-        center !important;
+    padding: 4px 0 10px !important;
 
-    justify-content:
-        center !important;
+    margin: 0 0 8px !important;
 
-    padding:
-        4px 0 10px !important;
-
-    margin:
-        0 0 8px !important;
-
-    border-bottom:
-        1px solid var(--fc-border) !important;
+    border-bottom: 1px solid var(--fc-border);
 }
 
 
 /* =========================================================
-   SIDEBAR LOGO
+   FC LOGO
    ========================================================= */
 
 .fc-sidebar-logo {
+    width: 40px !important;
+    height: 40px !important;
 
-    width:
-        40px !important;
+    display: grid !important;
+    place-items: center !important;
 
-    height:
-        40px !important;
+    flex-shrink: 0;
 
-    display:
-        grid !important;
-
-    place-items:
-        center !important;
-
-    flex-shrink:
-        0;
-
-    border-radius:
-        12px !important;
+    border-radius: 12px !important;
 
     background:
         linear-gradient(
@@ -463,14 +398,11 @@ textarea {
             var(--fc-accent-2)
         ) !important;
 
-    color:
-        white !important;
+    color: white !important;
 
-    font-size:
-        13px !important;
+    font-size: 13px !important;
 
-    font-weight:
-        900 !important;
+    font-weight: 900 !important;
 
     box-shadow:
         0 8px 25px rgba(108,124,255,.22);
@@ -478,14 +410,12 @@ textarea {
 
 
 /* =========================================================
-   HIDE SIDEBAR TEXT
+   HIDE BRAND TEXT
    ========================================================= */
 
 .fc-sidebar-title,
 .fc-sidebar-sub {
-
-    display:
-        none !important;
+    display: none !important;
 }
 
 
@@ -496,57 +426,36 @@ textarea {
 #fcCustomSidebar .fc-nav-item,
 .fc-nav-item,
 .fc-sidebar-item {
+    width: 50px !important;
+    min-width: 50px !important;
 
-    width:
-        50px !important;
+    height: 50px !important;
+    min-height: 50px !important;
 
-    min-width:
-        50px !important;
+    margin: 4px 0 !important;
 
-    height:
-        50px !important;
+    padding: 0 !important;
 
-    min-height:
-        50px !important;
+    display: flex !important;
 
-    margin:
-        4px 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-    padding:
-        0 !important;
+    gap: 0 !important;
 
-    display:
-        flex !important;
+    border: 0 !important;
 
-    align-items:
-        center !important;
+    border-radius: 14px !important;
 
-    justify-content:
-        center !important;
+    background: transparent !important;
 
-    gap:
-        0 !important;
+    color: var(--fc-text) !important;
 
-    border:
-        0 !important;
+    font-size: 0 !important;
 
-    border-radius:
-        14px !important;
+    text-align: center !important;
 
-    background:
-        transparent !important;
-
-    color:
-        var(--fc-text) !important;
-
-    font-size:
-        0 !important;
-
-    text-align:
-        center !important;
-
-    cursor:
-        pointer !important;
+    cursor: pointer !important;
 
     transition:
         background .18s ease,
@@ -562,15 +471,11 @@ textarea {
 #fcCustomSidebar .fc-nav-item:hover,
 .fc-nav-item:hover,
 .fc-sidebar-item:hover {
+    background: rgba(255,255,255,.08) !important;
 
-    background:
-        rgba(255,255,255,.08) !important;
+    transform: scale(1.06) !important;
 
-    transform:
-        scale(1.06) !important;
-
-    color:
-        white !important;
+    color: white !important;
 }
 
 
@@ -580,30 +485,19 @@ textarea {
 
 .fc-nav-icon,
 .fc-sidebar-icon {
+    width: 38px !important;
+    height: 38px !important;
 
-    width:
-        38px !important;
+    flex-shrink: 0;
 
-    height:
-        38px !important;
+    display: grid !important;
+    place-items: center !important;
 
-    flex-shrink:
-        0;
+    border-radius: 11px !important;
 
-    display:
-        grid !important;
+    background: rgba(255,255,255,.055) !important;
 
-    place-items:
-        center !important;
-
-    border-radius:
-        11px !important;
-
-    background:
-        rgba(255,255,255,.055) !important;
-
-    font-size:
-        18px !important;
+    font-size: 18px !important;
 
     transition:
         background .18s ease,
@@ -613,12 +507,9 @@ textarea {
 
 .fc-nav-item:hover .fc-nav-icon,
 .fc-sidebar-item:hover .fc-sidebar-icon {
+    background: rgba(108,124,255,.16) !important;
 
-    background:
-        rgba(108,124,255,.16) !important;
-
-    transform:
-        scale(1.04);
+    transform: scale(1.04);
 }
 
 
@@ -630,23 +521,19 @@ textarea {
 .fc-sidebar-item .fc-sidebar-text,
 .fc-nav-item span:not(.fc-nav-icon),
 .fc-sidebar-item span:not(.fc-sidebar-icon) {
-
-    display:
-        none !important;
+    display: none !important;
 }
 
 
 /* =========================================================
-   HIDE CHATS / FRIENDS
+   REMOVE CHATS / FRIENDS
    ========================================================= */
 
 #fcCustomSidebar .fc-nav-item[data-nav="chats"],
 #fcCustomSidebar .fc-nav-item[data-nav="friends"],
 .fc-nav-item[data-nav="chats"],
 .fc-nav-item[data-nav="friends"] {
-
-    display:
-        none !important;
+    display: none !important;
 }
 
 
@@ -655,32 +542,23 @@ textarea {
    ========================================================= */
 
 .fc-nav-divider {
+    width: 38px !important;
+    height: 1px !important;
 
-    width:
-        38px !important;
+    margin: 8px 0 !important;
 
-    height:
-        1px !important;
+    flex-shrink: 0;
 
-    margin:
-        8px 0 !important;
-
-    flex-shrink:
-        0;
-
-    background:
-        var(--fc-border) !important;
+    background: var(--fc-border) !important;
 }
 
 
 /* =========================================================
-   THEME BUTTON
+   THEME
    ========================================================= */
 
 .fc-nav-theme {
-
-    color:
-        #b9c1ff !important;
+    color: #b9c1ff !important;
 }
 
 
@@ -691,15 +569,11 @@ textarea {
 #fc-bottom-dock,
 .fc-bottom-dock,
 #bottomNav {
+    display: none !important;
 
-    display:
-        none !important;
+    visibility: hidden !important;
 
-    visibility:
-        hidden !important;
-
-    pointer-events:
-        none !important;
+    pointer-events: none !important;
 }
 
 
@@ -711,9 +585,7 @@ textarea {
 #fc-center-button,
 .fc-dock-btn,
 .fc-dock-button {
-
-    display:
-        none !important;
+    display: none !important;
 }
 
 
@@ -721,60 +593,44 @@ textarea {
    DISCOVERY
    ========================================================= */
 
-#fc-discovery,
+#fcDiscovery,
 .fc-discovery {
+    position: fixed !important;
 
-    position:
-        fixed !important;
+    left: 50% !important;
 
-    left:
-        50% !important;
+    bottom: 30px !important;
 
-    bottom:
-        30px !important;
+    width: min(430px, calc(100vw - 28px)) !important;
 
-    width:
-        min(430px, calc(100vw - 28px)) !important;
-
-    max-height:
-        min(620px, 70vh) !important;
+    max-height: min(620px, 70vh) !important;
 
     transform:
         translate(-50%,18px)
         scale(.96) !important;
 
-    opacity:
-        0 !important;
+    opacity: 0 !important;
 
-    visibility:
-        hidden !important;
+    visibility: hidden !important;
 
-    pointer-events:
-        none !important;
+    pointer-events: none !important;
 
-    background:
-        rgba(13,18,27,.98) !important;
+    background: rgba(13,18,27,.98) !important;
 
-    border:
-        1px solid var(--fc-border) !important;
+    border: 1px solid var(--fc-border) !important;
 
-    border-radius:
-        22px !important;
+    border-radius: 22px !important;
 
     box-shadow:
         0 25px 80px rgba(0,0,0,.55) !important;
 
-    backdrop-filter:
-        blur(24px);
+    backdrop-filter: blur(24px);
 
-    -webkit-backdrop-filter:
-        blur(24px);
+    -webkit-backdrop-filter: blur(24px);
 
-    z-index:
-        10020 !important;
+    z-index: 10020 !important;
 
-    overflow:
-        hidden !important;
+    overflow: hidden !important;
 
     transition:
         opacity .25s var(--fc-ease),
@@ -783,18 +639,15 @@ textarea {
 }
 
 
-#fc-discovery.fc-overlay-open,
+#fcDiscovery.open,
+#fcDiscoveryOverlay.open + #fcDiscovery,
 #fc-discovery.open,
 .fc-discovery.open {
+    opacity: 1 !important;
 
-    opacity:
-        1 !important;
+    visibility: visible !important;
 
-    visibility:
-        visible !important;
-
-    pointer-events:
-        auto !important;
+    pointer-events: auto !important;
 
     transform:
         translate(-50%,0)
@@ -808,126 +661,65 @@ textarea {
 
 .fc-discovery-head,
 .fc-discovery-header {
+    display: flex !important;
 
-    display:
-        flex !important;
+    align-items: center !important;
 
-    align-items:
-        center !important;
+    justify-content: space-between !important;
 
-    justify-content:
-        space-between !important;
+    padding: 16px 18px !important;
 
-    padding:
-        16px 18px !important;
-
-    border-bottom:
-        1px solid var(--fc-border) !important;
-}
-
-
-.fc-discovery-title {
-
-    font-size:
-        17px !important;
-
-    font-weight:
-        800 !important;
-}
-
-
-.fc-discovery-close {
-
-    width:
-        34px !important;
-
-    height:
-        34px !important;
-
-    display:
-        grid !important;
-
-    place-items:
-        center !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius:
-        10px !important;
-
-    background:
-        var(--fc-panel-2) !important;
-
-    color:
-        var(--fc-text) !important;
-
-    cursor:
-        pointer !important;
+    border-bottom: 1px solid var(--fc-border) !important;
 }
 
 
 /* =========================================================
-   DISCOVERY USERS
+   DISCOVERY LIST
    ========================================================= */
 
 .fc-discovery-list,
 .fc-discovery-users {
+    padding: 10px !important;
 
-    padding:
-        10px !important;
+    max-height: 520px !important;
 
-    max-height:
-        520px !important;
-
-    overflow-y:
-        auto !important;
+    overflow-y: auto !important;
 }
 
 
+/* =========================================================
+   USER SUGGESTION
+   ========================================================= */
+
 .fc-user-suggestion,
 .fc-discovery-user {
+    width: 100% !important;
 
-    width:
-        100% !important;
+    min-height: 64px !important;
 
-    min-height:
-        64px !important;
+    padding: 10px 12px !important;
 
-    padding:
-        10px 12px !important;
+    display: flex !important;
 
-    display:
-        flex !important;
+    align-items: center !important;
 
-    align-items:
-        center !important;
+    gap: 12px !important;
 
-    gap:
-        12px !important;
+    border-radius: 15px !important;
 
-    border-radius:
-        15px !important;
+    background: transparent !important;
 
-    background:
-        transparent !important;
+    color: var(--fc-text) !important;
 
-    color:
-        var(--fc-text) !important;
+    cursor: pointer !important;
 
-    cursor:
-        pointer !important;
-
-    transition:
-        background .18s ease !important;
+    transition: background .18s ease !important;
 }
 
 
 .fc-user-suggestion:hover,
 .fc-discovery-user:hover {
-
-    background:
-        rgba(255,255,255,.05) !important;
+    background: rgba(255,255,255,.05) !important;
 }
 
 
@@ -937,24 +729,15 @@ textarea {
 
 .fc-user-avatar,
 .fc-discovery-avatar {
+    width: 44px !important;
+    height: 44px !important;
 
-    width:
-        44px !important;
+    flex-shrink: 0;
 
-    height:
-        44px !important;
+    display: grid !important;
+    place-items: center !important;
 
-    flex-shrink:
-        0;
-
-    display:
-        grid !important;
-
-    place-items:
-        center !important;
-
-    border-radius:
-        50% !important;
+    border-radius: 50% !important;
 
     background:
         linear-gradient(
@@ -963,28 +746,20 @@ textarea {
             var(--fc-accent-2)
         ) !important;
 
-    color:
-        white !important;
+    color: white !important;
 
-    font-weight:
-        800 !important;
+    font-weight: 800 !important;
 
-    overflow:
-        hidden !important;
+    overflow: hidden !important;
 }
 
 
 .fc-user-avatar img,
 .fc-discovery-avatar img {
+    width: 100%;
+    height: 100%;
 
-    width:
-        100%;
-
-    height:
-        100%;
-
-    object-fit:
-        cover;
+    object-fit: cover;
 }
 
 
@@ -994,43 +769,70 @@ textarea {
 
 .fc-user-info,
 .fc-discovery-user-info {
+    min-width: 0;
 
-    min-width:
-        0;
-
-    flex:
-        1;
+    flex: 1;
 }
 
 
 .fc-user-name,
 .fc-discovery-user-name {
+    font-weight: 700 !important;
 
-    font-weight:
-        700 !important;
+    white-space: nowrap;
 
-    white-space:
-        nowrap;
+    overflow: hidden;
 
-    overflow:
-        hidden;
-
-    text-overflow:
-        ellipsis;
+    text-overflow: ellipsis;
 }
 
 
 .fc-user-id,
 .fc-discovery-user-id {
+    margin-top: 3px;
 
-    margin-top:
-        3px;
+    color: var(--fc-muted) !important;
 
-    color:
-        var(--fc-muted) !important;
+    font-size: 12px !important;
+}
 
-    font-size:
-        12px !important;
+
+/* =========================================================
+   THEME OVERLAY
+   ========================================================= */
+
+#fcThemeOverlay,
+#fc-theme-overlay {
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    background: rgba(0,0,0,.48);
+
+    backdrop-filter: blur(5px);
+
+    -webkit-backdrop-filter: blur(5px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    z-index: 10029;
+}
+
+
+#fcThemeOverlay.open,
+#fc-theme-overlay.open {
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
 }
 
 
@@ -1038,203 +840,111 @@ textarea {
    THEME PANEL
    ========================================================= */
 
+#fcThemePanel,
 #fc-theme-panel,
 .fc-theme-panel {
+    position: fixed !important;
 
-    position:
-        fixed !important;
+    left: 50% !important;
+    top: 50% !important;
 
-    inset:
-        0 !important;
+    width: min(470px, calc(100vw - 28px)) !important;
 
-    width:
-        100vw !important;
+    max-height: calc(100vh - 40px) !important;
 
-    height:
-        100vh !important;
+    transform:
+        translate(-50%,-48%)
+        scale(.96) !important;
 
-    display:
-        flex !important;
+    opacity: 0 !important;
 
-    align-items:
-        center !important;
+    visibility: hidden !important;
 
-    justify-content:
-        center !important;
+    pointer-events: none !important;
 
-    background:
-        rgba(0,0,0,.48) !important;
+    background: var(--fc-panel) !important;
 
-    backdrop-filter:
-        blur(5px);
+    border: 1px solid var(--fc-border) !important;
 
-    -webkit-backdrop-filter:
-        blur(5px);
+    border-radius: 22px !important;
 
-    opacity:
-        0 !important;
+    box-shadow:
+        0 30px 100px rgba(0,0,0,.65) !important;
 
-    visibility:
-        hidden !important;
+    z-index: 10030 !important;
 
-    pointer-events:
-        none !important;
-
-    z-index:
-        10030 !important;
+    overflow: hidden !important;
 
     transition:
         opacity .25s ease,
+        transform .25s ease,
         visibility .25s ease !important;
 }
 
 
-#fc-theme-panel.fc-overlay-open,
+#fcThemePanel.open,
 #fc-theme-panel.open,
 .fc-theme-panel.open {
+    opacity: 1 !important;
 
-    opacity:
-        1 !important;
+    visibility: visible !important;
 
-    visibility:
-        visible !important;
+    pointer-events: auto !important;
 
-    pointer-events:
-        auto !important;
+    transform:
+        translate(-50%,-50%)
+        scale(1) !important;
 }
 
 
 /* =========================================================
-   THEME WINDOW
+   THEME PANEL CONTENT
    ========================================================= */
-
-.fc-theme-window {
-
-    width:
-        min(390px, calc(100vw - 30px)) !important;
-
-    max-height:
-        calc(100vh - 40px) !important;
-
-    padding:
-        18px !important;
-
-    overflow-y:
-        auto !important;
-
-    background:
-        var(--fc-panel) !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius:
-        22px !important;
-
-    box-shadow:
-        0 30px 100px rgba(0,0,0,.65) !important;
-}
-
 
 .fc-theme-head,
 .fc-theme-header {
+    display: flex !important;
 
-    display:
-        flex !important;
+    align-items: center !important;
 
-    align-items:
-        center !important;
+    justify-content: space-between !important;
 
-    justify-content:
-        space-between !important;
+    padding: 18px !important;
 
-    margin-bottom:
-        15px !important;
+    border-bottom: 1px solid var(--fc-border) !important;
 }
 
 
-.fc-theme-title {
-
-    font-size:
-        17px !important;
-
-    font-weight:
-        800 !important;
+.fc-theme-body {
+    padding: 18px !important;
 }
 
-
-.fc-theme-close {
-
-    width:
-        34px !important;
-
-    height:
-        34px !important;
-
-    display:
-        grid !important;
-
-    place-items:
-        center !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius:
-        10px !important;
-
-    background:
-        rgba(255,255,255,.06) !important;
-
-    color:
-        var(--fc-text) !important;
-
-    cursor:
-        pointer !important;
-}
-
-
-/* =========================================================
-   THEME OPTIONS
-   ========================================================= */
 
 .fc-theme-grid,
 .fc-theme-options {
+    display: grid !important;
 
-    display:
-        grid !important;
+    grid-template-columns: repeat(2,1fr);
 
-    grid-template-columns:
-        repeat(2,1fr);
-
-    gap:
-        10px !important;
+    gap: 10px !important;
 }
 
 
 .fc-theme-choice,
 .fc-theme-option {
+    padding: 14px !important;
 
-    padding:
-        14px !important;
+    border: 1px solid var(--fc-border) !important;
 
-    border:
-        1px solid var(--fc-border) !important;
+    border-radius: 16px !important;
 
-    border-radius:
-        16px !important;
+    background: var(--fc-panel-2) !important;
 
-    background:
-        var(--fc-panel-2) !important;
+    color: var(--fc-text) !important;
 
-    color:
-        var(--fc-text) !important;
+    text-align: left !important;
 
-    text-align:
-        left !important;
-
-    cursor:
-        pointer !important;
+    cursor: pointer !important;
 
     transition:
         border-color .2s ease,
@@ -1244,49 +954,35 @@ textarea {
 
 .fc-theme-choice:hover,
 .fc-theme-option:hover {
+    transform: translateY(-2px);
 
-    transform:
-        translateY(-2px);
-
-    border-color:
-        rgba(108,124,255,.55) !important;
+    border-color: rgba(108,124,255,.55) !important;
 }
 
 
 .fc-theme-name {
-
-    font-weight:
-        700 !important;
+    font-weight: 700 !important;
 }
 
 
 .fc-theme-desc {
+    margin-top: 4px;
 
-    margin-top:
-        4px;
+    color: var(--fc-muted) !important;
 
-    color:
-        var(--fc-muted) !important;
-
-    font-size:
-        11px !important;
+    font-size: 11px !important;
 }
 
 
 .fc-theme-swatch,
 .fc-theme-preview {
+    width: 100% !important;
 
-    width:
-        100% !important;
+    height: 38px !important;
 
-    height:
-        38px !important;
+    margin-bottom: 8px !important;
 
-    margin-bottom:
-        8px !important;
-
-    border-radius:
-        10px !important;
+    border-radius: 10px !important;
 }
 
 
@@ -1295,7 +991,6 @@ textarea {
    ========================================================= */
 
 body.fc-theme-midnight {
-
     --fc-bg: #070a10;
     --fc-panel: #0d121b;
     --fc-panel-2: #111824;
@@ -1306,7 +1001,6 @@ body.fc-theme-midnight {
 
 
 body.fc-theme-emerald {
-
     --fc-bg: #07120f;
     --fc-panel: #0d1b17;
     --fc-panel-2: #12251f;
@@ -1317,7 +1011,6 @@ body.fc-theme-emerald {
 
 
 body.fc-theme-ocean {
-
     --fc-bg: #071118;
     --fc-panel: #0d1922;
     --fc-panel-2: #122431;
@@ -1328,7 +1021,6 @@ body.fc-theme-ocean {
 
 
 body.fc-theme-sunset {
-
     --fc-bg: #160c08;
     --fc-panel: #21120d;
     --fc-panel-2: #2b1811;
@@ -1339,7 +1031,6 @@ body.fc-theme-sunset {
 
 
 body.fc-theme-rose {
-
     --fc-bg: #150a11;
     --fc-panel: #21101a;
     --fc-panel-2: #2c1522;
@@ -1350,7 +1041,6 @@ body.fc-theme-rose {
 
 
 body.fc-theme-graphite {
-
     --fc-bg: #0c0d0f;
     --fc-panel: #15171a;
     --fc-panel-2: #1d2024;
@@ -1365,100 +1055,69 @@ body.fc-theme-graphite {
    ========================================================= */
 
 #addScreen {
+    background: var(--fc-bg);
 
-    background:
-        var(--fc-bg) !important;
-
-    overflow-x:
-        hidden !important;
-
-    overflow-y:
-        auto !important;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 
 #addScreen > header {
+    width: 100%;
 
-    width:
-        100% !important;
+    min-height: 76px;
 
-    min-height:
-        76px !important;
+    margin: 0 !important;
 
-    margin:
-        0 !important;
+    padding: 18px 24px;
 
-    padding:
-        18px 24px !important;
+    border-radius: 0;
 
-    border-radius:
-        0 !important;
+    border-bottom: 1px solid var(--fc-border);
 
-    border-bottom:
-        1px solid var(--fc-border) !important;
+    background: rgba(7,10,16,.88);
 
-    background:
-        rgba(7,10,16,.88) !important;
-
-    backdrop-filter:
-        blur(18px);
+    backdrop-filter: blur(18px);
 }
 
 
 #addScreen > .card.wide {
+    width: calc(100% - 48px);
 
-    width:
-        calc(100% - 48px) !important;
+    max-width: none;
 
-    max-width:
-        none !important;
+    margin: 24px;
 
-    margin:
-        24px !important;
+    padding: 24px;
 
-    padding:
-        24px !important;
-
-    border-radius:
-        18px !important;
+    border-radius: 18px;
 }
 
 
 #addScreen .tabs {
-
-    width:
-        100% !important;
+    width: 100%;
 }
 
 
 #addScreen .tabs button {
-
-    flex:
-        1 !important;
+    flex: 1;
 }
 
 
 #addScreen #addId {
+    width: 100%;
 
-    width:
-        100% !important;
-
-    max-width:
-        none !important;
+    max-width: none;
 }
 
 
 #addScreen .card.wide > button:not(.secondary) {
-
-    width:
-        100% !important;
+    width: 100%;
 }
 
 
 #addScreen #addStatus {
-
-    width:
-        100% !important;
+    width: 100%;
 }
 
 
@@ -1467,46 +1126,26 @@ body.fc-theme-graphite {
    ========================================================= */
 
 #chatScreen {
-
-    width:
-        100% !important;
-
-    min-width:
-        100% !important;
-
-    min-height:
-        100vh !important;
-
-    background:
-        var(--fc-bg) !important;
+    background: var(--fc-bg);
 }
 
 
 #chatScreen > header {
+    width: 100%;
 
-    width:
-        100% !important;
+    min-height: 76px;
 
-    min-height:
-        76px !important;
+    margin: 0 !important;
 
-    margin:
-        0 !important;
+    padding: 14px 22px;
 
-    padding:
-        14px 22px !important;
+    border-radius: 0;
 
-    border-radius:
-        0 !important;
+    border-bottom: 1px solid var(--fc-border);
 
-    border-bottom:
-        1px solid var(--fc-border) !important;
+    background: rgba(7,10,16,.86);
 
-    background:
-        rgba(7,10,16,.86) !important;
-
-    backdrop-filter:
-        blur(18px);
+    backdrop-filter: blur(18px);
 }
 
 
@@ -1515,54 +1154,40 @@ body.fc-theme-graphite {
    ========================================================= */
 
 #messages {
+    width: 100%;
 
-    width:
-        100% !important;
-
-    height:
-        calc(100vh - 150px) !important;
+    height: calc(100vh - 150px);
 
     padding:
-        28px clamp(18px,7vw,100px)
-        100px !important;
+        28px
+        clamp(18px,7vw,100px)
+        100px;
 
-    overflow-y:
-        auto !important;
+    overflow-y: auto;
 }
 
 
 /* =========================================================
-   CHAT COMPOSER
+   COMPOSER
    ========================================================= */
 
 #chatScreen .composer {
+    position: fixed;
 
-    position:
-        fixed !important;
+    left: clamp(14px,7vw,100px);
+    right: clamp(14px,7vw,100px);
 
-    left:
-        clamp(14px,7vw,100px) !important;
+    bottom: 16px;
 
-    right:
-        clamp(14px,7vw,100px) !important;
+    margin: 0;
 
-    bottom:
-        16px !important;
+    z-index: 1000;
 
-    margin:
-        0 !important;
+    background: rgba(17,24,36,.94);
 
-    z-index:
-        1000 !important;
+    border: 1px solid var(--fc-border);
 
-    background:
-        rgba(17,24,36,.94) !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius:
-        18px !important;
+    border-radius: 18px;
 
     box-shadow:
         0 15px 45px rgba(0,0,0,.35);
@@ -1577,9 +1202,7 @@ body.fc-theme-graphite {
 .readTicks,
 .deliveredTicks,
 .sentTick {
-
-    color:
-        #000 !important;
+    color: #000 !important;
 }
 
 
@@ -1588,32 +1211,25 @@ body.fc-theme-graphite {
    ========================================================= */
 
 #profileScreen {
+    width: 100%;
 
-    width:
-        100% !important;
+    min-height: 100vh;
 
-    min-height:
-        100vh !important;
+    padding: 14px;
 
-    padding:
-        14px !important;
-
-    background:
-        var(--fc-bg) !important;
+    background: var(--fc-bg);
 }
 
 
 /* =========================================================
-   HIDE OLD SPOTIFY UI
+   HIDE OLD SPOTIFY NAV
    ========================================================= */
 
 .spotify-side-button,
 .spotify-side-bar,
 .spotify-side-icon,
 .spotify-side-text {
-
-    display:
-        none !important;
+    display: none !important;
 }
 
 
@@ -1626,9 +1242,7 @@ body.fc-theme-graphite {
 .old-navigation,
 .old-bottom-nav,
 .old-bottom-navigation {
-
-    display:
-        none !important;
+    display: none !important;
 }
 
 
@@ -1638,28 +1252,21 @@ body.fc-theme-graphite {
 
 .fc-discovery-users::-webkit-scrollbar,
 .fc-discovery-list::-webkit-scrollbar {
-
-    width:
-        6px;
+    width: 6px;
 }
 
 
 .fc-discovery-users::-webkit-scrollbar-track,
 .fc-discovery-list::-webkit-scrollbar-track {
-
-    background:
-        transparent;
+    background: transparent;
 }
 
 
 .fc-discovery-users::-webkit-scrollbar-thumb,
 .fc-discovery-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.12);
 
-    background:
-        rgba(255,255,255,.12);
-
-    border-radius:
-        20px;
+    border-radius: 20px;
 }
 
 
@@ -1670,167 +1277,122 @@ body.fc-theme-graphite {
 @media (max-width: 760px) {
 
     :root {
-
         --fc-nav-width: 60px;
+        --fc-nav-left: 8px;
         --fc-nav-top: 14px;
         --fc-nav-bottom: 14px;
     }
 
 
     #homeScreen > header {
-
-        padding:
-            16px !important;
+        padding: 16px;
     }
 
+
+    /* IMPORTANT:
+       Do NOT move the home content because of the bar. */
 
     #homeScreen .profileRow,
     #homeScreen .search,
     #homeScreen .friendList {
-
-        width:
-            calc(100% - 28px) !important;
-
-        margin-left:
-            14px !important;
-
-        margin-right:
-            14px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
     }
 
-
-    /* FLOATING NAV */
 
     #fcCustomSidebar,
     .fc-sidebar,
     #fc-sidebar {
+        left: 8px !important;
 
-        left:
-            8px !important;
+        width: 60px !important;
 
-        width:
-            60px !important;
+        top: 14px !important;
 
-        padding:
-            8px 6px !important;
+        bottom: 14px !important;
 
-        border-radius:
-            17px !important;
+        padding: 8px 6px !important;
+
+        border-radius: 17px !important;
     }
 
 
     .fc-sidebar-logo {
+        width: 36px !important;
+        height: 36px !important;
 
-        width:
-            36px !important;
+        border-radius: 10px !important;
 
-        height:
-            36px !important;
-
-        border-radius:
-            10px !important;
-
-        font-size:
-            12px !important;
+        font-size: 12px !important;
     }
 
 
     #fcCustomSidebar .fc-nav-item,
     .fc-nav-item,
     .fc-sidebar-item {
+        width: 46px !important;
+        min-width: 46px !important;
 
-        width:
-            46px !important;
+        height: 46px !important;
+        min-height: 46px !important;
 
-        min-width:
-            46px !important;
-
-        height:
-            46px !important;
-
-        min-height:
-            46px !important;
-
-        border-radius:
-            13px !important;
+        border-radius: 13px !important;
     }
 
 
     .fc-nav-icon,
     .fc-sidebar-icon {
+        width: 34px !important;
+        height: 34px !important;
 
-        width:
-            34px !important;
+        border-radius: 10px !important;
 
-        height:
-            34px !important;
-
-        border-radius:
-            10px !important;
-
-        font-size:
-            16px !important;
+        font-size: 16px !important;
     }
 
 
-    #fc-discovery,
+    #fcDiscovery,
     .fc-discovery {
+        width: calc(100vw - 20px) !important;
 
-        width:
-            calc(100vw - 20px) !important;
-
-        bottom:
-            20px !important;
+        bottom: 20px !important;
     }
 
 
-    .fc-theme-window {
-
-        width:
-            calc(100vw - 20px) !important;
-
-        border-radius:
-            19px !important;
+    #fcThemePanel,
+    #fc-theme-panel,
+    .fc-theme-panel {
+        width: calc(100vw - 20px) !important;
     }
 
 
     #addScreen > header {
-
-        padding:
-            14px 16px !important;
+        padding: 14px 16px;
     }
 
 
     #addScreen > .card.wide {
+        width: calc(100% - 28px);
 
-        width:
-            calc(100% - 28px) !important;
+        margin: 14px;
 
-        margin:
-            14px !important;
-
-        padding:
-            18px !important;
+        padding: 18px;
     }
 
 
     #messages {
-
         padding:
-            18px 12px 100px !important;
+            18px
+            12px
+            100px;
     }
 
 
     #chatScreen .composer {
+        left: 10px;
+        right: 10px;
 
-        left:
-            10px !important;
-
-        right:
-            10px !important;
-
-        bottom:
-            8px !important;
+        bottom: 8px;
     }
 }
 
@@ -1842,8 +1404,8 @@ body.fc-theme-graphite {
 @media (max-width: 420px) {
 
     :root {
-
         --fc-nav-width: 56px;
+        --fc-nav-left: 6px;
         --fc-nav-top: 10px;
         --fc-nav-bottom: 10px;
     }
@@ -1852,79 +1414,94 @@ body.fc-theme-graphite {
     #fcCustomSidebar,
     .fc-sidebar,
     #fc-sidebar {
+        left: 6px !important;
 
-        left:
-            6px !important;
+        width: 56px !important;
 
-        width:
-            56px !important;
+        top: 10px !important;
 
-        padding:
-            7px 5px !important;
+        bottom: 10px !important;
 
-        border-radius:
-            16px !important;
+        padding: 7px 5px !important;
+
+        border-radius: 16px !important;
     }
 
 
     .fc-sidebar-logo {
-
-        width:
-            34px !important;
-
-        height:
-            34px !important;
+        width: 34px !important;
+        height: 34px !important;
     }
 
 
     #fcCustomSidebar .fc-nav-item,
     .fc-nav-item,
     .fc-sidebar-item {
+        width: 44px !important;
+        min-width: 44px !important;
 
-        width:
-            44px !important;
-
-        min-width:
-            44px !important;
-
-        height:
-            44px !important;
-
-        min-height:
-            44px !important;
+        height: 44px !important;
+        min-height: 44px !important;
     }
 
 
     .fc-nav-icon,
     .fc-sidebar-icon {
+        width: 32px !important;
+        height: 32px !important;
 
-        width:
-            32px !important;
-
-        height:
-            32px !important;
-
-        font-size:
-            15px !important;
+        font-size: 15px !important;
     }
 
 
     .fc-theme-grid,
     .fc-theme-options {
-
-        grid-template-columns:
-            1fr !important;
+        grid-template-columns: 1fr !important;
     }
 }
 
 
 /* =========================================================
-   FINAL LAYOUT SAFETY
-   NEVER SHIFT FRIENDCHAT FOR THE NAV
+   FINAL BAR PROTECTION
    ========================================================= */
 
-/* These rules are intentionally last so nothing below
-   can accidentally move the whole website right. */
+/*
+   Nothing is allowed to turn the floating bar
+   into a normal layout element.
+*/
+
+#fcCustomSidebar,
+#fcCustomSidebar.open,
+#fcCustomSidebar.fc-sidebar-open,
+.fc-sidebar,
+.fc-sidebar.open,
+.fc-sidebar.fc-sidebar-open,
+#fc-sidebar,
+#fc-sidebar.open,
+#fc-sidebar.fc-sidebar-open {
+    position: fixed !important;
+
+    float: none !important;
+
+    clear: none !important;
+
+    margin: 0 !important;
+
+    transform: none !important;
+
+    left: var(--fc-nav-left) !important;
+
+    top: var(--fc-nav-top) !important;
+
+    bottom: var(--fc-nav-bottom) !important;
+
+    z-index: 999999 !important;
+}
+
+
+/*
+   FriendChat itself stays at its original position.
+*/
 
 #loginScreen,
 #signupScreen,
@@ -1932,163 +1509,17 @@ body.fc-theme-graphite {
 #addScreen,
 #chatScreen,
 #profileScreen {
+    margin-left: 0 !important;
 
-    margin-left:
-        0 !important;
+    margin-right: 0 !important;
 
-    margin-right:
-        0 !important;
+    padding-left: 0 !important;
 
-    left:
-        0 !important;
+    left: auto !important;
 
-    right:
-        auto !important;
+    right: auto !important;
 
-    width:
-        100% !important;
-
-    max-width:
-        none !important;
-
-    transform:
-        none !important;
-}
-
-
-/* The navigation is completely outside normal layout flow */
-
-#fcCustomSidebar,
-.fc-sidebar,
-#fc-sidebar {
-
-    position:
-        fixed !important;
-
-    left:
-        14px !important;
-
-    top:
-        20px !important;
-
-    bottom:
-        20px !important;
-
-    width:
-        68px !important;
-
-    margin:
-        0 !important;
-
-    z-index:
-        100020 !important;
-}
-
-
-/* Never create a left gap for the navigation */
-
-#homeScreen,
-#addScreen,
-#chatScreen,
-#profileScreen {
-
-    padding-left:
-        0 !important;
-}
-
-
-/* No old arrow */
-
-#fcNavToggle,
-.fc-nav-toggle,
-#fc-nav-toggle {
-
-    display:
-        none !important;
-
-    visibility:
-        hidden !important;
-}
-
-
-/* No bottom dock */
-
-#fc-bottom-dock,
-.fc-bottom-dock,
-#bottomNav {
-
-    display:
-        none !important;
-
-    visibility:
-        hidden !important;
-
-    pointer-events:
-        none !important;
-}
-
-
-/* =========================================================
-   FINAL MOBILE SAFETY
-   ========================================================= */
-
-@media (max-width: 760px) {
-
-    #loginScreen,
-    #signupScreen,
-    #homeScreen,
-    #addScreen,
-    #chatScreen,
-    #profileScreen {
-
-        margin-left:
-            0 !important;
-
-        width:
-            100% !important;
-    }
-
-
-    #fcCustomSidebar,
-    .fc-sidebar,
-    #fc-sidebar {
-
-        left:
-            8px !important;
-
-        width:
-            60px !important;
-    }
-}
-
-
-@media (max-width: 420px) {
-
-    #loginScreen,
-    #signupScreen,
-    #homeScreen,
-    #addScreen,
-    #chatScreen,
-    #profileScreen {
-
-        margin-left:
-            0 !important;
-
-        width:
-            100% !important;
-    }
-
-
-    #fcCustomSidebar,
-    .fc-sidebar,
-    #fc-sidebar {
-
-        left:
-            6px !important;
-
-        width:
-            56px !important;
-    }
+    transform: none !important;
 }
 
 
@@ -2101,17 +1532,12 @@ body.fc-theme-graphite {
     *,
     *::before,
     *::after {
+        animation-duration: .01ms !important;
 
-        animation-duration:
-            .01ms !important;
+        animation-iteration-count: 1 !important;
 
-        animation-iteration-count:
-            1 !important;
+        scroll-behavior: auto !important;
 
-        scroll-behavior:
-            auto !important;
-
-        transition-duration:
-            .01ms !important;
+        transition-duration: .01ms !important;
     }
 }
