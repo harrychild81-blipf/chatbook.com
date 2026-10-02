@@ -1,94 +1,73 @@
 /* =========================================================
    FRIENDCHAT UI V3
-   FULL SCREEN UI
-   SIDEBAR + THEME + MUSIC + SETTINGS + PROFILE
-   FULL WIDTH HOME + BOTTOM BAR
    CLEAN COMPLETE CSS
    ========================================================= */
 
 :root {
-    --fc-bg: #0b0d10;
-    --fc-panel: #11151a;
-    --fc-panel-2: #171c22;
-    --fc-border: rgba(255, 255, 255, 0.08);
-    --fc-text: #ffffff;
-    --fc-muted: #9aa4af;
     --fc-bg: #070a10;
     --fc-panel: #0d121b;
     --fc-panel-2: #111824;
     --fc-panel-3: #151d2a;
 
-    --fc-accent: #5865f2;
-    --fc-accent-hover: #6975ff;
-    --fc-border: rgba(255,255,255,.08);
-
-    --fc-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
     --fc-text: #f5f7ff;
     --fc-muted: #8d97aa;
 
     --fc-accent: #6c7cff;
     --fc-accent-2: #8b5cf6;
+    --fc-accent-hover: #7d8bff;
 
-    --fc-green: #35d07f;
-    --fc-danger: #ff5c72;
+    --fc-border: rgba(255,255,255,.08);
+    --fc-shadow: 0 20px 60px rgba(0,0,0,.45);
 
     --fc-radius: 18px;
+    --fc-ease: cubic-bezier(.22,1,.36,1);
 
-    --fc-ease: cubic-bezier(.2,.8,.2,1);
+    --fc-sidebar-width: 250px;
+    --fc-sidebar-left: 0px;
 }
 
 
 /* =========================================================
-   GLOBAL RESET
    GLOBAL
    ========================================================= */
 
 * {
-@@ -31,29 +38,28 @@ html,
+    box-sizing: border-box;
+}
+
+html,
 body {
     width: 100%;
     min-width: 100%;
     min-height: 100%;
-    margin: 0;
-    padding: 0;
-}
-    height: 100%;
-
     margin: 0 !important;
     padding: 0 !important;
 
     background: var(--fc-bg) !important;
-
-body {
-    background: var(--fc-bg);
     color: var(--fc-text);
 
     overflow-x: hidden;
+}
+
+body {
+    overflow-y: auto;
 }
 
 button,
 input,
 textarea {
     font-family: inherit;
-body {
-    overflow-y: auto;
 }
 
 
 /* =========================================================
-   MAIN APP - FULL SCREEN
    MAIN APP
    ========================================================= */
 
 .app,
 #app {
-.app {
     width: 100vw !important;
     max-width: none !important;
-
-@@ -69,25 +75,50 @@ textarea {
-    max-width: none !important;
-
     min-width: 100% !important;
     min-height: 100vh !important;
 
@@ -97,36 +76,31 @@ body {
 }
 
 
-/* Remove old centered card */
+/* =========================================================
+   FULL SCREEN PAGES
+   ========================================================= */
 
 #homeScreen,
 #chatScreen,
 #profileScreen,
 #addScreen {
+    width: 100vw !important;
     max-width: none !important;
+    min-width: 100vw !important;
+    min-height: 100vh !important;
 
+    margin: 0 !important;
     border: 0 !important;
     border-radius: 0 !important;
-
     box-shadow: none !important;
 }
 
 
 /* =========================================================
-   HOME SCREEN - FULL WIDTH
-   HOME SCREEN
+   HOME
    ========================================================= */
 
 #homeScreen {
-    width: 100vw !important;
-    max-width: none !important;
-
-    min-width: 100vw !important;
-
-    min-height: 100vh !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
     background:
         radial-gradient(
             circle at 15% 0%,
@@ -135,109 +109,62 @@ body {
         ),
         var(--fc-bg) !important;
 
-    border-radius: 0 !important;
     overflow-y: auto !important;
 }
 
-
-/* =========================================================
-   HOME HEADER
-   ========================================================= */
-@@ -96,1124 +127,1016 @@ textarea {
+#homeScreen > header {
     width: 100% !important;
-    max-width: none !important;
-
-    min-height: 86px;
+    min-height: 86px !important;
 
     margin: 0 !important;
-
-    border-radius: 0 !important;
-}
     padding: 20px 28px !important;
 
-/* Header border should span entire screen */
+    border-radius: 0 !important;
     border: 0 !important;
     border-bottom: 1px solid var(--fc-border) !important;
 
-#homeScreen > header::after {
-    left: 0 !important;
-    right: 0 !important;
-    border-radius: 0 !important;
-
-    width: 100% !important;
     background: rgba(7,10,16,.88) !important;
 
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
 }
 
-
-/* =========================================================
-   PROFILE ROW
-   HOME CONTENT
-   ========================================================= */
-
-#homeScreen .profileRow {
-    width: calc(100% - 48px) !important;
-
-    max-width: none !important;
-
-    margin: 20px 24px 0 24px !important;
-    margin: 22px 24px 0 24px !important;
-}
-
-/* =========================================================
-   SEARCH BAR
-   ========================================================= */
-
-#homeScreen .search {
-    display: block !important;
-
-    width: calc(100% - 48px) !important;
-
-    max-width: none !important;
-
-    margin: 18px 24px !important;
-    margin: 20px 24px !important;
-}
-
-/* =========================================================
-   FRIEND LIST
-   ========================================================= */
-
+#homeScreen .profileRow,
+#homeScreen .search,
 #homeScreen .friendList {
     width: calc(100% - 48px) !important;
-
     max-width: none !important;
 
-    margin: 0 24px !important;
-    margin: 20px 24px 0 24px !important;
+    margin-left: 24px !important;
+    margin-right: 24px !important;
+}
 
-    padding: 5px 0 100px !important;
+#homeScreen .profileRow {
+    margin-top: 22px !important;
+}
+
+#homeScreen .search {
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+}
+
+#homeScreen .friendList {
+    margin-top: 20px !important;
     padding-bottom: 100px !important;
 }
 
-
-/* =========================================================
-   FRIEND CARDS
-   ========================================================= */
-
 #homeScreen .friendItem {
     width: 100% !important;
-
     max-width: none !important;
-    min-height: 88px;
 
+    min-height: 88px;
     margin: 10px 0 !important;
 
-    border-radius: 18px !important;
-
     border: 1px solid transparent !important;
+    border-radius: 18px !important;
 
     background: rgba(13,18,27,.86) !important;
 
-    margin-left: 0 !important;
-    margin-right: 0 !important;
     transition:
         transform .2s ease,
         background .2s ease,
@@ -245,14 +172,6 @@ body {
         box-shadow .2s ease;
 }
 
-/* =========================================================
-   REMOVE OLD CENTERED WIDTHS
-   ========================================================= */
-
-#homeScreen .profileRow,
-#homeScreen .search,
-#homeScreen .friendList {
-    max-width: none !important;
 #homeScreen .friendItem:hover {
     transform: translateX(4px);
 
@@ -264,57 +183,33 @@ body {
         0 12px 35px rgba(0,0,0,.22);
 }
 
-/* IMPORTANT:
-   Do NOT use the old 1120px restriction.
-*/
 
 /* =========================================================
-   LEFT MENU BUTTON
-   LEFT SIDEBAR
+   LEFT SIDEBAR ARROW
    ========================================================= */
 
-#fc-nav-toggle {
-    position: fixed !important;
 /*
    CLOSED:
 
-    left: 16px !important;
-    top: 50% !important;
-   ┌
-   │  <
-   └
+   ← | screen
 
-    transform: translateY(-50%) !important;
+
    OPEN:
 
-    width: 52px !important;
-    height: 52px !important;
-   ┌──────────────────────┐
-   │ FriendChat           │
-   │                      │
-   │ Music                │
-   │ Theme                │
-   │ Settings             │
-   │ Profile              │
-   └──────────────────────┘<
+   [ SIDEBAR ] ← | screen
+
+   IMPORTANT:
+   The arrow and sidebar use the SAME width.
 */
 
-    padding: 0 !important;
-
-    border: 1px solid var(--fc-border) !important;
-    border-radius: 15px !important;
-/* -------------------------
-   SMALL ARROW
-   ------------------------- */
-
-.fc-nav-toggle {
+#fcNavToggle,
+.fc-nav-toggle,
+#fc-nav-toggle {
     position: fixed !important;
 
-    background: rgba(17, 21, 26, 0.96) !important;
     left: 0 !important;
     top: 50% !important;
 
-    color: var(--fc-text) !important;
     width: 34px !important;
     height: 64px !important;
 
@@ -327,298 +222,176 @@ body {
     align-items: center !important;
     justify-content: center !important;
 
-    font-size: 22px !important;
     background: rgba(13,18,27,.98) !important;
-
-    cursor: pointer !important;
     color: #fff !important;
 
-    z-index: 100000 !important;
     border: 1px solid var(--fc-border) !important;
-
-    box-shadow: var(--fc-shadow);
     border-left: 0 !important;
 
-    transition:
-        transform 0.22s ease,
-        background 0.22s ease,
-        border-color 0.22s ease;
-}
-    border-radius: 0 15px 15px 0 !important;
+    border-radius: 0 14px 14px 0 !important;
 
-#fc-nav-toggle:hover {
-    background: var(--fc-panel-2) !important;
     box-shadow:
         8px 0 30px rgba(0,0,0,.35) !important;
 
     cursor: pointer !important;
 
-    border-color: rgba(255, 255, 255, 0.18) !important;
-    z-index: 100001 !important;
+    z-index: 100030 !important;
 
-    transform: translateY(-50%) scale(1.04) !important;
     transition:
-        left .38s var(--fc-ease),
-        width .2s ease,
-        background .2s ease !important;
+        left .35s var(--fc-ease),
+        background .2s ease,
+        width .2s ease !important;
 }
 
-#fc-nav-toggle:active {
-    transform: translateY(-50%) scale(0.94) !important;
 
-.fc-nav-toggle:hover {
-    width: 40px !important;
+/* Arrow itself */
 
+#fcNavToggle .fc-chevron,
+.fc-nav-toggle .fc-chevron,
+#fc-nav-toggle .fc-chevron {
+    display: block !important;
+
+    font-size: 25px !important;
+    line-height: 1 !important;
+
+    transform: rotate(0deg);
+
+    transition:
+        transform .35s var(--fc-ease) !important;
+}
+
+
+/* Hover */
+
+#fcNavToggle:hover,
+.fc-nav-toggle:hover,
+#fc-nav-toggle:hover {
     background: rgba(25,31,42,.99) !important;
 }
 
+
 /* =========================================================
-   SIDEBAR
+   ARROW WHEN SIDEBAR IS OPEN
    ========================================================= */
 
-#fc-sidebar {
-    position: fixed !important;
-.fc-nav-toggle .fc-chevron {
-    display: block !important;
-
-    left: 78px !important;
-    top: 50% !important;
-    font-size: 25px !important;
-
-    width: 220px !important;
-    line-height: 1 !important;
-
-    padding: 12px !important;
-    transform: rotate(0deg);
-
-    background: rgba(17, 21, 26, 0.98) !important;
-    transition:
-        transform .38s var(--fc-ease);
+#fcNavToggle.is-open,
+.fc-nav-toggle.is-open,
+#fc-nav-toggle.is-open {
+    left: calc(
+        var(--fc-sidebar-width) + 8px
+    ) !important;
 }
 
-    border: 1px solid var(--fc-border) !important;
-    border-radius: 20px !important;
 
-    box-shadow: var(--fc-shadow);
-/* Arrow when sidebar is open */
+/* Rotate arrow */
 
-    z-index: 99999 !important;
-.fc-nav-toggle.is-open {
-    left: 250px !important;
-
-    transform: translate(-25px, -50%) !important;
-    width: 34px !important;
-
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    border-left: 1px solid var(--fc-border) !important;
-
-    transition:
-        transform 0.28s cubic-bezier(.2, .8, .2, 1),
-        opacity 0.22s ease,
-        visibility 0.22s ease;
-    border-radius: 0 15px 15px 0 !important;
-}
-
-#fc-sidebar.fc-sidebar-open {
-    transform: translate(0, -50%) !important;
-
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-.fc-nav-toggle.is-open .fc-chevron {
+#fcNavToggle.is-open .fc-chevron,
+.fc-nav-toggle.is-open .fc-chevron,
+#fc-nav-toggle.is-open .fc-chevron {
     transform: rotate(180deg) !important;
 }
 
 
 /* =========================================================
-   SIDEBAR TITLE
    SIDEBAR
    ========================================================= */
 
-.fc-sidebar-title {
-    padding: 7px 10px 11px;
-.fc-sidebar {
+#fcCustomSidebar,
+.fc-sidebar,
+#fc-sidebar {
     position: fixed !important;
 
-    color: var(--fc-muted);
-    left: 0 !important;
+    left: var(--fc-sidebar-left) !important;
     top: 50% !important;
 
-    font-size: 13px;
-    font-weight: 700;
-    width: 250px !important;
+    width: var(--fc-sidebar-width) !important;
 
-    letter-spacing: 0.4px;
-}
-    max-height: calc(100vh - 32px) !important;
-
-/* =========================================================
-   SIDEBAR ITEMS
-   ========================================================= */
     margin: 0 !important;
+    padding: 12px !important;
 
-.fc-sidebar-item {
-    width: 100% !important;
-    padding: 14px !important;
+    background:
+        rgba(13,18,27,.98) !important;
 
-    min-height: 48px;
-    background: rgba(13,18,27,.98) !important;
-
-    margin: 3px 0;
     border: 1px solid var(--fc-border) !important;
-
-    padding: 0 12px;
     border-left: 0 !important;
 
-    border: 0;
-    border-radius: 0 22px 22px 0 !important;
+    border-radius: 0 20px 20px 0 !important;
 
-    border-radius: 13px;
     box-shadow:
         18px 20px 70px rgba(0,0,0,.55) !important;
 
-    background: transparent;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 
-    color: var(--fc-text);
-    z-index: 100000 !important;
+    z-index: 100020 !important;
 
-    display: flex;
     /*
-       CLOSED:
-       completely outside the left edge
+       CLOSED
     */
-
-    align-items: center;
     transform:
-        translate(-100%, -50%) !important;
+        translate(
+            calc(-100% - 30px),
+            -50%
+        ) !important;
 
-    gap: 12px;
     opacity: 0 !important;
-
-    font-size: 14px;
-    font-weight: 600;
     visibility: hidden !important;
-
-    cursor: pointer;
     pointer-events: none !important;
 
     transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-.fc-sidebar-item:hover {
-    background: rgba(255, 255, 255, 0.07);
-
-    transform: translateX(2px);
-}
-
-.fc-sidebar-item:active {
-    transform: scale(0.97);
-        transform .38s var(--fc-ease),
+        transform .35s var(--fc-ease),
         opacity .25s ease,
-        visibility .38s ease !important;
+        visibility .35s ease !important;
 }
 
-.fc-sidebar-icon {
-    width: 30px;
-    height: 30px;
 
-    flex-shrink: 0;
+/* =========================================================
+   SIDEBAR OPEN
+   ========================================================= */
 
-    display: flex;
-/* -------------------------
-   OPEN
-   ------------------------- */
-
-    align-items: center;
-    justify-content: center;
-.fc-sidebar.open {
+#fcCustomSidebar.open,
+.fc-sidebar.open,
+#fc-sidebar.fc-sidebar-open {
     transform:
-        translate(0, -50%) !important;
+        translate(0,-50%) !important;
 
-    border-radius: 9px;
     opacity: 1 !important;
-
-    background: rgba(255, 255, 255, 0.06);
     visibility: visible !important;
-
-    font-size: 16px;
     pointer-events: auto !important;
 }
 
 
 /* =========================================================
-   FULL WIDTH BOTTOM BAR
    SIDEBAR BRAND
    ========================================================= */
 
-#fc-bottom-dock {
-    position: fixed !important;
-
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-
-    width: 100% !important;
-    height: 64px !important;
-
-    padding: 7px 24px !important;
-
+#fcCustomSidebar .fc-sidebar-brand,
 .fc-sidebar-brand {
     display: flex !important;
 
     align-items: center !important;
     justify-content: center !important;
 
-    gap: 18px !important;
-
-    background: rgba(12, 14, 18, 0.97) !important;
     gap: 10px !important;
 
-    border-top: 1px solid var(--fc-border) !important;
-    padding: 8px 8px 15px !important;
-
-    border-left: 0 !important;
-    border-right: 0 !important;
-    border-bottom: 0 !important;
+    padding: 8px 8px 14px !important;
     margin-bottom: 7px !important;
 
-    border-radius: 0 !important;
     border-bottom:
         1px solid var(--fc-border) !important;
 }
 
-    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
-
-    z-index: 99980 !important;
 .fc-sidebar-logo {
     width: 38px !important;
     height: 38px !important;
 
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    flex-shrink: 0;
-
-    transform: none !important;
-}
     display: grid !important;
-
-/* =========================================================
-   BOTTOM BUTTONS
-   ========================================================= */
     place-items: center !important;
 
-.fc-dock-button {
-    width: 44px;
-    height: 44px;
+    flex-shrink: 0;
+
     border-radius: 12px !important;
 
-    padding: 0;
     background:
         linear-gradient(
             135deg,
@@ -626,458 +399,218 @@ body {
             var(--fc-accent-2)
         ) !important;
 
-    border: 0;
-    color: #fff !important;
+    color: white !important;
 
-    border-radius: 14px;
     font-size: 13px !important;
-
-    background: transparent;
     font-weight: 900 !important;
 }
 
-    color: var(--fc-muted);
-
-    display: flex;
 .fc-sidebar-title {
     color: var(--fc-text) !important;
-
-    align-items: center;
-    justify-content: center;
     font-size: 14px !important;
-
-    font-size: 20px;
     font-weight: 800 !important;
 }
 
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease;
-}
 .fc-sidebar-sub {
     margin-top: 2px !important;
 
-.fc-dock-button:hover {
-    background: rgba(255, 255, 255, 0.07);
     color: var(--fc-muted) !important;
-
-    color: var(--fc-text);
     font-size: 11px !important;
 }
 
-.fc-dock-button:active {
-    transform: scale(0.9);
-}
 
 /* =========================================================
-   CENTER FC BUTTON
    SIDEBAR BUTTONS
    ========================================================= */
 
-#fc-center-button {
-    width: 46px;
-    height: 46px;
-.fc-nav-item {
+#fcCustomSidebar .fc-nav-item,
+.fc-nav-item,
+.fc-sidebar-item {
     width: 100% !important;
-
-    padding: 0;
     min-height: 46px !important;
 
-    border: 0;
     margin: 3px 0 !important;
-
-    border-radius: 15px;
     padding: 0 11px !important;
 
-    background: var(--fc-accent);
     display: flex !important;
-
-    color: white;
     align-items: center !important;
 
-    display: flex;
     gap: 11px !important;
 
-    align-items: center;
-    justify-content: center;
     border: 0 !important;
+    border-radius: 13px !important;
 
-    font-size: 15px;
-    font-weight: 900;
-    border-radius: 12px !important;
-
-    letter-spacing: 0.5px;
     background: transparent !important;
 
-    cursor: pointer;
     color: var(--fc-text) !important;
 
-    box-shadow:
-        0 8px 25px rgba(88, 101, 242, 0.35);
     font-size: 14px !important;
-
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
-}
     font-weight: 600 !important;
 
-#fc-center-button:hover {
-    background: var(--fc-accent-hover);
     text-align: left !important;
 
-    transform: translateY(-2px);
-}
     cursor: pointer !important;
 
-#fc-center-button:active {
-    transform: scale(0.92);
     transition:
         background .18s ease,
         transform .18s ease !important;
 }
 
-/* =========================================================
-   DISCOVERY OVERLAY
-   ========================================================= */
-
-#fc-discovery {
-    position: fixed;
-
-    inset: 0;
-.fc-nav-item:hover {
+#fcCustomSidebar .fc-nav-item:hover,
+.fc-nav-item:hover,
+.fc-sidebar-item:hover {
     background:
         rgba(255,255,255,.07) !important;
 
-    width: 100vw;
-    height: 100vh;
     transform:
         translateX(3px) !important;
 }
 
-    background: rgba(0, 0, 0, 0.55);
 
-    display: flex;
-.fc-nav-item.active {
-    background:
-        rgba(108,124,255,.13) !important;
-}
+/* Hide Chat and Friends */
 
-    align-items: center;
-    justify-content: center;
-
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-.fc-nav-icon {
-    width: 31px !important;
-    height: 31px !important;
-
-    z-index: 99970;
-    flex-shrink: 0;
-
-    transition:
-        opacity 0.22s ease,
-        visibility 0.22s ease;
-    display: grid !important;
-
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-}
-    place-items: center !important;
-
-#fc-discovery.fc-overlay-open {
-    opacity: 1;
-    border-radius: 9px !important;
-
-    visibility: visible;
-    background:
-        rgba(255,255,255,.06) !important;
-
-    pointer-events: auto;
-    font-size: 16px !important;
-}
-
-/* =========================================================
-   DISCOVERY WINDOW
-   ========================================================= */
-
-.fc-discovery-window {
-    width: min(430px, calc(100vw - 30px));
-.fc-nav-divider {
-    height: 1px !important;
-
-    max-height: min(600px, calc(100vh - 80px));
-    margin: 9px 5px !important;
-
-    overflow: hidden;
-    background:
-        var(--fc-border) !important;
-}
-
-    background: var(--fc-panel);
-
-    border: 1px solid var(--fc-border);
-/* Hide Chat and Friend options */
-
-    border-radius: 22px;
+#fcCustomSidebar .fc-nav-item[data-nav="chats"],
+#fcCustomSidebar .fc-nav-item[data-nav="friends"],
 .fc-nav-item[data-nav="chats"],
 .fc-nav-item[data-nav="friends"] {
     display: none !important;
 }
 
-    box-shadow: var(--fc-shadow);
 
-    transform: translateY(15px) scale(0.97);
-/* Theme */
+/* Sidebar icons */
 
-    transition: transform 0.25s ease;
+.fc-nav-icon,
+.fc-sidebar-icon {
+    width: 31px !important;
+    height: 31px !important;
+
+    flex-shrink: 0;
+
+    display: grid !important;
+    place-items: center !important;
+
+    border-radius: 9px !important;
+
+    background:
+        rgba(255,255,255,.06) !important;
+
+    font-size: 16px !important;
+}
+
+
+/* Divider */
+
+.fc-nav-divider {
+    width: 100% !important;
+    height: 1px !important;
+
+    margin: 9px 5px !important;
+
+    background:
+        var(--fc-border) !important;
+}
+
+
+/* =========================================================
+   THEME BUTTON
+   ========================================================= */
+
 .fc-nav-theme {
     color: #b9c1ff !important;
 }
 
-#fc-discovery.fc-overlay-open .fc-discovery-window {
-    transform: translateY(0) scale(1);
-}
 
-/* =========================================================
-   DISCOVERY HEADER
-   QUICK ACTIONS
-   ========================================================= */
-
-.fc-discovery-header {
-    height: 60px;
-.fc-quick-actions {
-    position: fixed !important;
-
-    padding: 0 18px;
-    right: 22px !important;
-    top: 106px !important;
-
-    display: flex;
-    display: flex !important;
-
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px !important;
-
-    border-bottom: 1px solid var(--fc-border);
-    z-index: 999 !important;
-}
-
-.fc-discovery-title {
-    font-size: 17px;
-
-    font-weight: 800;
-}
-.fc-quick {
-    width: 44px !important;
-    height: 44px !important;
-
-.fc-discovery-close {
-    width: 34px;
-    height: 34px;
-    padding: 0 !important;
-
-    padding: 0;
-    display: grid !important;
-
-    border: 0;
-    place-items: center !important;
-
-    border-radius: 10px;
-    border-radius: 14px !important;
-
-    background: rgba(255, 255, 255, 0.06);
-    background: var(--fc-panel-2) !important;
-
-    color: var(--fc-muted);
-    border: 1px solid var(--fc-border) !important;
-
-    cursor: pointer;
-    color: var(--fc-text) !important;
-
-    font-size: 18px;
-    cursor: pointer !important;
-
-    transition:
-        transform .2s ease,
-        background .2s ease !important;
-}
-
-.fc-discovery-close:hover {
-    color: var(--fc-text);
-
-    background: rgba(255, 255, 255, 0.1);
-.fc-quick:hover {
-    transform: translateY(-3px);
-
-    background: var(--fc-panel-3) !important;
-}
-
-/* =========================================================
-   DISCOVERY USERS
-   ========================================================= */
-
-.fc-discovery-users {
-    padding: 12px;
-.fc-quick.add {
-    color: #9faaff !important;
-}
-
-    max-height: 500px;
-
-    overflow-y: auto;
-.fc-quick.media {
-    color: #8fe4ff !important;
-}
-
-.fc-discovery-user {
-    width: 100%;
-
-    min-height: 64px;
-
-    padding: 8px 10px;
 /* =========================================================
    BOTTOM DOCK
    ========================================================= */
 
-    margin-bottom: 5px;
+#fc-bottom-dock,
 .fc-bottom-dock {
     position: fixed !important;
 
-    display: flex;
     left: 50% !important;
-    right: auto !important;
-
-    align-items: center;
     bottom: 16px !important;
 
-    gap: 12px;
     transform: translateX(-50%) !important;
 
-    border-radius: 14px;
+    width: auto !important;
     height: 64px !important;
 
-    background: transparent;
     padding: 8px 12px !important;
 
-    cursor: pointer;
     display: flex !important;
-
-    transition: background 0.2s ease;
-}
     align-items: center !important;
 
-.fc-discovery-user:hover {
-    background: rgba(255, 255, 255, 0.06);
-}
     gap: 14px !important;
 
-.fc-discovery-avatar {
-    width: 44px;
-    height: 44px;
+    border-radius: 18px !important;
+
+    background:
+        rgba(13,18,27,.90) !important;
+
     border: 1px solid var(--fc-border) !important;
 
-    flex-shrink: 0;
-    border-radius: 22px !important;
-
-    border-radius: 50%;
-    background:
-        rgba(13,18,27,.92) !important;
-
-    background: var(--fc-accent);
     backdrop-filter: blur(20px);
-
-    color: white;
     -webkit-backdrop-filter: blur(20px);
 
-    display: flex;
     box-shadow:
         0 18px 60px rgba(0,0,0,.4) !important;
 
-    align-items: center;
-    justify-content: center;
     z-index: 10000 !important;
 }
 
-    font-weight: 800;
 
-    font-size: 15px;
-.fc-dock-btn {
+/* Bottom buttons */
+
+.fc-dock-btn,
+.fc-dock-button {
     width: 46px !important;
     height: 46px !important;
 
-    overflow: hidden;
-}
     padding: 0 !important;
 
-.fc-discovery-avatar img {
-    width: 100%;
-    height: 100%;
     display: grid !important;
-
-    object-fit: cover;
-}
     place-items: center !important;
 
-.fc-discovery-user-info {
-    min-width: 0;
     border: 0 !important;
-
-    flex: 1;
-}
     border-radius: 15px !important;
 
-.fc-discovery-user-name {
-    font-size: 14px;
     background: transparent !important;
 
-    font-weight: 700;
     color: var(--fc-muted) !important;
 
-    white-space: nowrap;
-    font-size: 19px !important;
+    font-size: 18px !important;
 
-    overflow: hidden;
     cursor: pointer !important;
 
-    text-overflow: ellipsis;
     transition:
-        background .22s ease,
-        color .22s ease,
-        transform .22s ease !important;
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease !important;
 }
 
-.fc-discovery-user-id {
-    margin-top: 3px;
-
-    color: var(--fc-muted);
-.fc-dock-btn:hover {
+.fc-dock-btn:hover,
+.fc-dock-button:hover {
     background:
         rgba(255,255,255,.06) !important;
 
-    font-size: 12px;
     color: var(--fc-text) !important;
 }
 
-    white-space: nowrap;
 
-    overflow: hidden;
-.fc-dock-center {
+/* Center FC */
+
+.fc-dock-center,
+#fc-center-button {
     width: 52px !important;
     height: 52px !important;
 
-    text-overflow: ellipsis;
-}
+    display: grid !important;
+    place-items: center !important;
+
+    border: 0 !important;
     border-radius: 17px !important;
 
-/* =========================================================
-   EMPTY DISCOVERY
-   ========================================================= */
     background:
         linear-gradient(
             135deg,
@@ -1085,21 +618,22 @@ body {
             var(--fc-accent-2)
         ) !important;
 
-.fc-discovery-empty {
-    padding: 45px 20px;
+    color: white !important;
+
+    font-size: 19px !important;
+    font-weight: 900 !important;
+
     box-shadow:
         0 8px 28px rgba(108,124,255,.3) !important;
 
-    text-align: center;
-    color: white !important;
+    cursor: pointer !important;
 
-    color: var(--fc-muted);
-    font-weight: 900 !important;
+    transition:
+        transform .22s ease !important;
 }
 
-    font-size: 14px;
-
-.fc-dock-center:hover {
+.fc-dock-center:hover,
+#fc-center-button:hover {
     transform:
         translateY(-4px)
         scale(1.03) !important;
@@ -1107,279 +641,165 @@ body {
 
 
 /* =========================================================
-   THEME OVERLAY
-   DISCOVERY WINDOW
+   DISCOVERY OVERLAY
    ========================================================= */
 
-#fc-theme-panel {
-    position: fixed;
-
-    inset: 0;
-.fc-overlay {
-    position: fixed !important;
-
-    width: 100vw;
-    height: 100vh;
-    inset: 0 !important;
-
-    background: rgba(0, 0, 0, 0.55);
-    width: 100vw !important;
-    height: 100vh !important;
-
-    display: flex;
-    background:
-        rgba(0,0,0,.48) !important;
-
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(3px);
-
-    opacity: 0;
-
-    visibility: hidden;
-
-    pointer-events: none;
-
-    z-index: 99971;
-    z-index: 10020 !important;
-
-    transition:
-        opacity 0.22s ease,
-        visibility 0.22s ease;
-
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-        opacity .25s ease !important;
-}
-
-#fc-theme-panel.fc-overlay-open {
-    opacity: 1;
-
-    visibility: visible;
-.fc-overlay.open {
-    opacity: 1;
-
-    pointer-events: auto;
-}
-
-/* =========================================================
-   THEME WINDOW
-   ========================================================= */
-
-.fc-theme-window {
-    width: min(390px, calc(100vw - 30px));
+#fc-discovery,
 .fc-discovery {
     position: fixed !important;
 
-    padding: 18px;
     left: 50% !important;
-
-    background: var(--fc-panel);
     bottom: 92px !important;
 
-    border: 1px solid var(--fc-border);
     width:
         min(430px, calc(100vw - 28px)) !important;
 
-    border-radius: 22px;
     max-height:
         min(620px, 70vh) !important;
 
-    box-shadow: var(--fc-shadow);
-}
-
-.fc-theme-header {
-    display: flex;
     transform:
-        translate(-50%, 18px)
+        translate(-50%,18px)
         scale(.96) !important;
 
-    align-items: center;
-    justify-content: space-between;
-    opacity: 0;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 
-    margin-bottom: 15px;
-}
-    pointer-events: none;
+    background:
+        rgba(13,18,27,.98) !important;
 
-.fc-theme-title {
-    font-size: 17px;
     border:
         1px solid var(--fc-border) !important;
 
-    font-weight: 800;
-}
     border-radius: 22px !important;
 
-.fc-theme-close {
-    width: 34px;
-    height: 34px;
-    background:
-        rgba(13,18,27,.97) !important;
-
-    padding: 0;
-    backdrop-filter: blur(24px);
-
-    border: 0;
     box-shadow:
         0 25px 80px rgba(0,0,0,.55) !important;
 
-    border-radius: 10px;
-    z-index: 10030 !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
 
-    background: rgba(255, 255, 255, 0.06);
+    z-index: 10020 !important;
+
+    overflow: hidden !important;
+
     transition:
         opacity .25s var(--fc-ease),
-        transform .25s var(--fc-ease) !important;
-
-    color: var(--fc-muted);
-    overflow: hidden !important;
+        transform .25s var(--fc-ease),
+        visibility .25s ease !important;
 }
 
-    cursor: pointer;
-
-    font-size: 18px;
-}
+#fc-discovery.fc-overlay-open,
+#fc-discovery.open,
 .fc-discovery.open {
-    opacity: 1;
+    opacity: 1 !important;
 
-.fc-theme-close:hover {
-    background: rgba(255, 255, 255, 0.1);
+    visibility: visible !important;
+
+    pointer-events: auto !important;
+
     transform:
-        translate(-50%, 0)
+        translate(-50%,0)
         scale(1) !important;
-
-    color: white;
-    pointer-events: auto;
 }
+
 
 /* =========================================================
-   THEME OPTIONS
+   DISCOVERY HEADER
    ========================================================= */
 
-.fc-theme-options {
-    display: grid;
-.fc-discovery-head {
+.fc-discovery-head,
+.fc-discovery-header {
     display: flex !important;
-
-    grid-template-columns: repeat(2, 1fr);
     align-items: center !important;
-
-    gap: 10px;
-}
     justify-content: space-between !important;
 
-.fc-theme-option {
-    min-height: 72px;
-    padding: 18px !important;
+    padding: 16px 18px !important;
 
-    padding: 12px;
     border-bottom:
         1px solid var(--fc-border) !important;
 }
 
-    border: 1px solid var(--fc-border);
-
-    border-radius: 14px;
-.fc-discovery-list {
-    padding: 10px !important;
-
-    background: var(--fc-panel-2);
-    overflow-y: auto !important;
-
-    color: var(--fc-text);
-    max-height: 520px !important;
+.fc-discovery-title {
+    font-size: 17px !important;
+    font-weight: 800 !important;
 }
 
-    cursor: pointer;
+.fc-discovery-close {
+    width: 34px !important;
+    height: 34px !important;
 
-    text-align: left;
-.fc-user-suggestion {
-    width: 100% !important;
+    display: grid !important;
+    place-items: center !important;
 
-    transition:
-        transform 0.2s ease,
-        border-color 0.2s ease;
-}
-    padding: 12px !important;
+    border: 1px solid var(--fc-border) !important;
+    border-radius: 10px !important;
 
-.fc-theme-option:hover {
-    transform: translateY(-2px);
-    display: flex !important;
+    background:
+        var(--fc-panel-2) !important;
 
-    border-color: rgba(255, 255, 255, 0.2);
-}
-    align-items: center !important;
-
-.fc-theme-name {
-    display: block;
-    gap: 12px !important;
-
-    font-size: 13px;
-    border-radius: 15px !important;
-
-    font-weight: 700;
-}
-    background: transparent !important;
-
-.fc-theme-preview {
-    width: 100%;
-    height: 6px;
     color: var(--fc-text) !important;
 
-    margin-top: 10px;
-    text-align: left !important;
-
-    border-radius: 99px;
     cursor: pointer !important;
 }
 
+
 /* =========================================================
-   THEME PREVIEWS
+   DISCOVERY USERS
    ========================================================= */
 
-.fc-theme-preview.midnight {
-    background: #5865f2;
-.fc-user-suggestion:hover {
+.fc-discovery-list,
+.fc-discovery-users {
+    padding: 10px !important;
+
+    max-height: 520px !important;
+
+    overflow-y: auto !important;
+}
+
+.fc-user-suggestion,
+.fc-discovery-user {
+    width: 100% !important;
+
+    min-height: 64px !important;
+
+    padding: 10px 12px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    gap: 12px !important;
+
+    border-radius: 15px !important;
+
+    background: transparent !important;
+
+    color: var(--fc-text) !important;
+
+    cursor: pointer !important;
+
+    transition:
+        background .18s ease !important;
+}
+
+.fc-user-suggestion:hover,
+.fc-discovery-user:hover {
     background:
         rgba(255,255,255,.05) !important;
 }
 
-.fc-theme-preview.emerald {
-    background: #10b981;
-}
-
-.fc-theme-preview.ocean {
-    background: #0ea5e9;
-}
-.fc-user-avatar {
+.fc-user-avatar,
+.fc-discovery-avatar {
     width: 44px !important;
     height: 44px !important;
 
-.fc-theme-preview.sunset {
-    background: #f97316;
-}
     flex-shrink: 0;
 
-.fc-theme-preview.rose {
-    background: #ec4899;
-}
     display: grid !important;
-
-.fc-theme-preview.graphite {
-    background: #94a3b8;
-}
     place-items: center !important;
 
-/* =========================================================
-   THEMES
-   ========================================================= */
     border-radius: 50% !important;
 
-body.fc-theme-midnight {
-    --fc-bg: #0b0d10;
-    --fc-panel: #11151a;
-    --fc-panel-2: #171c22;
     background:
         linear-gradient(
             135deg,
@@ -1387,11 +807,231 @@ body.fc-theme-midnight {
             var(--fc-accent-2)
         ) !important;
 
-    --fc-accent: #5865f2;
-    --fc-accent-hover: #6975ff;
+    color: white !important;
+
     font-weight: 800 !important;
 
     overflow: hidden !important;
+}
+
+.fc-user-avatar img,
+.fc-discovery-avatar img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.fc-user-info,
+.fc-discovery-user-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.fc-user-name,
+.fc-discovery-user-name {
+    font-weight: 700 !important;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fc-user-id,
+.fc-discovery-user-id {
+    margin-top: 3px;
+
+    color: var(--fc-muted) !important;
+
+    font-size: 12px !important;
+}
+
+
+/* =========================================================
+   THEME OVERLAY
+   ========================================================= */
+
+#fc-theme-panel,
+.fc-theme-panel {
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    background:
+        rgba(0,0,0,.48) !important;
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+
+    z-index: 10030 !important;
+
+    transition:
+        opacity .25s ease,
+        visibility .25s ease !important;
+}
+
+#fc-theme-panel.fc-overlay-open,
+#fc-theme-panel.open,
+.fc-theme-panel.open {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+
+/* =========================================================
+   THEME WINDOW
+   ========================================================= */
+
+.fc-theme-window {
+    width:
+        min(390px, calc(100vw - 30px)) !important;
+
+    max-height:
+        calc(100vh - 40px) !important;
+
+    padding: 18px !important;
+
+    overflow-y: auto !important;
+
+    background:
+        var(--fc-panel) !important;
+
+    border:
+        1px solid var(--fc-border) !important;
+
+    border-radius: 22px !important;
+
+    box-shadow:
+        0 30px 100px rgba(0,0,0,.65) !important;
+}
+
+.fc-theme-head,
+.fc-theme-header {
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    margin-bottom: 15px !important;
+}
+
+.fc-theme-title {
+    font-size: 17px !important;
+    font-weight: 800 !important;
+}
+
+.fc-theme-close {
+    width: 34px !important;
+    height: 34px !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    border:
+        1px solid var(--fc-border) !important;
+
+    border-radius: 10px !important;
+
+    background:
+        rgba(255,255,255,.06) !important;
+
+    color: var(--fc-text) !important;
+
+    cursor: pointer !important;
+}
+
+
+/* =========================================================
+   THEME OPTIONS
+   ========================================================= */
+
+.fc-theme-grid,
+.fc-theme-options {
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap: 10px !important;
+}
+
+.fc-theme-choice,
+.fc-theme-option {
+    padding: 14px !important;
+
+    border:
+        1px solid var(--fc-border) !important;
+
+    border-radius: 16px !important;
+
+    background:
+        var(--fc-panel-2) !important;
+
+    color: var(--fc-text) !important;
+
+    text-align: left !important;
+
+    cursor: pointer !important;
+
+    transition:
+        border-color .2s ease,
+        transform .2s ease !important;
+}
+
+.fc-theme-choice:hover,
+.fc-theme-option:hover {
+    transform: translateY(-2px);
+
+    border-color:
+        rgba(108,124,255,.55) !important;
+}
+
+.fc-theme-name {
+    font-weight: 700 !important;
+}
+
+.fc-theme-desc {
+    margin-top: 4px;
+
+    color: var(--fc-muted) !important;
+
+    font-size: 11px !important;
+}
+
+.fc-theme-swatch,
+.fc-theme-preview {
+    width: 100% !important;
+    height: 38px !important;
+
+    margin-bottom: 8px !important;
+
+    border-radius: 10px !important;
+}
+
+
+/* =========================================================
+   THEME COLORS
+   ========================================================= */
+
+body.fc-theme-midnight {
+    --fc-bg: #070a10;
+    --fc-panel: #0d121b;
+    --fc-panel-2: #111824;
+
+    --fc-accent: #6c7cff;
+    --fc-accent-2: #8b5cf6;
 }
 
 body.fc-theme-emerald {
@@ -1400,12 +1040,7 @@ body.fc-theme-emerald {
     --fc-panel-2: #12251f;
 
     --fc-accent: #10b981;
-    --fc-accent-hover: #18c996;
-.fc-user-avatar img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
+    --fc-accent-2: #059669;
 }
 
 body.fc-theme-ocean {
@@ -1414,11 +1049,7 @@ body.fc-theme-ocean {
     --fc-panel-2: #122431;
 
     --fc-accent: #0ea5e9;
-    --fc-accent-hover: #22b7f5;
-.fc-user-info {
-    flex: 1;
-
-    min-width: 0;
+    --fc-accent-2: #2563eb;
 }
 
 body.fc-theme-sunset {
@@ -1427,22 +1058,16 @@ body.fc-theme-sunset {
     --fc-panel-2: #2b1811;
 
     --fc-accent: #f97316;
-    --fc-accent-hover: #fb8c3c;
+    --fc-accent-2: #ef4444;
 }
-.fc-user-name {
-    font-weight: 700;
 
 body.fc-theme-rose {
     --fc-bg: #150a11;
     --fc-panel: #21101a;
     --fc-panel-2: #2c1522;
-    white-space: nowrap;
 
     --fc-accent: #ec4899;
-    --fc-accent-hover: #f15bad;
-    overflow: hidden;
-
-    text-overflow: ellipsis;
+    --fc-accent-2: #8b5cf6;
 }
 
 body.fc-theme-graphite {
@@ -1451,610 +1076,148 @@ body.fc-theme-graphite {
     --fc-panel-2: #1d2024;
 
     --fc-accent: #94a3b8;
-    --fc-accent-hover: #b1bdcc;
-.fc-user-id {
-    font-size: 12px;
-
-    color: var(--fc-muted);
-}
-
-/* =========================================================
-   SCROLLBAR
-   ========================================================= */
-
-.fc-discovery-users::-webkit-scrollbar {
-    width: 6px;
-}
-.fc-user-add {
-    padding: 8px 12px !important;
-
-.fc-discovery-users::-webkit-scrollbar-track {
-    background: transparent;
-}
-    border: 0 !important;
-
-.fc-discovery-users::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 10px !important;
-
-    border-radius: 20px;
-}
-    background: var(--fc-accent) !important;
-
-/* =========================================================
-   HIDE OLD SPOTIFY NAVIGATION
-   ========================================================= */
-    color: #fff !important;
-
-.spotify-side-button,
-.spotify-side-bar {
-    display: none !important;
-    font-size: 12px !important;
-
-    cursor: pointer !important;
+    --fc-accent-2: #64748b;
 }
 
 
 /* =========================================================
-   HIDE OLD NAVIGATION ELEMENTS
-   THEME PANEL
-   ========================================================= */
-
-.old-sidebar,
-.old-side-bar,
-.old-navigation,
-.old-bottom-nav,
-.old-bottom-navigation {
-    display: none !important;
-}
-.fc-theme-panel {
-    position: fixed !important;
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-    left: 50% !important;
-    top: 50% !important;
-
-@media (max-width: 760px) {
-    width:
-        min(470px, calc(100vw - 28px)) !important;
-
-    /* FULL WIDTH HOME */
-    max-height:
-        calc(100vh - 40px) !important;
-
-    #homeScreen {
-        width: 100vw !important;
-        min-width: 100vw !important;
-    }
-    overflow-y: auto !important;
-
-    #homeScreen > header {
-        width: 100% !important;
-    transform:
-        translate(-50%, -48%)
-        scale(.96) !important;
-
-        padding: 14px 16px !important;
-    }
-    opacity: 0;
-
-    #homeScreen .profileRow,
-    #homeScreen .search,
-    #homeScreen .friendList {
-    pointer-events: none;
-
-        width: calc(100% - 28px) !important;
-    z-index: 10031 !important;
-
-        margin-left: 14px !important;
-        margin-right: 14px !important;
-    }
-    background:
-        rgba(13,18,27,.98) !important;
-
-    #homeScreen .friendList {
-        padding-bottom: 90px !important;
-    }
-    border:
-        1px solid var(--fc-border) !important;
-
-    /* LEFT MENU */
-    border-radius: 24px !important;
-
-    #fc-nav-toggle {
-        left: 12px !important;
-        top: 16px !important;
-    box-shadow:
-        0 30px 100px rgba(0,0,0,.65) !important;
-
-        width: 44px !important;
-        height: 44px !important;
-    transition:
-        opacity .25s var(--fc-ease),
-        transform .25s var(--fc-ease) !important;
-}
-
-        transform: none !important;
-
-        border-radius: 13px !important;
-    }
-.fc-theme-panel.open {
-    opacity: 1;
-
-    #fc-nav-toggle:hover {
-        transform: scale(1.04) !important;
-    }
-    pointer-events: auto;
-
-    #fc-nav-toggle:active {
-        transform: scale(0.94) !important;
-    }
-    transform:
-        translate(-50%, -50%)
-        scale(1) !important;
-}
-
-    /* SIDEBAR */
-
-    #fc-sidebar {
-        left: 12px !important;
-        top: 70px !important;
-.fc-theme-head {
-    display: flex !important;
-
-        width: 210px !important;
-    align-items: center !important;
-
-        transform: translateY(-10px) scale(0.97) !important;
-    }
-    justify-content: space-between !important;
-
-    #fc-sidebar.fc-sidebar-open {
-        transform: translateY(0) scale(1) !important;
-    }
-    padding: 18px !important;
-
-    /* BOTTOM BAR */
-    border-bottom:
-        1px solid var(--fc-border) !important;
-}
-
-    #fc-bottom-dock {
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-
-        width: 100% !important;
-.fc-theme-body {
-    padding: 18px !important;
-}
-
-        height: 58px !important;
-
-        padding: 6px 12px !important;
-.fc-theme-grid {
-    display: grid !important;
-
-        border-radius: 0 !important;
-    }
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    .fc-dock-button {
-        width: 42px;
-        height: 42px;
-    }
-    gap: 10px !important;
-}
-
-    #fc-center-button {
-        width: 44px;
-        height: 44px;
-    }
-
-    /* DISCOVERY */
-.fc-theme-choice {
-    padding: 14px !important;
-
-    .fc-discovery-window {
-        width: calc(100vw - 20px);
-    border:
-        1px solid var(--fc-border) !important;
-
-        border-radius: 19px;
-    }
-    border-radius: 16px !important;
-
-    /* THEME */
-    background:
-        var(--fc-panel-2) !important;
-
-    .fc-theme-window {
-        width: calc(100vw - 20px);
-    color: var(--fc-text) !important;
-
-        border-radius: 19px;
-    }
-    text-align: left !important;
-
-    cursor: pointer !important;
-}
-
-/* =========================================================
-   SMALL PHONES
-   ========================================================= */
-
-@media (max-width: 420px) {
-.fc-theme-choice:hover {
-    border-color:
-        rgba(108,124,255,.55) !important;
-}
-
-    #fc-sidebar {
-        width: 190px !important;
-    }
-
-    .fc-sidebar-item {
-        min-height: 45px;
-.fc-theme-swatch {
-    height: 38px;
-
-        font-size: 13px;
-    }
-    margin-bottom: 8px;
-
-    .fc-sidebar-icon {
-        width: 28px;
-        height: 28px;
-    border-radius: 10px;
-}
-
-        font-size: 15px;
-    }
-
-    .fc-theme-options {
-        grid-template-columns: 1fr;
-    }
-.fc-theme-name {
-    font-weight: 700;
-}
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-.fc-theme-desc {
-    font-size: 11px;
-
-    #fc-nav-toggle,
-    #fc-sidebar,
-    #fc-bottom-dock,
-    #fc-discovery,
-    #fc-theme-panel,
-    .fc-discovery-window,
-    .fc-theme-option,
-    .fc-sidebar-item,
-    .fc-dock-button {
-        transition: none !important;
-    }
-    color: var(--fc-muted);
-}
-
-
-/* =========================================================
-   ADD FRIEND SCREEN - FULL WIDTH FIX
-   ADD FRIEND PAGE
+   ADD FRIEND
    ========================================================= */
 
 #addScreen {
-    width: 100vw !important;
-    max-width: none !important;
-
-    min-width: 100vw !important;
-    min-height: 100vh !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
-    min-height: 100vh !important;
-
-    border-radius: 0 !important;
     background: var(--fc-bg) !important;
 
     overflow-x: hidden !important;
     overflow-y: auto !important;
 }
 
-/* Full-width Add Friend header */
-
-/* Add page header */
-
 #addScreen > header {
     width: 100% !important;
-    max-width: none !important;
 
     min-height: 76px !important;
 
     margin: 0 !important;
-
     padding: 18px 24px !important;
 
     border-radius: 0 !important;
 
-    display: flex !important;
-    align-items: center !important;
     border-bottom:
         1px solid var(--fc-border) !important;
 
-    padding: 18px 24px !important;
     background:
         rgba(7,10,16,.88) !important;
 
     backdrop-filter: blur(18px);
 }
 
-/* Add Friend content */
-
-/* Add page card */
-
 #addScreen > .card.wide {
     width: calc(100% - 48px) !important;
-    width:
-        calc(100% - 48px) !important;
-
     max-width: none !important;
 
     margin: 24px !important;
-    margin:
-        24px !important;
-
     padding: 24px !important;
-    padding:
-        24px !important;
 
     border-radius: 18px !important;
-    border-radius:
-        18px !important;
 }
-
-/* Tabs */
-
-/* Add tabs */
 
 #addScreen .tabs {
     width: 100% !important;
-@@ -1225,6 +1148,7 @@ body.fc-theme-graphite {
-    margin-bottom: 20px !important;
 }
-
 
 #addScreen .tabs button {
     flex: 1 !important;
-
-@@ -1233,17 +1157,20 @@ body.fc-theme-graphite {
-    margin: 0 !important;
 }
-
-/* Friend ID input */
-
-/* Add ID */
 
 #addScreen #addId {
     width: 100% !important;
-
     max-width: none !important;
-
-    margin: 0 0 14px 0 !important;
-    margin:
-        0 0 14px 0 !important;
 }
-
-/* Continue / Add Friend button */
-
-/* Add button */
 
 #addScreen .card.wide > button:not(.secondary) {
     width: 100% !important;
-@@ -1253,409 +1180,477 @@ body.fc-theme-graphite {
-    margin: 0 !important;
 }
-
-/* Status */
 
 #addScreen #addStatus {
     width: 100% !important;
-
-    margin: 14px 0 5px 0 !important;
-    margin:
-        14px 0 5px !important;
 }
 
-/* Example text */
-
-#addScreen .smallText {
-    margin-top: 5px !important;
-}
 
 /* =========================================================
-   MOBILE ADD FRIEND
-   CHAT SCREEN
+   CHAT
    ========================================================= */
 
-@media (max-width: 760px) {
 #chatScreen {
     width: 100vw !important;
     min-width: 100vw !important;
-
-    #addScreen {
-        width: 100vw !important;
-        min-width: 100vw !important;
-    }
     min-height: 100vh !important;
 
-    #addScreen > header {
-        width: 100% !important;
-    background:
-        var(--fc-bg) !important;
+    background: var(--fc-bg) !important;
 }
 
-        padding: 14px 16px !important;
-    }
-
-    #addScreen > .card.wide {
-        width: calc(100% - 28px) !important;
 #chatScreen > header {
     width: 100% !important;
 
-        margin: 14px !important;
     min-height: 76px !important;
 
-        padding: 18px !important;
-    }
     margin: 0 !important;
-
-    #addScreen .tabs {
-        gap: 7px !important;
-    }
     padding: 14px 22px !important;
 
-    #addScreen .tabs button {
-        min-height: 44px !important;
     border-radius: 0 !important;
 
-        font-size: 13px !important;
-    }
-}
-/* =========================================================
-   FRIENDCHAT SLIDE-OUT LEFT SIDEBAR
-   ========================================================= */
     border-bottom:
         1px solid var(--fc-border) !important;
 
-/* -------------------------
-   SMALL ARROW TAB
-   ------------------------- */
     background:
         rgba(7,10,16,.86) !important;
 
-#fcNavToggle {
-    position: fixed !important;
     backdrop-filter: blur(18px);
 }
 
-    left: 0 !important;
-    top: 50% !important;
-
-    width: 34px !important;
-    height: 64px !important;
 #messages {
     width: 100% !important;
 
-    transform: translateY(-50%) !important;
     height:
         calc(100vh - 150px) !important;
 
-    padding: 0 !important;
     padding:
         28px clamp(18px,7vw,100px)
         100px !important;
 
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
     overflow-y: auto !important;
 }
 
-    border: 1px solid rgba(255,255,255,0.10) !important;
-    border-left: 0 !important;
-
-    border-radius: 0 14px 14px 0 !important;
-/* Composer */
-
-    background: rgba(15,18,23,0.98) !important;
 #chatScreen .composer {
     position: fixed !important;
 
-    color: white !important;
     left:
         clamp(14px,7vw,100px) !important;
 
-    cursor: pointer !important;
     right:
         clamp(14px,7vw,100px) !important;
 
-    z-index: 100001 !important;
     bottom: 16px !important;
 
-    box-shadow: 8px 0 30px rgba(0,0,0,0.30) !important;
     margin: 0 !important;
 
-    transition:
-        width .25s ease,
-        background .2s ease,
-        left .28s ease !important;
-}
     z-index: 1000 !important;
 
     background:
         rgba(17,24,36,.94) !important;
 
-/* Arrow */
     border:
         1px solid var(--fc-border) !important;
 
-#fcNavToggle .fc-chevron {
-    display: block !important;
     border-radius: 18px !important;
 
-    font-size: 25px !important;
     box-shadow:
         0 15px 45px rgba(0,0,0,.35);
 }
 
-    line-height: 1 !important;
 
-    transform: rotate(0deg) !important;
-/* Message animation */
+/* =========================================================
+   MESSAGE TICKS
+   ========================================================= */
 
-    transition:
-        transform .3s ease !important;
-.message {
-    animation:
-        fcMessageIn .25s var(--fc-ease);
-}
-
-
-/* Hover */
-@keyframes fcMessageIn {
-
-#fcNavToggle:hover {
-    width: 40px !important;
-    from {
-        opacity: 0;
-
-        transform:
-            translateY(8px)
-            scale(.98);
-    }
-
-    background: rgba(25,29,36,0.99) !important;
-    to {
-        opacity: 1;
-
-    transform: translateY(-50%) !important;
-        transform: none;
-    }
-}
-
-
-/* -------------------------
-   SIDEBAR CLOSED
-   ------------------------- */
-/* Black message ticks */
-
-#fcCustomSidebar {
 .messageStatus,
 .readTicks,
 .deliveredTicks,
@@ -2062,69 +1225,24 @@ body.fc-theme-graphite {
     color: #000 !important;
 }
 
-    position: fixed !important;
 
-    left: 0 !important;
-    top: 50% !important;
 /* =========================================================
    PROFILE
    ========================================================= */
 
-    width: 250px !important;
 #profileScreen {
     width: 100vw !important;
-
-    padding: 14px !important;
     min-height: 100vh !important;
 
-    background: rgba(14,17,22,0.98) !important;
+    padding: 14px !important;
+
     background:
         var(--fc-bg) !important;
 }
 
-    border: 1px solid rgba(255,255,255,0.09) !important;
 
-    border-left: 0 !important;
-#profileScreen .profilePage {
-    animation:
-        fcProfileIn .42s var(--fc-ease);
-}
-
-    border-radius: 0 20px 20px 0 !important;
-
-    box-shadow:
-        15px 20px 60px rgba(0,0,0,0.50) !important;
-@keyframes fcProfileIn {
-
-    z-index: 100000 !important;
-    from {
-        opacity: 0;
-
-    /* Completely hide behind left edge */
-    transform:
-        translate(-100%,-50%) !important;
-        transform:
-            translateY(20px)
-            scale(.985);
-    }
-
-    opacity: 0 !important;
-    to {
-        opacity: 1;
-
-    visibility: hidden !important;
-        transform: none;
-    }
-}
-
-    pointer-events: none !important;
-
-    transition:
-        transform .35s cubic-bezier(.22,.8,.25,1),
-        opacity .25s ease,
-        visibility .35s ease !important;
 /* =========================================================
-   SPOTIFY OLD UI
+   HIDE OLD SPOTIFY UI
    ========================================================= */
 
 .spotify-side-button,
@@ -2135,420 +1253,208 @@ body.fc-theme-graphite {
 }
 
 
-/* -------------------------
-   SIDEBAR OPEN
-   ------------------------- */
 /* =========================================================
-   THEMES
+   HIDE OLD NAVIGATION
    ========================================================= */
 
-#fcCustomSidebar.open {
-body.fc-theme-midnight {
-    --fc-bg: #070a10;
-    --fc-panel: #0d121b;
-    --fc-panel-2: #111824;
-
-    transform:
-        translate(0,-50%) !important;
-    --fc-accent: #6c7cff;
-    --fc-accent-2: #8b5cf6;
-}
-
-    opacity: 1 !important;
-
-    visibility: visible !important;
-body.fc-theme-emerald {
-    --fc-bg: #07120f;
-    --fc-panel: #0d1b17;
-    --fc-panel-2: #12251f;
-
-    pointer-events: auto !important;
-    --fc-accent: #10b981;
-    --fc-accent-2: #059669;
+.old-sidebar,
+.old-side-bar,
+.old-navigation,
+.old-bottom-nav,
+.old-bottom-navigation {
+    display: none !important;
 }
 
 
-/* -------------------------
-   ARROW WHEN OPEN
-   ------------------------- */
-body.fc-theme-ocean {
-    --fc-bg: #071118;
-    --fc-panel: #0d1922;
-    --fc-panel-2: #122431;
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
 
-    --fc-accent: #0ea5e9;
-    --fc-accent-2: #2563eb;
+.fc-discovery-users::-webkit-scrollbar,
+.fc-discovery-list::-webkit-scrollbar {
+    width: 6px;
 }
 
-#fcNavToggle.is-open {
-
-    left: 250px !important;
-body.fc-theme-sunset {
-    --fc-bg: #160c08;
-    --fc-panel: #21120d;
-    --fc-panel-2: #2b1811;
-
-    width: 34px !important;
-    --fc-accent: #f97316;
-    --fc-accent-2: #ef4444;
+.fc-discovery-users::-webkit-scrollbar-track,
+.fc-discovery-list::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-    border-left: 1px solid rgba(255,255,255,0.10) !important;
-
-    border-radius: 0 14px 14px 0 !important;
-body.fc-theme-rose {
-    --fc-bg: #150a11;
-    --fc-panel: #21101a;
-    --fc-panel-2: #2c1522;
-
-    box-shadow:
-        8px 0 30px rgba(0,0,0,0.35) !important;
-    --fc-accent: #ec4899;
-    --fc-accent-2: #8b5cf6;
+.fc-discovery-users::-webkit-scrollbar-thumb,
+.fc-discovery-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.12);
+    border-radius: 20px;
 }
 
 
-#fcNavToggle.is-open .fc-chevron {
-body.fc-theme-graphite {
-    --fc-bg: #0c0d0f;
-    --fc-panel: #15171a;
-    --fc-panel-2: #1d2024;
-
-    transform: rotate(180deg) !important;
-    --fc-accent: #94a3b8;
-    --fc-accent-2: #64748b;
-}
-
-
-/* -------------------------
-   SIDEBAR CONTENT
-   ------------------------- */
 /* =========================================================
    MOBILE
    ========================================================= */
 
-#fcCustomSidebar .fc-sidebar-brand {
 @media (max-width: 760px) {
 
-    display: flex;
-    /* Home */
-
-    align-items: center;
     #homeScreen > header {
-        padding:
-            16px 16px !important;
+        padding: 16px !important;
     }
 
-    gap: 11px;
-
-    padding: 8px 8px 14px;
     #homeScreen .profileRow,
     #homeScreen .search,
     #homeScreen .friendList {
-
-    margin-bottom: 6px;
         width:
             calc(100vw - 28px) !important;
 
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-        margin-left:
-            14px !important;
-
-        margin-right:
-            14px !important;
+        margin-left: 14px !important;
+        margin-right: 14px !important;
     }
 
-#fcCustomSidebar .fc-sidebar-logo {
 
-    width: 38px;
-    height: 38px;
-    #homeScreen .friendList {
-        padding-bottom:
-            90px !important;
-    }
+    /* Arrow */
 
-    flex-shrink: 0;
-
-    display: flex;
-    /* Small arrow */
-
-    align-items: center;
-    justify-content: center;
-    .fc-nav-toggle {
-
-    border-radius: 12px;
+    #fcNavToggle,
+    .fc-nav-toggle,
+    #fc-nav-toggle {
         width: 30px !important;
         height: 56px !important;
 
-    background: var(--fc-accent, #5865f2);
         left: 0 !important;
+
+        border-radius:
+            0 12px 12px 0 !important;
     }
 
-    color: white;
 
-    font-size: 13px;
-    .fc-nav-toggle:hover {
-        width: 35px !important;
-    }
-
-    font-weight: 900;
-}
-
-    .fc-nav-toggle .fc-chevron {
-        font-size: 22px !important;
-    }
-
-#fcCustomSidebar .fc-sidebar-title {
-
-    color: white;
     /* Sidebar */
 
-    font-size: 14px;
-    .fc-sidebar {
+    #fcCustomSidebar,
+    .fc-sidebar,
+    #fc-sidebar {
+        --fc-sidebar-width: 220px;
 
-    font-weight: 800;
-}
         width: 220px !important;
 
         left: 0 !important;
-
-#fcCustomSidebar .fc-sidebar-sub {
-        top: 50% !important;
-
-    margin-top: 2px;
-        border-radius:
-            0 18px 18px 0 !important;
     }
 
-    color: #8d96a3;
 
-    font-size: 11px;
-}
-    .fc-nav-toggle.is-open {
+    /* Arrow follows sidebar */
 
-        left: 220px !important;
-
-/* -------------------------
-   SIDEBAR OPTIONS
-   ------------------------- */
-        width: 30px !important;
+    #fcNavToggle.is-open,
+    .fc-nav-toggle.is-open,
+    #fc-nav-toggle.is-open {
+        left: 228px !important;
     }
 
-#fcCustomSidebar .fc-nav-item {
 
-    width: 100% !important;
-    /* Quick buttons */
+    /* Bottom */
 
-    min-height: 46px !important;
-    .fc-quick-actions {
-
-    margin: 3px 0 !important;
-        right: 12px !important;
-
-    padding: 0 11px !important;
-        top: 88px !important;
-    }
-
-    display: flex !important;
-
-    align-items: center !important;
-    /* Bottom dock */
-
-    gap: 11px !important;
+    #fc-bottom-dock,
     .fc-bottom-dock {
-
-    border: 0 !important;
+        left: 50% !important;
         bottom: 10px !important;
 
-    border-radius: 12px !important;
-        border-radius: 18px !important;
+        height: 58px !important;
     }
 
-    background: transparent !important;
 
-    color: #e8ebef !important;
     /* Discovery */
 
-    font-size: 14px !important;
+    #fc-discovery,
     .fc-discovery {
-
-    font-weight: 600 !important;
         width:
             calc(100vw - 20px) !important;
+
+        bottom: 80px !important;
     }
 
-    text-align: left !important;
 
-    cursor: pointer !important;
     /* Theme */
 
-    transition:
-        background .18s ease,
-        transform .18s ease !important;
-}
-    .fc-theme-panel {
-
+    .fc-theme-window {
         width:
             calc(100vw - 20px) !important;
-    }
 
-#fcCustomSidebar .fc-nav-item:hover {
-
-    background: rgba(255,255,255,0.07) !important;
-    .fc-theme-grid {
-
-    transform: translateX(3px) !important;
-}
-        grid-template-columns:
-            1fr !important;
+        border-radius: 19px !important;
     }
 
 
-#fcCustomSidebar .fc-nav-icon {
-    /* Add Friend */
+    /* Add */
 
-    width: 31px;
-    height: 31px;
     #addScreen > header {
-
-    flex-shrink: 0;
-        padding:
-            14px 16px !important;
+        padding: 14px 16px !important;
     }
 
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
     #addScreen > .card.wide {
-
-    border-radius: 9px;
         width:
             calc(100% - 28px) !important;
 
-    background: rgba(255,255,255,0.06);
-        margin:
-            14px !important;
-
-        padding:
-            18px !important;
-    }
-
-    font-size: 16px;
-}
-
-    #addScreen .tabs {
-
-/* Hide Chats and Friends */
-        gap: 7px !important;
-    }
-
-#fcCustomSidebar .fc-nav-item[data-nav="chats"],
-#fcCustomSidebar .fc-nav-item[data-nav="friends"] {
-
-    display: none !important;
-}
-    #addScreen .tabs button {
-
-        min-height: 44px !important;
-
-        font-size: 13px !important;
+        margin: 14px !important;
+        padding: 18px !important;
     }
 
 
     /* Chat */
 
     #messages {
-
         padding:
             18px 12px 100px !important;
     }
 
-
-#fcCustomSidebar .fc-nav-divider {
     #chatScreen .composer {
-
-    height: 1px;
         left: 10px !important;
-
-    margin: 8px 5px;
         right: 10px !important;
-
-    background: rgba(255,255,255,0.07);
         bottom: 8px !important;
     }
 }
 
 
 /* =========================================================
-   MOBILE
    SMALL PHONES
    ========================================================= */
 
-@media (max-width: 760px) {
 @media (max-width: 420px) {
 
-    #fcNavToggle {
-    .fc-sidebar {
+    #fcCustomSidebar,
+    .fc-sidebar,
+    #fc-sidebar {
+        --fc-sidebar-width: 205px;
 
-        left: 0 !important;
-        top: 50% !important;
         width: 205px !important;
     }
 
-        width: 30px !important;
-        height: 56px !important;
-
-        border-radius: 0 12px 12px 0 !important;
-    .fc-nav-toggle.is-open {
-
-        left: 205px !important;
+    #fcNavToggle.is-open,
+    .fc-nav-toggle.is-open,
+    #fc-nav-toggle.is-open {
+        left: 213px !important;
     }
 
-    #fcNavToggle:hover {
-
-        width: 35px !important;
-    }
     .fc-nav-item {
-
-    #fcNavToggle .fc-chevron {
         min-height: 44px !important;
-
-        font-size: 22px !important;
         font-size: 13px !important;
     }
 
-    #fcCustomSidebar {
-
-        width: 220px !important;
     .fc-nav-icon {
-
-        top: 50% !important;
         width: 28px !important;
         height: 28px !important;
-
-        border-radius: 0 18px 18px 0 !important;
         font-size: 15px !important;
+    }
+
+    .fc-theme-grid,
+    .fc-theme-options {
+        grid-template-columns: 1fr !important;
     }
 }
 
-    #fcNavToggle.is-open {
 
-        left: 220px !important;
 /* =========================================================
    REDUCED MOTION
    ========================================================= */
 
-        width: 30px !important;
 @media (prefers-reduced-motion: reduce) {
 
     *,
     *::before,
     *::after {
-
         animation-duration: .01ms !important;
-
         animation-iteration-count: 1 !important;
 
         scroll-behavior: auto !important;
