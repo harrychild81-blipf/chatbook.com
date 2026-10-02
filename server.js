@@ -19,15 +19,7 @@ const profilePhotos = new Map();
 
 /* =====================================================
    FIND WEBSITE ROOT
-   =====================================================
-
-   Render:
-     server.js + index.html are in SAME folder
-
-   Local old setup:
-     server/server.js
-     ../index.html
-*/
+   ===================================================== */
 
 const SAME_FOLDER = __dirname;
 const PARENT_FOLDER = path.resolve(__dirname, "..");
@@ -85,6 +77,7 @@ function sendToUser(userId, payload) {
       );
 
     }
+
   }
 
   return false;
@@ -185,7 +178,159 @@ const server = http.createServer(
 
 
     /* ================================================
-       FIND USER
+       ALL FRIENDCHAT USERS
+       ================================================
+
+       Example:
+
+       /api/users
+
+       /api/users?exclude=FC-ABC123
+
+       Returns:
+
+       {
+         users: [
+           {
+             id: "FC-ABC123",
+             name: "Harry",
+             status: "active"
+           }
+         ]
+       }
+
+       IMPORTANT:
+       No email or password is returned.
+       ================================================ */
+
+    if (pathname === "/api/users") {
+
+      const excludeId =
+        normalizeId(
+          url.searchParams.get("exclude")
+        );
+
+      const viewer =
+        excludeId;
+
+      const presenceForViewer =
+        viewer
+          ? getPresenceForViewer(viewer)
+          : {};
+
+      const result = [];
+
+      for (
+        const [id, user]
+        of users.entries()
+      ) {
+
+        if (
+          excludeId &&
+          id === excludeId
+        ) {
+          continue;
+        }
+
+        const presenceInfo =
+          presenceForViewer[id];
+
+        let status =
+          "offline";
+
+        if (presenceInfo) {
+
+          status =
+            presenceInfo.status ||
+            "offline";
+
+        } else {
+
+          const info =
+            presence.get(id);
+
+          if (
+            info &&
+            info.online
+          ) {
+
+            status =
+              "active";
+
+          }
+
+        }
+
+        result.push({
+
+          id:
+            user.id,
+
+          name:
+            user.name,
+
+          status:
+            status,
+
+          online:
+            status !== "offline"
+
+        });
+
+      }
+
+
+      /*
+        Sort online users first,
+        then alphabetically by name.
+      */
+
+      result.sort(
+        (a, b) => {
+
+          if (
+            a.online !== b.online
+          ) {
+
+            return a.online
+              ? -1
+              : 1;
+
+          }
+
+          return String(a.name)
+            .localeCompare(
+              String(b.name)
+            );
+
+        }
+      );
+
+
+      res.writeHead(
+        200,
+        {
+          "Content-Type":
+            "application/json; charset=utf-8",
+
+          "Cache-Control":
+            "no-cache"
+        }
+      );
+
+
+      res.end(
+        JSON.stringify({
+          users: result
+        })
+      );
+
+      return;
+    }
+
+
+    /* ================================================
+       FIND ONE USER
        ================================================ */
 
     if (
@@ -203,6 +348,7 @@ const server = http.createServer(
           )
         );
 
+
       const user =
         users.get(id);
 
@@ -218,14 +364,22 @@ const server = http.createServer(
 
       res.end(
         JSON.stringify({
-          found: !!user,
 
-          user: user
-            ? {
-                id: user.id,
-                name: user.name
-              }
-            : null
+          found:
+            !!user,
+
+          user:
+            user
+              ? {
+                  id:
+                    user.id,
+
+                  name:
+                    user.name
+                }
+
+              : null
+
         })
       );
 
@@ -243,6 +397,7 @@ const server = http.createServer(
 
       const result = {};
 
+
       for (
         const [id, info]
         of presence.entries()
@@ -250,11 +405,14 @@ const server = http.createServer(
 
         result[id] = {
 
-          id: info.id,
+          id:
+            info.id,
 
-          name: info.name,
+          name:
+            info.name,
 
-          online: info.online,
+          online:
+            info.online,
 
           chattingWith:
             info.chattingWith
@@ -315,6 +473,7 @@ const server = http.createServer(
           }
         );
 
+
         res.end(
           JSON.stringify({
             found: false
@@ -336,11 +495,16 @@ const server = http.createServer(
 
       res.end(
         JSON.stringify({
-          found: true,
 
-          userId: id,
+          found:
+            true,
 
-          photo: photo
+          userId:
+            id,
+
+          photo:
+            photo
+
         })
       );
 
@@ -469,6 +633,7 @@ const server = http.createServer(
         res.writeHead(
           200,
           {
+
             "Content-Type":
               contentTypes[
                 extension
@@ -480,6 +645,7 @@ const server = http.createServer(
               extension === ".js"
                 ? "no-cache"
                 : "public, max-age=3600"
+
           }
         );
 
@@ -494,32 +660,8 @@ const server = http.createServer(
 
 
 /* =====================================================
-   WEBSOCKET SERVER
-   ===================================================== */
-
-const wss =
-  new WebSocket.Server({
-    server
-  });
-
-
-/* =====================================================
    PRESENCE
-   =====================================================
-
-   IMPORTANT:
-
-   A talking to B
-
-   A sees B = ACTIVE
-   B sees A = ACTIVE
-
-   C sees A = BUSY
-   C sees B = BUSY
-
-   Someone online but not chatting = ACTIVE
-   Disconnected = OFFLINE
-*/
+   ===================================================== */
 
 function getPresenceForViewer(
   viewerId
@@ -545,8 +687,6 @@ function getPresenceForViewer(
       /*
         User is talking directly
         to the viewer.
-
-        Therefore show ACTIVE.
       */
 
       if (
@@ -561,6 +701,7 @@ function getPresenceForViewer(
 
       }
 
+
       /*
         User is talking to someone else.
       */
@@ -573,6 +714,7 @@ function getPresenceForViewer(
           "busy";
 
       }
+
 
       /*
         Online and not talking.
@@ -590,11 +732,14 @@ function getPresenceForViewer(
 
     result[id] = {
 
-      id: info.id,
+      id:
+        info.id,
 
-      name: info.name,
+      name:
+        info.name,
 
-      status: status
+      status:
+        status
 
     };
 
@@ -616,12 +761,15 @@ function sendPresenceToViewer(
   sendToUser(
     viewerId,
     {
-      type: "presence",
+
+      type:
+        "presence",
 
       users:
         getPresenceForViewer(
           viewerId
         )
+
     }
   );
 
@@ -669,7 +817,9 @@ function broadcastProfilePhoto(
     if (
       id === senderId
     ) {
+
       continue;
+
     }
 
 
@@ -683,16 +833,12 @@ function broadcastProfilePhoto(
 
         socket.send(
           JSON.stringify({
+
             type:
               "profile_photo",
 
             userId:
               senderId,
-
-            /*
-              Send both formats so the
-              current client can understand it.
-            */
 
             photo:
               photo,
@@ -700,6 +846,7 @@ function broadcastProfilePhoto(
             data:
               photo.data ||
               photo
+
           })
         );
 
@@ -717,6 +864,16 @@ function broadcastProfilePhoto(
   }
 
 }
+
+
+/* =====================================================
+   WEBSOCKET SERVER
+   ===================================================== */
+
+const wss =
+  new WebSocket.Server({
+    server
+  });
 
 
 /* =====================================================
@@ -786,7 +943,9 @@ wss.on(
 
 
             if (!userId) {
+
               return;
+
             }
 
 
@@ -938,17 +1097,11 @@ wss.on(
 
 
             if (!userId) {
+
               return;
+
             }
 
-
-            /*
-              Current client may send:
-                msg.photo
-
-              Newer client may send:
-                msg.data + mimeType + name
-            */
 
             let photo;
 
@@ -1073,7 +1226,9 @@ wss.on(
 
 
             if (!userId) {
+
               return;
+
             }
 
 
@@ -1084,7 +1239,9 @@ wss.on(
 
 
             if (!info) {
+
               return;
+
             }
 
 
@@ -1154,7 +1311,9 @@ wss.on(
 
 
             if (!messageId) {
+
               return;
+
             }
 
 
@@ -1228,11 +1387,6 @@ wss.on(
               );
 
 
-            /*
-              Immediately give sender
-              the delivered tick.
-            */
-
             if (
               delivered
             ) {
@@ -1301,7 +1455,9 @@ wss.on(
 
 
             if (!messageId) {
+
               return;
+
             }
 
 
@@ -1377,7 +1533,8 @@ wss.on(
               size:
                 Number(
                   msg.size
-                ) || 0
+                ) ||
+                0
 
             };
 
@@ -1776,7 +1933,6 @@ wss.on(
             return;
           }
 
-
         }
 
         catch (error) {
@@ -1805,17 +1961,15 @@ wss.on(
 
 
         if (!userId) {
+
           return;
+
         }
 
 
         /*
           Only remove the current
           connection.
-
-          This prevents an old browser
-          connection from making the
-          new connection offline.
         */
 
         if (
