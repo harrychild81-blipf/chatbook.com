@@ -1826,3 +1826,108 @@ body.fc-theme-graphite {
         left: 8px !important;
     }
 }
+/* =====================================================
+   FLOATING BAR — DOES NOT SHIFT THE WEBSITE
+   ===================================================== */
+
+#fcCustomSidebar,
+.fc-sidebar,
+#fc-sidebar {
+    position: fixed !important;
+
+    left: 14px !important;
+    top: 20px !important;
+    bottom: 20px !important;
+
+    width: 68px !important;
+    height: auto !important;
+
+    margin: 0 !important;
+    padding: 10px 8px !important;
+
+    box-sizing: border-box !important;
+
+    z-index: 100020 !important;
+
+    /* IMPORTANT: never affect page layout */
+    transform: none !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+
+    border-radius: 20px !important;
+}
+
+/* Make sure NO FriendChat screen gets pushed */
+#homeScreen,
+#addScreen,
+#chatScreen,
+#profileScreen,
+#loginScreen,
+#signupScreen {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Bar stays visible */
+#fcCustomSidebar,
+.fc-sidebar,
+#fc-sidebar {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+/* No old sliding behavior */
+#fcCustomSidebar.open,
+#fcCustomSidebar.fc-sidebar-open,
+.fc-sidebar.open,
+.fc-sidebar.fc-sidebar-open,
+#fc-sidebar.open,
+#fc-sidebar.fc-sidebar-open {
+    transform: none !important;
+}
+
+/* Hide the old arrow */
+#fcNavToggle,
+.fc-nav-toggle,
+#fc-nav-toggle {
+    display: none !important;
+}
+
+/* No bottom dock */
+#fc-bottom-dock,
+.fc-bottom-dock {
+    display: none !important;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+    #fcCustomSidebar,
+    .fc-sidebar,
+    #fc-sidebar {
+        left: 10px !important;
+        width: 60px !important;
+    }
+
+    #homeScreen,
+    #addScreen,
+    #chatScreen,
+    #profileScreen,
+    #loginScreen,
+    #signupScreen {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 420px) {
+    #fcCustomSidebar,
+    .fc-sidebar,
+    #fc-sidebar {
+        left: 8px !important;
+        width: 54px !important;
+    }
+}
