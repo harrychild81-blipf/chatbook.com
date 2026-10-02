@@ -1,28 +1,22 @@
 /* =========================================================
-   FRIENDCHAT UI V3
-   CLEAN COMPLETE CSS
+   FRIENDCHAT UI V3 - COMPLETE CSS
    ========================================================= */
 
 :root {
-    --fc-bg: #070a10;
+    --fc-bg: #080b12;
     --fc-panel: #0d121b;
-    --fc-panel-2: #111824;
-    --fc-panel-3: #151d2a;
+    --fc-panel-2: #141b27;
+    --fc-border: rgba(255,255,255,.10);
+    --fc-text: #f5f7fb;
+    --fc-muted: #8e98aa;
+    --fc-accent: #5b8cff;
+    --fc-accent-2: #7c5cff;
+    --fc-danger: #ff5d6c;
 
-    --fc-border: rgba(255,255,255,.08);
+    --fc-sidebar-width: 210px;
+    --fc-sidebar-left: 12px;
 
-    --fc-text: #f5f7ff;
-    --fc-muted: #8d97aa;
-
-    --fc-accent: #6c7cff;
-    --fc-accent-2: #8b5cf6;
-
-    --fc-green: #35d07f;
-    --fc-danger: #ff5c72;
-
-    --fc-radius: 18px;
-
-    --fc-ease: cubic-bezier(.2,.8,.2,1);
+    --fc-ease: cubic-bezier(.22,1,.36,1);
 }
 
 
@@ -39,210 +33,99 @@ body {
     width: 100%;
     min-width: 100%;
     height: 100%;
-
-    margin: 0 !important;
-    padding: 0 !important;
-
-    background: var(--fc-bg) !important;
-
-    color: var(--fc-text);
-
-    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--fc-bg);
+    color: var(--fc-text);
+}
+
+button,
+input,
+textarea {
+    font: inherit;
 }
 
 
 /* =========================================================
-   MAIN APP
+   SCREEN / MAIN APP
    ========================================================= */
-
-.app {
-    width: 100vw !important;
-    max-width: none !important;
-
-    min-width: 100vw !important;
-    min-height: 100vh !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
-}
 
 .screen {
     width: 100% !important;
-    max-width: none !important;
-
     min-width: 100% !important;
     min-height: 100vh !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
 }
 
-
-/* Remove old centered card */
-
 #homeScreen,
+#addScreen,
 #chatScreen,
-#profileScreen,
-#addScreen {
+#profileScreen {
+    width: 100% !important;
     max-width: none !important;
-
-    border: 0 !important;
-    border-radius: 0 !important;
-
-    box-shadow: none !important;
 }
 
 
 /* =========================================================
-   HOME SCREEN
+   HOME
    ========================================================= */
 
 #homeScreen {
-    width: 100vw !important;
-    min-width: 100vw !important;
-
-    min-height: 100vh !important;
-
-    background:
-        radial-gradient(
-            circle at 15% 0%,
-            rgba(108,124,255,.08),
-            transparent 28%
-        ),
-        var(--fc-bg) !important;
-
-    overflow-y: auto !important;
+    padding-bottom: 90px !important;
 }
-
-
-/* =========================================================
-   HOME HEADER
-   ========================================================= */
 
 #homeScreen > header {
     width: 100% !important;
-    max-width: none !important;
-
-    min-height: 86px;
-
-    margin: 0 !important;
-
-    padding: 20px 28px !important;
-
-    border: 0 !important;
-    border-bottom: 1px solid var(--fc-border) !important;
-
-    border-radius: 0 !important;
-
-    background: rgba(7,10,16,.88) !important;
-
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
 }
 
-
-/* =========================================================
-   HOME CONTENT
-   ========================================================= */
+#homeScreen .profileRow,
+#homeScreen .search,
+#homeScreen .friendList {
+    width: calc(100% - 40px) !important;
+    max-width: 1120px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
 
 #homeScreen .profileRow {
-    width: calc(100% - 48px) !important;
-
-    max-width: none !important;
-
-    margin: 22px 24px 0 24px !important;
+    margin-top: 18px !important;
 }
-
 
 #homeScreen .search {
-    width: calc(100% - 48px) !important;
-
-    max-width: none !important;
-
-    margin: 20px 24px !important;
+    display: block;
+    margin-top: 18px !important;
 }
-
 
 #homeScreen .friendList {
-    width: calc(100% - 48px) !important;
-
-    max-width: none !important;
-
-    margin: 20px 24px 0 24px !important;
-
-    padding-bottom: 100px !important;
+    margin-top: 16px !important;
 }
 
 
 /* =========================================================
-   FRIEND CARDS
+   FRIEND LIST
    ========================================================= */
 
-#homeScreen .friendItem {
-    width: 100% !important;
-
-    min-height: 88px;
-
-    margin: 10px 0 !important;
-
-    border-radius: 18px !important;
-
-    border: 1px solid transparent !important;
-
-    background: rgba(13,18,27,.86) !important;
-
-    transition:
-        transform .2s ease,
-        background .2s ease,
-        border-color .2s ease,
-        box-shadow .2s ease;
+.friendList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-
-#homeScreen .friendItem:hover {
-    transform: translateX(4px);
-
-    background: var(--fc-panel-2) !important;
-
-    border-color: var(--fc-border) !important;
-
-    box-shadow:
-        0 12px 35px rgba(0,0,0,.22);
+.friendList > * {
+    width: 100%;
 }
 
 
 /* =========================================================
-   LEFT SIDEBAR
+   SLIDING SIDEBAR
    ========================================================= */
 
-/*
-   CLOSED:
+/* Arrow button */
 
-   ┌
-   │  <
-   └
-
-   OPEN:
-
-   ┌──────────────────────┐
-   │ FriendChat           │
-   │                      │
-   │ Music                │
-   │ Theme                │
-   │ Settings             │
-   │ Profile              │
-   └──────────────────────┘<
-*/
-
-
-/* -------------------------
-   SMALL ARROW
-   ------------------------- */
-
+#fcNavToggle,
 .fc-nav-toggle {
     position: fixed !important;
 
@@ -250,374 +133,188 @@ body {
     top: 50% !important;
 
     width: 34px !important;
-    height: 64px !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
+    height: 52px !important;
 
     transform: translateY(-50%) !important;
+
+    z-index: 10030 !important;
 
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 
-    background: rgba(13,18,27,.98) !important;
-
-    color: #fff !important;
+    padding: 0 !important;
 
     border: 1px solid var(--fc-border) !important;
+    border-left: none !important;
 
-    border-left: 0 !important;
+    border-radius: 0 12px 12px 0 !important;
 
-    border-radius: 0 15px 15px 0 !important;
-
-    box-shadow:
-        8px 0 30px rgba(0,0,0,.35) !important;
+    background: rgba(13,18,27,.97) !important;
+    color: var(--fc-text) !important;
 
     cursor: pointer !important;
 
-    z-index: 100001 !important;
+    box-shadow: 0 10px 35px rgba(0,0,0,.4) !important;
 
     transition:
-        left .38s var(--fc-ease),
-        width .2s ease,
+        left .35s var(--fc-ease),
         background .2s ease !important;
 }
 
 
-.fc-nav-toggle:hover {
-    width: 40px !important;
+/* Arrow */
 
-    background: rgba(25,31,42,.99) !important;
-}
-
-
+#fcNavToggle .fc-chevron,
 .fc-nav-toggle .fc-chevron {
     display: block !important;
 
-    font-size: 25px !important;
-
+    font-size: 18px !important;
     line-height: 1 !important;
 
-    transform: rotate(0deg);
-
     transition:
-        transform .38s var(--fc-ease);
+        transform .35s var(--fc-ease) !important;
 }
 
 
 /* Arrow when sidebar is open */
 
+#fcNavToggle.is-open,
 .fc-nav-toggle.is-open {
-    left: 250px !important;
-
-    width: 34px !important;
-
-    border-left: 1px solid var(--fc-border) !important;
-
-    border-radius: 0 15px 15px 0 !important;
+    left: calc(
+        var(--fc-sidebar-left) +
+        var(--fc-sidebar-width) +
+        8px
+    ) !important;
 }
 
 
+/* Rotate arrow */
+
+#fcNavToggle.is-open .fc-chevron,
 .fc-nav-toggle.is-open .fc-chevron {
     transform: rotate(180deg) !important;
 }
 
 
+/* Hover */
+
+#fcNavToggle:hover,
+.fc-nav-toggle:hover {
+    background: var(--fc-panel-2) !important;
+}
+
+
 /* =========================================================
-   SIDEBAR
+   SIDEBAR PANEL
    ========================================================= */
 
+#fcCustomSidebar,
 .fc-sidebar {
     position: fixed !important;
 
-    left: 0 !important;
+    left: var(--fc-sidebar-left) !important;
     top: 50% !important;
 
-    width: 250px !important;
+    width: var(--fc-sidebar-width) !important;
 
-    max-height: calc(100vh - 32px) !important;
+    padding: 12px !important;
 
-    margin: 0 !important;
+    transform:
+        translate(
+            calc(-100% - 30px),
+            -50%
+        ) !important;
 
-    padding: 14px !important;
-
-    background: rgba(13,18,27,.98) !important;
+    z-index: 10020 !important;
 
     border: 1px solid var(--fc-border) !important;
 
-    border-left: 0 !important;
+    border-radius: 18px !important;
 
-    border-radius: 0 22px 22px 0 !important;
+    background:
+        rgba(13,18,27,.98) !important;
 
     box-shadow:
-        18px 20px 70px rgba(0,0,0,.55) !important;
+        0 25px 70px rgba(0,0,0,.55) !important;
 
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-
-    z-index: 100000 !important;
-
-    /*
-       CLOSED:
-       completely outside the left edge
-    */
-
-    transform:
-        translate(-100%, -50%) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
 
     opacity: 0 !important;
-
-    visibility: hidden !important;
 
     pointer-events: none !important;
 
     transition:
-        transform .38s var(--fc-ease),
-        opacity .25s ease,
-        visibility .38s ease !important;
+        transform .35s var(--fc-ease),
+        opacity .25s ease !important;
 }
 
 
-/* -------------------------
-   OPEN
-   ------------------------- */
+/* Sidebar OPEN */
 
+#fcCustomSidebar.open,
 .fc-sidebar.open {
     transform:
-        translate(0, -50%) !important;
+        translate(0,-50%) !important;
 
     opacity: 1 !important;
-
-    visibility: visible !important;
 
     pointer-events: auto !important;
 }
 
 
 /* =========================================================
-   SIDEBAR BRAND
+   SIDEBAR CONTENT
    ========================================================= */
 
-.fc-sidebar-brand {
-    display: flex !important;
+#fcCustomSidebar button,
+.fc-sidebar button {
+    width: 100% !important;
 
+    min-height: 44px !important;
+
+    margin: 4px 0 !important;
+
+    padding: 10px 12px !important;
+
+    display: flex !important;
     align-items: center !important;
 
     gap: 10px !important;
 
-    padding: 8px 8px 15px !important;
+    border: none !important;
 
-    margin-bottom: 7px !important;
-
-    border-bottom:
-        1px solid var(--fc-border) !important;
-}
-
-
-.fc-sidebar-logo {
-    width: 38px !important;
-    height: 38px !important;
-
-    flex-shrink: 0;
-
-    display: grid !important;
-
-    place-items: center !important;
-
-    border-radius: 12px !important;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--fc-accent),
-            var(--fc-accent-2)
-        ) !important;
-
-    color: #fff !important;
-
-    font-size: 13px !important;
-
-    font-weight: 900 !important;
-}
-
-
-.fc-sidebar-title {
-    color: var(--fc-text) !important;
-
-    font-size: 14px !important;
-
-    font-weight: 800 !important;
-}
-
-
-.fc-sidebar-sub {
-    margin-top: 2px !important;
-
-    color: var(--fc-muted) !important;
-
-    font-size: 11px !important;
-}
-
-
-/* =========================================================
-   SIDEBAR BUTTONS
-   ========================================================= */
-
-.fc-nav-item {
-    width: 100% !important;
-
-    min-height: 46px !important;
-
-    margin: 3px 0 !important;
-
-    padding: 0 11px !important;
-
-    display: flex !important;
-
-    align-items: center !important;
-
-    gap: 11px !important;
-
-    border: 0 !important;
-
-    border-radius: 12px !important;
+    border-radius: 11px !important;
 
     background: transparent !important;
 
     color: var(--fc-text) !important;
-
-    font-size: 14px !important;
-
-    font-weight: 600 !important;
 
     text-align: left !important;
 
     cursor: pointer !important;
 
     transition:
-        background .18s ease,
-        transform .18s ease !important;
+        background .2s ease,
+        transform .2s ease !important;
+}
+
+#fcCustomSidebar button:hover,
+.fc-sidebar button:hover {
+    background: rgba(255,255,255,.08) !important;
+
+    transform: translateX(3px) !important;
 }
 
 
-.fc-nav-item:hover {
-    background:
-        rgba(255,255,255,.07) !important;
+/* Hide old Chat / Friends sidebar items */
 
-    transform:
-        translateX(3px) !important;
-}
-
-
-.fc-nav-item.active {
-    background:
-        rgba(108,124,255,.13) !important;
-}
-
-
-.fc-nav-icon {
-    width: 31px !important;
-    height: 31px !important;
-
-    flex-shrink: 0;
-
-    display: grid !important;
-
-    place-items: center !important;
-
-    border-radius: 9px !important;
-
-    background:
-        rgba(255,255,255,.06) !important;
-
-    font-size: 16px !important;
-}
-
-
-.fc-nav-divider {
-    height: 1px !important;
-
-    margin: 9px 5px !important;
-
-    background:
-        var(--fc-border) !important;
-}
-
-
-/* Hide Chat and Friend options */
-
-.fc-nav-item[data-nav="chats"],
-.fc-nav-item[data-nav="friends"] {
+#fcCustomSidebar [data-nav="chats"],
+#fcCustomSidebar [data-nav="friends"],
+.fc-sidebar [data-nav="chats"],
+.fc-sidebar [data-nav="friends"] {
     display: none !important;
-}
-
-
-/* Theme */
-
-.fc-nav-theme {
-    color: #b9c1ff !important;
-}
-
-
-/* =========================================================
-   QUICK ACTIONS
-   ========================================================= */
-
-.fc-quick-actions {
-    position: fixed !important;
-
-    right: 22px !important;
-    top: 106px !important;
-
-    display: flex !important;
-
-    gap: 8px !important;
-
-    z-index: 999 !important;
-}
-
-
-.fc-quick {
-    width: 44px !important;
-    height: 44px !important;
-
-    padding: 0 !important;
-
-    display: grid !important;
-
-    place-items: center !important;
-
-    border-radius: 14px !important;
-
-    background: var(--fc-panel-2) !important;
-
-    border: 1px solid var(--fc-border) !important;
-
-    color: var(--fc-text) !important;
-
-    cursor: pointer !important;
-
-    transition:
-        transform .2s ease,
-        background .2s ease !important;
-}
-
-
-.fc-quick:hover {
-    transform: translateY(-3px);
-
-    background: var(--fc-panel-3) !important;
-}
-
-
-.fc-quick.add {
-    color: #9faaff !important;
-}
-
-
-.fc-quick.media {
-    color: #8fe4ff !important;
 }
 
 
@@ -625,86 +322,83 @@ body {
    BOTTOM DOCK
    ========================================================= */
 
+#fcBottomDock,
 .fc-bottom-dock {
     position: fixed !important;
 
     left: 50% !important;
-    right: auto !important;
-
     bottom: 16px !important;
 
     transform: translateX(-50%) !important;
 
-    height: 64px !important;
+    z-index: 10000 !important;
 
-    padding: 8px 12px !important;
+    height: 58px !important;
 
     display: flex !important;
-
     align-items: center !important;
+    justify-content: center !important;
 
-    gap: 14px !important;
+    gap: 8px !important;
+
+    padding: 7px !important;
 
     border: 1px solid var(--fc-border) !important;
 
-    border-radius: 22px !important;
+    border-radius: 20px !important;
 
     background:
         rgba(13,18,27,.92) !important;
 
-    backdrop-filter: blur(20px);
-
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
 
     box-shadow:
-        0 18px 60px rgba(0,0,0,.4) !important;
-
-    z-index: 10000 !important;
+        0 20px 50px rgba(0,0,0,.45) !important;
 }
 
+#fcBottomDock button,
+.fc-bottom-dock button {
+    width: 44px !important;
+    height: 44px !important;
 
-.fc-dock-btn {
-    width: 46px !important;
-    height: 46px !important;
+    border: none !important;
 
-    padding: 0 !important;
-
-    display: grid !important;
-
-    place-items: center !important;
-
-    border: 0 !important;
-
-    border-radius: 15px !important;
+    border-radius: 14px !important;
 
     background: transparent !important;
 
-    color: var(--fc-muted) !important;
-
-    font-size: 19px !important;
+    color: var(--fc-text) !important;
 
     cursor: pointer !important;
 
+    font-size: 19px !important;
+
     transition:
-        background .22s ease,
-        color .22s ease,
-        transform .22s ease !important;
+        background .2s ease,
+        transform .2s ease !important;
+}
+
+#fcBottomDock button:hover,
+.fc-bottom-dock button:hover {
+    background: rgba(255,255,255,.08) !important;
+
+    transform: translateY(-2px) !important;
 }
 
 
-.fc-dock-btn:hover {
-    background:
-        rgba(255,255,255,.06) !important;
+/* Center FC logo */
 
-    color: var(--fc-text) !important;
-}
+#fcBottomDock .fc-center-logo,
+.fc-bottom-dock .fc-center-logo {
+    width: 48px !important;
+    height: 48px !important;
 
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-.fc-dock-center {
-    width: 52px !important;
-    height: 52px !important;
-
-    border-radius: 17px !important;
+    border-radius: 16px !important;
 
     background:
         linear-gradient(
@@ -713,19 +407,14 @@ body {
             var(--fc-accent-2)
         ) !important;
 
-    box-shadow:
-        0 8px 28px rgba(108,124,255,.3) !important;
-
     color: white !important;
 
-    font-weight: 900 !important;
-}
+    font-weight: 800 !important;
 
+    cursor: pointer !important;
 
-.fc-dock-center:hover {
-    transform:
-        translateY(-4px)
-        scale(1.03) !important;
+    box-shadow:
+        0 8px 25px rgba(91,140,255,.28) !important;
 }
 
 
@@ -733,575 +422,162 @@ body {
    DISCOVERY WINDOW
    ========================================================= */
 
-.fc-overlay {
+#fcDiscoveryOverlay,
+.fc-discovery-overlay {
     position: fixed !important;
 
     inset: 0 !important;
 
-    width: 100vw !important;
-    height: 100vh !important;
+    z-index: 10050 !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 20px !important;
 
     background:
-        rgba(0,0,0,.48) !important;
+        rgba(0,0,0,.62) !important;
 
-    backdrop-filter: blur(3px);
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    z-index: 10020 !important;
-
-    transition:
-        opacity .25s ease !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
 }
 
+#fcDiscoveryPanel,
+.fc-discovery-panel {
+    width: min(460px,100%) !important;
 
-.fc-overlay.open {
-    opacity: 1;
+    max-height: min(620px,85vh) !important;
 
-    pointer-events: auto;
-}
+    overflow: auto !important;
 
+    padding: 20px !important;
 
-.fc-discovery {
-    position: fixed !important;
-
-    left: 50% !important;
-
-    bottom: 92px !important;
-
-    width:
-        min(430px, calc(100vw - 28px)) !important;
-
-    max-height:
-        min(620px, 70vh) !important;
-
-    transform:
-        translate(-50%, 18px)
-        scale(.96) !important;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    border:
-        1px solid var(--fc-border) !important;
+    border: 1px solid var(--fc-border) !important;
 
     border-radius: 22px !important;
 
     background:
-        rgba(13,18,27,.97) !important;
-
-    backdrop-filter: blur(24px);
+        var(--fc-panel) !important;
 
     box-shadow:
-        0 25px 80px rgba(0,0,0,.55) !important;
-
-    z-index: 10030 !important;
-
-    transition:
-        opacity .25s var(--fc-ease),
-        transform .25s var(--fc-ease) !important;
-
-    overflow: hidden !important;
-}
-
-
-.fc-discovery.open {
-    opacity: 1;
-
-    transform:
-        translate(-50%, 0)
-        scale(1) !important;
-
-    pointer-events: auto;
-}
-
-
-.fc-discovery-head {
-    display: flex !important;
-
-    align-items: center !important;
-
-    justify-content: space-between !important;
-
-    padding: 18px !important;
-
-    border-bottom:
-        1px solid var(--fc-border) !important;
-}
-
-
-.fc-discovery-list {
-    padding: 10px !important;
-
-    overflow-y: auto !important;
-
-    max-height: 520px !important;
-}
-
-
-.fc-user-suggestion {
-    width: 100% !important;
-
-    padding: 12px !important;
-
-    display: flex !important;
-
-    align-items: center !important;
-
-    gap: 12px !important;
-
-    border-radius: 15px !important;
-
-    background: transparent !important;
-
-    color: var(--fc-text) !important;
-
-    text-align: left !important;
-
-    cursor: pointer !important;
-}
-
-
-.fc-user-suggestion:hover {
-    background:
-        rgba(255,255,255,.05) !important;
-}
-
-
-.fc-user-avatar {
-    width: 44px !important;
-    height: 44px !important;
-
-    flex-shrink: 0;
-
-    display: grid !important;
-
-    place-items: center !important;
-
-    border-radius: 50% !important;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--fc-accent),
-            var(--fc-accent-2)
-        ) !important;
-
-    font-weight: 800 !important;
-
-    overflow: hidden !important;
-}
-
-
-.fc-user-avatar img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-}
-
-
-.fc-user-info {
-    flex: 1;
-
-    min-width: 0;
-}
-
-
-.fc-user-name {
-    font-weight: 700;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-}
-
-
-.fc-user-id {
-    font-size: 12px;
-
-    color: var(--fc-muted);
-}
-
-
-.fc-user-add {
-    padding: 8px 12px !important;
-
-    border: 0 !important;
-
-    border-radius: 10px !important;
-
-    background: var(--fc-accent) !important;
-
-    color: #fff !important;
-
-    font-size: 12px !important;
-
-    cursor: pointer !important;
+        0 30px 90px rgba(0,0,0,.65) !important;
 }
 
 
 /* =========================================================
-   THEME PANEL
+   THEME WINDOW
    ========================================================= */
 
-.fc-theme-panel {
+#fcThemeOverlay,
+.fc-theme-overlay {
     position: fixed !important;
 
-    left: 50% !important;
-    top: 50% !important;
+    inset: 0 !important;
 
-    width:
-        min(470px, calc(100vw - 28px)) !important;
+    z-index: 10050 !important;
 
-    max-height:
-        calc(100vh - 40px) !important;
-
-    overflow-y: auto !important;
-
-    transform:
-        translate(-50%, -48%)
-        scale(.96) !important;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    z-index: 10031 !important;
-
-    background:
-        rgba(13,18,27,.98) !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius: 24px !important;
-
-    box-shadow:
-        0 30px 100px rgba(0,0,0,.65) !important;
-
-    transition:
-        opacity .25s var(--fc-ease),
-        transform .25s var(--fc-ease) !important;
-}
-
-
-.fc-theme-panel.open {
-    opacity: 1;
-
-    pointer-events: auto;
-
-    transform:
-        translate(-50%, -50%)
-        scale(1) !important;
-}
-
-
-.fc-theme-head {
     display: flex !important;
 
     align-items: center !important;
+    justify-content: center !important;
 
-    justify-content: space-between !important;
-
-    padding: 18px !important;
-
-    border-bottom:
-        1px solid var(--fc-border) !important;
-}
-
-
-.fc-theme-body {
-    padding: 18px !important;
-}
-
-
-.fc-theme-grid {
-    display: grid !important;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    gap: 10px !important;
-}
-
-
-.fc-theme-choice {
-    padding: 14px !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius: 16px !important;
+    padding: 20px !important;
 
     background:
-        var(--fc-panel-2) !important;
+        rgba(0,0,0,.62) !important;
 
-    color: var(--fc-text) !important;
-
-    text-align: left !important;
-
-    cursor: pointer !important;
+    backdrop-filter: blur(8px) !important;
 }
 
+#fcThemePanel,
+.fc-theme-panel {
+    width: min(430px,100%) !important;
 
-.fc-theme-choice:hover {
-    border-color:
-        rgba(108,124,255,.55) !important;
-}
+    padding: 20px !important;
 
+    border: 1px solid var(--fc-border) !important;
 
-.fc-theme-swatch {
-    height: 38px;
+    border-radius: 22px !important;
 
-    margin-bottom: 8px;
+    background:
+        var(--fc-panel) !important;
 
-    border-radius: 10px;
-}
-
-
-.fc-theme-name {
-    font-weight: 700;
-}
-
-
-.fc-theme-desc {
-    font-size: 11px;
-
-    color: var(--fc-muted);
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.65) !important;
 }
 
 
 /* =========================================================
-   ADD FRIEND PAGE
+   ADD FRIEND
    ========================================================= */
 
 #addScreen {
-    width: 100vw !important;
-    min-width: 100vw !important;
+    width: 100% !important;
 
     min-height: 100vh !important;
 
-    background: var(--fc-bg) !important;
-
-    overflow-y: auto !important;
+    padding-bottom: 40px !important;
 }
-
-
-/* Add page header */
 
 #addScreen > header {
     width: 100% !important;
-    max-width: none !important;
-
-    min-height: 76px !important;
-
-    margin: 0 !important;
 
     padding: 18px 24px !important;
-
-    border-radius: 0 !important;
-
-    border-bottom:
-        1px solid var(--fc-border) !important;
-
-    background:
-        rgba(7,10,16,.88) !important;
-
-    backdrop-filter: blur(18px);
 }
 
+#addScreen .card {
+    width: min(900px, calc(100% - 40px)) !important;
 
-/* Add page card */
+    max-width: 900px !important;
 
-#addScreen > .card.wide {
-    width:
-        calc(100% - 48px) !important;
-
-    max-width: none !important;
-
-    margin:
-        24px !important;
-
-    padding:
-        24px !important;
-
-    border-radius:
-        18px !important;
+    margin: 30px auto !important;
 }
 
-
-/* Add tabs */
-
-#addScreen .tabs {
+#addScreen .card input,
+#addScreen .card button {
     width: 100% !important;
-
-    display: flex !important;
-
-    gap: 10px !important;
-
-    margin-bottom: 20px !important;
-}
-
-
-#addScreen .tabs button {
-    flex: 1 !important;
-
-    min-height: 48px !important;
-
-    margin: 0 !important;
-}
-
-
-/* Add ID */
-
-#addScreen #addId {
-    width: 100% !important;
-
-    max-width: none !important;
-
-    margin:
-        0 0 14px 0 !important;
-}
-
-
-/* Add button */
-
-#addScreen .card.wide > button:not(.secondary) {
-    width: 100% !important;
-
-    max-width: none !important;
-
-    margin: 0 !important;
-}
-
-
-#addScreen #addStatus {
-    width: 100% !important;
-
-    margin:
-        14px 0 5px !important;
 }
 
 
 /* =========================================================
-   CHAT SCREEN
+   CHAT
    ========================================================= */
 
 #chatScreen {
-    width: 100vw !important;
-    min-width: 100vw !important;
+    width: 100% !important;
 
     min-height: 100vh !important;
 
-    background:
-        var(--fc-bg) !important;
+    padding-bottom: 0 !important;
 }
-
 
 #chatScreen > header {
     width: 100% !important;
-
-    min-height: 76px !important;
-
-    margin: 0 !important;
-
-    padding: 14px 22px !important;
-
-    border-radius: 0 !important;
-
-    border-bottom:
-        1px solid var(--fc-border) !important;
-
-    background:
-        rgba(7,10,16,.86) !important;
-
-    backdrop-filter: blur(18px);
 }
 
+
+/* Message area */
 
 #messages {
     width: 100% !important;
 
-    height:
-        calc(100vh - 150px) !important;
+    max-width: none !important;
 
-    padding:
-        28px clamp(18px,7vw,100px)
-        100px !important;
-
-    overflow-y: auto !important;
+    overflow-y: auto;
 }
 
 
-/* Composer */
+/* =========================================================
+   CHAT COMPOSER
+   ========================================================= */
 
-#chatScreen .composer {
-    position: fixed !important;
+#chatScreen .composer,
+#chatScreen .messageComposer {
+    width: 100% !important;
 
-    left:
-        clamp(14px,7vw,100px) !important;
-
-    right:
-        clamp(14px,7vw,100px) !important;
-
-    bottom: 16px !important;
-
-    margin: 0 !important;
-
-    z-index: 1000 !important;
-
-    background:
-        rgba(17,24,36,.94) !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius: 18px !important;
-
-    box-shadow:
-        0 15px 45px rgba(0,0,0,.35);
-}
-
-
-/* Message animation */
-
-.message {
-    animation:
-        fcMessageIn .25s var(--fc-ease);
-}
-
-
-@keyframes fcMessageIn {
-
-    from {
-        opacity: 0;
-
-        transform:
-            translateY(8px)
-            scale(.98);
-    }
-
-    to {
-        opacity: 1;
-
-        transform: none;
-    }
-}
-
-
-/* Black message ticks */
-
-.messageStatus,
-.readTicks,
-.deliveredTicks,
-.sentTick {
-    color: #000 !important;
+    max-width: none !important;
 }
 
 
@@ -1310,48 +586,77 @@ body {
    ========================================================= */
 
 #profileScreen {
-    width: 100vw !important;
+    width: 100% !important;
 
     min-height: 100vh !important;
-
-    background:
-        var(--fc-bg) !important;
 }
-
 
 #profileScreen .profilePage {
-    animation:
-        fcProfileIn .42s var(--fc-ease);
-}
+    width: min(1000px, calc(100% - 40px)) !important;
 
-
-@keyframes fcProfileIn {
-
-    from {
-        opacity: 0;
-
-        transform:
-            translateY(20px)
-            scale(.985);
-    }
-
-    to {
-        opacity: 1;
-
-        transform: none;
-    }
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 
 /* =========================================================
-   SPOTIFY OLD UI
+   SPOTIFY
    ========================================================= */
 
-.spotify-side-button,
-.spotify-side-bar,
-.spotify-side-icon,
-.spotify-side-text {
-    display: none !important;
+#spotifyPanel,
+.spotify-window {
+    z-index: 10040 !important;
+}
+
+
+/* Keep Spotify background behind UI */
+
+.friendchat-spotify-bg {
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    z-index: -10 !important;
+
+    pointer-events: none !important;
+}
+
+body.spotify-background-active::after {
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: -5;
+
+    pointer-events: none;
+
+    background:
+        rgba(0,0,0,.55);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+
+/* =========================================================
+   GENERAL OVERLAY
+   ========================================================= */
+
+.fc-overlay {
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    z-index: 10050 !important;
+
+    background: rgba(0,0,0,.6) !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 
@@ -1359,63 +664,61 @@ body {
    THEMES
    ========================================================= */
 
-body.fc-theme-midnight {
-    --fc-bg: #070a10;
+body[data-fc-theme="midnight"] {
+    --fc-bg: #080b12;
     --fc-panel: #0d121b;
-    --fc-panel-2: #111824;
+    --fc-panel-2: #141b27;
+    --fc-accent: #5b8cff;
+    --fc-accent-2: #7c5cff;
+}
 
-    --fc-accent: #6c7cff;
-    --fc-accent-2: #8b5cf6;
+body[data-fc-theme="emerald"] {
+    --fc-bg: #06100d;
+    --fc-panel: #0a1712;
+    --fc-panel-2: #10241b;
+    --fc-accent: #27d17f;
+    --fc-accent-2: #0aa66a;
+}
+
+body[data-fc-theme="ocean"] {
+    --fc-bg: #061018;
+    --fc-panel: #0a1822;
+    --fc-panel-2: #102532;
+    --fc-accent: #28b7ff;
+    --fc-accent-2: #386cff;
+}
+
+body[data-fc-theme="sunset"] {
+    --fc-bg: #140b08;
+    --fc-panel: #21100c;
+    --fc-panel-2: #2d1711;
+    --fc-accent: #ff8a3d;
+    --fc-accent-2: #ff4d6d;
+}
+
+body[data-fc-theme="rose"] {
+    --fc-bg: #12080f;
+    --fc-panel: #1d0d18;
+    --fc-panel-2: #281224;
+    --fc-accent: #ff5f9e;
+    --fc-accent-2: #a95cff;
+}
+
+body[data-fc-theme="graphite"] {
+    --fc-bg: #0b0b0c;
+    --fc-panel: #151516;
+    --fc-panel-2: #202022;
+    --fc-accent: #c4c7ce;
+    --fc-accent-2: #777b85;
 }
 
 
-body.fc-theme-emerald {
-    --fc-bg: #07120f;
-    --fc-panel: #0d1b17;
-    --fc-panel-2: #12251f;
+/* =========================================================
+   HIDDEN
+   ========================================================= */
 
-    --fc-accent: #10b981;
-    --fc-accent-2: #059669;
-}
-
-
-body.fc-theme-ocean {
-    --fc-bg: #071118;
-    --fc-panel: #0d1922;
-    --fc-panel-2: #122431;
-
-    --fc-accent: #0ea5e9;
-    --fc-accent-2: #2563eb;
-}
-
-
-body.fc-theme-sunset {
-    --fc-bg: #160c08;
-    --fc-panel: #21120d;
-    --fc-panel-2: #2b1811;
-
-    --fc-accent: #f97316;
-    --fc-accent-2: #ef4444;
-}
-
-
-body.fc-theme-rose {
-    --fc-bg: #150a11;
-    --fc-panel: #21101a;
-    --fc-panel-2: #2c1522;
-
-    --fc-accent: #ec4899;
-    --fc-accent-2: #8b5cf6;
-}
-
-
-body.fc-theme-graphite {
-    --fc-bg: #0c0d0f;
-    --fc-panel: #15171a;
-    --fc-panel-2: #1d2024;
-
-    --fc-accent: #94a3b8;
-    --fc-accent-2: #64748b;
+.hidden {
+    display: none !important;
 }
 
 
@@ -1423,234 +726,71 @@ body.fc-theme-graphite {
    MOBILE
    ========================================================= */
 
-@media (max-width: 760px) {
+@media (max-width: 700px) {
 
-    /* Home */
-
-    #homeScreen > header {
-        padding:
-            16px 16px !important;
+    :root {
+        --fc-sidebar-width: 190px;
+        --fc-sidebar-left: 8px;
     }
 
+    #fcCustomSidebar,
+    .fc-sidebar {
+        width: var(--fc-sidebar-width) !important;
+    }
+
+    #fcNavToggle.is-open,
+    .fc-nav-toggle.is-open {
+        left: calc(
+            var(--fc-sidebar-left) +
+            var(--fc-sidebar-width) +
+            6px
+        ) !important;
+    }
 
     #homeScreen .profileRow,
     #homeScreen .search,
     #homeScreen .friendList {
-
-        width:
-            calc(100vw - 28px) !important;
-
-        margin-left:
-            14px !important;
-
-        margin-right:
-            14px !important;
+        width: calc(100% - 24px) !important;
     }
 
-
-    #homeScreen .friendList {
-        padding-bottom:
-            90px !important;
+    #addScreen .card {
+        width: calc(100% - 24px) !important;
     }
 
-
-    /* Small arrow */
-
-    .fc-nav-toggle {
-
-        width: 30px !important;
-        height: 56px !important;
-
-        left: 0 !important;
+    #profileScreen .profilePage {
+        width: calc(100% - 24px) !important;
     }
 
-
-    .fc-nav-toggle:hover {
-        width: 35px !important;
-    }
-
-
-    .fc-nav-toggle .fc-chevron {
-        font-size: 22px !important;
-    }
-
-
-    /* Sidebar */
-
-    .fc-sidebar {
-
-        width: 220px !important;
-
-        left: 0 !important;
-
-        top: 50% !important;
-
-        border-radius:
-            0 18px 18px 0 !important;
-    }
-
-
-    .fc-nav-toggle.is-open {
-
-        left: 220px !important;
-
-        width: 30px !important;
-    }
-
-
-    /* Quick buttons */
-
-    .fc-quick-actions {
-
-        right: 12px !important;
-
-        top: 88px !important;
-    }
-
-
-    /* Bottom dock */
-
+    #fcBottomDock,
     .fc-bottom-dock {
-
         bottom: 10px !important;
-
-        border-radius: 18px !important;
-    }
-
-
-    /* Discovery */
-
-    .fc-discovery {
-
-        width:
-            calc(100vw - 20px) !important;
-    }
-
-
-    /* Theme */
-
-    .fc-theme-panel {
-
-        width:
-            calc(100vw - 20px) !important;
-    }
-
-
-    .fc-theme-grid {
-
-        grid-template-columns:
-            1fr !important;
-    }
-
-
-    /* Add Friend */
-
-    #addScreen > header {
-
-        padding:
-            14px 16px !important;
-    }
-
-
-    #addScreen > .card.wide {
-
-        width:
-            calc(100% - 28px) !important;
-
-        margin:
-            14px !important;
-
-        padding:
-            18px !important;
-    }
-
-
-    #addScreen .tabs {
-
-        gap: 7px !important;
-    }
-
-
-    #addScreen .tabs button {
-
-        min-height: 44px !important;
-
-        font-size: 13px !important;
-    }
-
-
-    /* Chat */
-
-    #messages {
-
-        padding:
-            18px 12px 100px !important;
-    }
-
-
-    #chatScreen .composer {
-
-        left: 10px !important;
-
-        right: 10px !important;
-
-        bottom: 8px !important;
     }
 }
 
 
 /* =========================================================
-   SMALL PHONES
+   SMALL MOBILE
    ========================================================= */
 
 @media (max-width: 420px) {
 
+    :root {
+        --fc-sidebar-width: 180px;
+    }
+
+    #fcCustomSidebar,
     .fc-sidebar {
-
-        width: 205px !important;
+        width: 180px !important;
     }
 
+    #fcNavToggle,
+    .fc-nav-toggle {
+        width: 32px !important;
+        height: 48px !important;
+    }
 
+    #fcNavToggle.is-open,
     .fc-nav-toggle.is-open {
-
-        left: 205px !important;
-    }
-
-
-    .fc-nav-item {
-
-        min-height: 44px !important;
-
-        font-size: 13px !important;
-    }
-
-
-    .fc-nav-icon {
-
-        width: 28px !important;
-        height: 28px !important;
-
-        font-size: 15px !important;
-    }
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-
-        animation-duration: .01ms !important;
-
-        animation-iteration-count: 1 !important;
-
-        scroll-behavior: auto !important;
-
-        transition-duration: .01ms !important;
+        left: 194px !important;
     }
 }
