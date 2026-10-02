@@ -22,6 +22,7 @@
     --fc-radius: 18px;
     --fc-ease: cubic-bezier(.22,1,.36,1);
 
+    /* SIDEBAR */
     --fc-sidebar-width: 250px;
     --fc-sidebar-left: 0px;
 }
@@ -40,6 +41,7 @@ body {
     width: 100%;
     min-width: 100%;
     min-height: 100%;
+
     margin: 0 !important;
     padding: 0 !important;
 
@@ -90,8 +92,10 @@ textarea {
     min-height: 100vh !important;
 
     margin: 0 !important;
+
     border: 0 !important;
     border-radius: 0 !important;
+
     box-shadow: none !important;
 }
 
@@ -185,26 +189,13 @@ textarea {
 
 
 /* =========================================================
-   LEFT SIDEBAR ARROW
+   SIDEBAR ARROW
    ========================================================= */
-
-/*
-   CLOSED:
-
-   ← | screen
-
-
-   OPEN:
-
-   [ SIDEBAR ] ← | screen
-
-   IMPORTANT:
-   The arrow and sidebar use the SAME width.
-*/
 
 #fcNavToggle,
 .fc-nav-toggle,
 #fc-nav-toggle {
+
     position: fixed !important;
 
     left: 0 !important;
@@ -223,6 +214,7 @@ textarea {
     justify-content: center !important;
 
     background: rgba(13,18,27,.98) !important;
+
     color: #fff !important;
 
     border: 1px solid var(--fc-border) !important;
@@ -240,15 +232,18 @@ textarea {
     transition:
         left .35s var(--fc-ease),
         background .2s ease,
-        width .2s ease !important;
+        transform .35s var(--fc-ease) !important;
 }
 
 
-/* Arrow itself */
+/* =========================================================
+   ARROW ICON
+   ========================================================= */
 
 #fcNavToggle .fc-chevron,
 .fc-nav-toggle .fc-chevron,
 #fc-nav-toggle .fc-chevron {
+
     display: block !important;
 
     font-size: 25px !important;
@@ -261,34 +256,44 @@ textarea {
 }
 
 
-/* Hover */
+/* =========================================================
+   ARROW HOVER
+   ========================================================= */
 
 #fcNavToggle:hover,
 .fc-nav-toggle:hover,
 #fc-nav-toggle:hover {
-    background: rgba(25,31,42,.99) !important;
+
+    background:
+        rgba(25,31,42,.99) !important;
 }
 
 
 /* =========================================================
-   ARROW WHEN SIDEBAR IS OPEN
+   ARROW OPEN POSITION
    ========================================================= */
 
 #fcNavToggle.is-open,
 .fc-nav-toggle.is-open,
 #fc-nav-toggle.is-open {
-    left: calc(
-        var(--fc-sidebar-width) + 8px
-    ) !important;
+
+    left:
+        calc(
+            var(--fc-sidebar-width) + 8px
+        ) !important;
 }
 
 
-/* Rotate arrow */
+/* =========================================================
+   ARROW ROTATION
+   ========================================================= */
 
 #fcNavToggle.is-open .fc-chevron,
 .fc-nav-toggle.is-open .fc-chevron,
 #fc-nav-toggle.is-open .fc-chevron {
-    transform: rotate(180deg) !important;
+
+    transform:
+        rotate(180deg) !important;
 }
 
 
@@ -299,12 +304,16 @@ textarea {
 #fcCustomSidebar,
 .fc-sidebar,
 #fc-sidebar {
+
     position: fixed !important;
 
-    left: var(--fc-sidebar-left) !important;
+    left:
+        var(--fc-sidebar-left) !important;
+
     top: 50% !important;
 
-    width: var(--fc-sidebar-width) !important;
+    width:
+        var(--fc-sidebar-width) !important;
 
     margin: 0 !important;
     padding: 12px !important;
@@ -312,10 +321,13 @@ textarea {
     background:
         rgba(13,18,27,.98) !important;
 
-    border: 1px solid var(--fc-border) !important;
+    border:
+        1px solid var(--fc-border) !important;
+
     border-left: 0 !important;
 
-    border-radius: 0 20px 20px 0 !important;
+    border-radius:
+        0 20px 20px 0 !important;
 
     box-shadow:
         18px 20px 70px rgba(0,0,0,.55) !important;
@@ -325,9 +337,8 @@ textarea {
 
     z-index: 100020 !important;
 
-    /*
-       CLOSED
-    */
+    /* CLOSED */
+
     transform:
         translate(
             calc(-100% - 30px),
@@ -335,8 +346,12 @@ textarea {
         ) !important;
 
     opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+
+    visibility:
+        hidden !important;
+
+    pointer-events:
+        none !important;
 
     transition:
         transform .35s var(--fc-ease),
@@ -350,14 +365,24 @@ textarea {
    ========================================================= */
 
 #fcCustomSidebar.open,
+#fcCustomSidebar.fc-sidebar-open,
+
 .fc-sidebar.open,
+.fc-sidebar.fc-sidebar-open,
+
+#fc-sidebar.open,
 #fc-sidebar.fc-sidebar-open {
+
     transform:
         translate(0,-50%) !important;
 
     opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
+
+    visibility:
+        visible !important;
+
+    pointer-events:
+        auto !important;
 }
 
 
@@ -367,6 +392,7 @@ textarea {
 
 #fcCustomSidebar .fc-sidebar-brand,
 .fc-sidebar-brand {
+
     display: flex !important;
 
     align-items: center !important;
@@ -374,7 +400,9 @@ textarea {
 
     gap: 10px !important;
 
-    padding: 8px 8px 14px !important;
+    padding:
+        8px 8px 14px !important;
+
     margin-bottom: 7px !important;
 
     border-bottom:
@@ -382,6 +410,7 @@ textarea {
 }
 
 .fc-sidebar-logo {
+
     width: 38px !important;
     height: 38px !important;
 
@@ -406,16 +435,26 @@ textarea {
 }
 
 .fc-sidebar-title {
-    color: var(--fc-text) !important;
-    font-size: 14px !important;
-    font-weight: 800 !important;
+
+    color:
+        var(--fc-text) !important;
+
+    font-size:
+        14px !important;
+
+    font-weight:
+        800 !important;
 }
 
 .fc-sidebar-sub {
+
     margin-top: 2px !important;
 
-    color: var(--fc-muted) !important;
-    font-size: 11px !important;
+    color:
+        var(--fc-muted) !important;
+
+    font-size:
+        11px !important;
 }
 
 
@@ -426,30 +465,48 @@ textarea {
 #fcCustomSidebar .fc-nav-item,
 .fc-nav-item,
 .fc-sidebar-item {
-    width: 100% !important;
-    min-height: 46px !important;
 
-    margin: 3px 0 !important;
-    padding: 0 11px !important;
+    width: 100% !important;
+
+    min-height:
+        46px !important;
+
+    margin:
+        3px 0 !important;
+
+    padding:
+        0 11px !important;
 
     display: flex !important;
-    align-items: center !important;
 
-    gap: 11px !important;
+    align-items:
+        center !important;
+
+    gap:
+        11px !important;
 
     border: 0 !important;
-    border-radius: 13px !important;
 
-    background: transparent !important;
+    border-radius:
+        13px !important;
 
-    color: var(--fc-text) !important;
+    background:
+        transparent !important;
 
-    font-size: 14px !important;
-    font-weight: 600 !important;
+    color:
+        var(--fc-text) !important;
 
-    text-align: left !important;
+    font-size:
+        14px !important;
 
-    cursor: pointer !important;
+    font-weight:
+        600 !important;
+
+    text-align:
+        left !important;
+
+    cursor:
+        pointer !important;
 
     transition:
         background .18s ease,
@@ -459,6 +516,7 @@ textarea {
 #fcCustomSidebar .fc-nav-item:hover,
 .fc-nav-item:hover,
 .fc-sidebar-item:hover {
+
     background:
         rgba(255,255,255,.07) !important;
 
@@ -467,20 +525,28 @@ textarea {
 }
 
 
-/* Hide Chat and Friends */
+/* =========================================================
+   HIDE CHAT / FRIENDS
+   ========================================================= */
 
 #fcCustomSidebar .fc-nav-item[data-nav="chats"],
 #fcCustomSidebar .fc-nav-item[data-nav="friends"],
+
 .fc-nav-item[data-nav="chats"],
 .fc-nav-item[data-nav="friends"] {
-    display: none !important;
+
+    display:
+        none !important;
 }
 
 
-/* Sidebar icons */
+/* =========================================================
+   SIDEBAR ICONS
+   ========================================================= */
 
 .fc-nav-icon,
 .fc-sidebar-icon {
+
     width: 31px !important;
     height: 31px !important;
 
@@ -489,22 +555,28 @@ textarea {
     display: grid !important;
     place-items: center !important;
 
-    border-radius: 9px !important;
+    border-radius:
+        9px !important;
 
     background:
         rgba(255,255,255,.06) !important;
 
-    font-size: 16px !important;
+    font-size:
+        16px !important;
 }
 
 
-/* Divider */
+/* =========================================================
+   DIVIDER
+   ========================================================= */
 
 .fc-nav-divider {
+
     width: 100% !important;
     height: 1px !important;
 
-    margin: 9px 5px !important;
+    margin:
+        9px 5px !important;
 
     background:
         var(--fc-border) !important;
@@ -516,7 +588,8 @@ textarea {
    ========================================================= */
 
 .fc-nav-theme {
-    color: #b9c1ff !important;
+    color:
+        #b9c1ff !important;
 }
 
 
@@ -526,62 +599,99 @@ textarea {
 
 #fc-bottom-dock,
 .fc-bottom-dock {
-    position: fixed !important;
 
-    left: 50% !important;
-    bottom: 16px !important;
+    position:
+        fixed !important;
 
-    transform: translateX(-50%) !important;
+    left:
+        50% !important;
 
-    width: auto !important;
-    height: 64px !important;
+    bottom:
+        16px !important;
 
-    padding: 8px 12px !important;
+    transform:
+        translateX(-50%) !important;
 
-    display: flex !important;
-    align-items: center !important;
+    width:
+        auto !important;
 
-    gap: 14px !important;
+    height:
+        64px !important;
 
-    border-radius: 18px !important;
+    padding:
+        8px 12px !important;
+
+    display:
+        flex !important;
+
+    align-items:
+        center !important;
+
+    gap:
+        14px !important;
+
+    border-radius:
+        18px !important;
 
     background:
         rgba(13,18,27,.90) !important;
 
-    border: 1px solid var(--fc-border) !important;
+    border:
+        1px solid var(--fc-border) !important;
 
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter:
+        blur(20px);
+
+    -webkit-backdrop-filter:
+        blur(20px);
 
     box-shadow:
         0 18px 60px rgba(0,0,0,.4) !important;
 
-    z-index: 10000 !important;
+    z-index:
+        10000 !important;
 }
 
 
-/* Bottom buttons */
+/* =========================================================
+   BOTTOM BUTTONS
+   ========================================================= */
 
 .fc-dock-btn,
 .fc-dock-button {
-    width: 46px !important;
-    height: 46px !important;
 
-    padding: 0 !important;
+    width:
+        46px !important;
 
-    display: grid !important;
-    place-items: center !important;
+    height:
+        46px !important;
 
-    border: 0 !important;
-    border-radius: 15px !important;
+    padding:
+        0 !important;
 
-    background: transparent !important;
+    display:
+        grid !important;
 
-    color: var(--fc-muted) !important;
+    place-items:
+        center !important;
 
-    font-size: 18px !important;
+    border:
+        0 !important;
 
-    cursor: pointer !important;
+    border-radius:
+        15px !important;
+
+    background:
+        transparent !important;
+
+    color:
+        var(--fc-muted) !important;
+
+    font-size:
+        18px !important;
+
+    cursor:
+        pointer !important;
 
     transition:
         background .2s ease,
@@ -591,25 +701,39 @@ textarea {
 
 .fc-dock-btn:hover,
 .fc-dock-button:hover {
+
     background:
         rgba(255,255,255,.06) !important;
 
-    color: var(--fc-text) !important;
+    color:
+        var(--fc-text) !important;
 }
 
 
-/* Center FC */
+/* =========================================================
+   CENTER FC BUTTON
+   ========================================================= */
 
 .fc-dock-center,
 #fc-center-button {
-    width: 52px !important;
-    height: 52px !important;
 
-    display: grid !important;
-    place-items: center !important;
+    width:
+        52px !important;
 
-    border: 0 !important;
-    border-radius: 17px !important;
+    height:
+        52px !important;
+
+    display:
+        grid !important;
+
+    place-items:
+        center !important;
+
+    border:
+        0 !important;
+
+    border-radius:
+        17px !important;
 
     background:
         linear-gradient(
@@ -618,15 +742,20 @@ textarea {
             var(--fc-accent-2)
         ) !important;
 
-    color: white !important;
+    color:
+        white !important;
 
-    font-size: 19px !important;
-    font-weight: 900 !important;
+    font-size:
+        19px !important;
+
+    font-weight:
+        900 !important;
 
     box-shadow:
         0 8px 28px rgba(108,124,255,.3) !important;
 
-    cursor: pointer !important;
+    cursor:
+        pointer !important;
 
     transition:
         transform .22s ease !important;
@@ -634,6 +763,7 @@ textarea {
 
 .fc-dock-center:hover,
 #fc-center-button:hover {
+
     transform:
         translateY(-4px)
         scale(1.03) !important;
@@ -641,15 +771,20 @@ textarea {
 
 
 /* =========================================================
-   DISCOVERY OVERLAY
+   DISCOVERY
    ========================================================= */
 
 #fc-discovery,
 .fc-discovery {
-    position: fixed !important;
 
-    left: 50% !important;
-    bottom: 92px !important;
+    position:
+        fixed !important;
+
+    left:
+        50% !important;
+
+    bottom:
+        92px !important;
 
     width:
         min(430px, calc(100vw - 28px)) !important;
@@ -661,9 +796,14 @@ textarea {
         translate(-50%,18px)
         scale(.96) !important;
 
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+    opacity:
+        0 !important;
+
+    visibility:
+        hidden !important;
+
+    pointer-events:
+        none !important;
 
     background:
         rgba(13,18,27,.98) !important;
@@ -671,17 +811,23 @@ textarea {
     border:
         1px solid var(--fc-border) !important;
 
-    border-radius: 22px !important;
+    border-radius:
+        22px !important;
 
     box-shadow:
         0 25px 80px rgba(0,0,0,.55) !important;
 
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter:
+        blur(24px);
 
-    z-index: 10020 !important;
+    -webkit-backdrop-filter:
+        blur(24px);
 
-    overflow: hidden !important;
+    z-index:
+        10020 !important;
+
+    overflow:
+        hidden !important;
 
     transition:
         opacity .25s var(--fc-ease),
@@ -692,11 +838,15 @@ textarea {
 #fc-discovery.fc-overlay-open,
 #fc-discovery.open,
 .fc-discovery.open {
-    opacity: 1 !important;
 
-    visibility: visible !important;
+    opacity:
+        1 !important;
 
-    pointer-events: auto !important;
+    visibility:
+        visible !important;
+
+    pointer-events:
+        auto !important;
 
     transform:
         translate(-50%,0)
@@ -710,37 +860,60 @@ textarea {
 
 .fc-discovery-head,
 .fc-discovery-header {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
 
-    padding: 16px 18px !important;
+    display:
+        flex !important;
+
+    align-items:
+        center !important;
+
+    justify-content:
+        space-between !important;
+
+    padding:
+        16px 18px !important;
 
     border-bottom:
         1px solid var(--fc-border) !important;
 }
 
 .fc-discovery-title {
-    font-size: 17px !important;
-    font-weight: 800 !important;
+
+    font-size:
+        17px !important;
+
+    font-weight:
+        800 !important;
 }
 
 .fc-discovery-close {
-    width: 34px !important;
-    height: 34px !important;
 
-    display: grid !important;
-    place-items: center !important;
+    width:
+        34px !important;
 
-    border: 1px solid var(--fc-border) !important;
-    border-radius: 10px !important;
+    height:
+        34px !important;
+
+    display:
+        grid !important;
+
+    place-items:
+        center !important;
+
+    border:
+        1px solid var(--fc-border) !important;
+
+    border-radius:
+        10px !important;
 
     background:
         var(--fc-panel-2) !important;
 
-    color: var(--fc-text) !important;
+    color:
+        var(--fc-text) !important;
 
-    cursor: pointer !important;
+    cursor:
+        pointer !important;
 }
 
 
@@ -750,33 +923,49 @@ textarea {
 
 .fc-discovery-list,
 .fc-discovery-users {
-    padding: 10px !important;
 
-    max-height: 520px !important;
+    padding:
+        10px !important;
 
-    overflow-y: auto !important;
+    max-height:
+        520px !important;
+
+    overflow-y:
+        auto !important;
 }
 
 .fc-user-suggestion,
 .fc-discovery-user {
-    width: 100% !important;
 
-    min-height: 64px !important;
+    width:
+        100% !important;
 
-    padding: 10px 12px !important;
+    min-height:
+        64px !important;
 
-    display: flex !important;
-    align-items: center !important;
+    padding:
+        10px 12px !important;
 
-    gap: 12px !important;
+    display:
+        flex !important;
 
-    border-radius: 15px !important;
+    align-items:
+        center !important;
 
-    background: transparent !important;
+    gap:
+        12px !important;
 
-    color: var(--fc-text) !important;
+    border-radius:
+        15px !important;
 
-    cursor: pointer !important;
+    background:
+        transparent !important;
+
+    color:
+        var(--fc-text) !important;
+
+    cursor:
+        pointer !important;
 
     transition:
         background .18s ease !important;
@@ -784,21 +973,31 @@ textarea {
 
 .fc-user-suggestion:hover,
 .fc-discovery-user:hover {
+
     background:
         rgba(255,255,255,.05) !important;
 }
 
 .fc-user-avatar,
 .fc-discovery-avatar {
-    width: 44px !important;
-    height: 44px !important;
 
-    flex-shrink: 0;
+    width:
+        44px !important;
 
-    display: grid !important;
-    place-items: center !important;
+    height:
+        44px !important;
 
-    border-radius: 50% !important;
+    flex-shrink:
+        0;
+
+    display:
+        grid !important;
+
+    place-items:
+        center !important;
+
+    border-radius:
+        50% !important;
 
     background:
         linear-gradient(
@@ -807,74 +1006,117 @@ textarea {
             var(--fc-accent-2)
         ) !important;
 
-    color: white !important;
+    color:
+        white !important;
 
-    font-weight: 800 !important;
+    font-weight:
+        800 !important;
 
-    overflow: hidden !important;
+    overflow:
+        hidden !important;
 }
 
 .fc-user-avatar img,
 .fc-discovery-avatar img {
-    width: 100%;
-    height: 100%;
 
-    object-fit: cover;
+    width:
+        100%;
+
+    height:
+        100%;
+
+    object-fit:
+        cover;
 }
 
 .fc-user-info,
 .fc-discovery-user-info {
-    min-width: 0;
-    flex: 1;
+
+    min-width:
+        0;
+
+    flex:
+        1;
 }
 
 .fc-user-name,
 .fc-discovery-user-name {
-    font-weight: 700 !important;
 
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-weight:
+        700 !important;
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
 }
 
 .fc-user-id,
 .fc-discovery-user-id {
-    margin-top: 3px;
 
-    color: var(--fc-muted) !important;
+    margin-top:
+        3px;
 
-    font-size: 12px !important;
+    color:
+        var(--fc-muted) !important;
+
+    font-size:
+        12px !important;
 }
 
 
 /* =========================================================
-   THEME OVERLAY
+   THEME PANEL
    ========================================================= */
 
 #fc-theme-panel,
 .fc-theme-panel {
-    position: fixed !important;
 
-    inset: 0 !important;
+    position:
+        fixed !important;
 
-    width: 100vw !important;
-    height: 100vh !important;
+    inset:
+        0 !important;
 
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    width:
+        100vw !important;
+
+    height:
+        100vh !important;
+
+    display:
+        flex !important;
+
+    align-items:
+        center !important;
+
+    justify-content:
+        center !important;
 
     background:
         rgba(0,0,0,.48) !important;
 
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter:
+        blur(5px);
 
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+    -webkit-backdrop-filter:
+        blur(5px);
 
-    z-index: 10030 !important;
+    opacity:
+        0 !important;
+
+    visibility:
+        hidden !important;
+
+    pointer-events:
+        none !important;
+
+    z-index:
+        10030 !important;
 
     transition:
         opacity .25s ease,
@@ -884,9 +1126,15 @@ textarea {
 #fc-theme-panel.fc-overlay-open,
 #fc-theme-panel.open,
 .fc-theme-panel.open {
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
+
+    opacity:
+        1 !important;
+
+    visibility:
+        visible !important;
+
+    pointer-events:
+        auto !important;
 }
 
 
@@ -895,15 +1143,18 @@ textarea {
    ========================================================= */
 
 .fc-theme-window {
+
     width:
         min(390px, calc(100vw - 30px)) !important;
 
     max-height:
         calc(100vh - 40px) !important;
 
-    padding: 18px !important;
+    padding:
+        18px !important;
 
-    overflow-y: auto !important;
+    overflow-y:
+        auto !important;
 
     background:
         var(--fc-panel) !important;
@@ -911,7 +1162,8 @@ textarea {
     border:
         1px solid var(--fc-border) !important;
 
-    border-radius: 22px !important;
+    border-radius:
+        22px !important;
 
     box-shadow:
         0 30px 100px rgba(0,0,0,.65) !important;
@@ -919,37 +1171,57 @@ textarea {
 
 .fc-theme-head,
 .fc-theme-header {
-    display: flex !important;
 
-    align-items: center !important;
-    justify-content: space-between !important;
+    display:
+        flex !important;
 
-    margin-bottom: 15px !important;
+    align-items:
+        center !important;
+
+    justify-content:
+        space-between !important;
+
+    margin-bottom:
+        15px !important;
 }
 
 .fc-theme-title {
-    font-size: 17px !important;
-    font-weight: 800 !important;
+
+    font-size:
+        17px !important;
+
+    font-weight:
+        800 !important;
 }
 
 .fc-theme-close {
-    width: 34px !important;
-    height: 34px !important;
 
-    display: grid !important;
-    place-items: center !important;
+    width:
+        34px !important;
+
+    height:
+        34px !important;
+
+    display:
+        grid !important;
+
+    place-items:
+        center !important;
 
     border:
         1px solid var(--fc-border) !important;
 
-    border-radius: 10px !important;
+    border-radius:
+        10px !important;
 
     background:
         rgba(255,255,255,.06) !important;
 
-    color: var(--fc-text) !important;
+    color:
+        var(--fc-text) !important;
 
-    cursor: pointer !important;
+    cursor:
+        pointer !important;
 }
 
 
@@ -959,31 +1231,40 @@ textarea {
 
 .fc-theme-grid,
 .fc-theme-options {
-    display: grid !important;
+
+    display:
+        grid !important;
 
     grid-template-columns:
         repeat(2,1fr);
 
-    gap: 10px !important;
+    gap:
+        10px !important;
 }
 
 .fc-theme-choice,
 .fc-theme-option {
-    padding: 14px !important;
+
+    padding:
+        14px !important;
 
     border:
         1px solid var(--fc-border) !important;
 
-    border-radius: 16px !important;
+    border-radius:
+        16px !important;
 
     background:
         var(--fc-panel-2) !important;
 
-    color: var(--fc-text) !important;
+    color:
+        var(--fc-text) !important;
 
-    text-align: left !important;
+    text-align:
+        left !important;
 
-    cursor: pointer !important;
+    cursor:
+        pointer !important;
 
     transition:
         border-color .2s ease,
@@ -992,40 +1273,55 @@ textarea {
 
 .fc-theme-choice:hover,
 .fc-theme-option:hover {
-    transform: translateY(-2px);
+
+    transform:
+        translateY(-2px);
 
     border-color:
         rgba(108,124,255,.55) !important;
 }
 
 .fc-theme-name {
-    font-weight: 700 !important;
+
+    font-weight:
+        700 !important;
 }
 
 .fc-theme-desc {
-    margin-top: 4px;
 
-    color: var(--fc-muted) !important;
+    margin-top:
+        4px;
 
-    font-size: 11px !important;
+    color:
+        var(--fc-muted) !important;
+
+    font-size:
+        11px !important;
 }
 
 .fc-theme-swatch,
 .fc-theme-preview {
-    width: 100% !important;
-    height: 38px !important;
 
-    margin-bottom: 8px !important;
+    width:
+        100% !important;
 
-    border-radius: 10px !important;
+    height:
+        38px !important;
+
+    margin-bottom:
+        8px !important;
+
+    border-radius:
+        10px !important;
 }
 
 
 /* =========================================================
-   THEME COLORS
+   THEMES
    ========================================================= */
 
 body.fc-theme-midnight {
+
     --fc-bg: #070a10;
     --fc-panel: #0d121b;
     --fc-panel-2: #111824;
@@ -1035,6 +1331,7 @@ body.fc-theme-midnight {
 }
 
 body.fc-theme-emerald {
+
     --fc-bg: #07120f;
     --fc-panel: #0d1b17;
     --fc-panel-2: #12251f;
@@ -1044,6 +1341,7 @@ body.fc-theme-emerald {
 }
 
 body.fc-theme-ocean {
+
     --fc-bg: #071118;
     --fc-panel: #0d1922;
     --fc-panel-2: #122431;
@@ -1053,6 +1351,7 @@ body.fc-theme-ocean {
 }
 
 body.fc-theme-sunset {
+
     --fc-bg: #160c08;
     --fc-panel: #21120d;
     --fc-panel-2: #2b1811;
@@ -1062,6 +1361,7 @@ body.fc-theme-sunset {
 }
 
 body.fc-theme-rose {
+
     --fc-bg: #150a11;
     --fc-panel: #21101a;
     --fc-panel-2: #2c1522;
@@ -1071,6 +1371,7 @@ body.fc-theme-rose {
 }
 
 body.fc-theme-graphite {
+
     --fc-bg: #0c0d0f;
     --fc-panel: #15171a;
     --fc-panel-2: #1d2024;
@@ -1085,21 +1386,33 @@ body.fc-theme-graphite {
    ========================================================= */
 
 #addScreen {
-    background: var(--fc-bg) !important;
 
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
+    background:
+        var(--fc-bg) !important;
+
+    overflow-x:
+        hidden !important;
+
+    overflow-y:
+        auto !important;
 }
 
 #addScreen > header {
-    width: 100% !important;
 
-    min-height: 76px !important;
+    width:
+        100% !important;
 
-    margin: 0 !important;
-    padding: 18px 24px !important;
+    min-height:
+        76px !important;
 
-    border-radius: 0 !important;
+    margin:
+        0 !important;
+
+    padding:
+        18px 24px !important;
+
+    border-radius:
+        0 !important;
 
     border-bottom:
         1px solid var(--fc-border) !important;
@@ -1107,38 +1420,59 @@ body.fc-theme-graphite {
     background:
         rgba(7,10,16,.88) !important;
 
-    backdrop-filter: blur(18px);
+    backdrop-filter:
+        blur(18px);
 }
 
 #addScreen > .card.wide {
-    width: calc(100% - 48px) !important;
-    max-width: none !important;
 
-    margin: 24px !important;
-    padding: 24px !important;
+    width:
+        calc(100% - 48px) !important;
 
-    border-radius: 18px !important;
+    max-width:
+        none !important;
+
+    margin:
+        24px !important;
+
+    padding:
+        24px !important;
+
+    border-radius:
+        18px !important;
 }
 
 #addScreen .tabs {
-    width: 100% !important;
+
+    width:
+        100% !important;
 }
 
 #addScreen .tabs button {
-    flex: 1 !important;
+
+    flex:
+        1 !important;
 }
 
 #addScreen #addId {
-    width: 100% !important;
-    max-width: none !important;
+
+    width:
+        100% !important;
+
+    max-width:
+        none !important;
 }
 
 #addScreen .card.wide > button:not(.secondary) {
-    width: 100% !important;
+
+    width:
+        100% !important;
 }
 
 #addScreen #addStatus {
-    width: 100% !important;
+
+    width:
+        100% !important;
 }
 
 
@@ -1147,22 +1481,36 @@ body.fc-theme-graphite {
    ========================================================= */
 
 #chatScreen {
-    width: 100vw !important;
-    min-width: 100vw !important;
-    min-height: 100vh !important;
 
-    background: var(--fc-bg) !important;
+    width:
+        100vw !important;
+
+    min-width:
+        100vw !important;
+
+    min-height:
+        100vh !important;
+
+    background:
+        var(--fc-bg) !important;
 }
 
 #chatScreen > header {
-    width: 100% !important;
 
-    min-height: 76px !important;
+    width:
+        100% !important;
 
-    margin: 0 !important;
-    padding: 14px 22px !important;
+    min-height:
+        76px !important;
 
-    border-radius: 0 !important;
+    margin:
+        0 !important;
+
+    padding:
+        14px 22px !important;
+
+    border-radius:
+        0 !important;
 
     border-bottom:
         1px solid var(--fc-border) !important;
@@ -1170,11 +1518,14 @@ body.fc-theme-graphite {
     background:
         rgba(7,10,16,.86) !important;
 
-    backdrop-filter: blur(18px);
+    backdrop-filter:
+        blur(18px);
 }
 
 #messages {
-    width: 100% !important;
+
+    width:
+        100% !important;
 
     height:
         calc(100vh - 150px) !important;
@@ -1183,11 +1534,14 @@ body.fc-theme-graphite {
         28px clamp(18px,7vw,100px)
         100px !important;
 
-    overflow-y: auto !important;
+    overflow-y:
+        auto !important;
 }
 
 #chatScreen .composer {
-    position: fixed !important;
+
+    position:
+        fixed !important;
 
     left:
         clamp(14px,7vw,100px) !important;
@@ -1195,11 +1549,14 @@ body.fc-theme-graphite {
     right:
         clamp(14px,7vw,100px) !important;
 
-    bottom: 16px !important;
+    bottom:
+        16px !important;
 
-    margin: 0 !important;
+    margin:
+        0 !important;
 
-    z-index: 1000 !important;
+    z-index:
+        1000 !important;
 
     background:
         rgba(17,24,36,.94) !important;
@@ -1207,7 +1564,8 @@ body.fc-theme-graphite {
     border:
         1px solid var(--fc-border) !important;
 
-    border-radius: 18px !important;
+    border-radius:
+        18px !important;
 
     box-shadow:
         0 15px 45px rgba(0,0,0,.35);
@@ -1222,7 +1580,9 @@ body.fc-theme-graphite {
 .readTicks,
 .deliveredTicks,
 .sentTick {
-    color: #000 !important;
+
+    color:
+        #000 !important;
 }
 
 
@@ -1231,10 +1591,15 @@ body.fc-theme-graphite {
    ========================================================= */
 
 #profileScreen {
-    width: 100vw !important;
-    min-height: 100vh !important;
 
-    padding: 14px !important;
+    width:
+        100vw !important;
+
+    min-height:
+        100vh !important;
+
+    padding:
+        14px !important;
 
     background:
         var(--fc-bg) !important;
@@ -1249,7 +1614,9 @@ body.fc-theme-graphite {
 .spotify-side-bar,
 .spotify-side-icon,
 .spotify-side-text {
-    display: none !important;
+
+    display:
+        none !important;
 }
 
 
@@ -1262,7 +1629,9 @@ body.fc-theme-graphite {
 .old-navigation,
 .old-bottom-nav,
 .old-bottom-navigation {
-    display: none !important;
+
+    display:
+        none !important;
 }
 
 
@@ -1272,18 +1641,26 @@ body.fc-theme-graphite {
 
 .fc-discovery-users::-webkit-scrollbar,
 .fc-discovery-list::-webkit-scrollbar {
-    width: 6px;
+
+    width:
+        6px;
 }
 
 .fc-discovery-users::-webkit-scrollbar-track,
 .fc-discovery-list::-webkit-scrollbar-track {
-    background: transparent;
+
+    background:
+        transparent;
 }
 
 .fc-discovery-users::-webkit-scrollbar-thumb,
 .fc-discovery-list::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,.12);
-    border-radius: 20px;
+
+    background:
+        rgba(255,255,255,.12);
+
+    border-radius:
+        20px;
 }
 
 
@@ -1294,115 +1671,154 @@ body.fc-theme-graphite {
 @media (max-width: 760px) {
 
     #homeScreen > header {
-        padding: 16px !important;
+
+        padding:
+            16px !important;
     }
 
     #homeScreen .profileRow,
     #homeScreen .search,
     #homeScreen .friendList {
+
         width:
             calc(100vw - 28px) !important;
 
-        margin-left: 14px !important;
-        margin-right: 14px !important;
+        margin-left:
+            14px !important;
+
+        margin-right:
+            14px !important;
     }
 
 
-    /* Arrow */
+    /* ARROW */
 
     #fcNavToggle,
     .fc-nav-toggle,
     #fc-nav-toggle {
-        width: 30px !important;
-        height: 56px !important;
 
-        left: 0 !important;
+        width:
+            30px !important;
+
+        height:
+            56px !important;
+
+        left:
+            0 !important;
 
         border-radius:
             0 12px 12px 0 !important;
     }
 
 
-    /* Sidebar */
+    /* SIDEBAR */
 
     #fcCustomSidebar,
     .fc-sidebar,
     #fc-sidebar {
-        --fc-sidebar-width: 220px;
 
-        width: 220px !important;
+        --fc-sidebar-width:
+            220px;
 
-        left: 0 !important;
+        width:
+            220px !important;
+
+        left:
+            0 !important;
     }
 
 
-    /* Arrow follows sidebar */
+    /* OPEN ARROW */
 
     #fcNavToggle.is-open,
     .fc-nav-toggle.is-open,
     #fc-nav-toggle.is-open {
-        left: 228px !important;
+
+        left:
+            228px !important;
     }
 
 
-    /* Bottom */
+    /* BOTTOM */
 
     #fc-bottom-dock,
     .fc-bottom-dock {
-        left: 50% !important;
-        bottom: 10px !important;
 
-        height: 58px !important;
+        left:
+            50% !important;
+
+        bottom:
+            10px !important;
+
+        height:
+            58px !important;
     }
 
 
-    /* Discovery */
+    /* DISCOVERY */
 
     #fc-discovery,
     .fc-discovery {
+
         width:
             calc(100vw - 20px) !important;
 
-        bottom: 80px !important;
+        bottom:
+            80px !important;
     }
 
 
-    /* Theme */
+    /* THEME */
 
     .fc-theme-window {
+
         width:
             calc(100vw - 20px) !important;
 
-        border-radius: 19px !important;
+        border-radius:
+            19px !important;
     }
 
 
-    /* Add */
+    /* ADD */
 
     #addScreen > header {
-        padding: 14px 16px !important;
+
+        padding:
+            14px 16px !important;
     }
 
     #addScreen > .card.wide {
+
         width:
             calc(100% - 28px) !important;
 
-        margin: 14px !important;
-        padding: 18px !important;
+        margin:
+            14px !important;
+
+        padding:
+            18px !important;
     }
 
 
-    /* Chat */
+    /* CHAT */
 
     #messages {
+
         padding:
             18px 12px 100px !important;
     }
 
     #chatScreen .composer {
-        left: 10px !important;
-        right: 10px !important;
-        bottom: 8px !important;
+
+        left:
+            10px !important;
+
+        right:
+            10px !important;
+
+        bottom:
+            8px !important;
     }
 }
 
@@ -1416,31 +1832,48 @@ body.fc-theme-graphite {
     #fcCustomSidebar,
     .fc-sidebar,
     #fc-sidebar {
-        --fc-sidebar-width: 205px;
 
-        width: 205px !important;
+        --fc-sidebar-width:
+            205px;
+
+        width:
+            205px !important;
     }
 
     #fcNavToggle.is-open,
     .fc-nav-toggle.is-open,
     #fc-nav-toggle.is-open {
-        left: 213px !important;
+
+        left:
+            213px !important;
     }
 
     .fc-nav-item {
-        min-height: 44px !important;
-        font-size: 13px !important;
+
+        min-height:
+            44px !important;
+
+        font-size:
+            13px !important;
     }
 
     .fc-nav-icon {
-        width: 28px !important;
-        height: 28px !important;
-        font-size: 15px !important;
+
+        width:
+            28px !important;
+
+        height:
+            28px !important;
+
+        font-size:
+            15px !important;
     }
 
     .fc-theme-grid,
     .fc-theme-options {
-        grid-template-columns: 1fr !important;
+
+        grid-template-columns:
+            1fr !important;
     }
 }
 
@@ -1454,11 +1887,17 @@ body.fc-theme-graphite {
     *,
     *::before,
     *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
 
-        scroll-behavior: auto !important;
+        animation-duration:
+            .01ms !important;
 
-        transition-duration: .01ms !important;
+        animation-iteration-count:
+            1 !important;
+
+        scroll-behavior:
+            auto !important;
+
+        transition-duration:
+            .01ms !important;
     }
 }
