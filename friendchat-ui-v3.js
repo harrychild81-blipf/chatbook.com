@@ -1,17 +1,25 @@
 /* =========================================================
    FRIENDCHAT UI V3
-   Custom Sidebar + Theme + Profile + Discovery
+   Floating Sidebar + Theme + Profile + Discovery
    Works ON TOP of the existing FriendChat app.js
+
+   IMPORTANT:
+   - No sliding sidebar
+   - No hamburger button
+   - No bottom dock
+   - Floating sidebar overlays the existing app
+   - Existing FriendChat layout is NOT resized
    ========================================================= */
 
 (function () {
     "use strict";
 
-    /* =========================================================
-       CONFIG
-       ========================================================= */
-
     const UI_ID = "friendchat-custom-ui";
+
+
+    /* =========================================================
+       THEMES
+       ========================================================= */
 
     const themes = {
         midnight: {
@@ -102,7 +110,9 @@
         return document.querySelector(selector);
     }
 
+
     function createElement(tag, className, html) {
+
         const el = document.createElement(tag);
 
         if (className) {
@@ -116,7 +126,9 @@
         return el;
     }
 
+
     function removeElement(id) {
+
         const el = document.getElementById(id);
 
         if (el) {
@@ -124,13 +136,22 @@
         }
     }
 
+
     function safeCall(fnName, ...args) {
+
         try {
+
             if (typeof window[fnName] === "function") {
                 return window[fnName](...args);
             }
-        } catch (err) {
-            console.warn("FriendChat UI:", fnName, err);
+
+        } catch (error) {
+
+            console.warn(
+                "FriendChat UI:",
+                fnName,
+                error
+            );
         }
 
         return null;
@@ -138,43 +159,86 @@
 
 
     /* =========================================================
-       REMOVE OLD UI
+       REMOVE OLD CUSTOM UI
        ========================================================= */
 
     function removeOldCustomUI() {
+
+        /* Remove old custom wrapper */
+
         removeElement(UI_ID);
 
-        document.querySelectorAll(
-            ".fc-nav-toggle, .fc-sidebar, .fc-bottom-dock, .fc-discovery, .fc-theme-panel"
-        ).forEach(el => {
-            el.remove();
-        });
+
+        /* Remove previous versions */
+
+        const oldSelectors = [
+            "#fc-nav-toggle",
+            "#fc-sidebar",
+            "#fc-bottom-dock",
+
+            ".fc-nav-toggle",
+            ".fc-sidebar",
+            ".fc-bottom-dock",
+
+            ".fc-discovery",
+            ".fc-theme-panel",
+
+            "#fc-discovery",
+            "#fc-theme-panel",
+
+            "#fc-quick-actions"
+        ];
+
+
+        document
+            .querySelectorAll(oldSelectors.join(","))
+            .forEach(el => {
+
+                try {
+                    el.remove();
+                } catch (error) {
+                    console.warn(error);
+                }
+
+            });
     }
 
 
     /* =========================================================
-       HIDE OLD SPOTIFY / OLD SIDEBARS
+       HIDE OLD NAVIGATION
        ========================================================= */
 
     function hideOldNavigation() {
+
         const selectors = [
+
             ".spotify-side-button",
             ".spotify-side-bar",
 
             ".fc-old-sidebar",
             ".fc-old-nav",
+
             ".old-sidebar",
             ".old-nav",
+
             ".side-nav",
             ".sidebar-nav"
+
         ];
 
+
         selectors.forEach(selector => {
-            document.querySelectorAll(selector).forEach(el => {
-                el.style.display = "none";
-                el.style.visibility = "hidden";
-                el.style.pointerEvents = "none";
-            });
+
+            document
+                .querySelectorAll(selector)
+                .forEach(el => {
+
+                    el.style.display = "none";
+                    el.style.visibility = "hidden";
+                    el.style.pointerEvents = "none";
+
+                });
+
         });
     }
 
@@ -184,57 +248,138 @@
        ========================================================= */
 
     function applyTheme(themeName) {
+
         const theme = themes[themeName];
 
         if (!theme) {
             return;
         }
 
-        const root = document.documentElement;
 
-        root.style.setProperty("--fc-bg", theme.bg);
-        root.style.setProperty("--fc-panel", theme.panel);
-        root.style.setProperty("--fc-panel-2", theme.panel2);
-        root.style.setProperty("--fc-card", theme.card);
-        root.style.setProperty("--fc-text", theme.text);
-        root.style.setProperty("--fc-muted", theme.muted);
-        root.style.setProperty("--fc-accent", theme.accent);
-        root.style.setProperty("--fc-accent-2", theme.accent2);
-        root.style.setProperty("--fc-border", theme.border);
+        const root =
+            document.documentElement;
 
-        localStorage.setItem("friendchat_theme", themeName);
 
-        document.body.dataset.fcTheme = themeName;
+        root.style.setProperty(
+            "--fc-bg",
+            theme.bg
+        );
+
+        root.style.setProperty(
+            "--fc-panel",
+            theme.panel
+        );
+
+        root.style.setProperty(
+            "--fc-panel-2",
+            theme.panel2
+        );
+
+        root.style.setProperty(
+            "--fc-card",
+            theme.card
+        );
+
+        root.style.setProperty(
+            "--fc-text",
+            theme.text
+        );
+
+        root.style.setProperty(
+            "--fc-muted",
+            theme.muted
+        );
+
+        root.style.setProperty(
+            "--fc-accent",
+            theme.accent
+        );
+
+        root.style.setProperty(
+            "--fc-accent-2",
+            theme.accent2
+        );
+
+        root.style.setProperty(
+            "--fc-border",
+            theme.border
+        );
+
+
+        try {
+
+            localStorage.setItem(
+                "friendchat_theme",
+                themeName
+            );
+
+        } catch (error) {
+            console.warn(error);
+        }
+
+
+        document.body.dataset.fcTheme =
+            themeName;
     }
 
 
     function loadTheme() {
-        const saved = localStorage.getItem("friendchat_theme");
 
-        if (saved && themes[saved]) {
+        let saved = null;
+
+        try {
+
+            saved =
+                localStorage.getItem(
+                    "friendchat_theme"
+                );
+
+        } catch (error) {
+            console.warn(error);
+        }
+
+
+        if (
+            saved &&
+            themes[saved]
+        ) {
+
             applyTheme(saved);
+
         } else {
+
             applyTheme("midnight");
         }
     }
 
 
     /* =========================================================
-       MAIN CUSTOM CSS
+       FLOATING BAR CSS
        ========================================================= */
 
     function injectCSS() {
-        if (document.getElementById("friendchat-ui-v3-inline-css")) {
+
+        if (
+            document.getElementById(
+                "friendchat-ui-v3-inline-css"
+            )
+        ) {
             return;
         }
 
-        const style = document.createElement("style");
 
-        style.id = "friendchat-ui-v3-inline-css";
+        const style =
+            document.createElement("style");
+
+
+        style.id =
+            "friendchat-ui-v3-inline-css";
+
 
         style.textContent = `
+
         /* =====================================================
-           FRIENDCHAT V3 CUSTOM UI
+           THEME VARIABLES
            ===================================================== */
 
         :root {
@@ -249,104 +394,173 @@
             --fc-border: rgba(255,255,255,.08);
         }
 
+
+        /* =====================================================
+           BODY THEME
+           ===================================================== */
+
         body {
             background: var(--fc-bg) !important;
         }
 
 
         /* =====================================================
-           LEFT TOGGLE BUTTON
+           IMPORTANT:
+           DO NOT CHANGE FRIENDCHAT'S MAIN LAYOUT
            ===================================================== */
 
-        .fc-nav-toggle {
-            position: fixed !important;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
+        #loginScreen,
+        #signupScreen,
+        #homeScreen,
+        #addScreen,
+        #chatScreen,
+        #profileScreen {
 
-            width: 44px;
-            height: 44px;
+            box-sizing: border-box !important;
 
-            border: 1px solid var(--fc-border);
-            border-radius: 14px;
-
-            background: var(--fc-panel);
-            color: var(--fc-text);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            cursor: pointer;
-
-            z-index: 999999;
-
-            box-shadow:
-                0 10px 30px rgba(0,0,0,.35);
-
-            transition:
-                left .28s ease,
-                background .2s ease,
-                transform .28s ease;
         }
 
-        .fc-nav-toggle:hover {
-            background: var(--fc-panel-2);
-        }
 
-        .fc-nav-toggle.open {
-            left: 300px;
+        /*
+         * The custom UI must NEVER create a layout column.
+         */
+
+        .app,
+        #app,
+        main {
+
+            box-sizing: border-box;
+
         }
 
 
         /* =====================================================
-           SIDEBAR
+           OLD TOGGLE COMPLETELY DISABLED
            ===================================================== */
 
-        .fc-sidebar {
-            position: fixed !important;
+        #fc-nav-toggle,
+        .fc-nav-toggle {
 
-            left: 14px;
-            top: 50%;
+            display: none !important;
 
-            width: 260px;
+            visibility: hidden !important;
 
-            height: auto !important;
-            min-height: 0 !important;
-            max-height: calc(100vh - 40px);
+            pointer-events: none !important;
 
-            transform:
-                translate(-125%, -50%);
-
-            padding: 16px 12px !important;
-
-            box-sizing: border-box;
-
-            background: rgba(13,17,27,.98);
-
-            border: 1px solid var(--fc-border);
-
-            border-radius: 22px;
-
-            box-shadow:
-                0 25px 70px rgba(0,0,0,.55);
-
-            z-index: 999998;
-
-            opacity: 0;
-
-            overflow: hidden;
-
-            transition:
-                transform .30s cubic-bezier(.22,1,.36,1),
-                opacity .20s ease;
         }
 
-        .fc-sidebar.open {
-            transform:
-                translate(0, -50%);
 
-            opacity: 1;
+        /* =====================================================
+           OLD BOTTOM DOCK DISABLED
+           ===================================================== */
+
+        #fc-bottom-dock,
+        .fc-bottom-dock {
+
+            display: none !important;
+
+            visibility: hidden !important;
+
+            pointer-events: none !important;
+
+        }
+
+
+        /* =====================================================
+           PERMANENT FLOATING SIDEBAR
+           ===================================================== */
+
+        #fc-sidebar,
+        .fc-sidebar {
+
+            position: fixed !important;
+
+            left: 14px !important;
+
+            top: 20px !important;
+
+            bottom: 20px !important;
+
+            width: 68px !important;
+
+            height: auto !important;
+
+            min-height: 0 !important;
+
+            max-height: none !important;
+
+            margin: 0 !important;
+
+            padding: 10px 7px !important;
+
+            box-sizing: border-box !important;
+
+            display: flex !important;
+
+            flex-direction: column !important;
+
+            align-items: center !important;
+
+            justify-content: flex-start !important;
+
+            gap: 10px !important;
+
+            background:
+                rgba(13,17,27,.96) !important;
+
+            border:
+                1px solid var(--fc-border) !important;
+
+            border-radius: 20px !important;
+
+            box-shadow:
+                0 18px 55px rgba(0,0,0,.45) !important;
+
+            backdrop-filter:
+                blur(20px) !important;
+
+            -webkit-backdrop-filter:
+                blur(20px) !important;
+
+            z-index: 1000000 !important;
+
+            transform: none !important;
+
+            opacity: 1 !important;
+
+            visibility: visible !important;
+
+            overflow: hidden !important;
+
+            pointer-events: auto !important;
+
+            transition: none !important;
+
+        }
+
+
+        /*
+         * Even if JS accidentally adds "open",
+         * the sidebar DOES NOT slide.
+         */
+
+        #fc-sidebar.open,
+        .fc-sidebar.open {
+
+            position: fixed !important;
+
+            transform: none !important;
+
+            opacity: 1 !important;
+
+            visibility: visible !important;
+
+            left: 14px !important;
+
+            top: 20px !important;
+
+            bottom: 20px !important;
+
         }
 
 
@@ -355,59 +569,71 @@
            ===================================================== */
 
         .fc-sidebar-header {
-            display: flex;
 
-            align-items: center;
+            width: 100% !important;
 
-            gap: 11px;
+            height: 42px !important;
 
-            padding: 6px 7px 14px;
+            min-height: 42px !important;
+
+            display: flex !important;
+
+            align-items: center !important;
+
+            justify-content: center !important;
+
+            padding: 0 !important;
+
+            margin: 0 0 5px 0 !important;
+
         }
 
+
         .fc-sidebar-logo {
-            width: 38px;
-            height: 38px;
 
-            flex: 0 0 38px;
+            width: 40px !important;
 
-            border-radius: 12px;
+            height: 40px !important;
+
+            min-width: 40px !important;
+
+            border-radius: 13px !important;
 
             background:
                 linear-gradient(
                     135deg,
                     var(--fc-accent),
                     var(--fc-accent-2)
-                );
+                ) !important;
 
-            color: white;
+            color: white !important;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex !important;
 
-            font-weight: 800;
-            font-size: 15px;
+            align-items: center !important;
+
+            justify-content: center !important;
+
+            font-weight: 800 !important;
+
+            font-size: 14px !important;
 
             box-shadow:
-                0 8px 20px rgba(124,92,255,.22);
+                0 8px 20px
+                rgba(124,92,255,.22) !important;
+
         }
 
-        .fc-sidebar-title {
-            color: var(--fc-text);
 
-            font-size: 15px;
+        /*
+         * Hide the text so the bar remains thin.
+         */
 
-            font-weight: 750;
-
-            line-height: 1.2;
-        }
-
+        .fc-sidebar-title,
         .fc-sidebar-subtitle {
-            color: var(--fc-muted);
 
-            font-size: 10px;
+            display: none !important;
 
-            margin-top: 3px;
         }
 
 
@@ -416,175 +642,112 @@
            ===================================================== */
 
         .fc-sidebar-items {
-            display: flex;
 
-            flex-direction: column;
+            width: 100% !important;
 
-            gap: 5px !important;
+            display: flex !important;
+
+            flex-direction: column !important;
+
+            align-items: center !important;
+
+            gap: 7px !important;
 
             margin: 0 !important;
 
             padding: 0 !important;
+
         }
+
 
         .fc-sidebar-item {
-            width: 100%;
 
-            min-height: 46px !important;
-            height: 46px !important;
+            width: 50px !important;
 
-            box-sizing: border-box;
+            height: 50px !important;
 
-            display: flex;
+            min-width: 50px !important;
 
-            align-items: center;
+            min-height: 50px !important;
 
-            gap: 13px;
+            padding: 0 !important;
 
-            padding: 0 12px !important;
+            margin: 0 !important;
 
-            border: 0;
+            border: 0 !important;
 
-            border-radius: 13px;
+            border-radius: 15px !important;
 
-            background: transparent;
+            background: transparent !important;
 
-            color: var(--fc-muted);
+            color: var(--fc-muted) !important;
 
-            font-size: 14px;
+            display: flex !important;
 
-            cursor: pointer;
+            align-items: center !important;
+
+            justify-content: center !important;
+
+            cursor: pointer !important;
 
             transition:
                 background .18s ease,
                 color .18s ease,
-                transform .18s ease;
+                transform .18s ease !important;
+
         }
+
 
         .fc-sidebar-item:hover {
-            background: var(--fc-panel-2);
-
-            color: var(--fc-text);
-
-            transform: translateX(2px);
-        }
-
-        .fc-sidebar-item.active {
-            background: rgba(124,92,255,.16);
-
-            color: var(--fc-text);
-        }
-
-        .fc-sidebar-icon {
-            width: 25px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 19px;
-        }
-
-
-        /* =====================================================
-           SIDEBAR FOOTER
-           ===================================================== */
-
-        .fc-sidebar-footer {
-            display: none !important;
-        }
-
-
-        /* =====================================================
-           BOTTOM DOCK
-           ===================================================== */
-
-        .fc-bottom-dock {
-            position: fixed !important;
-
-            left: 50%;
-            bottom: 16px;
-
-            transform: translateX(-50%);
-
-            height: 58px;
-
-            padding: 6px 8px;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            background: rgba(13,17,27,.94);
-
-            border: 1px solid var(--fc-border);
-
-            border-radius: 19px;
-
-            box-shadow:
-                0 18px 45px rgba(0,0,0,.45);
-
-            z-index: 999990;
-
-            backdrop-filter: blur(18px);
-        }
-
-        .fc-dock-button {
-            width: 45px;
-            height: 45px;
-
-            border: 0;
-
-            border-radius: 14px;
-
-            background: transparent;
-
-            color: var(--fc-muted);
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            cursor: pointer;
-
-            transition:
-                background .18s ease,
-                color .18s ease,
-                transform .18s ease;
-        }
-
-        .fc-dock-button:hover {
-            background: var(--fc-panel-2);
-
-            color: var(--fc-text);
-
-            transform: translateY(-2px);
-        }
-
-        .fc-dock-center {
-            width: 49px;
-            height: 49px;
-
-            border-radius: 15px;
 
             background:
-                linear-gradient(
-                    135deg,
-                    var(--fc-accent),
-                    var(--fc-accent-2)
-                );
+                var(--fc-panel-2) !important;
 
-            color: white;
+            color:
+                var(--fc-text) !important;
 
-            font-weight: 850;
+            transform:
+                scale(1.04) !important;
 
-            font-size: 14px;
+        }
 
-            box-shadow:
-                0 10px 25px rgba(124,92,255,.3);
+
+        .fc-sidebar-item:active {
+
+            transform:
+                scale(.96) !important;
+
+        }
+
+
+        .fc-sidebar-icon {
+
+            width: 50px !important;
+
+            height: 50px !important;
+
+            display: flex !important;
+
+            align-items: center !important;
+
+            justify-content: center !important;
+
+            font-size: 21px !important;
+
+            line-height: 1 !important;
+
+        }
+
+
+        /*
+         * Hide the written labels.
+         * Icons remain visible.
+         */
+
+        .fc-sidebar-item > span:not(.fc-sidebar-icon) {
+
+            display: none !important;
+
         }
 
 
@@ -593,64 +756,89 @@
            ===================================================== */
 
         .fc-overlay {
-            position: fixed;
 
-            inset: 0;
+            position: fixed !important;
 
-            background: rgba(0,0,0,.35);
+            inset: 0 !important;
 
-            backdrop-filter: blur(3px);
+            background:
+                rgba(0,0,0,.35) !important;
 
-            z-index: 999980;
+            backdrop-filter:
+                blur(3px) !important;
 
-            display: flex;
+            -webkit-backdrop-filter:
+                blur(3px) !important;
 
-            align-items: center;
+            z-index: 999900 !important;
 
-            justify-content: center;
+            display: flex !important;
 
-            opacity: 0;
+            align-items: center !important;
 
-            pointer-events: none;
+            justify-content: center !important;
 
-            transition: opacity .2s ease;
+            opacity: 0 !important;
+
+            pointer-events: none !important;
+
+            transition:
+                opacity .2s ease !important;
+
         }
+
 
         .fc-overlay.show {
-            opacity: 1;
 
-            pointer-events: auto;
+            opacity: 1 !important;
+
+            pointer-events: auto !important;
+
         }
 
+
         .fc-window {
-            width: min(430px, calc(100vw - 30px));
 
-            max-height: min(600px, calc(100vh - 40px));
+            width:
+                min(430px, calc(100vw - 30px)) !important;
 
-            overflow: auto;
+            max-height:
+                min(600px, calc(100vh - 40px)) !important;
 
-            background: var(--fc-panel);
+            overflow:
+                auto !important;
 
-            border: 1px solid var(--fc-border);
+            background:
+                var(--fc-panel) !important;
 
-            border-radius: 22px;
+            border:
+                1px solid var(--fc-border) !important;
+
+            border-radius:
+                22px !important;
 
             box-shadow:
-                0 30px 90px rgba(0,0,0,.6);
+                0 30px 90px rgba(0,0,0,.6) !important;
 
-            transform: translateY(15px) scale(.97);
+            transform:
+                translateY(15px) scale(.97);
 
             transition:
                 transform .25s ease;
+
         }
+
 
         .fc-overlay.show .fc-window {
+
             transform:
-                translateY(0)
-                scale(1);
+                translateY(0) scale(1);
+
         }
 
+
         .fc-window-header {
+
             display: flex;
 
             align-items: center;
@@ -659,38 +847,65 @@
 
             padding: 18px 20px;
 
-            border-bottom: 1px solid var(--fc-border);
+            border-bottom:
+                1px solid var(--fc-border);
+
         }
+
 
         .fc-window-title {
-            color: var(--fc-text);
 
-            font-size: 17px;
+            color:
+                var(--fc-text);
 
-            font-weight: 750;
+            font-size:
+                17px;
+
+            font-weight:
+                750;
+
         }
+
 
         .fc-close {
-            width: 32px;
-            height: 32px;
 
-            border: 0;
+            width:
+                32px;
 
-            border-radius: 10px;
+            height:
+                32px;
 
-            background: var(--fc-panel-2);
+            border:
+                0;
 
-            color: var(--fc-muted);
+            border-radius:
+                10px;
 
-            cursor: pointer;
+            background:
+                var(--fc-panel-2);
+
+            color:
+                var(--fc-muted);
+
+            cursor:
+                pointer;
+
         }
+
 
         .fc-close:hover {
-            color: var(--fc-text);
+
+            color:
+                var(--fc-text);
+
         }
 
+
         .fc-window-body {
-            padding: 16px;
+
+            padding:
+                16px;
+
         }
 
 
@@ -699,83 +914,142 @@
            ===================================================== */
 
         .fc-discovery-list {
-            display: flex;
 
-            flex-direction: column;
+            display:
+                flex;
 
-            gap: 8px;
+            flex-direction:
+                column;
+
+            gap:
+                8px;
+
         }
+
 
         .fc-user-card {
-            display: flex;
 
-            align-items: center;
+            display:
+                flex;
 
-            gap: 12px;
+            align-items:
+                center;
 
-            padding: 10px;
+            gap:
+                12px;
 
-            border-radius: 14px;
+            padding:
+                10px;
 
-            background: var(--fc-card);
+            border-radius:
+                14px;
 
-            border: 1px solid var(--fc-border);
+            background:
+                var(--fc-card);
+
+            border:
+                1px solid var(--fc-border);
+
         }
+
 
         .fc-user-avatar {
-            width: 42px;
-            height: 42px;
 
-            border-radius: 50%;
+            width:
+                42px;
 
-            object-fit: cover;
+            height:
+                42px;
 
-            background: var(--fc-panel-2);
+            min-width:
+                42px;
 
-            display: flex;
+            border-radius:
+                50%;
 
-            align-items: center;
-            justify-content: center;
+            overflow:
+                hidden;
 
-            color: var(--fc-text);
+            background:
+                var(--fc-panel-2);
 
-            font-weight: 700;
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            color:
+                var(--fc-text);
+
+            font-weight:
+                700;
+
         }
+
 
         .fc-user-info {
-            flex: 1;
 
-            min-width: 0;
+            flex:
+                1;
+
+            min-width:
+                0;
+
         }
+
 
         .fc-user-name {
-            color: var(--fc-text);
 
-            font-size: 14px;
+            color:
+                var(--fc-text);
 
-            font-weight: 650;
+            font-size:
+                14px;
+
+            font-weight:
+                650;
+
         }
+
 
         .fc-user-id {
-            color: var(--fc-muted);
 
-            font-size: 11px;
+            color:
+                var(--fc-muted);
 
-            margin-top: 3px;
+            font-size:
+                11px;
+
+            margin-top:
+                3px;
+
         }
 
+
         .fc-user-chat {
-            border: 0;
 
-            border-radius: 10px;
+            border:
+                0;
 
-            padding: 8px 11px;
+            border-radius:
+                10px;
 
-            background: var(--fc-accent);
+            padding:
+                8px 11px;
 
-            color: white;
+            background:
+                var(--fc-accent);
 
-            cursor: pointer;
+            color:
+                white;
+
+            cursor:
+                pointer;
+
         }
 
 
@@ -784,46 +1058,76 @@
            ===================================================== */
 
         .fc-theme-list {
-            display: grid;
 
-            grid-template-columns: 1fr 1fr;
+            display:
+                grid;
 
-            gap: 9px;
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                9px;
+
         }
+
 
         .fc-theme-button {
-            border: 1px solid var(--fc-border);
 
-            border-radius: 13px;
+            border:
+                1px solid var(--fc-border);
 
-            padding: 12px;
+            border-radius:
+                13px;
 
-            background: var(--fc-card);
+            padding:
+                12px;
 
-            color: var(--fc-text);
+            background:
+                var(--fc-card);
 
-            cursor: pointer;
+            color:
+                var(--fc-text);
 
-            text-align: left;
+            cursor:
+                pointer;
+
+            text-align:
+                left;
+
         }
+
 
         .fc-theme-button:hover {
-            background: var(--fc-panel-2);
+
+            background:
+                var(--fc-panel-2);
+
         }
 
+
         .fc-theme-dot {
-            width: 18px;
-            height: 18px;
 
-            border-radius: 50%;
+            width:
+                18px;
 
-            display: inline-block;
+            height:
+                18px;
 
-            vertical-align: middle;
+            border-radius:
+                50%;
 
-            margin-right: 7px;
+            display:
+                inline-block;
 
-            background: var(--theme-color);
+            vertical-align:
+                middle;
+
+            margin-right:
+                7px;
+
+            background:
+                var(--theme-color);
+
         }
 
 
@@ -831,84 +1135,220 @@
            MOBILE
            ===================================================== */
 
-        @media (max-width: 600px) {
+        @media (max-width: 760px) {
 
-            .fc-nav-toggle {
-                left: 9px;
-
-                width: 40px;
-                height: 40px;
-            }
-
-            .fc-nav-toggle.open {
-                left: calc(100vw - 54px);
-            }
-
+            #fc-sidebar,
             .fc-sidebar {
-                left: 8px;
 
-                width: min(260px, calc(100vw - 16px));
+                left:
+                    10px !important;
+
+                top:
+                    14px !important;
+
+                bottom:
+                    14px !important;
+
+                width:
+                    60px !important;
+
+                border-radius:
+                    18px !important;
+
+                padding:
+                    9px 5px !important;
+
             }
 
-            .fc-bottom-dock {
-                bottom: 10px;
 
-                height: 54px;
+            .fc-sidebar-logo {
+
+                width:
+                    38px !important;
+
+                height:
+                    38px !important;
+
+                min-width:
+                    38px !important;
+
             }
 
-            .fc-dock-button {
-                width: 42px;
-                height: 42px;
+
+            .fc-sidebar-item {
+
+                width:
+                    46px !important;
+
+                height:
+                    46px !important;
+
+                min-width:
+                    46px !important;
+
+                min-height:
+                    46px !important;
+
             }
 
-            .fc-dock-center {
-                width: 46px;
-                height: 46px;
+
+            .fc-sidebar-icon {
+
+                width:
+                    46px !important;
+
+                height:
+                    46px !important;
+
+                font-size:
+                    20px !important;
+
             }
+
         }
+
+
+        @media (max-width: 420px) {
+
+            #fc-sidebar,
+            .fc-sidebar {
+
+                left:
+                    8px !important;
+
+                top:
+                    12px !important;
+
+                bottom:
+                    12px !important;
+
+                width:
+                    54px !important;
+
+                border-radius:
+                    17px !important;
+
+                padding:
+                    8px 4px !important;
+
+            }
+
+
+            .fc-sidebar-logo {
+
+                width:
+                    34px !important;
+
+                height:
+                    34px !important;
+
+                min-width:
+                    34px !important;
+
+                border-radius:
+                    11px !important;
+
+                font-size:
+                    12px !important;
+
+            }
+
+
+            .fc-sidebar-item {
+
+                width:
+                    42px !important;
+
+                height:
+                    42px !important;
+
+                min-width:
+                    42px !important;
+
+                min-height:
+                    42px !important;
+
+                border-radius:
+                    13px !important;
+
+            }
+
+
+            .fc-sidebar-icon {
+
+                width:
+                    42px !important;
+
+                height:
+                    42px !important;
+
+                font-size:
+                    18px !important;
+
+            }
+
+
+            .fc-theme-list {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+        }
+
         `;
+
 
         document.head.appendChild(style);
     }
 
 
     /* =========================================================
-       SIDEBAR
+       CREATE PERMANENT SIDEBAR
        ========================================================= */
 
     function createSidebar() {
 
+        /* Remove old versions */
+
         removeElement("fc-sidebar");
         removeElement("fc-nav-toggle");
 
-        const toggle = createElement(
-            "button",
-            "fc-nav-toggle",
-            "☰"
-        );
 
-        toggle.id = "fc-nav-toggle";
+        /*
+         * IMPORTANT:
+         * Sidebar is appended directly to BODY.
+         * This prevents the sidebar from becoming
+         * part of the FriendChat layout.
+         */
 
-        document.body.appendChild(toggle);
-
-
-        const sidebar = createElement(
-            "aside",
-            "fc-sidebar"
-        );
-
-        sidebar.id = "fc-sidebar";
+        const sidebar =
+            createElement(
+                "aside",
+                "fc-sidebar"
+            );
 
 
-        /* HEADER */
+        sidebar.id =
+            "fc-sidebar";
 
-        const header = createElement(
-            "div",
-            "fc-sidebar-header"
-        );
+
+        /* =====================================================
+           HEADER / FC LOGO
+           ===================================================== */
+
+        const header =
+            createElement(
+                "div",
+                "fc-sidebar-header"
+            );
+
 
         header.innerHTML = `
-            <div class="fc-sidebar-logo">FC</div>
+            <div class="fc-sidebar-logo">
+                FC
+            </div>
 
             <div>
                 <div class="fc-sidebar-title">
@@ -921,189 +1361,195 @@
             </div>
         `;
 
+
         sidebar.appendChild(header);
 
 
         /* =====================================================
-           ONLY THESE OPTIONS
+           SIDEBAR OPTIONS
            ===================================================== */
 
-        const items = createElement(
-            "div",
-            "fc-sidebar-items"
-        );
+        const items =
+            createElement(
+                "div",
+                "fc-sidebar-items"
+            );
+
 
         const sidebarOptions = [
 
             {
                 icon: "🎵",
+
                 label: "Music",
+
                 action: function () {
 
-                    closeSidebar();
+                    if (
+                        typeof window.openSpotifyPanel ===
+                        "function"
+                    ) {
 
-                    setTimeout(() => {
+                        window.openSpotifyPanel();
 
-                        if (typeof window.openSpotifyPanel === "function") {
-                            window.openSpotifyPanel();
+                    }
+
+                    else if (
+                        typeof window.toggleSpotifyPanel ===
+                        "function"
+                    ) {
+
+                        window.toggleSpotifyPanel();
+
+                    }
+
+                    else {
+
+                        const spotify =
+                            document.querySelector(
+                                ".spotify-window"
+                            );
+
+                        if (spotify) {
+
+                            spotify.classList.toggle(
+                                "open"
+                            );
+
+                        } else {
+
+                            console.warn(
+                                "Spotify panel not found"
+                            );
                         }
-
-                        else if (typeof window.toggleSpotifyPanel === "function") {
-                            window.toggleSpotifyPanel();
-                        }
-
-                        else {
-                            const spotify =
-                                document.querySelector(".spotify-window");
-
-                            if (spotify) {
-                                spotify.classList.toggle("open");
-                            }
-                        }
-
-                    }, 180);
+                    }
                 }
             },
+
 
             {
                 icon: "🎨",
+
                 label: "Theme",
+
                 action: function () {
 
-                    closeSidebar();
+                    openThemePanel();
 
-                    setTimeout(() => {
-                        openThemePanel();
-                    }, 180);
                 }
             },
+
 
             {
                 icon: "⚙️",
+
                 label: "Settings",
+
                 action: function () {
 
-                    closeSidebar();
+                    if (
+                        typeof window.showSettings ===
+                        "function"
+                    ) {
 
-                    setTimeout(() => {
+                        window.showSettings();
 
-                        if (typeof window.showSettings === "function") {
-                            window.showSettings();
-                        } else {
-                            console.log("Settings function not found");
-                        }
+                    } else {
 
-                    }, 180);
+                        console.warn(
+                            "showSettings() was not found."
+                        );
+
+                    }
                 }
             },
 
+
             {
                 icon: "👤",
+
                 label: "Profile",
+
                 action: function () {
 
-                    closeSidebar();
+                    safeCall(
+                        "showProfile"
+                    );
 
-                    setTimeout(() => {
-                        safeCall("showProfile");
-                    }, 180);
                 }
             }
 
         ];
 
 
-        sidebarOptions.forEach(option => {
+        sidebarOptions.forEach(
+            option => {
 
-            const button = createElement(
-                "button",
-                "fc-sidebar-item"
-            );
-
-            button.type = "button";
-
-            button.innerHTML = `
-                <span class="fc-sidebar-icon">
-                    ${option.icon}
-                </span>
-
-                <span>
-                    ${option.label}
-                </span>
-            `;
-
-            button.addEventListener(
-                "click",
-                option.action
-            );
-
-            items.appendChild(button);
-        });
+                const button =
+                    createElement(
+                        "button",
+                        "fc-sidebar-item"
+                    );
 
 
-        sidebar.appendChild(items);
-
-        document.body.appendChild(sidebar);
-
-
-        /* TOGGLE */
-
-        toggle.addEventListener("click", function (event) {
-
-            event.stopPropagation();
-
-            const opened =
-                sidebar.classList.toggle("open");
-
-            toggle.classList.toggle(
-                "open",
-                opened
-            );
-
-            toggle.innerHTML =
-                opened ? "✕" : "☰";
-        });
+                button.type =
+                    "button";
 
 
-        /* CLICK OUTSIDE */
+                button.title =
+                    option.label;
 
-        document.addEventListener(
-            "click",
-            function (event) {
 
-                if (!sidebar.classList.contains("open")) {
-                    return;
-                }
+                button.setAttribute(
+                    "aria-label",
+                    option.label
+                );
 
-                if (
-                    sidebar.contains(event.target) ||
-                    toggle.contains(event.target)
-                ) {
-                    return;
-                }
 
-                closeSidebar();
+                button.innerHTML = `
+                    <span class="fc-sidebar-icon">
+                        ${option.icon}
+                    </span>
+
+                    <span>
+                        ${option.label}
+                    </span>
+                `;
+
+
+                button.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.stopPropagation();
+
+                        option.action();
+
+                    }
+                );
+
+
+                items.appendChild(
+                    button
+                );
+
             }
         );
-    }
 
 
-    function closeSidebar() {
+        sidebar.appendChild(
+            items
+        );
 
-        const sidebar =
-            document.getElementById("fc-sidebar");
 
-        const toggle =
-            document.getElementById("fc-nav-toggle");
+        /*
+         * Append DIRECTLY to body.
+         * It is not inside .app.
+         */
 
-        if (sidebar) {
-            sidebar.classList.remove("open");
-        }
-
-        if (toggle) {
-            toggle.classList.remove("open");
-            toggle.innerHTML = "☰";
-        }
+        document.body.appendChild(
+            sidebar
+        );
     }
 
 
@@ -1114,28 +1560,38 @@
     function openThemePanel() {
 
         let overlay =
-            document.getElementById("fc-theme-panel");
+            document.getElementById(
+                "fc-theme-panel"
+            );
+
 
         if (overlay) {
 
-            overlay.classList.add("show");
+            overlay.classList.add(
+                "show"
+            );
 
             return;
         }
 
 
-        overlay = createElement(
-            "div",
-            "fc-overlay"
-        );
+        overlay =
+            createElement(
+                "div",
+                "fc-overlay"
+            );
 
-        overlay.id = "fc-theme-panel";
+
+        overlay.id =
+            "fc-theme-panel";
 
 
-        const windowBox = createElement(
-            "div",
-            "fc-window"
-        );
+        const windowBox =
+            createElement(
+                "div",
+                "fc-window"
+            );
+
 
         windowBox.innerHTML = `
             <div class="fc-window-header">
@@ -1175,22 +1631,30 @@
                         "fc-theme-button"
                     );
 
-                button.type = "button";
+
+                button.type =
+                    "button";
+
 
                 button.innerHTML = `
                     <span
                         class="fc-theme-dot"
-                        style="--theme-color:${theme.accent}">
+                        style="
+                            --theme-color:${theme.accent}
+                        ">
                     </span>
 
                     ${theme.name}
                 `;
 
+
                 button.addEventListener(
                     "click",
                     function () {
 
-                        applyTheme(key);
+                        applyTheme(
+                            key
+                        );
 
                         overlay.classList.remove(
                             "show"
@@ -1198,7 +1662,10 @@
                     }
                 );
 
-                themeList.appendChild(button);
+
+                themeList.appendChild(
+                    button
+                );
             }
         );
 
@@ -1208,6 +1675,7 @@
                 ".fc-close"
             );
 
+
         close.addEventListener(
             "click",
             function () {
@@ -1215,6 +1683,7 @@
                 overlay.classList.remove(
                     "show"
                 );
+
             }
         );
 
@@ -1223,28 +1692,45 @@
             "click",
             function (event) {
 
-                if (event.target === overlay) {
+                if (
+                    event.target ===
+                    overlay
+                ) {
+
                     overlay.classList.remove(
                         "show"
                     );
+
                 }
+
             }
         );
 
 
-        overlay.appendChild(windowBox);
+        overlay.appendChild(
+            windowBox
+        );
 
-        document.body.appendChild(overlay);
+
+        document.body.appendChild(
+            overlay
+        );
 
 
-        requestAnimationFrame(() => {
-            overlay.classList.add("show");
-        });
+        requestAnimationFrame(
+            () => {
+
+                overlay.classList.add(
+                    "show"
+                );
+
+            }
+        );
     }
 
 
     /* =========================================================
-       DISCOVERY / FRIENDCHAT USERS
+       GET FRIENDCHAT USERS
        ========================================================= */
 
     function getUsers() {
@@ -1253,30 +1739,45 @@
 
 
         const possibleArrays = [
+
             window.friends,
+
             window.users,
+
             window.allUsers,
+
             window.friendList
+
         ];
 
 
         possibleArrays.forEach(
             array => {
 
-                if (Array.isArray(array)) {
-                    users.push(...array);
+                if (
+                    Array.isArray(array)
+                ) {
+
+                    users.push(
+                        ...array
+                    );
+
                 }
+
             }
         );
 
 
-        /* LOCAL STORAGE */
-
         const storageKeys = [
+
             "friends",
+
             "users",
+
             "allUsers",
+
             "friendList"
+
         ];
 
 
@@ -1285,19 +1786,42 @@
 
                 try {
 
-                    const value =
-                        JSON.parse(
-                            localStorage.getItem(key)
+                    const raw =
+                        localStorage.getItem(
+                            key
                         );
 
 
-                    if (Array.isArray(value)) {
-                        users.push(...value);
+                    if (!raw) {
+                        return;
+                    }
+
+
+                    const value =
+                        JSON.parse(
+                            raw
+                        );
+
+
+                    if (
+                        Array.isArray(value)
+                    ) {
+
+                        users.push(
+                            ...value
+                        );
+
                     }
 
                 } catch (error) {
-                    /* Ignore invalid storage */
+
+                    console.warn(
+                        "FriendChat storage:",
+                        error
+                    );
+
                 }
+
             }
         );
 
@@ -1306,36 +1830,49 @@
 
         const unique = [];
 
-        const seen = new Set();
+        const seen =
+            new Set();
 
 
-        users.forEach(user => {
+        users.forEach(
+            user => {
 
-            if (!user) {
-                return;
+                if (!user) {
+                    return;
+                }
+
+
+                const id =
+                    String(
+                        user.id ||
+                        user.userId ||
+                        user.uid ||
+                        user.email ||
+                        user.name ||
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                if (
+                    !id ||
+                    seen.has(id)
+                ) {
+
+                    return;
+
+                }
+
+
+                seen.add(id);
+
+                unique.push(
+                    user
+                );
+
             }
-
-
-            const id =
-                String(
-                    user.id ||
-                    user.userId ||
-                    user.uid ||
-                    user.email ||
-                    user.name ||
-                    ""
-                ).toLowerCase();
-
-
-            if (!id || seen.has(id)) {
-                return;
-            }
-
-
-            seen.add(id);
-
-            unique.push(user);
-        });
+        );
 
 
         return unique;
@@ -1360,24 +1897,30 @@
                 overlay
             );
 
-            overlay.classList.add("show");
+            overlay.classList.add(
+                "show"
+            );
 
             return;
         }
 
 
-        overlay = createElement(
-            "div",
-            "fc-overlay"
-        );
+        overlay =
+            createElement(
+                "div",
+                "fc-overlay"
+            );
 
-        overlay.id = "fc-discovery";
+
+        overlay.id =
+            "fc-discovery";
 
 
-        const windowBox = createElement(
-            "div",
-            "fc-window"
-        );
+        const windowBox =
+            createElement(
+                "div",
+                "fc-window"
+            );
 
 
         windowBox.innerHTML = `
@@ -1415,6 +1958,7 @@
                 overlay.classList.remove(
                     "show"
                 );
+
             }
         );
 
@@ -1423,18 +1967,29 @@
             "click",
             function (event) {
 
-                if (event.target === overlay) {
+                if (
+                    event.target ===
+                    overlay
+                ) {
+
                     overlay.classList.remove(
                         "show"
                     );
+
                 }
+
             }
         );
 
 
-        overlay.appendChild(windowBox);
+        overlay.appendChild(
+            windowBox
+        );
 
-        document.body.appendChild(overlay);
+
+        document.body.appendChild(
+            overlay
+        );
 
 
         renderDiscoveryUsers(
@@ -1442,12 +1997,15 @@
         );
 
 
-        requestAnimationFrame(() => {
+        requestAnimationFrame(
+            () => {
 
-            overlay.classList.add(
-                "show"
-            );
-        });
+                overlay.classList.add(
+                    "show"
+                );
+
+            }
+        );
     }
 
 
@@ -1478,8 +2036,7 @@
                         text-align:center;
                         padding:35px 10px;
                         color:var(--fc-muted);
-                    "
-                >
+                    ">
                     No users found yet.
                 </div>
             `;
@@ -1495,343 +2052,205 @@
             );
 
 
-        users.forEach(user => {
+        users.forEach(
+            user => {
 
-            const name =
-                user.name ||
-                user.username ||
-                user.displayName ||
-                "FriendChat User";
-
-
-            const id =
-                user.id ||
-                user.userId ||
-                user.uid ||
-                "";
+                const name =
+                    user.name ||
+                    user.username ||
+                    user.displayName ||
+                    "FriendChat User";
 
 
-            const avatar =
-                user.photo ||
-                user.photoURL ||
-                user.avatar ||
-                user.profilePhoto ||
-                "";
+                const id =
+                    user.id ||
+                    user.userId ||
+                    user.uid ||
+                    "";
 
 
-            const card =
-                createElement(
-                    "div",
-                    "fc-user-card"
-                );
+                const avatar =
+                    user.photo ||
+                    user.photoURL ||
+                    user.avatar ||
+                    user.profilePhoto ||
+                    "";
 
 
-            const avatarElement =
-                createElement(
-                    "div",
-                    "fc-user-avatar"
-                );
-
-
-            if (avatar) {
-
-                avatarElement.innerHTML = `
-                    <img
-                        src="${avatar}"
-                        style="
-                            width:100%;
-                            height:100%;
-                            object-fit:cover;
-                            border-radius:50%;
-                        "
-                    >
-                `;
-
-            } else {
-
-                avatarElement.textContent =
-                    String(name)
-                        .charAt(0)
-                        .toUpperCase();
-            }
-
-
-            const info =
-                createElement(
-                    "div",
-                    "fc-user-info"
-                );
-
-
-            info.innerHTML = `
-                <div class="fc-user-name">
-                    ${name}
-                </div>
-
-                <div class="fc-user-id">
-                    ${id || "FriendChat user"}
-                </div>
-            `;
-
-
-            const chat =
-                createElement(
-                    "button",
-                    "fc-user-chat",
-                    "Chat"
-                );
-
-
-            chat.type = "button";
-
-
-            chat.addEventListener(
-                "click",
-                function () {
-
-                    overlay.classList.remove(
-                        "show"
+                const card =
+                    createElement(
+                        "div",
+                        "fc-user-card"
                     );
 
 
-                    setTimeout(() => {
+                const avatarElement =
+                    createElement(
+                        "div",
+                        "fc-user-avatar"
+                    );
 
-                        if (
-                            typeof window.openChat ===
-                            "function"
-                        ) {
-                            window.openChat(user);
-                        }
 
-                        else if (
-                            typeof window.startChat ===
-                            "function"
-                        ) {
-                            window.startChat(user);
-                        }
+                if (avatar) {
 
-                    }, 150);
+                    const img =
+                        document.createElement(
+                            "img"
+                        );
+
+
+                    img.src =
+                        avatar;
+
+
+                    img.alt =
+                        name;
+
+
+                    img.style.width =
+                        "100%";
+
+                    img.style.height =
+                        "100%";
+
+                    img.style.objectFit =
+                        "cover";
+
+                    img.style.borderRadius =
+                        "50%";
+
+
+                    avatarElement.appendChild(
+                        img
+                    );
+
+                } else {
+
+                    avatarElement.textContent =
+                        String(name)
+                            .charAt(0)
+                            .toUpperCase();
+
                 }
-            );
 
 
-            card.appendChild(
-                avatarElement
-            );
-
-            card.appendChild(
-                info
-            );
-
-            card.appendChild(
-                chat
-            );
+                const info =
+                    createElement(
+                        "div",
+                        "fc-user-info"
+                    );
 
 
-            list.appendChild(card);
-        });
+                info.innerHTML = `
+                    <div class="fc-user-name">
+                        ${escapeHTML(name)}
+                    </div>
+
+                    <div class="fc-user-id">
+                        ${escapeHTML(
+                            id || "FriendChat user"
+                        )}
+                    </div>
+                `;
 
 
-        body.innerHTML = "";
+                const chat =
+                    createElement(
+                        "button",
+                        "fc-user-chat",
+                        "Chat"
+                    );
 
-        body.appendChild(list);
+
+                chat.type =
+                    "button";
+
+
+                chat.addEventListener(
+                    "click",
+                    function () {
+
+                        overlay.classList.remove(
+                            "show"
+                        );
+
+
+                        setTimeout(
+                            () => {
+
+                                if (
+                                    typeof window.openChat ===
+                                    "function"
+                                ) {
+
+                                    window.openChat(
+                                        user
+                                    );
+
+                                }
+
+                                else if (
+                                    typeof window.startChat ===
+                                    "function"
+                                ) {
+
+                                    window.startChat(
+                                        user
+                                    );
+
+                                }
+
+                            },
+                            150
+                        );
+
+                    }
+                );
+
+
+                card.appendChild(
+                    avatarElement
+                );
+
+                card.appendChild(
+                    info
+                );
+
+                card.appendChild(
+                    chat
+                );
+
+
+                list.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+        body.innerHTML =
+            "";
+
+
+        body.appendChild(
+            list
+        );
     }
 
 
     /* =========================================================
-       BOTTOM DOCK
+       ESCAPE HTML
        ========================================================= */
 
-    function createBottomDock() {
-
-        removeElement("fc-bottom-dock");
-
-
-        const dock =
-            createElement(
-                "div",
-                "fc-bottom-dock"
-            );
-
-
-        dock.id =
-            "fc-bottom-dock";
-
-
-        /* LEFT */
-
-        const left =
-            createElement(
-                "button",
-                "fc-dock-button",
-                "💬"
-            );
-
-
-        left.type = "button";
-
-        left.title = "Home";
-
-
-        left.addEventListener(
-            "click",
-            function () {
-
-                safeCall("showHome");
-            }
-        );
-
-
-        /* CENTER */
-
-        const center =
-            createElement(
-                "button",
-                "fc-dock-button fc-dock-center",
-                "FC"
-            );
-
-
-        center.type = "button";
-
-        center.title =
-            "FriendChat users";
-
-
-        center.addEventListener(
-            "click",
-            function () {
-
-                openDiscovery();
-            }
-        );
-
-
-        /* RIGHT */
-
-        const right =
-            createElement(
-                "button",
-                "fc-dock-button",
-                "👤"
-            );
-
-
-        right.type = "button";
-
-        right.title =
-            "Profile";
-
-
-        right.addEventListener(
-            "click",
-            function () {
-
-                safeCall("showProfile");
-            }
-        );
-
-
-        dock.appendChild(left);
-
-        dock.appendChild(center);
-
-        dock.appendChild(right);
-
-
-        document.body.appendChild(dock);
-    }
-
-
-    /* =========================================================
-       QUICK ACTIONS
-       ========================================================= */
-
-    function createQuickActions() {
-
-        if (document.getElementById("fc-quick-actions")) {
-            return;
-        }
-
-        const app =
-            document.querySelector(
-                ".app"
-            );
-
-        if (!app) {
-            return;
-        }
-
-
-        const actions =
-            createElement(
-                "div",
-                "fc-quick-actions"
-            );
-
-
-        actions.id =
-            "fc-quick-actions";
-
-
-        /* We intentionally keep this minimal.
-           Existing FriendChat add/media buttons
-           are not replaced. */
-
-
-        app.appendChild(actions);
-    }
-
-
-    /* =========================================================
-       SCREEN VISIBILITY
-       ========================================================= */
-
-    function setupScreenVisibility() {
-
-        const app =
-            document.querySelector(
-                ".app"
-            );
-
-
-        if (!app) {
-            return;
-        }
-
-
-        function update() {
-
-            /*
-             * Keep custom navigation visible
-             * throughout FriendChat.
-             *
-             * We don't hide it based on
-             * app classes because different
-             * FriendChat versions use
-             * different class names.
-             */
-        }
-
-
-        update();
-
-
-        const observer =
-            new MutationObserver(
-                update
-            );
-
-
-        observer.observe(
-            app,
-            {
-                attributes: true,
-                attributeFilter: [
-                    "class"
-                ]
-            }
-        );
+    function escapeHTML(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
 
@@ -1845,25 +2264,51 @@
             "keydown",
             function (event) {
 
-                if (event.key === "Escape") {
-
-                    closeSidebar();
-
-
-                    document
-                        .querySelectorAll(
-                            ".fc-overlay.show"
-                        )
-                        .forEach(
-                            overlay => {
-                                overlay.classList.remove(
-                                    "show"
-                                );
-                            }
-                        );
+                if (
+                    event.key !==
+                    "Escape"
+                ) {
+                    return;
                 }
+
+
+                document
+                    .querySelectorAll(
+                        ".fc-overlay.show"
+                    )
+                    .forEach(
+                        overlay => {
+
+                            overlay.classList.remove(
+                                "show"
+                            );
+
+                        }
+                    );
+
             }
         );
+    }
+
+
+    /* =========================================================
+       REMOVE BOTTOM DOCK IF CREATED BY OLD VERSION
+       ========================================================= */
+
+    function removeBottomDock() {
+
+        removeElement(
+            "fc-bottom-dock"
+        );
+
+
+        document
+            .querySelectorAll(
+                ".fc-bottom-dock"
+            )
+            .forEach(
+                el => el.remove()
+            );
     }
 
 
@@ -1873,7 +2318,12 @@
 
     function init() {
 
-        /* Remove previous version */
+        console.log(
+            "FriendChat UI V3 initializing..."
+        );
+
+
+        /* Remove old UI */
 
         removeOldCustomUI();
 
@@ -1883,34 +2333,28 @@
         hideOldNavigation();
 
 
-        /* CSS */
+        /* Add custom CSS */
 
         injectCSS();
 
 
-        /* Theme */
+        /* Load theme */
 
         loadTheme();
 
 
-        /* Sidebar */
+        /* Create permanent floating bar */
 
         createSidebar();
 
 
-        /* Bottom navigation */
-
-        createBottomDock();
-
-
-        /* Existing app compatibility */
-
-        createQuickActions();
+        /*
+         * IMPORTANT:
+         * We DO NOT create bottom dock.
+         */
 
 
-        /* Screen observer */
-
-        setupScreenVisibility();
+        removeBottomDock();
 
 
         /* Keyboard */
@@ -1919,13 +2363,15 @@
 
 
         /*
-         * Spotify's old buttons can be
-         * recreated by spotify.js after
-         * this script loads, so hide them
-         * repeatedly for a short time.
+         * Spotify may recreate its old
+         * sidebar after loading.
+         *
+         * Keep removing only the OLD
+         * Spotify navigation.
          */
 
         let checks = 0;
+
 
         const spotifyCleaner =
             setInterval(
@@ -1933,12 +2379,19 @@
 
                     hideOldNavigation();
 
+                    removeBottomDock();
+
                     checks++;
 
-                    if (checks >= 20) {
+
+                    if (
+                        checks >= 20
+                    ) {
+
                         clearInterval(
                             spotifyCleaner
                         );
+
                     }
 
                 },
@@ -1947,7 +2400,7 @@
 
 
         console.log(
-            "FriendChat UI V3 loaded"
+            "FriendChat UI V3 loaded successfully."
         );
     }
 
@@ -1959,14 +2412,21 @@
     window.openFriendChatDiscovery =
         openDiscovery;
 
+
     window.openFriendChatTheme =
         openThemePanel;
+
 
     window.applyFriendChatTheme =
         applyTheme;
 
+
     window.closeFriendChatSidebar =
-        closeSidebar;
+        function () {
+            /* Kept for compatibility.
+               There is no sliding sidebar anymore. */
+            return;
+        };
 
 
     /* =========================================================
@@ -1986,6 +2446,7 @@
     } else {
 
         init();
+
     }
 
 })();
