@@ -1,6 +1,6 @@
 /* =========================================================
    FRIENDCHAT UI V3
-   CLEAN COMPLETE CSS
+   FLOATING VERTICAL NAVIGATION
    ========================================================= */
 
 :root {
@@ -22,9 +22,10 @@
     --fc-radius: 18px;
     --fc-ease: cubic-bezier(.22,1,.36,1);
 
-    /* SIDEBAR */
-    --fc-sidebar-width: 250px;
-    --fc-sidebar-left: 0px;
+    /* FLOATING NAV */
+    --fc-nav-width: 68px;
+    --fc-nav-top: 20px;
+    --fc-nav-bottom: 20px;
 }
 
 
@@ -189,116 +190,20 @@ textarea {
 
 
 /* =========================================================
-   SIDEBAR ARROW
+   REMOVE OLD SLIDE ARROW COMPLETELY
    ========================================================= */
 
 #fcNavToggle,
 .fc-nav-toggle,
 #fc-nav-toggle {
-
-    position: fixed !important;
-
-    left: 0 !important;
-    top: 50% !important;
-
-    width: 34px !important;
-    height: 64px !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
-
-    transform: translateY(-50%) !important;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    background: rgba(13,18,27,.98) !important;
-
-    color: #fff !important;
-
-    border: 1px solid var(--fc-border) !important;
-    border-left: 0 !important;
-
-    border-radius: 0 14px 14px 0 !important;
-
-    box-shadow:
-        8px 0 30px rgba(0,0,0,.35) !important;
-
-    cursor: pointer !important;
-
-    z-index: 100030 !important;
-
-    transition:
-        left .35s var(--fc-ease),
-        background .2s ease,
-        transform .35s var(--fc-ease) !important;
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 
 /* =========================================================
-   ARROW ICON
-   ========================================================= */
-
-#fcNavToggle .fc-chevron,
-.fc-nav-toggle .fc-chevron,
-#fc-nav-toggle .fc-chevron {
-
-    display: block !important;
-
-    font-size: 25px !important;
-    line-height: 1 !important;
-
-    transform: rotate(0deg);
-
-    transition:
-        transform .35s var(--fc-ease) !important;
-}
-
-
-/* =========================================================
-   ARROW HOVER
-   ========================================================= */
-
-#fcNavToggle:hover,
-.fc-nav-toggle:hover,
-#fc-nav-toggle:hover {
-
-    background:
-        rgba(25,31,42,.99) !important;
-}
-
-
-/* =========================================================
-   ARROW OPEN POSITION
-   ========================================================= */
-
-#fcNavToggle.is-open,
-.fc-nav-toggle.is-open,
-#fc-nav-toggle.is-open {
-
-    left:
-        calc(
-            var(--fc-sidebar-width) + 8px
-        ) !important;
-}
-
-
-/* =========================================================
-   ARROW ROTATION
-   ========================================================= */
-
-#fcNavToggle.is-open .fc-chevron,
-.fc-nav-toggle.is-open .fc-chevron,
-#fc-nav-toggle.is-open .fc-chevron {
-
-    transform:
-        rotate(180deg) !important;
-}
-
-
-/* =========================================================
-   SIDEBAR
+   FLOATING VERTICAL NAVIGATION
    ========================================================= */
 
 #fcCustomSidebar,
@@ -307,82 +212,67 @@ textarea {
 
     position: fixed !important;
 
-    left:
-        var(--fc-sidebar-left) !important;
+    left: 14px !important;
+    top: var(--fc-nav-top) !important;
+    bottom: var(--fc-nav-bottom) !important;
 
-    top: 50% !important;
-
-    width:
-        var(--fc-sidebar-width) !important;
+    width: var(--fc-nav-width) !important;
+    height: auto !important;
 
     margin: 0 !important;
-    padding: 12px !important;
+    padding: 10px 8px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
 
     background:
-        rgba(13,18,27,.98) !important;
+        rgba(13,18,27,.96) !important;
 
-    border:
-        1px solid var(--fc-border) !important;
+    border: 1px solid var(--fc-border) !important;
 
-    border-left: 0 !important;
-
-    border-radius:
-        0 20px 20px 0 !important;
+    border-radius: 20px !important;
 
     box-shadow:
-        18px 20px 70px rgba(0,0,0,.55) !important;
+        0 18px 60px rgba(0,0,0,.48) !important;
 
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 
     z-index: 100020 !important;
 
-    /* CLOSED */
+    /* ALWAYS VISIBLE */
 
-    transform:
-        translate(
-            calc(-100% - 30px),
-            -50%
-        ) !important;
+    transform: none !important;
 
-    opacity: 0 !important;
+    opacity: 1 !important;
 
-    visibility:
-        hidden !important;
+    visibility: visible !important;
 
-    pointer-events:
-        none !important;
+    pointer-events: auto !important;
 
-    transition:
-        transform .35s var(--fc-ease),
-        opacity .25s ease,
-        visibility .35s ease !important;
+    transition: none !important;
 }
 
 
 /* =========================================================
-   SIDEBAR OPEN
+   FORCE SIDEBAR OPEN STATE
    ========================================================= */
 
 #fcCustomSidebar.open,
 #fcCustomSidebar.fc-sidebar-open,
-
 .fc-sidebar.open,
 .fc-sidebar.fc-sidebar-open,
-
 #fc-sidebar.open,
 #fc-sidebar.fc-sidebar-open {
 
-    transform:
-        translate(0,-50%) !important;
+    transform: none !important;
 
     opacity: 1 !important;
 
-    visibility:
-        visible !important;
+    visibility: visible !important;
 
-    pointer-events:
-        auto !important;
+    pointer-events: auto !important;
 }
 
 
@@ -393,26 +283,29 @@ textarea {
 #fcCustomSidebar .fc-sidebar-brand,
 .fc-sidebar-brand {
 
+    width: 100% !important;
+
     display: flex !important;
 
     align-items: center !important;
     justify-content: center !important;
 
-    gap: 10px !important;
+    padding: 4px 0 10px !important;
 
-    padding:
-        8px 8px 14px !important;
+    margin: 0 0 8px !important;
 
-    margin-bottom: 7px !important;
-
-    border-bottom:
-        1px solid var(--fc-border) !important;
+    border-bottom: 1px solid var(--fc-border) !important;
 }
+
+
+/* =========================================================
+   SIDEBAR LOGO
+   ========================================================= */
 
 .fc-sidebar-logo {
 
-    width: 38px !important;
-    height: 38px !important;
+    width: 40px !important;
+    height: 40px !important;
 
     display: grid !important;
     place-items: center !important;
@@ -432,29 +325,20 @@ textarea {
 
     font-size: 13px !important;
     font-weight: 900 !important;
+
+    box-shadow:
+        0 8px 25px rgba(108,124,255,.22);
 }
 
-.fc-sidebar-title {
 
-    color:
-        var(--fc-text) !important;
+/* =========================================================
+   SIDEBAR TITLE
+   ========================================================= */
 
-    font-size:
-        14px !important;
-
-    font-weight:
-        800 !important;
-}
-
+.fc-sidebar-title,
 .fc-sidebar-sub {
 
-    margin-top: 2px !important;
-
-    color:
-        var(--fc-muted) !important;
-
-    font-size:
-        11px !important;
+    display: none !important;
 }
 
 
@@ -466,62 +350,115 @@ textarea {
 .fc-nav-item,
 .fc-sidebar-item {
 
-    width: 100% !important;
+    width: 50px !important;
+    min-width: 50px !important;
 
-    min-height:
-        46px !important;
+    height: 50px !important;
+    min-height: 50px !important;
 
-    margin:
-        3px 0 !important;
-
-    padding:
-        0 11px !important;
+    margin: 4px 0 !important;
+    padding: 0 !important;
 
     display: flex !important;
 
-    align-items:
-        center !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-    gap:
-        11px !important;
+    gap: 0 !important;
 
     border: 0 !important;
 
-    border-radius:
-        13px !important;
+    border-radius: 14px !important;
 
-    background:
-        transparent !important;
+    background: transparent !important;
 
-    color:
-        var(--fc-text) !important;
+    color: var(--fc-text) !important;
 
-    font-size:
-        14px !important;
+    font-size: 0 !important;
 
-    font-weight:
-        600 !important;
+    text-align: center !important;
 
-    text-align:
-        left !important;
-
-    cursor:
-        pointer !important;
+    cursor: pointer !important;
 
     transition:
         background .18s ease,
-        transform .18s ease !important;
+        transform .18s ease,
+        color .18s ease !important;
 }
+
+
+/* =========================================================
+   SIDEBAR BUTTON HOVER
+   ========================================================= */
 
 #fcCustomSidebar .fc-nav-item:hover,
 .fc-nav-item:hover,
 .fc-sidebar-item:hover {
 
     background:
-        rgba(255,255,255,.07) !important;
+        rgba(255,255,255,.08) !important;
 
     transform:
-        translateX(3px) !important;
+        scale(1.06) !important;
+
+    color:
+        white !important;
+}
+
+
+/* =========================================================
+   SIDEBAR ICON
+   ========================================================= */
+
+.fc-nav-icon,
+.fc-sidebar-icon {
+
+    width: 38px !important;
+    height: 38px !important;
+
+    flex-shrink: 0;
+
+    display: grid !important;
+    place-items: center !important;
+
+    border-radius: 11px !important;
+
+    background:
+        rgba(255,255,255,.055) !important;
+
+    font-size: 18px !important;
+
+    transition:
+        background .18s ease,
+        transform .18s ease !important;
+}
+
+
+/* =========================================================
+   ICON HOVER
+   ========================================================= */
+
+.fc-nav-item:hover .fc-nav-icon,
+.fc-sidebar-item:hover .fc-sidebar-icon {
+
+    background:
+        rgba(108,124,255,.16) !important;
+
+    transform:
+        scale(1.04);
+}
+
+
+/* =========================================================
+   HIDE TEXT INSIDE NAV
+   ========================================================= */
+
+.fc-nav-item .fc-nav-text,
+.fc-sidebar-item .fc-sidebar-text,
+.fc-nav-item span:not(.fc-nav-icon),
+.fc-sidebar-item span:not(.fc-sidebar-icon) {
+
+    display: none !important;
 }
 
 
@@ -535,34 +472,7 @@ textarea {
 .fc-nav-item[data-nav="chats"],
 .fc-nav-item[data-nav="friends"] {
 
-    display:
-        none !important;
-}
-
-
-/* =========================================================
-   SIDEBAR ICONS
-   ========================================================= */
-
-.fc-nav-icon,
-.fc-sidebar-icon {
-
-    width: 31px !important;
-    height: 31px !important;
-
-    flex-shrink: 0;
-
-    display: grid !important;
-    place-items: center !important;
-
-    border-radius:
-        9px !important;
-
-    background:
-        rgba(255,255,255,.06) !important;
-
-    font-size:
-        16px !important;
+    display: none !important;
 }
 
 
@@ -572,11 +482,13 @@ textarea {
 
 .fc-nav-divider {
 
-    width: 100% !important;
+    width: 38px !important;
     height: 1px !important;
 
     margin:
-        9px 5px !important;
+        8px 0 !important;
+
+    flex-shrink: 0;
 
     background:
         var(--fc-border) !important;
@@ -588,185 +500,46 @@ textarea {
    ========================================================= */
 
 .fc-nav-theme {
+
     color:
         #b9c1ff !important;
 }
 
 
 /* =========================================================
-   BOTTOM DOCK
+   REMOVE OLD BOTTOM DOCK
    ========================================================= */
 
 #fc-bottom-dock,
 .fc-bottom-dock {
 
-    position:
-        fixed !important;
+    display: none !important;
 
-    left:
-        50% !important;
+    visibility: hidden !important;
 
-    bottom:
-        16px !important;
-
-    transform:
-        translateX(-50%) !important;
-
-    width:
-        auto !important;
-
-    height:
-        64px !important;
-
-    padding:
-        8px 12px !important;
-
-    display:
-        flex !important;
-
-    align-items:
-        center !important;
-
-    gap:
-        14px !important;
-
-    border-radius:
-        18px !important;
-
-    background:
-        rgba(13,18,27,.90) !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    backdrop-filter:
-        blur(20px);
-
-    -webkit-backdrop-filter:
-        blur(20px);
-
-    box-shadow:
-        0 18px 60px rgba(0,0,0,.4) !important;
-
-    z-index:
-        10000 !important;
+    pointer-events: none !important;
 }
 
 
 /* =========================================================
-   BOTTOM BUTTONS
-   ========================================================= */
-
-.fc-dock-btn,
-.fc-dock-button {
-
-    width:
-        46px !important;
-
-    height:
-        46px !important;
-
-    padding:
-        0 !important;
-
-    display:
-        grid !important;
-
-    place-items:
-        center !important;
-
-    border:
-        0 !important;
-
-    border-radius:
-        15px !important;
-
-    background:
-        transparent !important;
-
-    color:
-        var(--fc-muted) !important;
-
-    font-size:
-        18px !important;
-
-    cursor:
-        pointer !important;
-
-    transition:
-        background .2s ease,
-        color .2s ease,
-        transform .2s ease !important;
-}
-
-.fc-dock-btn:hover,
-.fc-dock-button:hover {
-
-    background:
-        rgba(255,255,255,.06) !important;
-
-    color:
-        var(--fc-text) !important;
-}
-
-
-/* =========================================================
-   CENTER FC BUTTON
+   REMOVE CENTER FC BUTTON
    ========================================================= */
 
 .fc-dock-center,
 #fc-center-button {
 
-    width:
-        52px !important;
-
-    height:
-        52px !important;
-
-    display:
-        grid !important;
-
-    place-items:
-        center !important;
-
-    border:
-        0 !important;
-
-    border-radius:
-        17px !important;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--fc-accent),
-            var(--fc-accent-2)
-        ) !important;
-
-    color:
-        white !important;
-
-    font-size:
-        19px !important;
-
-    font-weight:
-        900 !important;
-
-    box-shadow:
-        0 8px 28px rgba(108,124,255,.3) !important;
-
-    cursor:
-        pointer !important;
-
-    transition:
-        transform .22s ease !important;
+    display: none !important;
 }
 
-.fc-dock-center:hover,
-#fc-center-button:hover {
 
-    transform:
-        translateY(-4px)
-        scale(1.03) !important;
+/* =========================================================
+   REMOVE OLD DOCK BUTTONS
+   ========================================================= */
+
+.fc-dock-btn,
+.fc-dock-button {
+
+    display: none !important;
 }
 
 
@@ -777,14 +550,11 @@ textarea {
 #fc-discovery,
 .fc-discovery {
 
-    position:
-        fixed !important;
+    position: fixed !important;
 
-    left:
-        50% !important;
+    left: 50% !important;
 
-    bottom:
-        92px !important;
+    bottom: 30px !important;
 
     width:
         min(430px, calc(100vw - 28px)) !important;
@@ -796,8 +566,7 @@ textarea {
         translate(-50%,18px)
         scale(.96) !important;
 
-    opacity:
-        0 !important;
+    opacity: 0 !important;
 
     visibility:
         hidden !important;
@@ -834,6 +603,7 @@ textarea {
         transform .25s var(--fc-ease),
         visibility .25s ease !important;
 }
+
 
 #fc-discovery.fc-overlay-open,
 #fc-discovery.open,
@@ -877,6 +647,7 @@ textarea {
         1px solid var(--fc-border) !important;
 }
 
+
 .fc-discovery-title {
 
     font-size:
@@ -885,6 +656,7 @@ textarea {
     font-weight:
         800 !important;
 }
+
 
 .fc-discovery-close {
 
@@ -934,6 +706,7 @@ textarea {
         auto !important;
 }
 
+
 .fc-user-suggestion,
 .fc-discovery-user {
 
@@ -971,12 +744,18 @@ textarea {
         background .18s ease !important;
 }
 
+
 .fc-user-suggestion:hover,
 .fc-discovery-user:hover {
 
     background:
         rgba(255,255,255,.05) !important;
 }
+
+
+/* =========================================================
+   USER AVATAR
+   ========================================================= */
 
 .fc-user-avatar,
 .fc-discovery-avatar {
@@ -1016,6 +795,7 @@ textarea {
         hidden !important;
 }
 
+
 .fc-user-avatar img,
 .fc-discovery-avatar img {
 
@@ -1029,6 +809,11 @@ textarea {
         cover;
 }
 
+
+/* =========================================================
+   USER INFO
+   ========================================================= */
+
 .fc-user-info,
 .fc-discovery-user-info {
 
@@ -1038,6 +823,7 @@ textarea {
     flex:
         1;
 }
+
 
 .fc-user-name,
 .fc-discovery-user-name {
@@ -1054,6 +840,7 @@ textarea {
     text-overflow:
         ellipsis;
 }
+
 
 .fc-user-id,
 .fc-discovery-user-id {
@@ -1123,6 +910,7 @@ textarea {
         visibility .25s ease !important;
 }
 
+
 #fc-theme-panel.fc-overlay-open,
 #fc-theme-panel.open,
 .fc-theme-panel.open {
@@ -1169,6 +957,7 @@ textarea {
         0 30px 100px rgba(0,0,0,.65) !important;
 }
 
+
 .fc-theme-head,
 .fc-theme-header {
 
@@ -1185,6 +974,7 @@ textarea {
         15px !important;
 }
 
+
 .fc-theme-title {
 
     font-size:
@@ -1193,6 +983,7 @@ textarea {
     font-weight:
         800 !important;
 }
+
 
 .fc-theme-close {
 
@@ -1242,6 +1033,7 @@ textarea {
         10px !important;
 }
 
+
 .fc-theme-choice,
 .fc-theme-option {
 
@@ -1271,6 +1063,7 @@ textarea {
         transform .2s ease !important;
 }
 
+
 .fc-theme-choice:hover,
 .fc-theme-option:hover {
 
@@ -1281,11 +1074,13 @@ textarea {
         rgba(108,124,255,.55) !important;
 }
 
+
 .fc-theme-name {
 
     font-weight:
         700 !important;
 }
+
 
 .fc-theme-desc {
 
@@ -1298,6 +1093,7 @@ textarea {
     font-size:
         11px !important;
 }
+
 
 .fc-theme-swatch,
 .fc-theme-preview {
@@ -1330,6 +1126,7 @@ body.fc-theme-midnight {
     --fc-accent-2: #8b5cf6;
 }
 
+
 body.fc-theme-emerald {
 
     --fc-bg: #07120f;
@@ -1339,6 +1136,7 @@ body.fc-theme-emerald {
     --fc-accent: #10b981;
     --fc-accent-2: #059669;
 }
+
 
 body.fc-theme-ocean {
 
@@ -1350,6 +1148,7 @@ body.fc-theme-ocean {
     --fc-accent-2: #2563eb;
 }
 
+
 body.fc-theme-sunset {
 
     --fc-bg: #160c08;
@@ -1360,6 +1159,7 @@ body.fc-theme-sunset {
     --fc-accent-2: #ef4444;
 }
 
+
 body.fc-theme-rose {
 
     --fc-bg: #150a11;
@@ -1369,6 +1169,7 @@ body.fc-theme-rose {
     --fc-accent: #ec4899;
     --fc-accent-2: #8b5cf6;
 }
+
 
 body.fc-theme-graphite {
 
@@ -1397,6 +1198,7 @@ body.fc-theme-graphite {
         auto !important;
 }
 
+
 #addScreen > header {
 
     width:
@@ -1424,6 +1226,7 @@ body.fc-theme-graphite {
         blur(18px);
 }
 
+
 #addScreen > .card.wide {
 
     width:
@@ -1442,17 +1245,20 @@ body.fc-theme-graphite {
         18px !important;
 }
 
+
 #addScreen .tabs {
 
     width:
         100% !important;
 }
 
+
 #addScreen .tabs button {
 
     flex:
         1 !important;
 }
+
 
 #addScreen #addId {
 
@@ -1463,11 +1269,13 @@ body.fc-theme-graphite {
         none !important;
 }
 
+
 #addScreen .card.wide > button:not(.secondary) {
 
     width:
         100% !important;
 }
+
 
 #addScreen #addStatus {
 
@@ -1494,6 +1302,7 @@ body.fc-theme-graphite {
     background:
         var(--fc-bg) !important;
 }
+
 
 #chatScreen > header {
 
@@ -1522,6 +1331,7 @@ body.fc-theme-graphite {
         blur(18px);
 }
 
+
 #messages {
 
     width:
@@ -1537,6 +1347,7 @@ body.fc-theme-graphite {
     overflow-y:
         auto !important;
 }
+
 
 #chatScreen .composer {
 
@@ -1646,12 +1457,14 @@ body.fc-theme-graphite {
         6px;
 }
 
+
 .fc-discovery-users::-webkit-scrollbar-track,
 .fc-discovery-list::-webkit-scrollbar-track {
 
     background:
         transparent;
 }
+
 
 .fc-discovery-users::-webkit-scrollbar-thumb,
 .fc-discovery-list::-webkit-scrollbar-thumb {
@@ -1670,11 +1483,20 @@ body.fc-theme-graphite {
 
 @media (max-width: 760px) {
 
+    :root {
+
+        --fc-nav-width: 60px;
+        --fc-nav-top: 14px;
+        --fc-nav-bottom: 14px;
+    }
+
+
     #homeScreen > header {
 
         padding:
             16px !important;
     }
+
 
     #homeScreen .profileRow,
     #homeScreen .search,
@@ -1691,71 +1513,79 @@ body.fc-theme-graphite {
     }
 
 
-    /* ARROW */
-
-    #fcNavToggle,
-    .fc-nav-toggle,
-    #fc-nav-toggle {
-
-        width:
-            30px !important;
-
-        height:
-            56px !important;
-
-        left:
-            0 !important;
-
-        border-radius:
-            0 12px 12px 0 !important;
-    }
-
-
-    /* SIDEBAR */
+    /* FLOATING NAV */
 
     #fcCustomSidebar,
     .fc-sidebar,
     #fc-sidebar {
 
-        --fc-sidebar-width:
-            220px;
+        left:
+            8px !important;
 
         width:
-            220px !important;
+            60px !important;
 
-        left:
-            0 !important;
+        padding:
+            8px 6px !important;
+
+        border-radius:
+            17px !important;
     }
 
 
-    /* OPEN ARROW */
+    .fc-sidebar-logo {
 
-    #fcNavToggle.is-open,
-    .fc-nav-toggle.is-open,
-    #fc-nav-toggle.is-open {
-
-        left:
-            228px !important;
-    }
-
-
-    /* BOTTOM */
-
-    #fc-bottom-dock,
-    .fc-bottom-dock {
-
-        left:
-            50% !important;
-
-        bottom:
-            10px !important;
+        width:
+            36px !important;
 
         height:
-            58px !important;
+            36px !important;
+
+        border-radius:
+            10px !important;
+
+        font-size:
+            12px !important;
     }
 
 
-    /* DISCOVERY */
+    #fcCustomSidebar .fc-nav-item,
+    .fc-nav-item,
+    .fc-sidebar-item {
+
+        width:
+            46px !important;
+
+        min-width:
+            46px !important;
+
+        height:
+            46px !important;
+
+        min-height:
+            46px !important;
+
+        border-radius:
+            13px !important;
+    }
+
+
+    .fc-nav-icon,
+    .fc-sidebar-icon {
+
+        width:
+            34px !important;
+
+        height:
+            34px !important;
+
+        border-radius:
+            10px !important;
+
+        font-size:
+            16px !important;
+    }
+
 
     #fc-discovery,
     .fc-discovery {
@@ -1764,11 +1594,9 @@ body.fc-theme-graphite {
             calc(100vw - 20px) !important;
 
         bottom:
-            80px !important;
+            20px !important;
     }
 
-
-    /* THEME */
 
     .fc-theme-window {
 
@@ -1780,13 +1608,12 @@ body.fc-theme-graphite {
     }
 
 
-    /* ADD */
-
     #addScreen > header {
 
         padding:
             14px 16px !important;
     }
+
 
     #addScreen > .card.wide {
 
@@ -1801,13 +1628,12 @@ body.fc-theme-graphite {
     }
 
 
-    /* CHAT */
-
     #messages {
 
         padding:
             18px 12px 100px !important;
     }
+
 
     #chatScreen .composer {
 
@@ -1829,45 +1655,73 @@ body.fc-theme-graphite {
 
 @media (max-width: 420px) {
 
+    :root {
+
+        --fc-nav-width: 56px;
+        --fc-nav-top: 10px;
+        --fc-nav-bottom: 10px;
+    }
+
+
     #fcCustomSidebar,
     .fc-sidebar,
     #fc-sidebar {
 
-        --fc-sidebar-width:
-            205px;
+        left:
+            6px !important;
 
         width:
-            205px !important;
+            56px !important;
+
+        padding:
+            7px 5px !important;
+
+        border-radius:
+            16px !important;
     }
 
-    #fcNavToggle.is-open,
-    .fc-nav-toggle.is-open,
-    #fc-nav-toggle.is-open {
 
-        left:
-            213px !important;
+    .fc-sidebar-logo {
+
+        width:
+            34px !important;
+
+        height:
+            34px !important;
     }
 
-    .fc-nav-item {
+
+    #fcCustomSidebar .fc-nav-item,
+    .fc-nav-item,
+    .fc-sidebar-item {
+
+        width:
+            44px !important;
+
+        min-width:
+            44px !important;
+
+        height:
+            44px !important;
 
         min-height:
             44px !important;
-
-        font-size:
-            13px !important;
     }
 
-    .fc-nav-icon {
+
+    .fc-nav-icon,
+    .fc-sidebar-icon {
 
         width:
-            28px !important;
+            32px !important;
 
         height:
-            28px !important;
+            32px !important;
 
         font-size:
             15px !important;
     }
+
 
     .fc-theme-grid,
     .fc-theme-options {
