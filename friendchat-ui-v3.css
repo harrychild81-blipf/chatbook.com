@@ -1755,3 +1755,74 @@ body.fc-theme-graphite {
             .01ms !important;
     }
 }
+/* =====================================================
+   FIX: FLOATING SIDEBAR MUST NOT COVER FRIENDCHAT
+   ===================================================== */
+
+/* Keep the floating bar above the app */
+#fcCustomSidebar,
+.fc-sidebar,
+#fc-sidebar {
+    left: 14px !important;
+    top: 20px !important;
+    bottom: 20px !important;
+    width: 68px !important;
+    z-index: 100020 !important;
+}
+
+/* Move the actual FriendChat content to the right */
+#homeScreen,
+#addScreen,
+#chatScreen,
+#profileScreen {
+    margin-left: 96px !important;
+    width: calc(100% - 96px) !important;
+    box-sizing: border-box !important;
+}
+
+/* Don't move login/signup screens */
+#loginScreen,
+#signupScreen {
+    margin-left: 0 !important;
+    width: 100% !important;
+}
+
+/* Prevent the bar from blocking clicks outside itself */
+#fcCustomSidebar {
+    pointer-events: auto !important;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+    #homeScreen,
+    #addScreen,
+    #chatScreen,
+    #profileScreen {
+        margin-left: 78px !important;
+        width: calc(100% - 78px) !important;
+    }
+
+    #fcCustomSidebar,
+    .fc-sidebar,
+    #fc-sidebar {
+        width: 60px !important;
+        left: 10px !important;
+    }
+}
+
+@media (max-width: 420px) {
+    #homeScreen,
+    #addScreen,
+    #chatScreen,
+    #profileScreen {
+        margin-left: 70px !important;
+        width: calc(100% - 70px) !important;
+    }
+
+    #fcCustomSidebar,
+    .fc-sidebar,
+    #fc-sidebar {
+        width: 54px !important;
+        left: 8px !important;
+    }
+}
