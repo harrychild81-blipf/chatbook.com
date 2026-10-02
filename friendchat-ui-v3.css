@@ -22,7 +22,7 @@
     --fc-radius: 18px;
     --fc-ease: cubic-bezier(.22,1,.36,1);
 
-    /* FLOATING NAV */
+    /* FLOATING NAVIGATION */
     --fc-nav-width: 68px;
     --fc-nav-top: 20px;
     --fc-nav-bottom: 20px;
@@ -69,7 +69,7 @@ textarea {
 
 .app,
 #app {
-    width: 100vw !important;
+    width: 100% !important;
     max-width: none !important;
     min-width: 100% !important;
     min-height: 100vh !important;
@@ -80,24 +80,51 @@ textarea {
 
 
 /* =========================================================
-   FULL SCREEN PAGES
+   LOGIN / SIGNUP
+   ========================================================= */
+
+#loginScreen,
+#signupScreen {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+
+/* =========================================================
+   MAIN SCREENS
+   IMPORTANT:
+   These MUST remain full width.
+   The floating bar overlays them.
    ========================================================= */
 
 #homeScreen,
 #chatScreen,
 #profileScreen,
 #addScreen {
-    width: 100vw !important;
+
+    position: relative !important;
+
+    width: 100% !important;
     max-width: none !important;
-    min-width: 100vw !important;
+    min-width: 100% !important;
+
     min-height: 100vh !important;
 
     margin: 0 !important;
+    padding-left: 0 !important;
+
+    left: 0 !important;
 
     border: 0 !important;
     border-radius: 0 !important;
 
     box-shadow: none !important;
+
+    transform: none !important;
 }
 
 
@@ -106,6 +133,7 @@ textarea {
    ========================================================= */
 
 #homeScreen {
+
     background:
         radial-gradient(
             circle at 15% 0%,
@@ -117,58 +145,110 @@ textarea {
     overflow-y: auto !important;
 }
 
+
+/* =========================================================
+   HOME HEADER
+   ========================================================= */
+
 #homeScreen > header {
+
     width: 100% !important;
+
     min-height: 86px !important;
 
     margin: 0 !important;
+
     padding: 20px 28px !important;
 
     border-radius: 0 !important;
-    border: 0 !important;
-    border-bottom: 1px solid var(--fc-border) !important;
 
-    background: rgba(7,10,16,.88) !important;
+    border: 0 !important;
+
+    border-bottom:
+        1px solid var(--fc-border) !important;
+
+    background:
+        rgba(7,10,16,.88) !important;
 
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
+
+    box-sizing: border-box !important;
 }
+
+
+/* =========================================================
+   HOME CONTENT
+   ========================================================= */
 
 #homeScreen .profileRow,
 #homeScreen .search,
 #homeScreen .friendList {
-    width: calc(100% - 48px) !important;
+
+    width:
+        calc(100% - 48px) !important;
+
     max-width: none !important;
 
-    margin-left: 24px !important;
-    margin-right: 24px !important;
+    margin-left:
+        24px !important;
+
+    margin-right:
+        24px !important;
+
+    box-sizing: border-box !important;
 }
+
 
 #homeScreen .profileRow {
-    margin-top: 22px !important;
+
+    margin-top:
+        22px !important;
 }
+
 
 #homeScreen .search {
-    margin-top: 20px !important;
-    margin-bottom: 20px !important;
+
+    margin-top:
+        20px !important;
+
+    margin-bottom:
+        20px !important;
 }
+
 
 #homeScreen .friendList {
-    margin-top: 20px !important;
-    padding-bottom: 100px !important;
+
+    margin-top:
+        20px !important;
+
+    padding-bottom:
+        100px !important;
 }
 
+
+/* =========================================================
+   FRIEND ITEMS
+   ========================================================= */
+
 #homeScreen .friendItem {
+
     width: 100% !important;
+
     max-width: none !important;
 
     min-height: 88px;
+
     margin: 10px 0 !important;
 
-    border: 1px solid transparent !important;
-    border-radius: 18px !important;
+    border:
+        1px solid transparent !important;
 
-    background: rgba(13,18,27,.86) !important;
+    border-radius:
+        18px !important;
+
+    background:
+        rgba(13,18,27,.86) !important;
 
     transition:
         transform .2s ease,
@@ -177,12 +257,17 @@ textarea {
         box-shadow .2s ease;
 }
 
+
 #homeScreen .friendItem:hover {
-    transform: translateX(4px);
 
-    background: var(--fc-panel-2) !important;
+    transform:
+        translateX(4px);
 
-    border-color: var(--fc-border) !important;
+    background:
+        var(--fc-panel-2) !important;
+
+    border-color:
+        var(--fc-border) !important;
 
     box-shadow:
         0 12px 35px rgba(0,0,0,.22);
@@ -190,20 +275,25 @@ textarea {
 
 
 /* =========================================================
-   REMOVE OLD SLIDE ARROW COMPLETELY
+   REMOVE OLD SLIDE ARROW
    ========================================================= */
 
 #fcNavToggle,
 .fc-nav-toggle,
 #fc-nav-toggle {
+
     display: none !important;
+
     visibility: hidden !important;
+
     pointer-events: none !important;
 }
 
 
 /* =========================================================
    FLOATING VERTICAL NAVIGATION
+   IMPORTANT:
+   position: fixed means it DOES NOT take page space.
    ========================================================= */
 
 #fcCustomSidebar,
@@ -212,51 +302,83 @@ textarea {
 
     position: fixed !important;
 
-    left: 14px !important;
-    top: var(--fc-nav-top) !important;
-    bottom: var(--fc-nav-bottom) !important;
+    left:
+        14px !important;
 
-    width: var(--fc-nav-width) !important;
-    height: auto !important;
+    top:
+        var(--fc-nav-top) !important;
 
-    margin: 0 !important;
-    padding: 10px 8px !important;
+    bottom:
+        var(--fc-nav-bottom) !important;
 
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
+    width:
+        var(--fc-nav-width) !important;
+
+    height:
+        auto !important;
+
+    margin:
+        0 !important;
+
+    padding:
+        10px 8px !important;
+
+    box-sizing:
+        border-box !important;
+
+    display:
+        flex !important;
+
+    flex-direction:
+        column !important;
+
+    align-items:
+        center !important;
+
+    justify-content:
+        flex-start !important;
 
     background:
         rgba(13,18,27,.96) !important;
 
-    border: 1px solid var(--fc-border) !important;
+    border:
+        1px solid var(--fc-border) !important;
 
-    border-radius: 20px !important;
+    border-radius:
+        20px !important;
 
     box-shadow:
         0 18px 60px rgba(0,0,0,.48) !important;
 
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter:
+        blur(20px);
 
-    z-index: 100020 !important;
+    -webkit-backdrop-filter:
+        blur(20px);
 
-    /* ALWAYS VISIBLE */
+    z-index:
+        100020 !important;
 
-    transform: none !important;
+    transform:
+        none !important;
 
-    opacity: 1 !important;
+    opacity:
+        1 !important;
 
-    visibility: visible !important;
+    visibility:
+        visible !important;
 
-    pointer-events: auto !important;
+    pointer-events:
+        auto !important;
 
-    transition: none !important;
+    transition:
+        none !important;
 }
 
 
 /* =========================================================
-   FORCE SIDEBAR OPEN STATE
+   SIDEBAR OPEN STATE
+   No sliding.
    ========================================================= */
 
 #fcCustomSidebar.open,
@@ -266,13 +388,17 @@ textarea {
 #fc-sidebar.open,
 #fc-sidebar.fc-sidebar-open {
 
-    transform: none !important;
+    transform:
+        none !important;
 
-    opacity: 1 !important;
+    opacity:
+        1 !important;
 
-    visibility: visible !important;
+    visibility:
+        visible !important;
 
-    pointer-events: auto !important;
+    pointer-events:
+        auto !important;
 }
 
 
@@ -283,18 +409,26 @@ textarea {
 #fcCustomSidebar .fc-sidebar-brand,
 .fc-sidebar-brand {
 
-    width: 100% !important;
+    width:
+        100% !important;
 
-    display: flex !important;
+    display:
+        flex !important;
 
-    align-items: center !important;
-    justify-content: center !important;
+    align-items:
+        center !important;
 
-    padding: 4px 0 10px !important;
+    justify-content:
+        center !important;
 
-    margin: 0 0 8px !important;
+    padding:
+        4px 0 10px !important;
 
-    border-bottom: 1px solid var(--fc-border) !important;
+    margin:
+        0 0 8px !important;
+
+    border-bottom:
+        1px solid var(--fc-border) !important;
 }
 
 
@@ -304,15 +438,23 @@ textarea {
 
 .fc-sidebar-logo {
 
-    width: 40px !important;
-    height: 40px !important;
+    width:
+        40px !important;
 
-    display: grid !important;
-    place-items: center !important;
+    height:
+        40px !important;
 
-    flex-shrink: 0;
+    display:
+        grid !important;
 
-    border-radius: 12px !important;
+    place-items:
+        center !important;
+
+    flex-shrink:
+        0;
+
+    border-radius:
+        12px !important;
 
     background:
         linear-gradient(
@@ -321,10 +463,14 @@ textarea {
             var(--fc-accent-2)
         ) !important;
 
-    color: white !important;
+    color:
+        white !important;
 
-    font-size: 13px !important;
-    font-weight: 900 !important;
+    font-size:
+        13px !important;
+
+    font-weight:
+        900 !important;
 
     box-shadow:
         0 8px 25px rgba(108,124,255,.22);
@@ -332,53 +478,75 @@ textarea {
 
 
 /* =========================================================
-   SIDEBAR TITLE
+   HIDE SIDEBAR TEXT
    ========================================================= */
 
 .fc-sidebar-title,
 .fc-sidebar-sub {
 
-    display: none !important;
+    display:
+        none !important;
 }
 
 
 /* =========================================================
-   SIDEBAR BUTTONS
+   NAV BUTTONS
    ========================================================= */
 
 #fcCustomSidebar .fc-nav-item,
 .fc-nav-item,
 .fc-sidebar-item {
 
-    width: 50px !important;
-    min-width: 50px !important;
+    width:
+        50px !important;
 
-    height: 50px !important;
-    min-height: 50px !important;
+    min-width:
+        50px !important;
 
-    margin: 4px 0 !important;
-    padding: 0 !important;
+    height:
+        50px !important;
 
-    display: flex !important;
+    min-height:
+        50px !important;
 
-    align-items: center !important;
-    justify-content: center !important;
+    margin:
+        4px 0 !important;
 
-    gap: 0 !important;
+    padding:
+        0 !important;
 
-    border: 0 !important;
+    display:
+        flex !important;
 
-    border-radius: 14px !important;
+    align-items:
+        center !important;
 
-    background: transparent !important;
+    justify-content:
+        center !important;
 
-    color: var(--fc-text) !important;
+    gap:
+        0 !important;
 
-    font-size: 0 !important;
+    border:
+        0 !important;
 
-    text-align: center !important;
+    border-radius:
+        14px !important;
 
-    cursor: pointer !important;
+    background:
+        transparent !important;
+
+    color:
+        var(--fc-text) !important;
+
+    font-size:
+        0 !important;
+
+    text-align:
+        center !important;
+
+    cursor:
+        pointer !important;
 
     transition:
         background .18s ease,
@@ -388,7 +556,7 @@ textarea {
 
 
 /* =========================================================
-   SIDEBAR BUTTON HOVER
+   NAV HOVER
    ========================================================= */
 
 #fcCustomSidebar .fc-nav-item:hover,
@@ -407,36 +575,41 @@ textarea {
 
 
 /* =========================================================
-   SIDEBAR ICON
+   NAV ICON
    ========================================================= */
 
 .fc-nav-icon,
 .fc-sidebar-icon {
 
-    width: 38px !important;
-    height: 38px !important;
+    width:
+        38px !important;
 
-    flex-shrink: 0;
+    height:
+        38px !important;
 
-    display: grid !important;
-    place-items: center !important;
+    flex-shrink:
+        0;
 
-    border-radius: 11px !important;
+    display:
+        grid !important;
+
+    place-items:
+        center !important;
+
+    border-radius:
+        11px !important;
 
     background:
         rgba(255,255,255,.055) !important;
 
-    font-size: 18px !important;
+    font-size:
+        18px !important;
 
     transition:
         background .18s ease,
         transform .18s ease !important;
 }
 
-
-/* =========================================================
-   ICON HOVER
-   ========================================================= */
 
 .fc-nav-item:hover .fc-nav-icon,
 .fc-sidebar-item:hover .fc-sidebar-icon {
@@ -450,7 +623,7 @@ textarea {
 
 
 /* =========================================================
-   HIDE TEXT INSIDE NAV
+   HIDE NAV TEXT
    ========================================================= */
 
 .fc-nav-item .fc-nav-text,
@@ -458,21 +631,22 @@ textarea {
 .fc-nav-item span:not(.fc-nav-icon),
 .fc-sidebar-item span:not(.fc-sidebar-icon) {
 
-    display: none !important;
+    display:
+        none !important;
 }
 
 
 /* =========================================================
-   HIDE CHAT / FRIENDS
+   HIDE CHATS / FRIENDS
    ========================================================= */
 
 #fcCustomSidebar .fc-nav-item[data-nav="chats"],
 #fcCustomSidebar .fc-nav-item[data-nav="friends"],
-
 .fc-nav-item[data-nav="chats"],
 .fc-nav-item[data-nav="friends"] {
 
-    display: none !important;
+    display:
+        none !important;
 }
 
 
@@ -482,13 +656,17 @@ textarea {
 
 .fc-nav-divider {
 
-    width: 38px !important;
-    height: 1px !important;
+    width:
+        38px !important;
+
+    height:
+        1px !important;
 
     margin:
         8px 0 !important;
 
-    flex-shrink: 0;
+    flex-shrink:
+        0;
 
     background:
         var(--fc-border) !important;
@@ -507,39 +685,35 @@ textarea {
 
 
 /* =========================================================
-   REMOVE OLD BOTTOM DOCK
+   REMOVE BOTTOM DOCK
    ========================================================= */
 
 #fc-bottom-dock,
-.fc-bottom-dock {
+.fc-bottom-dock,
+#bottomNav {
 
-    display: none !important;
+    display:
+        none !important;
 
-    visibility: hidden !important;
+    visibility:
+        hidden !important;
 
-    pointer-events: none !important;
+    pointer-events:
+        none !important;
 }
 
 
 /* =========================================================
-   REMOVE CENTER FC BUTTON
+   REMOVE CENTER BUTTON
    ========================================================= */
 
 .fc-dock-center,
-#fc-center-button {
-
-    display: none !important;
-}
-
-
-/* =========================================================
-   REMOVE OLD DOCK BUTTONS
-   ========================================================= */
-
+#fc-center-button,
 .fc-dock-btn,
 .fc-dock-button {
 
-    display: none !important;
+    display:
+        none !important;
 }
 
 
@@ -550,11 +724,14 @@ textarea {
 #fc-discovery,
 .fc-discovery {
 
-    position: fixed !important;
+    position:
+        fixed !important;
 
-    left: 50% !important;
+    left:
+        50% !important;
 
-    bottom: 30px !important;
+    bottom:
+        30px !important;
 
     width:
         min(430px, calc(100vw - 28px)) !important;
@@ -566,7 +743,8 @@ textarea {
         translate(-50%,18px)
         scale(.96) !important;
 
-    opacity: 0 !important;
+    opacity:
+        0 !important;
 
     visibility:
         hidden !important;
@@ -1291,10 +1469,10 @@ body.fc-theme-graphite {
 #chatScreen {
 
     width:
-        100vw !important;
+        100% !important;
 
     min-width:
-        100vw !important;
+        100% !important;
 
     min-height:
         100vh !important;
@@ -1332,6 +1510,10 @@ body.fc-theme-graphite {
 }
 
 
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
 #messages {
 
     width:
@@ -1348,6 +1530,10 @@ body.fc-theme-graphite {
         auto !important;
 }
 
+
+/* =========================================================
+   CHAT COMPOSER
+   ========================================================= */
 
 #chatScreen .composer {
 
@@ -1404,7 +1590,7 @@ body.fc-theme-graphite {
 #profileScreen {
 
     width:
-        100vw !important;
+        100% !important;
 
     min-height:
         100vh !important;
@@ -1503,7 +1689,7 @@ body.fc-theme-graphite {
     #homeScreen .friendList {
 
         width:
-            calc(100vw - 28px) !important;
+            calc(100% - 28px) !important;
 
         margin-left:
             14px !important;
@@ -1733,6 +1919,180 @@ body.fc-theme-graphite {
 
 
 /* =========================================================
+   FINAL LAYOUT SAFETY
+   NEVER SHIFT FRIENDCHAT FOR THE NAV
+   ========================================================= */
+
+/* These rules are intentionally last so nothing below
+   can accidentally move the whole website right. */
+
+#loginScreen,
+#signupScreen,
+#homeScreen,
+#addScreen,
+#chatScreen,
+#profileScreen {
+
+    margin-left:
+        0 !important;
+
+    margin-right:
+        0 !important;
+
+    left:
+        0 !important;
+
+    right:
+        auto !important;
+
+    width:
+        100% !important;
+
+    max-width:
+        none !important;
+
+    transform:
+        none !important;
+}
+
+
+/* The navigation is completely outside normal layout flow */
+
+#fcCustomSidebar,
+.fc-sidebar,
+#fc-sidebar {
+
+    position:
+        fixed !important;
+
+    left:
+        14px !important;
+
+    top:
+        20px !important;
+
+    bottom:
+        20px !important;
+
+    width:
+        68px !important;
+
+    margin:
+        0 !important;
+
+    z-index:
+        100020 !important;
+}
+
+
+/* Never create a left gap for the navigation */
+
+#homeScreen,
+#addScreen,
+#chatScreen,
+#profileScreen {
+
+    padding-left:
+        0 !important;
+}
+
+
+/* No old arrow */
+
+#fcNavToggle,
+.fc-nav-toggle,
+#fc-nav-toggle {
+
+    display:
+        none !important;
+
+    visibility:
+        hidden !important;
+}
+
+
+/* No bottom dock */
+
+#fc-bottom-dock,
+.fc-bottom-dock,
+#bottomNav {
+
+    display:
+        none !important;
+
+    visibility:
+        hidden !important;
+
+    pointer-events:
+        none !important;
+}
+
+
+/* =========================================================
+   FINAL MOBILE SAFETY
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+    #loginScreen,
+    #signupScreen,
+    #homeScreen,
+    #addScreen,
+    #chatScreen,
+    #profileScreen {
+
+        margin-left:
+            0 !important;
+
+        width:
+            100% !important;
+    }
+
+
+    #fcCustomSidebar,
+    .fc-sidebar,
+    #fc-sidebar {
+
+        left:
+            8px !important;
+
+        width:
+            60px !important;
+    }
+}
+
+
+@media (max-width: 420px) {
+
+    #loginScreen,
+    #signupScreen,
+    #homeScreen,
+    #addScreen,
+    #chatScreen,
+    #profileScreen {
+
+        margin-left:
+            0 !important;
+
+        width:
+            100% !important;
+    }
+
+
+    #fcCustomSidebar,
+    .fc-sidebar,
+    #fc-sidebar {
+
+        left:
+            6px !important;
+
+        width:
+            56px !important;
+    }
+}
+
+
+/* =========================================================
    REDUCED MOTION
    ========================================================= */
 
@@ -1753,181 +2113,5 @@ body.fc-theme-graphite {
 
         transition-duration:
             .01ms !important;
-    }
-}
-/* =====================================================
-   FIX: FLOATING SIDEBAR MUST NOT COVER FRIENDCHAT
-   ===================================================== */
-
-/* Keep the floating bar above the app */
-#fcCustomSidebar,
-.fc-sidebar,
-#fc-sidebar {
-    left: 14px !important;
-    top: 20px !important;
-    bottom: 20px !important;
-    width: 68px !important;
-    z-index: 100020 !important;
-}
-
-/* Move the actual FriendChat content to the right */
-#homeScreen,
-#addScreen,
-#chatScreen,
-#profileScreen {
-    margin-left: 96px !important;
-    width: calc(100% - 96px) !important;
-    box-sizing: border-box !important;
-}
-
-/* Don't move login/signup screens */
-#loginScreen,
-#signupScreen {
-    margin-left: 0 !important;
-    width: 100% !important;
-}
-
-/* Prevent the bar from blocking clicks outside itself */
-#fcCustomSidebar {
-    pointer-events: auto !important;
-}
-
-/* Mobile */
-@media (max-width: 760px) {
-    #homeScreen,
-    #addScreen,
-    #chatScreen,
-    #profileScreen {
-        margin-left: 78px !important;
-        width: calc(100% - 78px) !important;
-    }
-
-    #fcCustomSidebar,
-    .fc-sidebar,
-    #fc-sidebar {
-        width: 60px !important;
-        left: 10px !important;
-    }
-}
-
-@media (max-width: 420px) {
-    #homeScreen,
-    #addScreen,
-    #chatScreen,
-    #profileScreen {
-        margin-left: 70px !important;
-        width: calc(100% - 70px) !important;
-    }
-
-    #fcCustomSidebar,
-    .fc-sidebar,
-    #fc-sidebar {
-        width: 54px !important;
-        left: 8px !important;
-    }
-}
-/* =====================================================
-   FLOATING BAR — DOES NOT SHIFT THE WEBSITE
-   ===================================================== */
-
-#fcCustomSidebar,
-.fc-sidebar,
-#fc-sidebar {
-    position: fixed !important;
-
-    left: 14px !important;
-    top: 20px !important;
-    bottom: 20px !important;
-
-    width: 68px !important;
-    height: auto !important;
-
-    margin: 0 !important;
-    padding: 10px 8px !important;
-
-    box-sizing: border-box !important;
-
-    z-index: 100020 !important;
-
-    /* IMPORTANT: never affect page layout */
-    transform: none !important;
-
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-
-    border-radius: 20px !important;
-}
-
-/* Make sure NO FriendChat screen gets pushed */
-#homeScreen,
-#addScreen,
-#chatScreen,
-#profileScreen,
-#loginScreen,
-#signupScreen {
-    margin-left: 0 !important;
-    width: 100% !important;
-    max-width: none !important;
-}
-
-/* Bar stays visible */
-#fcCustomSidebar,
-.fc-sidebar,
-#fc-sidebar {
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
-}
-
-/* No old sliding behavior */
-#fcCustomSidebar.open,
-#fcCustomSidebar.fc-sidebar-open,
-.fc-sidebar.open,
-.fc-sidebar.fc-sidebar-open,
-#fc-sidebar.open,
-#fc-sidebar.fc-sidebar-open {
-    transform: none !important;
-}
-
-/* Hide the old arrow */
-#fcNavToggle,
-.fc-nav-toggle,
-#fc-nav-toggle {
-    display: none !important;
-}
-
-/* No bottom dock */
-#fc-bottom-dock,
-.fc-bottom-dock {
-    display: none !important;
-}
-
-/* Mobile */
-@media (max-width: 760px) {
-    #fcCustomSidebar,
-    .fc-sidebar,
-    #fc-sidebar {
-        left: 10px !important;
-        width: 60px !important;
-    }
-
-    #homeScreen,
-    #addScreen,
-    #chatScreen,
-    #profileScreen,
-    #loginScreen,
-    #signupScreen {
-        margin-left: 0 !important;
-        width: 100% !important;
-    }
-}
-
-@media (max-width: 420px) {
-    #fcCustomSidebar,
-    .fc-sidebar,
-    #fc-sidebar {
-        left: 8px !important;
-        width: 54px !important;
     }
 }
