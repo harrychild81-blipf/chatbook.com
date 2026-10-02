@@ -889,3 +889,139 @@ body.fc-theme-graphite {
         transition: none !important;
     }
 }
+/* =========================================================
+   FRIENDCHAT FULL WIDTH LAYOUT FIX
+   ========================================================= */
+
+/* Make the main FriendChat shell use the full screen */
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+}
+
+/* Remove the old centered/limited width */
+#app,
+.app,
+.app-container,
+.container,
+.main-container,
+.chat-container {
+    max-width: none !important;
+}
+
+/* Main FriendChat header */
+header,
+.top-bar,
+.header,
+.app-header,
+#header {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Remove unwanted horizontal gaps */
+#app,
+.app,
+.app-container {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* =========================================================
+   LEFT SIDEBAR
+   ========================================================= */
+
+#fc-nav-toggle {
+    position: fixed !important;
+
+    left: 16px !important;
+    top: 50% !important;
+
+    transform: translateY(-50%) !important;
+
+    width: 52px !important;
+    height: 52px !important;
+
+    z-index: 100000 !important;
+}
+
+#fc-nav-toggle:hover {
+    transform: translateY(-50%) scale(1.04) !important;
+}
+
+/* Sidebar opens beside the button */
+#fc-sidebar {
+    position: fixed !important;
+
+    left: 78px !important;
+    top: 50% !important;
+
+    width: 220px !important;
+
+    z-index: 99999 !important;
+}
+
+/* =========================================================
+   REMOVE THE OLD LEFT NAVIGATION SPACE
+   ========================================================= */
+
+.sidebar,
+.side-bar,
+.left-sidebar,
+.left-nav,
+.navigation,
+.nav-sidebar {
+    /* Don't force them visible */
+}
+
+/* =========================================================
+   TOP HORIZONTAL LINE
+   ========================================================= */
+
+/*
+   Make the top/header border span the complete window.
+*/
+
+header::after,
+.top-bar::after,
+.app-header::after {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    #fc-nav-toggle {
+        left: 12px !important;
+        top: 16px !important;
+
+        width: 44px !important;
+        height: 44px !important;
+
+        transform: none !important;
+    }
+
+    #fc-nav-toggle:hover {
+        transform: scale(1.04) !important;
+    }
+
+    #fc-sidebar {
+        left: 12px !important;
+        top: 70px !important;
+
+        width: 210px !important;
+
+        transform: translateY(-10px) scale(.97) !important;
+    }
+
+    #fc-sidebar.fc-sidebar-open {
+        transform: translateY(0) scale(1) !important;
+    }
+}
