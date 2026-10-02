@@ -1164,3 +1164,141 @@ body.fc-theme-graphite {
         transition: none !important;
     }
 }
+/* =========================================================
+   ADD FRIEND SCREEN - FULL WIDTH FIX
+   ========================================================= */
+
+#addScreen {
+    width: 100vw !important;
+    max-width: none !important;
+
+    min-width: 100vw !important;
+    min-height: 100vh !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border-radius: 0 !important;
+
+    overflow-x: hidden !important;
+}
+
+/* Full-width Add Friend header */
+
+#addScreen > header {
+    width: 100% !important;
+    max-width: none !important;
+
+    margin: 0 !important;
+
+    border-radius: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    padding: 18px 24px !important;
+}
+
+/* Add Friend content */
+
+#addScreen > .card.wide {
+    width: calc(100% - 48px) !important;
+
+    max-width: none !important;
+
+    margin: 24px !important;
+
+    padding: 24px !important;
+
+    border-radius: 18px !important;
+}
+
+/* Tabs */
+
+#addScreen .tabs {
+    width: 100% !important;
+
+    display: flex !important;
+
+    gap: 10px !important;
+
+    margin-bottom: 20px !important;
+}
+
+#addScreen .tabs button {
+    flex: 1 !important;
+
+    min-height: 48px !important;
+
+    margin: 0 !important;
+}
+
+/* Friend ID input */
+
+#addScreen #addId {
+    width: 100% !important;
+
+    max-width: none !important;
+
+    margin: 0 0 14px 0 !important;
+}
+
+/* Continue / Add Friend button */
+
+#addScreen .card.wide > button:not(.secondary) {
+    width: 100% !important;
+
+    max-width: none !important;
+
+    margin: 0 !important;
+}
+
+/* Status */
+
+#addScreen #addStatus {
+    width: 100% !important;
+
+    margin: 14px 0 5px 0 !important;
+}
+
+/* Example text */
+
+#addScreen .smallText {
+    margin-top: 5px !important;
+}
+
+/* =========================================================
+   MOBILE ADD FRIEND
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+    #addScreen {
+        width: 100vw !important;
+        min-width: 100vw !important;
+    }
+
+    #addScreen > header {
+        width: 100% !important;
+
+        padding: 14px 16px !important;
+    }
+
+    #addScreen > .card.wide {
+        width: calc(100% - 28px) !important;
+
+        margin: 14px !important;
+
+        padding: 18px !important;
+    }
+
+    #addScreen .tabs {
+        gap: 7px !important;
+    }
+
+    #addScreen .tabs button {
+        min-height: 44px !important;
+
+        font-size: 13px !important;
+    }
+}
