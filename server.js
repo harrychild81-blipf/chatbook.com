@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 8080;
 
 
 /* =====================================================
-   TEMPORARY SERVER DATA
+   SERVER DATA
    ===================================================== */
 
 const users = new Map();
@@ -40,13 +40,42 @@ console.log("Website root:", ROOT_DIR);
 
 
 /* =====================================================
+   PERSISTENT USER ACCOUNTS
+   ===================================================== */
+
+/*
+   User accounts are stored outside the website folder.
+
+   Only:
+   - FriendChat ID
+   - Name
+
+   are saved.
+
+   Passwords and emails are NOT stored here.
+*/
+
+const DATA_DIR = path.join(
+  PARENT_FOLDER,
+  ".friendchat-data"
+);
+
+const USERS_FILE = path.join(
+  DATA_DIR,
+  "users.json"
+);
+
+
+/* =====================================================
    HELPERS
    ===================================================== */
 
 function normalizeId(value) {
+
   return String(value || "")
     .trim()
     .toUpperCase();
+
 }
 
 
@@ -81,7 +110,234 @@ function sendToUser(userId, payload) {
   }
 
   return false;
+
 }
+
+
+/* =====================================================
+   LOAD SAVED USERS
+   ===================================================== */
+
+function loadUsers() {
+
+  try {
+
+    if (!fs.existsSync(DATA_DIR)) {
+
+      fs.mkdirSync(
+        DATA_DIR,
+        {
+          recursive: true
+        }
+      );
+
+    }
+
+
+    if (!fs.existsSync(USERS_FILE)) {
+
+      console.log(
+        "No saved users file found."
+      );
+
+      return;
+
+    }
+
+
+    const raw =
+      fs.readFileSync(
+        USERS_FILE,
+        "utf8"
+      );
+
+
+    const savedUsers =
+      JSON.parse(raw);
+
+
+    if (!Array.isArray(savedUsers)) {
+
+      console.log(
+        "users.json is not an array."
+      );
+
+      return;
+
+    }
+
+
+    for (
+      const saved
+      of savedUsers
+    ) {
+
+      const id =
+        normalizeId(
+          saved.id
+        );
+
+
+      const name =
+        String(
+          saved.name || "Friend"
+        ).trim();
+
+
+      if (!id) {
+
+        continue;
+
+      }
+
+
+      const user = {
+
+        id: id,
+
+        name:
+          name || "Friend"
+
+      };
+
+
+      users.set(
+        id,
+        user
+      );
+
+
+      /*
+        Every user loaded from disk
+        starts offline.
+
+        When they connect, this
+        changes to online.
+      */
+
+      presence.set(
+        id,
+        {
+
+          id: id,
+
+          name:
+            user.name,
+
+          online:
+            false,
+
+          chattingWith:
+            null
+
+        }
+      );
+
+    }
+
+
+    console.log(
+      `Loaded ${users.size} saved FriendChat users.`
+    );
+
+  }
+
+  catch (error) {
+
+    console.log(
+      "Could not load users:",
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   SAVE USERS
+   ===================================================== */
+
+function saveUsers() {
+
+  try {
+
+    if (!fs.existsSync(DATA_DIR)) {
+
+      fs.mkdirSync(
+        DATA_DIR,
+        {
+          recursive: true
+        }
+      );
+
+    }
+
+
+    const savedUsers =
+      Array.from(
+        users.values()
+      ).map(
+        user => ({
+
+          id:
+            user.id,
+
+          name:
+            user.name
+
+        })
+      );
+
+
+    /*
+      Write to temporary file first.
+
+      This helps prevent users.json
+      from becoming corrupted if the
+      server stops while saving.
+    */
+
+    const tempFile =
+      USERS_FILE + ".tmp";
+
+
+    fs.writeFileSync(
+      tempFile,
+      JSON.stringify(
+        savedUsers,
+        null,
+        2
+      ),
+      "utf8"
+    );
+
+
+    fs.renameSync(
+      tempFile,
+      USERS_FILE
+    );
+
+
+  }
+
+  catch (error) {
+
+    console.log(
+      "Could not save users:",
+      error.message
+    );
+
+  }
+
+}
+
+
+/*
+   Load accounts when server starts.
+*/
+
+loadUsers();
 
 
 /* =====================================================
@@ -148,6 +404,7 @@ const server = http.createServer(
         `http://${req.headers.host || "localhost"}`
       );
 
+
     const pathname =
       url.pathname;
 
@@ -166,14 +423,22 @@ const server = http.createServer(
         }
       );
 
+
       res.end(
         JSON.stringify({
-          ok: true,
-          service: "FriendChat"
+
+          ok:
+            true,
+
+          service:
+            "FriendChat"
+
         })
       );
 
+
       return;
+
     }
 
 
@@ -181,62 +446,72 @@ const server = http.createServer(
        ALL FRIENDCHAT USERS
        ================================================
 
-       Example:
-
        /api/users
 
        /api/users?exclude=FC-ABC123
 
-       Returns:
+       Returns all saved users.
 
-       {
-         users: [
-           {
-             id: "FC-ABC123",
-             name: "Harry",
-             status: "active"
-           }
-         ]
-       }
+       Online users:
+       status = active/busy
 
-       IMPORTANT:
-       No email or password is returned.
+       Offline users:
+       status = offline
+
+       Own account is excluded.
        ================================================ */
 
     if (pathname === "/api/users") {
 
       const excludeId =
         normalizeId(
-          url.searchParams.get("exclude")
+          url.searchParams.get(
+            "exclude"
+          )
         );
+
 
       const viewer =
         excludeId;
 
+
       const presenceForViewer =
         viewer
-          ? getPresenceForViewer(viewer)
+          ? getPresenceForViewer(
+              viewer
+            )
           : {};
 
+
       const result = [];
+
 
       for (
         const [id, user]
         of users.entries()
       ) {
 
+        /*
+          Do not show own account.
+        */
+
         if (
           excludeId &&
           id === excludeId
         ) {
+
           continue;
+
         }
+
 
         const presenceInfo =
           presenceForViewer[id];
 
+
         let status =
           "offline";
+
 
         if (presenceInfo) {
 
@@ -244,10 +519,13 @@ const server = http.createServer(
             presenceInfo.status ||
             "offline";
 
-        } else {
+        }
+
+        else {
 
           const info =
             presence.get(id);
+
 
           if (
             info &&
@@ -260,6 +538,7 @@ const server = http.createServer(
           }
 
         }
+
 
         result.push({
 
@@ -281,15 +560,19 @@ const server = http.createServer(
 
 
       /*
-        Sort online users first,
-        then alphabetically by name.
+        Online users first.
+        Offline users after that.
+
+        Within each group,
+        sort alphabetically.
       */
 
       result.sort(
         (a, b) => {
 
           if (
-            a.online !== b.online
+            a.online !==
+            b.online
           ) {
 
             return a.online
@@ -298,10 +581,14 @@ const server = http.createServer(
 
           }
 
-          return String(a.name)
-            .localeCompare(
-              String(b.name)
-            );
+
+          return String(
+            a.name
+          ).localeCompare(
+            String(
+              b.name
+            )
+          );
 
         }
       );
@@ -310,22 +597,29 @@ const server = http.createServer(
       res.writeHead(
         200,
         {
+
           "Content-Type":
             "application/json; charset=utf-8",
 
           "Cache-Control":
             "no-cache"
+
         }
       );
 
 
       res.end(
         JSON.stringify({
-          users: result
+
+          users:
+            result
+
         })
       );
 
+
       return;
+
     }
 
 
@@ -356,8 +650,10 @@ const server = http.createServer(
       res.writeHead(
         200,
         {
+
           "Content-Type":
             "application/json; charset=utf-8"
+
         }
       );
 
@@ -371,11 +667,13 @@ const server = http.createServer(
           user:
             user
               ? {
+
                   id:
                     user.id,
 
                   name:
                     user.name
+
                 }
 
               : null
@@ -383,7 +681,9 @@ const server = http.createServer(
         })
       );
 
+
       return;
+
     }
 
 
@@ -392,7 +692,8 @@ const server = http.createServer(
        ================================================ */
 
     if (
-      pathname === "/api/presence"
+      pathname ===
+      "/api/presence"
     ) {
 
       const result = {};
@@ -425,17 +726,23 @@ const server = http.createServer(
       res.writeHead(
         200,
         {
+
           "Content-Type":
             "application/json; charset=utf-8"
+
         }
       );
 
 
       res.end(
-        JSON.stringify(result)
+        JSON.stringify(
+          result
+        )
       );
 
+
       return;
+
     }
 
 
@@ -468,27 +775,36 @@ const server = http.createServer(
         res.writeHead(
           404,
           {
+
             "Content-Type":
               "application/json; charset=utf-8"
+
           }
         );
 
 
         res.end(
           JSON.stringify({
-            found: false
+
+            found:
+              false
+
           })
         );
 
+
         return;
+
       }
 
 
       res.writeHead(
         200,
         {
+
           "Content-Type":
             "application/json; charset=utf-8"
+
         }
       );
 
@@ -508,7 +824,9 @@ const server = http.createServer(
         })
       );
 
+
       return;
+
     }
 
 
@@ -532,7 +850,10 @@ const server = http.createServer(
 
     let relativeFile =
       requestedFile
-        .replace(/^\/+/, "");
+        .replace(
+          /^\/+/,
+          ""
+        );
 
 
     /*
@@ -552,11 +873,18 @@ const server = http.createServer(
       relativeFile === ".."
     ) {
 
-      res.writeHead(403);
+      res.writeHead(
+        403
+      );
 
-      res.end("Forbidden");
+
+      res.end(
+        "Forbidden"
+      );
+
 
       return;
+
     }
 
 
@@ -587,11 +915,18 @@ const server = http.createServer(
       )
     ) {
 
-      res.writeHead(403);
+      res.writeHead(
+        403
+      );
 
-      res.end("Forbidden");
+
+      res.end(
+        "Forbidden"
+      );
+
 
       return;
+
     }
 
 
@@ -610,8 +945,10 @@ const server = http.createServer(
           res.writeHead(
             404,
             {
+
               "Content-Type":
                 "text/plain; charset=utf-8"
+
             }
           );
 
@@ -620,7 +957,9 @@ const server = http.createServer(
             `FILE NOT FOUND: ${filePath}`
           );
 
+
           return;
+
         }
 
 
@@ -640,6 +979,7 @@ const server = http.createServer(
               ] ||
               "application/octet-stream",
 
+
             "Cache-Control":
               extension === ".css" ||
               extension === ".js"
@@ -650,7 +990,9 @@ const server = http.createServer(
         );
 
 
-        res.end(data);
+        res.end(
+          data
+        );
 
       }
     );
@@ -668,21 +1010,36 @@ function getPresenceForViewer(
 ) {
 
   const viewer =
-    normalizeId(viewerId);
+    normalizeId(
+      viewerId
+    );
+
 
   const result = {};
 
 
+  /*
+    Use users as the source of truth so
+    saved offline users are also included.
+  */
+
   for (
-    const [id, info]
-    of presence.entries()
+    const [id, user]
+    of users.entries()
   ) {
+
+    const info =
+      presence.get(id);
+
 
     let status =
       "offline";
 
 
-    if (info.online) {
+    if (
+      info &&
+      info.online
+    ) {
 
       /*
         User is talking directly
@@ -733,10 +1090,10 @@ function getPresenceForViewer(
     result[id] = {
 
       id:
-        info.id,
+        user.id,
 
       name:
-        info.name,
+        user.name,
 
       status:
         status
@@ -747,6 +1104,7 @@ function getPresenceForViewer(
 
 
   return result;
+
 }
 
 
@@ -806,7 +1164,9 @@ function broadcastProfilePhoto(
 ) {
 
   const senderId =
-    normalizeId(userId);
+    normalizeId(
+      userId
+    );
 
 
   for (
@@ -850,7 +1210,9 @@ function broadcastProfilePhoto(
           })
         );
 
-      } catch (error) {
+      }
+
+      catch (error) {
 
         console.log(
           "Profile photo send error:",
@@ -969,7 +1331,9 @@ wss.on(
 
                 oldSocket.close();
 
-              } catch {}
+              }
+
+              catch {}
 
             }
 
@@ -980,15 +1344,31 @@ wss.on(
                 userId,
 
               name:
-                name
+                name ||
+                "Friend"
 
             };
 
+
+            /*
+              Save/update user in memory.
+            */
 
             users.set(
               userId,
               user
             );
+
+
+            /*
+              IMPORTANT:
+              Save account permanently.
+
+              This is what allows the
+              account to appear when offline.
+            */
+
+            saveUsers();
 
 
             sockets.set(
@@ -1001,6 +1381,10 @@ wss.on(
               userId;
 
 
+            /*
+              User is now online.
+            */
+
             presence.set(
               userId,
               {
@@ -1009,7 +1393,7 @@ wss.on(
                   userId,
 
                 name:
-                  name,
+                  user.name,
 
                 online:
                   true,
@@ -1073,13 +1457,20 @@ wss.on(
               "Registered:",
               userId,
               "-",
-              name
+              user.name
             );
 
 
+            /*
+              Tell everyone that presence
+              has changed.
+            */
+
             broadcastPresence();
 
+
             return;
+
           }
 
 
@@ -1186,7 +1577,9 @@ wss.on(
                 }
               );
 
+
               return;
+
             }
 
 
@@ -1209,6 +1602,7 @@ wss.on(
 
 
             return;
+
           }
 
 
@@ -1289,7 +1683,9 @@ wss.on(
 
             broadcastPresence();
 
+
             return;
+
           }
 
 
@@ -1434,6 +1830,7 @@ wss.on(
 
 
             return;
+
           }
 
 
@@ -1485,7 +1882,9 @@ wss.on(
                 }
               );
 
+
               return;
+
             }
 
 
@@ -1631,6 +2030,7 @@ wss.on(
 
 
             return;
+
           }
 
 
@@ -1681,6 +2081,7 @@ wss.on(
 
 
             return;
+
           }
 
 
@@ -1735,6 +2136,7 @@ wss.on(
 
 
             return;
+
           }
 
 
@@ -1821,6 +2223,7 @@ wss.on(
 
 
             return;
+
           }
 
 
@@ -1876,6 +2279,7 @@ wss.on(
 
 
             return;
+
           }
 
 
@@ -1931,6 +2335,7 @@ wss.on(
 
 
             return;
+
           }
 
         }
@@ -1968,8 +2373,7 @@ wss.on(
 
 
         /*
-          Only remove the current
-          connection.
+          Only remove the current connection.
         */
 
         if (
@@ -2012,6 +2416,16 @@ wss.on(
 
         }
 
+
+        /*
+          IMPORTANT:
+
+          We DO NOT delete the user
+          from users.
+
+          Therefore the account remains
+          available as OFFLINE.
+        */
 
         console.log(
           "Disconnected:",
@@ -2072,6 +2486,7 @@ const heartbeatInterval =
 
           socket.terminate();
 
+
           continue;
 
         }
@@ -2116,7 +2531,7 @@ wss.on(
 
 
 /* =====================================================
-   START
+   START SERVER
    ===================================================== */
 
 server.listen(
@@ -2128,12 +2543,19 @@ server.listen(
       `FriendChat running at http://localhost:${PORT}`
     );
 
+
     console.log(
       `WebSocket server: ws://localhost:${PORT}`
     );
 
+
     console.log(
       `Serving files from: ${ROOT_DIR}`
+    );
+
+
+    console.log(
+      `Saved users: ${users.size}`
     );
 
   }
