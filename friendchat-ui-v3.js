@@ -1,4 +1,4 @@
-/* FRIENDCHAT CUSTOM UI v3 — DISCOVERY FIX */
+/* FRIENDCHAT CUSTOM UI v3 — DISCOVERY + AUTH VISIBILITY FIX */
 (() => {
   "use strict";
 
@@ -11,6 +11,7 @@
       accent: "#6c7cff",
       accent2: "#8b5cf6"
     },
+
     emerald: {
       name: "Emerald",
       desc: "Dark green glass",
@@ -19,6 +20,7 @@
       accent: "#22c55e",
       accent2: "#14b8a6"
     },
+
     ocean: {
       name: "Ocean",
       desc: "Deep blue",
@@ -27,6 +29,7 @@
       accent: "#22a6f2",
       accent2: "#6366f1"
     },
+
     sunset: {
       name: "Sunset",
       desc: "Warm orange glow",
@@ -35,6 +38,7 @@
       accent: "#ff7a45",
       accent2: "#ef4444"
     },
+
     rose: {
       name: "Rose",
       desc: "Pink and violet",
@@ -43,6 +47,7 @@
       accent: "#ec4899",
       accent2: "#8b5cf6"
     },
+
     graphite: {
       name: "Graphite",
       desc: "Minimal monochrome",
@@ -53,7 +58,10 @@
     }
   };
 
-  const $ = id => document.getElementById(id);
+
+  const $ = id =>
+    document.getElementById(id);
+
 
   const esc = s =>
     String(s ?? "").replace(
@@ -67,21 +75,34 @@
       }[m])
     );
 
-  function create(tag, cls, parent) {
-    const e = document.createElement(tag);
 
-    if (cls) e.className = cls;
-    if (parent) parent.appendChild(e);
+  function create(tag, cls, parent) {
+
+    const e =
+      document.createElement(tag);
+
+    if (cls) {
+      e.className = cls;
+    }
+
+    if (parent) {
+      parent.appendChild(e);
+    }
 
     return e;
   }
+
 
   /* =========================================================
      INIT
   ========================================================= */
 
   function init() {
-    if ($("fcCustomSidebar")) return;
+
+    if ($("fcCustomSidebar")) {
+      return;
+    }
+
 
     /* =======================================================
        SLIDE BUTTON
@@ -93,13 +114,23 @@
       document.body
     );
 
-    toggle.id = "fcNavToggle";
-    toggle.type = "button";
-    toggle.title = "Open navigation";
-    toggle.setAttribute("aria-label", "Open navigation");
+    toggle.id =
+      "fcNavToggle";
+
+    toggle.type =
+      "button";
+
+    toggle.title =
+      "Open navigation";
+
+    toggle.setAttribute(
+      "aria-label",
+      "Open navigation"
+    );
 
     toggle.innerHTML =
       '<span class="fc-chevron">›</span>';
+
 
     /* =======================================================
        SIDEBAR
@@ -111,145 +142,334 @@
       document.body
     );
 
-    sidebar.id = "fcCustomSidebar";
+    sidebar.id =
+      "fcCustomSidebar";
+
 
     sidebar.innerHTML = `
       <div class="fc-sidebar-brand">
-        <div class="fc-sidebar-logo">FC</div>
+
+        <div class="fc-sidebar-logo">
+          FC
+        </div>
 
         <div>
-          <div class="fc-sidebar-title">FriendChat</div>
-          <div class="fc-sidebar-sub">Your private space</div>
+
+          <div class="fc-sidebar-title">
+            FriendChat
+          </div>
+
+          <div class="fc-sidebar-sub">
+            Your private space
+          </div>
+
         </div>
+
       </div>
 
-      <button class="fc-nav-item active" data-nav="chats" type="button">
-        <span class="fc-nav-icon">💬</span>
-        <span>Chats</span>
+
+      <button
+        class="fc-nav-item active"
+        data-nav="chats"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          💬
+        </span>
+
+        <span>
+          Chats
+        </span>
       </button>
 
-      <button class="fc-nav-item" data-nav="friends" type="button">
-        <span class="fc-nav-icon">👥</span>
-        <span>Friends</span>
+
+      <button
+        class="fc-nav-item"
+        data-nav="friends"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          👥
+        </span>
+
+        <span>
+          Friends
+        </span>
       </button>
 
-      <button class="fc-nav-item" data-nav="music" type="button">
-        <span class="fc-nav-icon">🎵</span>
-        <span>Music</span>
+
+      <button
+        class="fc-nav-item"
+        data-nav="music"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          🎵
+        </span>
+
+        <span>
+          Music
+        </span>
       </button>
+
 
       <div class="fc-nav-divider"></div>
 
-      <button class="fc-nav-item fc-nav-theme" data-nav="theme" type="button">
-        <span class="fc-nav-icon">🎨</span>
-        <span>Change theme</span>
+
+      <button
+        class="fc-nav-item fc-nav-theme"
+        data-nav="theme"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          🎨
+        </span>
+
+        <span>
+          Change theme
+        </span>
       </button>
 
-      <button class="fc-nav-item" data-nav="settings" type="button">
-        <span class="fc-nav-icon">⚙️</span>
-        <span>Settings</span>
+
+      <button
+        class="fc-nav-item"
+        data-nav="settings"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          ⚙️
+        </span>
+
+        <span>
+          Settings
+        </span>
       </button>
 
-      <button class="fc-nav-item" data-nav="profile" type="button">
-        <span class="fc-nav-icon">👤</span>
-        <span>Profile</span>
+
+      <button
+        class="fc-nav-item"
+        data-nav="profile"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          👤
+        </span>
+
+        <span>
+          Profile
+        </span>
       </button>
     `;
+
 
     /* =======================================================
        SIDEBAR SLIDE CONTROL
     ======================================================= */
 
-    toggle.addEventListener("click", () => {
-      const open = sidebar.classList.toggle("open");
+    toggle.addEventListener(
+      "click",
+      () => {
 
-      toggle.classList.toggle("is-open", open);
+        const open =
+          sidebar.classList.toggle(
+            "open"
+          );
 
-      toggle.title = open
-        ? "Close navigation"
-        : "Open navigation";
+        toggle.classList.toggle(
+          "is-open",
+          open
+        );
 
-      toggle.setAttribute(
-        "aria-label",
-        open ? "Close navigation" : "Open navigation"
-      );
-    });
+
+        toggle.title =
+          open
+            ? "Close navigation"
+            : "Open navigation";
+
+
+        toggle.setAttribute(
+          "aria-label",
+          open
+            ? "Close navigation"
+            : "Open navigation"
+        );
+
+      }
+    );
+
 
     /* =======================================================
        SIDEBAR BUTTONS
     ======================================================= */
 
     sidebar
-      .querySelectorAll(".fc-nav-item")
+      .querySelectorAll(
+        ".fc-nav-item"
+      )
       .forEach(btn => {
-        btn.addEventListener("click", () => {
-          const action = btn.dataset.nav;
 
-          if (action === "chats") {
-            if (typeof showHome === "function") {
-              showHome();
-            }
-          }
+        btn.addEventListener(
+          "click",
+          () => {
 
-          if (action === "friends") {
-            if (typeof showHome === "function") {
-              showHome();
-            }
-          }
+            const action =
+              btn.dataset.nav;
 
-          if (action === "music") {
-            if (typeof window.openSpotifyPanel === "function") {
-              window.openSpotifyPanel();
-            } else if (
-              typeof window.toggleSpotifyPanel === "function"
+
+            if (
+              action ===
+              "chats"
             ) {
-              window.toggleSpotifyPanel();
+
+              if (
+                typeof showHome ===
+                "function"
+              ) {
+
+                showHome();
+
+              }
+
             }
+
+
+            if (
+              action ===
+              "friends"
+            ) {
+
+              if (
+                typeof showHome ===
+                "function"
+              ) {
+
+                showHome();
+
+              }
+
+            }
+
+
+            if (
+              action ===
+              "music"
+            ) {
+
+              if (
+                typeof window.openSpotifyPanel ===
+                "function"
+              ) {
+
+                window.openSpotifyPanel();
+
+              }
+
+              else if (
+                typeof window.toggleSpotifyPanel ===
+                "function"
+              ) {
+
+                window.toggleSpotifyPanel();
+
+              }
+
+            }
+
+
+            if (
+              action ===
+              "profile"
+            ) {
+
+              if (
+                typeof showProfile ===
+                "function"
+              ) {
+
+                showProfile();
+
+              }
+
+            }
+
+
+            if (
+              action ===
+              "theme"
+            ) {
+
+              openThemePanel();
+
+            }
+
+
+            if (
+              action ===
+              "settings"
+            ) {
+
+              openThemePanel();
+
+            }
+
+
+            sidebar.classList.remove(
+              "open"
+            );
+
+            toggle.classList.remove(
+              "is-open"
+            );
+
+
+            toggle.title =
+              "Open navigation";
+
+
+            toggle.setAttribute(
+              "aria-label",
+              "Open navigation"
+            );
+
           }
+        );
 
-          if (
-            action === "profile" &&
-            typeof showProfile === "function"
-          ) {
-            showProfile();
-          }
-
-          if (action === "theme") {
-            openThemePanel();
-          }
-
-          if (action === "settings") {
-            openThemePanel();
-          }
-
-          sidebar.classList.remove("open");
-          toggle.classList.remove("is-open");
-
-          toggle.title = "Open navigation";
-          toggle.setAttribute(
-            "aria-label",
-            "Open navigation"
-          );
-        });
       });
 
+
     addQuickActions();
+
     addBottomDock();
+
     addDiscovery();
+
     addThemePanel();
 
     hideOldSpotifyButton();
+
     applySavedTheme();
 
     setupVisibility();
+
   }
+
 
   /* =========================================================
      QUICK ACTIONS
   ========================================================= */
 
   function addQuickActions() {
-    if (document.querySelector(".fc-quick-actions")) return;
+
+    if (
+      document.querySelector(
+        ".fc-quick-actions"
+      )
+    ) {
+
+      return;
+
+    }
+
 
     const box = create(
       "div",
@@ -257,22 +477,50 @@
       document.body
     );
 
+
+    /* =======================================================
+       ADD FRIEND
+    ======================================================= */
+
     const add = create(
       "button",
       "fc-quick add",
       box
     );
 
-    add.type = "button";
-    add.title = "Add friend";
-    add.setAttribute("aria-label", "Add friend");
-    add.textContent = "＋";
+
+    add.type =
+      "button";
+
+    add.title =
+      "Add friend";
+
+    add.setAttribute(
+      "aria-label",
+      "Add friend"
+    );
+
+    add.textContent =
+      "＋";
+
 
     add.onclick = () => {
-      if (typeof showAdd === "function") {
+
+      if (
+        typeof showAdd ===
+        "function"
+      ) {
+
         showAdd();
+
       }
+
     };
+
+
+    /* =======================================================
+       MEDIA
+    ======================================================= */
 
     const media = create(
       "button",
@@ -280,32 +528,64 @@
       box
     );
 
-    media.type = "button";
-    media.title = "Upload profile media";
+
+    media.type =
+      "button";
+
+    media.title =
+      "Upload profile media";
+
     media.setAttribute(
       "aria-label",
       "Upload profile media"
     );
 
-    media.textContent = "▧";
+    media.textContent =
+      "▧";
+
 
     media.onclick = () => {
-      const input = $("profileMediaInput");
+
+      const input =
+        $("profileMediaInput");
+
 
       if (input) {
+
         input.click();
-      } else if (typeof showProfile === "function") {
-        showProfile();
+
       }
+
+      else if (
+        typeof showProfile ===
+        "function"
+      ) {
+
+        showProfile();
+
+      }
+
     };
+
   }
+
 
   /* =========================================================
      BOTTOM SMALL BAR
   ========================================================= */
 
   function addBottomDock() {
-    if (document.querySelector(".fc-bottom-dock")) return;
+
+    if (
+      document.querySelector(
+        ".fc-bottom-dock"
+      )
+    ) {
+
+      return;
+
+    }
+
 
     const dock = create(
       "div",
@@ -313,7 +593,10 @@
       document.body
     );
 
-    /* Chats */
+
+    /* =======================================================
+       CHATS
+    ======================================================= */
 
     const chats = create(
       "button",
@@ -321,18 +604,39 @@
       dock
     );
 
-    chats.type = "button";
-    chats.title = "Chats";
-    chats.setAttribute("aria-label", "Chats");
-    chats.textContent = "💬";
+
+    chats.type =
+      "button";
+
+    chats.title =
+      "Chats";
+
+    chats.setAttribute(
+      "aria-label",
+      "Chats"
+    );
+
+    chats.textContent =
+      "💬";
+
 
     chats.onclick = () => {
-      if (typeof showHome === "function") {
+
+      if (
+        typeof showHome ===
+        "function"
+      ) {
+
         showHome();
+
       }
+
     };
 
-    /* FC DISCOVERY */
+
+    /* =======================================================
+       FC DISCOVERY
+    ======================================================= */
 
     const center = create(
       "button",
@@ -340,20 +644,32 @@
       dock
     );
 
-    center.type = "button";
-    center.title = "Discover FriendChat users";
+
+    center.type =
+      "button";
+
+    center.title =
+      "Discover FriendChat users";
+
     center.setAttribute(
       "aria-label",
       "Discover FriendChat users"
     );
 
-    center.textContent = "FC";
+    center.textContent =
+      "FC";
+
 
     center.onclick = () => {
+
       toggleDiscovery();
+
     };
 
-    /* Profile */
+
+    /* =======================================================
+       PROFILE
+    ======================================================= */
 
     const profile = create(
       "button",
@@ -361,28 +677,52 @@
       dock
     );
 
-    profile.type = "button";
-    profile.title = "Profile";
+
+    profile.type =
+      "button";
+
+    profile.title =
+      "Profile";
+
     profile.setAttribute(
       "aria-label",
       "Profile"
     );
 
-    profile.textContent = "👤";
+    profile.textContent =
+      "👤";
+
 
     profile.onclick = () => {
-      if (typeof showProfile === "function") {
+
+      if (
+        typeof showProfile ===
+        "function"
+      ) {
+
         showProfile();
+
       }
+
     };
+
   }
+
 
   /* =========================================================
      DISCOVERY WINDOW
   ========================================================= */
 
   function addDiscovery() {
-    if ($("fcDiscovery")) return;
+
+    if (
+      $("fcDiscovery")
+    ) {
+
+      return;
+
+    }
+
 
     const overlay = create(
       "div",
@@ -390,11 +730,17 @@
       document.body
     );
 
-    overlay.id = "fcDiscoveryOverlay";
+
+    overlay.id =
+      "fcDiscoveryOverlay";
+
 
     overlay.onclick = () => {
+
       closeDiscovery();
+
     };
+
 
     const panel = create(
       "section",
@@ -402,18 +748,27 @@
       document.body
     );
 
-    panel.id = "fcDiscovery";
+
+    panel.id =
+      "fcDiscovery";
+
 
     panel.innerHTML = `
+
       <div class="fc-discovery-head">
 
         <div>
-          <strong>Discover people</strong>
+
+          <strong>
+            Discover people
+          </strong>
 
           <div class="fc-sidebar-sub">
             FriendChat accounts
           </div>
+
         </div>
+
 
         <button
           class="fc-dock-btn"
@@ -426,181 +781,414 @@
 
       </div>
 
+
       <div class="fc-discovery-search">
+
         <input
           id="fcDiscoverySearch"
           type="text"
           placeholder="Search people..."
           autocomplete="off"
         >
+
       </div>
+
 
       <div
         class="fc-discovery-list"
         id="fcDiscoveryList"
       ></div>
+
     `;
 
+
     const closeButton =
-      panel.querySelector("[data-close]");
+      panel.querySelector(
+        "[data-close]"
+      );
+
 
     if (closeButton) {
-      closeButton.onclick = closeDiscovery;
+
+      closeButton.onclick =
+        closeDiscovery;
+
     }
 
-    const search = $("fcDiscoverySearch");
+
+    const search =
+      $("fcDiscoverySearch");
+
 
     if (search) {
+
       search.addEventListener(
         "input",
         () => {
-          filterDiscovery(search.value);
+
+          filterDiscovery(
+            search.value
+          );
+
         }
       );
+
     }
+
   }
+
 
   async function toggleDiscovery() {
-    const panel = $("fcDiscovery");
-    const overlay = $("fcDiscoveryOverlay");
 
-    if (!panel || !overlay) return;
+    const panel =
+      $("fcDiscovery");
 
-    if (panel.classList.contains("open")) {
-      closeDiscovery();
+    const overlay =
+      $("fcDiscoveryOverlay");
+
+
+    if (
+      !panel ||
+      !overlay
+    ) {
+
       return;
+
     }
 
-    panel.classList.add("open");
-    overlay.classList.add("open");
+
+    if (
+      panel.classList.contains(
+        "open"
+      )
+    ) {
+
+      closeDiscovery();
+
+      return;
+
+    }
+
+
+    /*
+      Do not allow discovery
+      while logged out.
+    */
+
+    if (
+      !isLoggedInScreen()
+    ) {
+
+      return;
+
+    }
+
+
+    panel.classList.add(
+      "open"
+    );
+
+    overlay.classList.add(
+      "open"
+    );
+
 
     await loadDiscoveryUsers();
+
   }
 
+
   function closeDiscovery() {
-    $("fcDiscovery")?.classList.remove("open");
-    $("fcDiscoveryOverlay")?.classList.remove("open");
+
+    $("fcDiscovery")
+      ?.classList.remove(
+        "open"
+      );
+
+
+    $("fcDiscoveryOverlay")
+      ?.classList.remove(
+        "open"
+      );
+
   }
+
 
   /* =========================================================
      GET CURRENT USER ID
   ========================================================= */
 
   function getMyUserId() {
-    /* First try the global currentUser */
+
+    /* First try global currentUser */
 
     if (
       window.currentUser &&
       window.currentUser.id
     ) {
+
       return String(
         window.currentUser.id
-      ).trim().toUpperCase();
+      )
+        .trim()
+        .toUpperCase();
+
     }
+
 
     /* Try localStorage */
 
     const possibleKeys = [
+
       "currentUser",
+
       "friendchat_user",
+
       "friendChatUser",
-      "user"
+
+      "user",
+
+      "friendchat_account"
+
     ];
 
-    for (const key of possibleKeys) {
-      try {
-        const value =
-          localStorage.getItem(key);
 
-        if (!value) continue;
+    for (
+      const key of possibleKeys
+    ) {
+
+      try {
+
+        const value =
+          localStorage.getItem(
+            key
+          );
+
+
+        if (!value) {
+
+          continue;
+
+        }
+
 
         const parsed =
           JSON.parse(value);
+
 
         if (
           parsed &&
           parsed.id
         ) {
+
           return String(
             parsed.id
-          ).trim().toUpperCase();
+          )
+            .trim()
+            .toUpperCase();
+
         }
 
-      } catch {}
+      }
+
+      catch {}
+
     }
+
 
     /* Try page elements */
 
     const idElement =
       $("myId");
 
+
     if (
       idElement &&
       idElement.textContent
     ) {
+
       const match =
         idElement.textContent.match(
           /FC-[A-Z0-9]+/i
         );
 
+
       if (match) {
+
         return String(
           match[0]
         ).toUpperCase();
+
       }
+
     }
+
 
     const idLabel =
       $("myIdLabel");
+
 
     if (
       idLabel &&
       idLabel.textContent
     ) {
+
       const match =
         idLabel.textContent.match(
           /FC-[A-Z0-9]+/i
         );
 
+
       if (match) {
+
         return String(
           match[0]
         ).toUpperCase();
+
       }
+
     }
 
+
     return "";
+
   }
+
+
+  /* =========================================================
+     CHECK LOGIN STATE
+  ========================================================= */
+
+  function isLoggedInScreen() {
+
+    const login =
+      $("loginScreen");
+
+    const signup =
+      $("signupScreen");
+
+    const home =
+      $("homeScreen");
+
+    const chat =
+      $("chatScreen");
+
+    const profile =
+      $("profileScreen");
+
+
+    /*
+      If login or signup is visible,
+      the user is NOT logged in.
+    */
+
+    const loginVisible =
+      login &&
+      !login.classList.contains(
+        "hidden"
+      );
+
+
+    const signupVisible =
+      signup &&
+      !signup.classList.contains(
+        "hidden"
+      );
+
+
+    if (
+      loginVisible ||
+      signupVisible
+    ) {
+
+      return false;
+
+    }
+
+
+    /*
+      Only these screens count
+      as logged-in screens.
+    */
+
+    return Boolean(
+
+      (home &&
+        !home.classList.contains(
+          "hidden"
+        ))
+
+      ||
+
+      (chat &&
+        !chat.classList.contains(
+          "hidden"
+        ))
+
+      ||
+
+      (profile &&
+        !profile.classList.contains(
+          "hidden"
+        ))
+
+    );
+
+  }
+
 
   /* =========================================================
      LOAD USERS FROM SERVER
   ========================================================= */
 
   async function loadDiscoveryUsers() {
+
     const list =
       $("fcDiscoveryList");
 
-    if (!list) return;
+
+    if (!list) {
+
+      return;
+
+    }
+
 
     list.innerHTML = `
+
       <div class="fc-discovery-loading">
+
         <div class="fc-discovery-spinner"></div>
-        <div>Loading FriendChat users...</div>
+
+        <div>
+          Loading FriendChat users...
+        </div>
+
       </div>
+
     `;
+
 
     const myId =
       getMyUserId();
 
+
     try {
+
       let endpoint =
         "/api/users";
 
+
       if (myId) {
+
         endpoint +=
           "?exclude=" +
-          encodeURIComponent(myId);
+          encodeURIComponent(
+            myId
+          );
+
       }
+
 
       const response =
         await fetch(
@@ -611,43 +1199,62 @@
           }
         );
 
+
       if (!response.ok) {
+
         throw new Error(
           "Server returned " +
           response.status
         );
+
       }
+
 
       const data =
         await response.json();
 
+
       const users =
-        Array.isArray(data.users)
+        Array.isArray(
+          data.users
+        )
           ? data.users
           : [];
 
-      renderDiscoveryUsers(users);
 
-    } catch (error) {
+      renderDiscoveryUsers(
+        users
+      );
+
+    }
+
+
+    catch (error) {
 
       console.error(
         "FriendChat discovery error:",
         error
       );
 
+
       list.innerHTML = `
+
         <div class="fc-discovery-empty">
+
           <div class="fc-discovery-empty-icon">
             ⚠️
           </div>
+
 
           <strong>
             Could not load users
           </strong>
 
+
           <div>
             Make sure the FriendChat server is running.
           </div>
+
 
           <button
             id="fcDiscoveryRetry"
@@ -656,15 +1263,22 @@
           >
             Try again
           </button>
+
         </div>
+
       `;
 
-      $("fcDiscoveryRetry")?.addEventListener(
-        "click",
-        loadDiscoveryUsers
-      );
+
+      $("fcDiscoveryRetry")
+        ?.addEventListener(
+          "click",
+          loadDiscoveryUsers
+        );
+
     }
+
   }
+
 
   /* =========================================================
      RENDER USERS
@@ -672,62 +1286,101 @@
 
   let discoveryUsers = [];
 
-  function renderDiscoveryUsers(users) {
+
+  function renderDiscoveryUsers(
+    users
+  ) {
+
     const list =
       $("fcDiscoveryList");
 
-    if (!list) return;
+
+    if (!list) {
+
+      return;
+
+    }
+
 
     const myId =
       getMyUserId();
 
+
     discoveryUsers =
-      users.filter(user => {
+      users.filter(
+        user => {
 
-        if (!user || !user.id) {
-          return false;
+          if (
+            !user ||
+            !user.id
+          ) {
+
+            return false;
+
+          }
+
+
+          const id =
+            String(
+              user.id
+            )
+              .trim()
+              .toUpperCase();
+
+
+          /*
+            Never show current account.
+          */
+
+          if (
+            myId &&
+            id === myId
+          ) {
+
+            return false;
+
+          }
+
+
+          return true;
+
         }
+      );
 
-        const id =
-          String(
-            user.id
-          ).trim().toUpperCase();
-
-        /* Never show current account */
-
-        if (
-          myId &&
-          id === myId
-        ) {
-          return false;
-        }
-
-        return true;
-
-      });
 
     drawDiscoveryList(
       discoveryUsers
     );
+
   }
+
 
   /* =========================================================
      FILTER
   ========================================================= */
 
-  function filterDiscovery(query) {
+  function filterDiscovery(
+    query
+  ) {
+
     const text =
       String(
         query || ""
-      ).trim().toLowerCase();
+      )
+        .trim()
+        .toLowerCase();
+
 
     if (!text) {
+
       drawDiscoveryList(
         discoveryUsers
       );
 
       return;
+
     }
+
 
     const filtered =
       discoveryUsers.filter(
@@ -738,10 +1391,12 @@
               user.name || ""
             ).toLowerCase();
 
+
           const id =
             String(
               user.id || ""
             ).toLowerCase();
+
 
           return (
             name.includes(text) ||
@@ -751,43 +1406,66 @@
         }
       );
 
+
     drawDiscoveryList(
       filtered
     );
+
   }
+
 
   /* =========================================================
      DRAW DISCOVERY LIST
   ========================================================= */
 
-  function drawDiscoveryList(users) {
+  function drawDiscoveryList(
+    users
+  ) {
+
     const list =
       $("fcDiscoveryList");
 
-    if (!list) return;
 
-    list.innerHTML = "";
+    if (!list) {
+
+      return;
+
+    }
+
+
+    list.innerHTML =
+      "";
+
 
     if (!users.length) {
 
       list.innerHTML = `
+
         <div class="fc-discovery-empty">
+
           <div class="fc-discovery-empty-icon">
             👥
           </div>
+
 
           <strong>
             No other users found
           </strong>
 
+
           <div>
-            Ask your friend to open FriendChat once.
+            No other FriendChat accounts are available.
           </div>
+
         </div>
+
       `;
 
+
       return;
+
     }
+
 
     users.forEach(
       user => {
@@ -799,10 +1477,12 @@
             list
           );
 
+
         row.dataset.userId =
           String(
             user.id || ""
           ).toUpperCase();
+
 
         /* =================================================
            AVATAR
@@ -815,12 +1495,14 @@
             row
           );
 
+
         avatar.textContent =
           String(
             user.name || "?"
           )
             .charAt(0)
             .toUpperCase();
+
 
         /* =================================================
            INFO
@@ -833,6 +1515,7 @@
             row
           );
 
+
         const name =
           create(
             "div",
@@ -840,9 +1523,11 @@
             info
           );
 
+
         name.textContent =
           user.name ||
           "Unknown";
+
 
         const id =
           create(
@@ -851,8 +1536,10 @@
             info
           );
 
+
         id.textContent =
           user.id || "";
+
 
         /* =================================================
            STATUS
@@ -865,22 +1552,47 @@
             info
           );
 
-        const online =
-          user.online === true ||
+
+        /*
+          IMPORTANT:
+          Only explicitly online/active users
+          are treated as online.
+
+          Unknown/missing status is offline.
+        */
+
+        const statusValue =
           String(
             user.status || ""
-          ).toLowerCase() !==
-            "offline";
+          )
+            .trim()
+            .toLowerCase();
+
+
+        const online =
+          user.online === true ||
+          statusValue === "online" ||
+          statusValue === "active" ||
+          statusValue === "busy";
+
 
         status.className =
           online
             ? "fc-user-status online"
             : "fc-user-status offline";
 
+
         status.innerHTML =
           online
-            ? `<span class="fc-status-dot"></span> Online`
-            : `<span class="fc-status-dot"></span> Offline`;
+            ? `
+                <span class="fc-status-dot"></span>
+                Online
+              `
+            : `
+                <span class="fc-status-dot"></span>
+                Offline
+              `;
+
 
         /* =================================================
            CHAT BUTTON
@@ -893,48 +1605,68 @@
             row
           );
 
-        chat.type = "button";
-        chat.textContent = "Chat";
 
-        chat.onclick = event => {
+        chat.type =
+          "button";
 
-          event.stopPropagation();
 
-          openDiscoveredUser(
-            user
-          );
+        chat.textContent =
+          "Chat";
 
-        };
+
+        chat.onclick =
+          event => {
+
+            event.stopPropagation();
+
+
+            openDiscoveredUser(
+              user
+            );
+
+          };
+
 
         /* =================================================
            CLICK ROW
         ================================================= */
 
-        row.onclick = () => {
+        row.onclick =
+          () => {
 
-          openDiscoveredUser(
-            user
-          );
+            openDiscoveredUser(
+              user
+            );
 
-        };
+          };
 
       }
     );
+
   }
+
 
   /* =========================================================
      OPEN DISCOVERED USER
   ========================================================= */
 
-  function openDiscoveredUser(user) {
+  function openDiscoveredUser(
+    user
+  ) {
 
-    if (!user) return;
+    if (!user) {
+
+      return;
+
+    }
+
 
     closeDiscovery();
 
+
     /*
-      Try the existing FriendChat openChat()
-      function first.
+      Try existing FriendChat
+      openChat() first.
     */
 
     if (
@@ -949,9 +1681,13 @@
           name: user.name
         });
 
+
         return;
 
-      } catch (error) {
+      }
+
+
+      catch (error) {
 
         console.error(
           "openChat failed:",
@@ -962,9 +1698,9 @@
 
     }
 
+
     /*
-      If openChat() is not available,
-      try showing the profile.
+      Fallback to profile.
     */
 
     if (
@@ -978,43 +1714,66 @@
           user
         );
 
-      } catch {}
+      }
+
+      catch {}
 
     }
 
   }
+
 
   /* =========================================================
      THEME PANEL
   ========================================================= */
 
   function addThemePanel() {
-    if ($("fcThemePanel")) return;
 
-    const overlay = create(
-      "div",
-      "fc-overlay",
-      document.body
-    );
+    if (
+      $("fcThemePanel")
+    ) {
 
-    overlay.id = "fcThemeOverlay";
+      return;
 
-    overlay.onclick = closeThemePanel;
+    }
 
-    const panel = create(
-      "section",
-      "fc-theme-panel",
-      document.body
-    );
 
-    panel.id = "fcThemePanel";
+    const overlay =
+      create(
+        "div",
+        "fc-overlay",
+        document.body
+      );
+
+
+    overlay.id =
+      "fcThemeOverlay";
+
+
+    overlay.onclick =
+      closeThemePanel;
+
+
+    const panel =
+      create(
+        "section",
+        "fc-theme-panel",
+        document.body
+      );
+
+
+    panel.id =
+      "fcThemePanel";
+
 
     panel.innerHTML = `
+
       <div class="fc-theme-head">
 
         <strong>
           Customize FriendChat
         </strong>
+
 
         <button
           class="fc-dock-btn"
@@ -1027,6 +1786,7 @@
 
       </div>
 
+
       <div class="fc-theme-body">
 
         <div
@@ -1035,26 +1795,40 @@
         ></div>
 
       </div>
+
     `;
+
 
     const closeButton =
       panel.querySelector(
         "[data-close]"
       );
 
+
     if (closeButton) {
+
       closeButton.onclick =
         closeThemePanel;
+
     }
+
 
     const grid =
       panel.querySelector(
         "#fcThemeGrid"
       );
 
-    if (!grid) return;
 
-    Object.entries(themes).forEach(
+    if (!grid) {
+
+      return;
+
+    }
+
+
+    Object.entries(
+      themes
+    ).forEach(
       ([key, theme]) => {
 
         const button =
@@ -1064,9 +1838,13 @@
             grid
           );
 
-        button.type = "button";
+
+        button.type =
+          "button";
+
 
         button.innerHTML = `
+
           <div
             class="fc-theme-swatch"
             style="
@@ -1079,92 +1857,259 @@
             "
           ></div>
 
+
           <div class="fc-theme-name">
             ${theme.name}
           </div>
 
+
           <div class="fc-theme-desc">
             ${theme.desc}
           </div>
+
         `;
 
-        button.onclick = () => {
-          setTheme(key);
-        };
+
+        button.onclick =
+          () => {
+
+            setTheme(
+              key
+            );
+
+          };
 
       }
     );
+
   }
+
 
   function openThemePanel() {
-    $("fcThemePanel")?.classList.add("open");
-    $("fcThemeOverlay")?.classList.add("open");
+
+    $("fcThemePanel")
+      ?.classList.add(
+        "open"
+      );
+
+
+    $("fcThemeOverlay")
+      ?.classList.add(
+        "open"
+      );
+
   }
 
+
   function closeThemePanel() {
-    $("fcThemePanel")?.classList.remove("open");
-    $("fcThemeOverlay")?.classList.remove("open");
+
+    $("fcThemePanel")
+      ?.classList.remove(
+        "open"
+      );
+
+
+    $("fcThemeOverlay")
+      ?.classList.remove(
+        "open"
+      );
+
   }
+
 
   /* =========================================================
      THEME
   ========================================================= */
 
-  function setTheme(key) {
+  function setTheme(
+    key
+  ) {
+
     const theme =
       themes[key];
 
-    if (!theme) return;
+
+    if (!theme) {
+
+      return;
+
+    }
+
 
     const root =
       document.documentElement;
+
 
     root.style.setProperty(
       "--fc-bg",
       theme.bg
     );
 
+
     root.style.setProperty(
       "--fc-panel",
       theme.panel
     );
+
 
     root.style.setProperty(
       "--fc-panel-2",
       theme.panel
     );
 
+
     root.style.setProperty(
       "--fc-accent",
       theme.accent
     );
+
 
     root.style.setProperty(
       "--fc-accent-2",
       theme.accent2
     );
 
+
     localStorage.setItem(
       "friendchat_theme",
       key
     );
 
+
     closeThemePanel();
+
   }
 
+
   function applySavedTheme() {
+
     setTheme(
       localStorage.getItem(
         "friendchat_theme"
-      ) || "midnight"
+      ) ||
+      "midnight"
     );
+
   }
+
+
+  /* =========================================================
+     CHECK AUTH / LOGGED-IN SCREEN
+  ========================================================= */
+
+  function isLoggedInScreen() {
+
+    const login =
+      $("loginScreen");
+
+    const signup =
+      $("signupScreen");
+
+    const home =
+      $("homeScreen");
+
+    const chat =
+      $("chatScreen");
+
+    const profile =
+      $("profileScreen");
+
+
+    /*
+      LOGIN VISIBLE
+    */
+
+    if (
+      login &&
+      !login.classList.contains(
+        "hidden"
+      )
+    ) {
+
+      return false;
+
+    }
+
+
+    /*
+      SIGNUP VISIBLE
+    */
+
+    if (
+      signup &&
+      !signup.classList.contains(
+        "hidden"
+      )
+    ) {
+
+      return false;
+
+    }
+
+
+    /*
+      HOME
+    */
+
+    if (
+      home &&
+      !home.classList.contains(
+        "hidden"
+      )
+    ) {
+
+      return true;
+
+    }
+
+
+    /*
+      CHAT
+    */
+
+    if (
+      chat &&
+      !chat.classList.contains(
+        "hidden"
+      )
+    ) {
+
+      return true;
+
+    }
+
+
+    /*
+      PROFILE
+    */
+
+    if (
+      profile &&
+      !profile.classList.contains(
+        "hidden"
+      )
+    ) {
+
+      return true;
+
+    }
+
+
+    return false;
+
+  }
+
 
   /* =========================================================
      VISIBILITY
   ========================================================= */
 
   function setupVisibility() {
+
+    /*
+      These are the ONLY custom UI elements
+      that should be controlled by login state.
+    */
 
     const managed = [
       $("fcNavToggle"),
@@ -1177,65 +2122,105 @@
       )
     ].filter(Boolean);
 
+
     const sync = () => {
 
-      const active = [
-        "homeScreen",
-        "chatScreen",
-        "profileScreen",
-        "addScreen"
-      ].some(id => {
+      const loggedIn =
+        isLoggedInScreen();
 
-        const element =
-          $(id);
-
-        return (
-          element &&
-          !element.classList.contains(
-            "hidden"
-          )
-        );
-
-      });
 
       managed.forEach(
         element => {
-          element.style.display =
-            active
-              ? ""
-              : "none";
+
+          if (loggedIn) {
+
+            /*
+              Logged in:
+              show navigation.
+            */
+
+            element.style.setProperty(
+              "display",
+              "",
+              "important"
+            );
+
+          }
+
+          else {
+
+            /*
+              Login/signup:
+              completely hide navigation.
+            */
+
+            element.style.setProperty(
+              "display",
+              "none",
+              "important"
+            );
+
+          }
+
         }
       );
 
-      if (!active) {
+
+      /*
+        When logged out, close everything.
+      */
+
+      if (!loggedIn) {
 
         $("fcCustomSidebar")
           ?.classList.remove(
             "open"
           );
 
+
         $("fcNavToggle")
           ?.classList.remove(
             "is-open"
           );
 
+
         closeDiscovery();
+
+        closeThemePanel();
 
       }
 
     };
 
+
+    /*
+      Run immediately.
+    */
+
     sync();
+
+
+    /*
+      Watch the main app for changes.
+
+      Your app changes .hidden when moving
+      between login/home/chat/profile.
+    */
 
     const app =
       document.querySelector(
         ".app"
       );
 
+
     if (app) {
 
       new MutationObserver(
-        sync
+        () => {
+
+          sync();
+
+        }
       ).observe(
         app,
         {
@@ -1249,7 +2234,56 @@
 
     }
 
+
+    /*
+      Extra observer.
+
+      This also catches UI changes outside
+      .app and makes the system more reliable.
+    */
+
+    new MutationObserver(
+      () => {
+
+        sync();
+
+      }
+    ).observe(
+      document.body,
+      {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: [
+          "class"
+        ]
+      }
+    );
+
+
+    /*
+      Also re-check after startup.
+    */
+
+    setTimeout(
+      sync,
+      100
+    );
+
+
+    setTimeout(
+      sync,
+      500
+    );
+
+
+    setTimeout(
+      sync,
+      1000
+    );
+
   }
+
 
   /* =========================================================
      REMOVE OLD SPOTIFY BUTTON
@@ -1265,13 +2299,17 @@
         )
         .forEach(
           element => {
+
             element.remove();
+
           }
         );
 
     };
 
+
     hide();
+
 
     const timer =
       setInterval(
@@ -1279,16 +2317,20 @@
         250
       );
 
+
     setTimeout(
       () => {
+
         clearInterval(
           timer
         );
+
       },
       15000
     );
 
   }
+
 
   /* =========================================================
      START
@@ -1304,7 +2346,9 @@
       init
     );
 
-  } else {
+  }
+
+  else {
 
     init();
 
