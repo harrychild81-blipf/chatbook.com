@@ -1405,3 +1405,186 @@ main {
         height: 100dvh !important;
     }
 }
+/* =========================================================
+   FRIENDCHAT — FULL SCREEN FIX
+   Keeps the sidebar unchanged
+   ========================================================= */
+
+/* Make the page use the entire browser viewport */
+html,
+body {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Main FriendChat app */
+#app,
+#friendchatApp,
+.app,
+.app-shell,
+.friendchat-app {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Every screen fills the browser */
+.screen {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Home screen */
+#homeScreen {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Add screen */
+#addScreen {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Profile screen */
+#profileScreen {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Chat screen */
+#chatScreen {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Login / signup */
+#loginScreen,
+#signupScreen {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Headers should use full available width */
+#homeScreen > header,
+#addScreen > header,
+#profileScreen > header,
+#chatScreen > header {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Friend list/content should use the available screen */
+#homeScreen .content,
+#homeScreen .home-content,
+#homeScreen .friends,
+#homeScreen .friend-list {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Chat messages */
+#messages {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Composer */
+#chatScreen .composer {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Remove accidental desktop margins */
+body > *,
+#app > * {
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    html,
+    body {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 100% !important;
+    }
+
+    .screen,
+    #homeScreen,
+    #addScreen,
+    #profileScreen,
+    #chatScreen,
+    #loginScreen,
+    #signupScreen {
+        width: 100% !important;
+        min-width: 100% !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+    }
+}
+
+/* Very small phones */
+@media (max-width: 420px) {
+
+    .screen,
+    #homeScreen,
+    #addScreen,
+    #profileScreen,
+    #chatScreen,
+    #loginScreen,
+    #signupScreen {
+        width: 100vw !important;
+        min-width: 100vw !important;
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+    }
+}
