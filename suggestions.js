@@ -944,3 +944,5 @@
 
 
 })();
+<script src="app.js?v=4"></script>
+<script src="suggestions.js?v=1"></script>
