@@ -1,6 +1,10 @@
-/* FRIENDCHAT CUSTOM UI v3 — DISCOVERY + AUTH VISIBILITY FIX */
+/* FRIENDCHAT CUSTOM UI v3 — FULL SCREEN + SIDEBAR + DISCOVERY + AUTH FIX */
 (() => {
   "use strict";
+
+  /* =========================================================
+     THEMES
+  ========================================================= */
 
   const themes = {
     midnight: {
@@ -59,27 +63,28 @@
   };
 
 
-  const $ = id =>
-    document.getElementById(id);
+  /* =========================================================
+     HELPERS
+  ========================================================= */
 
+  const $ = id => document.getElementById(id);
 
   const esc = s =>
     String(s ?? "").replace(
       /[&<>"']/g,
-      m => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      }[m])
+      m =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        }[m])
     );
 
 
   function create(tag, cls, parent) {
-
-    const e =
-      document.createElement(tag);
+    const e = document.createElement(tag);
 
     if (cls) {
       e.className = cls;
@@ -94,12 +99,122 @@
 
 
   /* =========================================================
+     FULL SCREEN / VIEWPORT FIX
+  ========================================================= */
+
+  function fixFullScreen() {
+    const html = document.documentElement;
+    const body = document.body;
+
+    if (!html || !body) {
+      return;
+    }
+
+    html.style.width = "100%";
+    html.style.minWidth = "100%";
+    html.style.minHeight = "100%";
+    html.style.height = "100%";
+
+    body.style.width = "100%";
+    body.style.minWidth = "100%";
+    body.style.minHeight = "100vh";
+    body.style.height = "100%";
+    body.style.margin = "0";
+    body.style.padding = "0";
+    body.style.overflowX = "hidden";
+
+    const app = document.querySelector(".app");
+
+    if (app) {
+      app.style.width = "100%";
+      app.style.minWidth = "0";
+      app.style.maxWidth = "none";
+      app.style.minHeight = "100vh";
+      app.style.height = "100vh";
+      app.style.margin = "0";
+      app.style.boxSizing = "border-box";
+    }
+  }
+
+
+  /* =========================================================
+     SIDEBAR STATE
+  ========================================================= */
+
+  function closeNavigation() {
+    const sidebar = $("fcCustomSidebar");
+    const toggle = $("fcNavToggle");
+
+    if (sidebar) {
+      sidebar.classList.remove("open");
+    }
+
+    if (toggle) {
+      toggle.classList.remove("is-open");
+
+      toggle.title = "Open navigation";
+
+      toggle.setAttribute(
+        "aria-label",
+        "Open navigation"
+      );
+    }
+  }
+
+
+  function openNavigation() {
+    const sidebar = $("fcCustomSidebar");
+    const toggle = $("fcNavToggle");
+
+    if (sidebar) {
+      sidebar.classList.add("open");
+    }
+
+    if (toggle) {
+      toggle.classList.add("is-open");
+
+      toggle.title = "Close navigation";
+
+      toggle.setAttribute(
+        "aria-label",
+        "Close navigation"
+      );
+    }
+  }
+
+
+  function toggleNavigation() {
+    const sidebar = $("fcCustomSidebar");
+
+    if (!sidebar) {
+      return;
+    }
+
+    if (
+      sidebar.classList.contains("open")
+    ) {
+      closeNavigation();
+    } else {
+      openNavigation();
+    }
+  }
+
+
+  /* =========================================================
      INIT
   ========================================================= */
 
   function init() {
 
+    /* Full screen immediately */
+    fixFullScreen();
+
+
+    /*
+      Do not create the custom UI twice.
+    */
     if ($("fcCustomSidebar")) {
+      setupVisibility();
       return;
     }
 
@@ -114,14 +229,11 @@
       document.body
     );
 
-    toggle.id =
-      "fcNavToggle";
+    toggle.id = "fcNavToggle";
 
-    toggle.type =
-      "button";
+    toggle.type = "button";
 
-    toggle.title =
-      "Open navigation";
+    toggle.title = "Open navigation";
 
     toggle.setAttribute(
       "aria-label",
@@ -142,8 +254,7 @@
       document.body
     );
 
-    sidebar.id =
-      "fcCustomSidebar";
+    sidebar.id = "fcCustomSidebar";
 
 
     sidebar.innerHTML = `
@@ -268,31 +379,11 @@
 
     toggle.addEventListener(
       "click",
-      () => {
+      event => {
 
-        const open =
-          sidebar.classList.toggle(
-            "open"
-          );
+        event.preventDefault();
 
-        toggle.classList.toggle(
-          "is-open",
-          open
-        );
-
-
-        toggle.title =
-          open
-            ? "Close navigation"
-            : "Open navigation";
-
-
-        toggle.setAttribute(
-          "aria-label",
-          open
-            ? "Close navigation"
-            : "Open navigation"
-        );
+        toggleNavigation();
 
       }
     );
@@ -303,9 +394,7 @@
     ======================================================= */
 
     sidebar
-      .querySelectorAll(
-        ".fc-nav-item"
-      )
+      .querySelectorAll(".fc-nav-item")
       .forEach(btn => {
 
         btn.addEventListener(
@@ -316,9 +405,10 @@
               btn.dataset.nav;
 
 
+            /* CHATS */
+
             if (
-              action ===
-              "chats"
+              action === "chats"
             ) {
 
               if (
@@ -333,9 +423,10 @@
             }
 
 
+            /* FRIENDS */
+
             if (
-              action ===
-              "friends"
+              action === "friends"
             ) {
 
               if (
@@ -350,9 +441,10 @@
             }
 
 
+            /* MUSIC */
+
             if (
-              action ===
-              "music"
+              action === "music"
             ) {
 
               if (
@@ -376,9 +468,10 @@
             }
 
 
+            /* PROFILE */
+
             if (
-              action ===
-              "profile"
+              action === "profile"
             ) {
 
               if (
@@ -393,9 +486,10 @@
             }
 
 
+            /* THEME */
+
             if (
-              action ===
-              "theme"
+              action === "theme"
             ) {
 
               openThemePanel();
@@ -403,9 +497,10 @@
             }
 
 
+            /* SETTINGS */
+
             if (
-              action ===
-              "settings"
+              action === "settings"
             ) {
 
               openThemePanel();
@@ -413,29 +508,19 @@
             }
 
 
-            sidebar.classList.remove(
-              "open"
-            );
+            /* Close sidebar */
 
-            toggle.classList.remove(
-              "is-open"
-            );
-
-
-            toggle.title =
-              "Open navigation";
-
-
-            toggle.setAttribute(
-              "aria-label",
-              "Open navigation"
-            );
+            closeNavigation();
 
           }
         );
 
       });
 
+
+    /* =======================================================
+       OTHER UI
+    ======================================================= */
 
     addQuickActions();
 
@@ -451,6 +536,19 @@
 
     setupVisibility();
 
+    fixFullScreen();
+
+
+    /* Recheck after layout is ready */
+
+    requestAnimationFrame(() => {
+      fixFullScreen();
+    });
+
+    setTimeout(() => {
+      fixFullScreen();
+    }, 250);
+
   }
 
 
@@ -465,9 +563,7 @@
         ".fc-quick-actions"
       )
     ) {
-
       return;
-
     }
 
 
@@ -478,9 +574,7 @@
     );
 
 
-    /* =======================================================
-       ADD FRIEND
-    ======================================================= */
+    /* ADD FRIEND */
 
     const add = create(
       "button",
@@ -488,20 +582,16 @@
       box
     );
 
+    add.type = "button";
 
-    add.type =
-      "button";
-
-    add.title =
-      "Add friend";
+    add.title = "Add friend";
 
     add.setAttribute(
       "aria-label",
       "Add friend"
     );
 
-    add.textContent =
-      "＋";
+    add.textContent = "＋";
 
 
     add.onclick = () => {
@@ -518,9 +608,7 @@
     };
 
 
-    /* =======================================================
-       MEDIA
-    ======================================================= */
+    /* MEDIA */
 
     const media = create(
       "button",
@@ -528,9 +616,7 @@
       box
     );
 
-
-    media.type =
-      "button";
+    media.type = "button";
 
     media.title =
       "Upload profile media";
@@ -540,8 +626,7 @@
       "Upload profile media"
     );
 
-    media.textContent =
-      "▧";
+    media.textContent = "▧";
 
 
     media.onclick = () => {
@@ -581,9 +666,7 @@
         ".fc-bottom-dock"
       )
     ) {
-
       return;
-
     }
 
 
@@ -594,9 +677,7 @@
     );
 
 
-    /* =======================================================
-       CHATS
-    ======================================================= */
+    /* CHATS */
 
     const chats = create(
       "button",
@@ -604,20 +685,16 @@
       dock
     );
 
+    chats.type = "button";
 
-    chats.type =
-      "button";
-
-    chats.title =
-      "Chats";
+    chats.title = "Chats";
 
     chats.setAttribute(
       "aria-label",
       "Chats"
     );
 
-    chats.textContent =
-      "💬";
+    chats.textContent = "💬";
 
 
     chats.onclick = () => {
@@ -634,9 +711,7 @@
     };
 
 
-    /* =======================================================
-       FC DISCOVERY
-    ======================================================= */
+    /* FC DISCOVERY */
 
     const center = create(
       "button",
@@ -644,9 +719,7 @@
       dock
     );
 
-
-    center.type =
-      "button";
+    center.type = "button";
 
     center.title =
       "Discover FriendChat users";
@@ -656,8 +729,7 @@
       "Discover FriendChat users"
     );
 
-    center.textContent =
-      "FC";
+    center.textContent = "FC";
 
 
     center.onclick = () => {
@@ -667,9 +739,7 @@
     };
 
 
-    /* =======================================================
-       PROFILE
-    ======================================================= */
+    /* PROFILE */
 
     const profile = create(
       "button",
@@ -677,20 +747,16 @@
       dock
     );
 
+    profile.type = "button";
 
-    profile.type =
-      "button";
-
-    profile.title =
-      "Profile";
+    profile.title = "Profile";
 
     profile.setAttribute(
       "aria-label",
       "Profile"
     );
 
-    profile.textContent =
-      "👤";
+    profile.textContent = "👤";
 
 
     profile.onclick = () => {
@@ -718,9 +784,7 @@
     if (
       $("fcDiscovery")
     ) {
-
       return;
-
     }
 
 
@@ -729,7 +793,6 @@
       "fc-overlay",
       document.body
     );
-
 
     overlay.id =
       "fcDiscoveryOverlay";
@@ -747,7 +810,6 @@
       "fc-discovery",
       document.body
     );
-
 
     panel.id =
       "fcDiscovery";
@@ -870,11 +932,6 @@
     }
 
 
-    /*
-      Do not allow discovery
-      while logged out.
-    */
-
     if (
       !isLoggedInScreen()
     ) {
@@ -920,7 +977,7 @@
 
   function getMyUserId() {
 
-    /* First try global currentUser */
+    /* Global currentUser */
 
     if (
       window.currentUser &&
@@ -936,7 +993,7 @@
     }
 
 
-    /* Try localStorage */
+    /* localStorage */
 
     const possibleKeys = [
 
@@ -996,7 +1053,7 @@
     }
 
 
-    /* Try page elements */
+    /* Page elements */
 
     const idElement =
       $("myId");
@@ -1057,6 +1114,10 @@
 
   /* =========================================================
      CHECK LOGIN STATE
+     
+     IMPORTANT:
+     This function existed twice in the old file.
+     It now exists ONLY ONCE.
   ========================================================= */
 
   function isLoggedInScreen() {
@@ -1077,28 +1138,13 @@
       $("profileScreen");
 
 
-    /*
-      If login or signup is visible,
-      the user is NOT logged in.
-    */
+    /* Login visible */
 
-    const loginVisible =
+    if (
       login &&
       !login.classList.contains(
         "hidden"
-      );
-
-
-    const signupVisible =
-      signup &&
-      !signup.classList.contains(
-        "hidden"
-      );
-
-
-    if (
-      loginVisible ||
-      signupVisible
+      )
     ) {
 
       return false;
@@ -1106,33 +1152,63 @@
     }
 
 
-    /*
-      Only these screens count
-      as logged-in screens.
-    */
+    /* Signup visible */
 
-    return Boolean(
+    if (
+      signup &&
+      !signup.classList.contains(
+        "hidden"
+      )
+    ) {
 
-      (home &&
-        !home.classList.contains(
-          "hidden"
-        ))
+      return false;
 
-      ||
+    }
 
-      (chat &&
-        !chat.classList.contains(
-          "hidden"
-        ))
 
-      ||
+    /* Home */
 
-      (profile &&
-        !profile.classList.contains(
-          "hidden"
-        ))
+    if (
+      home &&
+      !home.classList.contains(
+        "hidden"
+      )
+    ) {
 
-    );
+      return true;
+
+    }
+
+
+    /* Chat */
+
+    if (
+      chat &&
+      !chat.classList.contains(
+        "hidden"
+      )
+    ) {
+
+      return true;
+
+    }
+
+
+    /* Profile */
+
+    if (
+      profile &&
+      !profile.classList.contains(
+        "hidden"
+      )
+    ) {
+
+      return true;
+
+    }
+
+
+    return false;
 
   }
 
@@ -1328,10 +1404,6 @@
               .toUpperCase();
 
 
-          /*
-            Never show current account.
-          */
-
           if (
             myId &&
             id === myId
@@ -1433,8 +1505,7 @@
     }
 
 
-    list.innerHTML =
-      "";
+    list.innerHTML = "";
 
 
     if (!users.length) {
@@ -1484,9 +1555,7 @@
           ).toUpperCase();
 
 
-        /* =================================================
-           AVATAR
-        ================================================= */
+        /* AVATAR */
 
         const avatar =
           create(
@@ -1504,9 +1573,7 @@
             .toUpperCase();
 
 
-        /* =================================================
-           INFO
-        ================================================= */
+        /* INFO */
 
         const info =
           create(
@@ -1541,9 +1608,7 @@
           user.id || "";
 
 
-        /* =================================================
-           STATUS
-        ================================================= */
+        /* STATUS */
 
         const status =
           create(
@@ -1552,14 +1617,6 @@
             info
           );
 
-
-        /*
-          IMPORTANT:
-          Only explicitly online/active users
-          are treated as online.
-
-          Unknown/missing status is offline.
-        */
 
         const statusValue =
           String(
@@ -1594,9 +1651,7 @@
               `;
 
 
-        /* =================================================
-           CHAT BUTTON
-        ================================================= */
+        /* CHAT BUTTON */
 
         const chat =
           create(
@@ -1606,8 +1661,7 @@
           );
 
 
-        chat.type =
-          "button";
+        chat.type = "button";
 
 
         chat.textContent =
@@ -1619,7 +1673,6 @@
 
             event.stopPropagation();
 
-
             openDiscoveredUser(
               user
             );
@@ -1627,9 +1680,7 @@
           };
 
 
-        /* =================================================
-           CLICK ROW
-        ================================================= */
+        /* ROW CLICK */
 
         row.onclick =
           () => {
@@ -1664,11 +1715,6 @@
     closeDiscovery();
 
 
-    /*
-      Try existing FriendChat
-      openChat() first.
-    */
-
     if (
       typeof window.openChat ===
       "function"
@@ -1698,10 +1744,6 @@
 
     }
 
-
-    /*
-      Fallback to profile.
-    */
 
     if (
       typeof window.showProfile ===
@@ -1859,12 +1901,12 @@
 
 
           <div class="fc-theme-name">
-            ${theme.name}
+            ${esc(theme.name)}
           </div>
 
 
           <div class="fc-theme-desc">
-            ${theme.desc}
+            ${esc(theme.desc)}
           </div>
 
         `;
@@ -1994,122 +2036,10 @@
 
 
   /* =========================================================
-     CHECK AUTH / LOGGED-IN SCREEN
-  ========================================================= */
-
-  function isLoggedInScreen() {
-
-    const login =
-      $("loginScreen");
-
-    const signup =
-      $("signupScreen");
-
-    const home =
-      $("homeScreen");
-
-    const chat =
-      $("chatScreen");
-
-    const profile =
-      $("profileScreen");
-
-
-    /*
-      LOGIN VISIBLE
-    */
-
-    if (
-      login &&
-      !login.classList.contains(
-        "hidden"
-      )
-    ) {
-
-      return false;
-
-    }
-
-
-    /*
-      SIGNUP VISIBLE
-    */
-
-    if (
-      signup &&
-      !signup.classList.contains(
-        "hidden"
-      )
-    ) {
-
-      return false;
-
-    }
-
-
-    /*
-      HOME
-    */
-
-    if (
-      home &&
-      !home.classList.contains(
-        "hidden"
-      )
-    ) {
-
-      return true;
-
-    }
-
-
-    /*
-      CHAT
-    */
-
-    if (
-      chat &&
-      !chat.classList.contains(
-        "hidden"
-      )
-    ) {
-
-      return true;
-
-    }
-
-
-    /*
-      PROFILE
-    */
-
-    if (
-      profile &&
-      !profile.classList.contains(
-        "hidden"
-      )
-    ) {
-
-      return true;
-
-    }
-
-
-    return false;
-
-  }
-
-
-  /* =========================================================
      VISIBILITY
   ========================================================= */
 
   function setupVisibility() {
-
-    /*
-      These are the ONLY custom UI elements
-      that should be controlled by login state.
-    */
 
     const managed = [
       $("fcNavToggle"),
@@ -2134,11 +2064,6 @@
 
           if (loggedIn) {
 
-            /*
-              Logged in:
-              show navigation.
-            */
-
             element.style.setProperty(
               "display",
               "",
@@ -2148,11 +2073,6 @@
           }
 
           else {
-
-            /*
-              Login/signup:
-              completely hide navigation.
-            */
 
             element.style.setProperty(
               "display",
@@ -2166,23 +2086,9 @@
       );
 
 
-      /*
-        When logged out, close everything.
-      */
-
       if (!loggedIn) {
 
-        $("fcCustomSidebar")
-          ?.classList.remove(
-            "open"
-          );
-
-
-        $("fcNavToggle")
-          ?.classList.remove(
-            "is-open"
-          );
-
+        closeNavigation();
 
         closeDiscovery();
 
@@ -2193,19 +2099,10 @@
     };
 
 
-    /*
-      Run immediately.
-    */
-
     sync();
 
 
-    /*
-      Watch the main app for changes.
-
-      Your app changes .hidden when moving
-      between login/home/chat/profile.
-    */
+    /* APP OBSERVER */
 
     const app =
       document.querySelector(
@@ -2235,12 +2132,7 @@
     }
 
 
-    /*
-      Extra observer.
-
-      This also catches UI changes outside
-      .app and makes the system more reliable.
-    */
+    /* BODY OBSERVER */
 
     new MutationObserver(
       () => {
@@ -2260,10 +2152,6 @@
       }
     );
 
-
-    /*
-      Also re-check after startup.
-    */
 
     setTimeout(
       sync,
@@ -2330,6 +2218,22 @@
     );
 
   }
+
+
+  /* =========================================================
+     WINDOW RESIZE
+     
+     Keeps the app full-screen if browser size changes.
+  ========================================================= */
+
+  window.addEventListener(
+    "resize",
+    () => {
+
+      fixFullScreen();
+
+    }
+  );
 
 
   /* =========================================================
