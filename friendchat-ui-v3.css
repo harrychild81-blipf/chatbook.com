@@ -1866,3 +1866,21 @@ body.fc-theme-graphite {
         transition-duration: .01ms !important;
     }
 }
+/* =========================================================
+   AUTH SCREEN FIX
+   Hide custom navigation before login
+   ========================================================= */
+
+body:has(#loginScreen:not(.hidden)) .fc-nav-toggle,
+body:has(#loginScreen:not(.hidden)) .fc-sidebar,
+body:has(#loginScreen:not(.hidden)) .fc-quick-actions,
+body:has(#loginScreen:not(.hidden)) .fc-bottom-dock,
+
+body:has(#signupScreen:not(.hidden)) .fc-nav-toggle,
+body:has(#signupScreen:not(.hidden)) .fc-sidebar,
+body:has(#signupScreen:not(.hidden)) .fc-quick-actions,
+body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
+
+  display: none !important;
+
+}
