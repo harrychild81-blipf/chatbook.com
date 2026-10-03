@@ -44,11 +44,181 @@
 
 
   <!-- =====================================================
-       HIDE OLD BOTTOM NAV
-       Custom UI V3 provides the new navigation.
+       SPOTIFY CSS
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="spotify.css?v=5"
+  >
+
+
+  <!-- =====================================================
+       FULL SCREEN FIX
        ===================================================== -->
 
   <style>
+
+    /* -----------------------------------------------------
+       PAGE SIZE
+       ----------------------------------------------------- */
+
+    html,
+    body {
+      width: 100%;
+      min-width: 100%;
+      height: 100%;
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+
+    body {
+      overflow-x: hidden;
+    }
+
+
+    /* -----------------------------------------------------
+       MAIN APP
+       ----------------------------------------------------- */
+
+    .app {
+      width: 100vw !important;
+      min-width: 100vw !important;
+      max-width: none !important;
+
+      height: 100vh !important;
+      min-height: 100vh !important;
+      max-height: none !important;
+
+      margin: 0 !important;
+      padding: 0 !important;
+
+      box-sizing: border-box !important;
+    }
+
+
+    /* -----------------------------------------------------
+       ALL SCREENS
+       ----------------------------------------------------- */
+
+    .screen {
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: none !important;
+
+      min-height: 100vh !important;
+
+      box-sizing: border-box !important;
+    }
+
+
+    /* -----------------------------------------------------
+       HIDDEN SCREEN
+       ----------------------------------------------------- */
+
+    .screen.hidden {
+      display: none !important;
+    }
+
+
+    /* -----------------------------------------------------
+       AUTH SCREENS
+       ----------------------------------------------------- */
+
+    .screen.auth {
+      width: 100vw !important;
+      min-width: 100vw !important;
+      min-height: 100vh !important;
+
+      box-sizing: border-box !important;
+    }
+
+
+    /* -----------------------------------------------------
+       HOME / ADD / CHAT / PROFILE
+       ----------------------------------------------------- */
+
+    #homeScreen,
+    #addScreen,
+    #chatScreen,
+    #profileScreen {
+      width: 100vw !important;
+      min-width: 100vw !important;
+      max-width: none !important;
+
+      min-height: 100vh !important;
+
+      box-sizing: border-box !important;
+    }
+
+
+    /* -----------------------------------------------------
+       CHAT SCREEN
+       ----------------------------------------------------- */
+
+    #chatScreen {
+      display: flex;
+      flex-direction: column;
+    }
+
+
+    #chatScreen.hidden {
+      display: none !important;
+    }
+
+
+    /* Messages take remaining screen space */
+
+    #chatScreen .messages {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+
+    /* Composer stays at bottom */
+
+    #chatScreen .composer {
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+
+    /* -----------------------------------------------------
+       FRIEND LIST
+       ----------------------------------------------------- */
+
+    #friendList {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+
+    /* -----------------------------------------------------
+       PROFILE PAGE
+       ----------------------------------------------------- */
+
+    .profilePage {
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+
+    /* -----------------------------------------------------
+       ADD SCREEN
+       ----------------------------------------------------- */
+
+    #addScreen .card.wide {
+      box-sizing: border-box;
+    }
+
+
+    /* -----------------------------------------------------
+       OLD BOTTOM NAV
+       ----------------------------------------------------- */
 
     #bottomNav {
       display: none !important;
@@ -752,117 +922,22 @@
 
     <div class="reactionRow">
 
-      <button
-        type="button"
-        onclick="reactToMessage('👍')"
-      >
-        👍
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('❤️')"
-      >
-        ❤️
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😂')"
-      >
-        😂
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😮')"
-      >
-        😮
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😢')"
-      >
-        😢
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😡')"
-      >
-        😡
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('🔥')"
-      >
-        🔥
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😍')"
-      >
-        😍
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😭')"
-      >
-        😭
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('🤣')"
-      >
-        🤣
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😎')"
-      >
-        😎
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('🥰')"
-      >
-        🥰
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('🎉')"
-      >
-        🎉
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('👏')"
-      >
-        👏
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('💀')"
-      >
-        💀
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('👎')"
-      >
-        👎
-      </button>
+      <button type="button" onclick="reactToMessage('👍')">👍</button>
+      <button type="button" onclick="reactToMessage('❤️')">❤️</button>
+      <button type="button" onclick="reactToMessage('😂')">😂</button>
+      <button type="button" onclick="reactToMessage('😮')">😮</button>
+      <button type="button" onclick="reactToMessage('😢')">😢</button>
+      <button type="button" onclick="reactToMessage('😡')">😡</button>
+      <button type="button" onclick="reactToMessage('🔥')">🔥</button>
+      <button type="button" onclick="reactToMessage('😍')">😍</button>
+      <button type="button" onclick="reactToMessage('😭')">😭</button>
+      <button type="button" onclick="reactToMessage('🤣')">🤣</button>
+      <button type="button" onclick="reactToMessage('😎')">😎</button>
+      <button type="button" onclick="reactToMessage('🥰')">🥰</button>
+      <button type="button" onclick="reactToMessage('🎉')">🎉</button>
+      <button type="button" onclick="reactToMessage('👏')">👏</button>
+      <button type="button" onclick="reactToMessage('💀')">💀</button>
+      <button type="button" onclick="reactToMessage('👎')">👎</button>
 
     </div>
 
@@ -928,33 +1003,32 @@ function toggleStatusInfo() {
 
 
 <!-- =====================================================
-     SPOTIFY
+     SPOTIFY WEB PLAYBACK SDK
      ===================================================== -->
-
-<!-- Spotify Web Playback SDK -->
 
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
 
 
-<!-- Spotify CSS -->
 
-<link
-  rel="stylesheet"
-  href="spotify.css?v=5"
->
-
-
-<!-- Spotify API -->
+<!-- =====================================================
+     SPOTIFY API
+     ===================================================== -->
 
 <script src="spotify-api.js?v=5"></script>
 
 
-<!-- Spotify Player -->
+
+<!-- =====================================================
+     SPOTIFY PLAYER
+     ===================================================== -->
 
 <script src="spotify-player.js?v=5"></script>
 
 
-<!-- Spotify UI -->
+
+<!-- =====================================================
+     SPOTIFY UI
+     ===================================================== -->
 
 <script src="spotify.js?v=5"></script>
 
