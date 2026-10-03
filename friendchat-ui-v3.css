@@ -1,4 +1,8 @@
-/* FRIENDCHAT CUSTOM UI v3 — layout/theme/sidebar */
+/* =========================================================
+   FRIENDCHAT CUSTOM UI v3
+   FULL SCREEN + SLIDING SIDEBAR
+   ========================================================= */
+
 :root{
   --fc-bg:#070a10;
   --fc-panel:#0d121b;
@@ -15,736 +19,91 @@
   --fc-ease:cubic-bezier(.2,.8,.2,1);
 }
 
-html,body{
+/* =========================================================
+   FULL SCREEN BASE
+   ========================================================= */
+
+html,
+body{
   margin:0!important;
-  width:100%;
-  height:100%;
-  background:var(--fc-bg)!important
+  padding:0!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:100%!important;
+  min-height:100%!important;
+  background:var(--fc-bg)!important;
 }
 
 body{
   overflow:hidden!important;
-  color:var(--fc-text)
+  color:var(--fc-text);
+}
+
+*{
+  box-sizing:border-box;
 }
 
 .app{
   width:100vw!important;
   height:100vh!important;
+  min-width:100vw!important;
   min-height:100vh!important;
   margin:0!important;
   padding:0!important;
-  overflow:hidden!important
+  overflow:hidden!important;
 }
 
 .screen{
-  width:100%!important;
-  height:100%!important;
+  position:relative!important;
+  width:100vw!important;
+  max-width:none!important;
+  height:100vh!important;
+  min-width:100vw!important;
   min-height:100vh!important;
   margin:0!important;
-  padding:0!important
-}
-
-/* Remove the old centered card/container look */
-#homeScreen,#chatScreen,#profileScreen,#addScreen{
-  max-width:none!important;
+  padding:0!important;
   border:0!important;
   border-radius:0!important;
   box-shadow:none!important;
 }
 
-/* ---------- sliding navigation ---------- */
-
-.fc-nav-toggle{
-  position:fixed;
-  left:16px;
-  top:50%;
-  transform:translateY(-50%);
-  width:48px;
-  height:48px;
-  border-radius:16px;
-  z-index:10020;
-  background:rgba(17,24,36,.94);
-  border:1px solid var(--fc-border);
-  box-shadow:0 12px 35px rgba(0,0,0,.38);
-  transition:
-    transform .35s var(--fc-ease),
-    left .35s var(--fc-ease),
-    background .2s;
-}
-
-.fc-nav-toggle:hover{
-  background:var(--fc-panel-3)
-}
-
-.fc-nav-toggle.is-open{
-  left:238px
-}
-
-.fc-nav-toggle .fc-chevron{
-  display:inline-block;
-  transition:transform .35s var(--fc-ease)
-}
-
-.fc-nav-toggle.is-open .fc-chevron{
-  transform:rotate(180deg)
-}
-
-.fc-sidebar{
-  position:fixed;
-  left:12px;
-  top:50%;
-  transform:translate(-125%,-50%);
-  width:210px;
-  max-height:calc(100vh - 32px);
-  padding:14px;
-  border:1px solid var(--fc-border);
-  border-radius:24px;
-  background:rgba(13,18,27,.96);
-  backdrop-filter:blur(20px);
-  box-shadow:0 22px 70px rgba(0,0,0,.45);
-  z-index:10010;
-  transition:transform .4s var(--fc-ease);
-}
-
-.fc-sidebar.open{
-  transform:translateY(-50%)
-}
-
-.fc-sidebar-brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 8px 16px
-}
-
-.fc-sidebar-logo{
-  width:38px;
-  height:38px;
-  border-radius:12px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(
-    135deg,
-    var(--fc-accent),
-    var(--fc-accent-2)
-  );
-  font-weight:900
-}
-
-.fc-sidebar-title{
-  font-weight:800
-}
-
-.fc-sidebar-sub{
-  font-size:11px;
-  color:var(--fc-muted)
-}
-
-.fc-nav-item{
-  width:100%;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:12px 13px;
-  margin:4px 0;
-  border-radius:14px;
-  background:transparent;
-  color:var(--fc-muted);
-  text-align:left;
-  transition:all .2s
-}
-
-.fc-nav-item:hover{
-  background:rgba(255,255,255,.05);
-  color:var(--fc-text);
-  transform:translateX(3px)
-}
-
-.fc-nav-item.active{
-  background:linear-gradient(
-    90deg,
-    rgba(108,124,255,.18),
-    rgba(139,92,246,.08)
-  );
-  color:var(--fc-text)
-}
-
-.fc-nav-icon{
-  width:24px;
-  text-align:center;
-  font-size:18px
-}
-
-.fc-nav-divider{
-  height:1px;
-  background:var(--fc-border);
-  margin:10px 4px
-}
-
-.fc-nav-theme{
-  color:#b9c1ff
-}
-
-/* Main app shifts only while sidebar is open */
-.fc-main-shift{
-  transition:padding-left .4s var(--fc-ease)!important
-}
-
-/* ---------- home: no outer gap ---------- */
-
-#homeScreen{
-  background:
-    radial-gradient(
-      circle at 15% 0%,
-      rgba(108,124,255,.08),
-      transparent 28%
-    ),
-    var(--fc-bg)!important;
-  overflow:auto!important
-}
-
-#homeScreen>header{
-  width:100%!important;
-  min-height:86px;
+/* Remove old centered card */
+#homeScreen,
+#chatScreen,
+#profileScreen,
+#addScreen{
+  width:100vw!important;
+  max-width:none!important;
+  min-width:100vw!important;
+  height:100vh!important;
+  min-height:100vh!important;
   margin:0!important;
-  padding:20px 28px!important;
-  border-bottom:1px solid var(--fc-border)!important;
+  padding:0!important;
+  border:0!important;
   border-radius:0!important;
-  background:rgba(7,10,16,.82)!important;
-  backdrop-filter:blur(18px);
+  box-shadow:none!important;
 }
 
-#homeScreen .profileRow,
-#homeScreen .search,
-#homeScreen .friendList{
-  width:min(900px,calc(100vw - 120px))!important;
-  margin-left:110px!important;
-  margin-right:auto!important;
-}
-
-#homeScreen .profileRow{
-  margin-top:22px!important
-}
-
-#homeScreen .search{
-  margin-top:20px!important
-}
-
-#homeScreen .friendList{
-  margin-top:20px!important;
-  padding-bottom:80px
-}
-
-#homeScreen .friendItem{
-  width:100%!important;
-  min-height:88px;
-  margin:10px 0!important;
-  border-radius:18px!important;
-  border:1px solid transparent!important;
-  background:rgba(13,18,27,.86)!important;
-  transition:
-    transform .2s,
-    background .2s,
-    border-color .2s,
-    box-shadow .2s
-}
-
-#homeScreen .friendItem:hover{
-  transform:translateX(4px);
-  background:var(--fc-panel-2)!important;
-  border-color:var(--fc-border)!important;
-  box-shadow:0 12px 35px rgba(0,0,0,.22)
-}
-
-/* ---------- add/media quick actions ---------- */
-
-.fc-quick-actions{
-  position:fixed;
-  right:22px;
-  top:106px;
-  display:flex;
-  gap:8px;
-  z-index:999
-}
-
-.fc-quick{
-  width:44px;
-  height:44px;
-  border-radius:14px;
-  background:var(--fc-panel-2);
-  border:1px solid var(--fc-border);
-  color:var(--fc-text);
-  transition:.2s
-}
-
-.fc-quick:hover{
-  transform:translateY(-3px);
-  background:var(--fc-panel-3)
-}
-
-.fc-quick.add{
-  color:#9faaff
-}
-
-.fc-quick.media{
-  color:#8fe4ff
-}
-
-/* ---------- bottom dock ---------- */
-
-.fc-bottom-dock{
-  position:fixed;
-  left:50%;
-  bottom:16px;
-  transform:translateX(-50%);
-  height:64px;
-  padding:8px 12px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  border:1px solid var(--fc-border);
-  border-radius:22px;
-  background:rgba(13,18,27,.9);
-  backdrop-filter:blur(20px);
-  box-shadow:0 18px 60px rgba(0,0,0,.4);
-  z-index:10000
-}
-
-.fc-dock-btn{
-  width:46px;
-  height:46px;
-  border-radius:15px;
-  background:transparent;
-  color:var(--fc-muted);
-  display:grid;
-  place-items:center;
-  font-size:19px;
-  transition:.22s
-}
-
-.fc-dock-btn:hover{
-  background:rgba(255,255,255,.06);
-  color:var(--fc-text)
-}
-
-.fc-dock-center{
-  width:52px;
-  height:52px;
-  border-radius:17px;
-  background:linear-gradient(
-    135deg,
-    var(--fc-accent),
-    var(--fc-accent-2)
-  );
-  box-shadow:0 8px 28px rgba(108,124,255,.3);
-  font-weight:900;
-  color:white
-}
-
-.fc-dock-center:hover{
-  transform:translateY(-4px) scale(1.03)
-}
-
-/* ---------- all-users suggestion window ---------- */
-
-.fc-discovery{
-  position:fixed;
-  left:50%;
-  bottom:92px;
-  width:min(430px,calc(100vw - 28px));
-  max-height:min(620px,70vh);
-  transform:translate(-50%,18px) scale(.96);
-  opacity:0;
-  pointer-events:none;
-  border:1px solid var(--fc-border);
-  border-radius:22px;
-  background:rgba(13,18,27,.97);
-  backdrop-filter:blur(24px);
-  box-shadow:0 25px 80px rgba(0,0,0,.55);
-  z-index:9999;
-  transition:
-    opacity .25s var(--fc-ease),
-    transform .25s var(--fc-ease);
-  overflow:hidden
-}
-
-.fc-discovery.open{
-  opacity:1;
-  transform:translate(-50%,0) scale(1);
-  pointer-events:auto
-}
-
-.fc-discovery-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:18px;
-  border-bottom:1px solid var(--fc-border)
-}
-
-.fc-discovery-list{
-  padding:10px;
-  overflow:auto;
-  max-height:520px
-}
-
-.fc-user-suggestion{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  width:100%;
-  padding:12px;
-  border-radius:15px;
-  background:transparent;
-  color:var(--fc-text);
-  text-align:left
-}
-
-.fc-user-suggestion:hover{
-  background:rgba(255,255,255,.05)
-}
-
-.fc-user-avatar{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(
-    135deg,
-    var(--fc-accent),
-    var(--fc-accent-2)
-  );
-  font-weight:800;
-  overflow:hidden
-}
-
-.fc-user-avatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover
-}
-
-.fc-user-info{
-  flex:1;
-  min-width:0
-}
-
-.fc-user-name{
-  font-weight:700;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis
-}
-
-.fc-user-id{
-  font-size:12px;
-  color:var(--fc-muted)
-}
-
-.fc-user-add{
-  padding:8px 12px;
-  border-radius:10px;
-  background:var(--fc-accent);
-  color:#fff;
-  font-size:12px
-}
-
-/* ---------- theme picker ---------- */
-
-.fc-theme-panel{
-  position:fixed;
-  left:50%;
-  top:50%;
-  width:min(470px,calc(100vw - 28px));
-  transform:translate(-50%,-48%) scale(.96);
-  opacity:0;
-  pointer-events:none;
-  z-index:10030;
-  background:rgba(13,18,27,.98);
-  border:1px solid var(--fc-border);
-  border-radius:24px;
-  box-shadow:0 30px 100px rgba(0,0,0,.65);
-  transition:.25s var(--fc-ease)
-}
-
-.fc-theme-panel.open{
-  opacity:1;
-  pointer-events:auto;
-  transform:translate(-50%,-50%) scale(1)
-}
-
-.fc-theme-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:18px;
-  border-bottom:1px solid var(--fc-border)
-}
-
-.fc-theme-body{
-  padding:18px
-}
-
-.fc-theme-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px
-}
-
-.fc-theme-choice{
-  padding:14px;
-  border-radius:16px;
-  border:1px solid var(--fc-border);
-  background:var(--fc-panel-2);
-  text-align:left
-}
-
-.fc-theme-choice:hover{
-  border-color:rgba(108,124,255,.55)
-}
-
-.fc-theme-swatch{
-  height:38px;
-  border-radius:10px;
-  margin-bottom:8px
-}
-
-.fc-theme-name{
-  font-weight:700
-}
-
-.fc-theme-desc{
-  font-size:11px;
-  color:var(--fc-muted)
-}
-
-.fc-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.48);
-  backdrop-filter:blur(3px);
-  opacity:0;
-  pointer-events:none;
-  z-index:10020;
-  transition:.25s
-}
-
-.fc-overlay.open{
-  opacity:1;
-  pointer-events:auto
-}
-
-/* ---------- chat ---------- */
-
-#chatScreen{
-  background:var(--fc-bg)!important
-}
-
-#chatScreen>header{
-  min-height:76px!important;
-  padding:14px 22px!important;
-  margin:0!important;
-  border-radius:0!important;
-  border-bottom:1px solid var(--fc-border)!important;
-  background:rgba(7,10,16,.86)!important
-}
-
-#messages{
-  width:100%!important;
-  height:calc(100vh - 150px)!important;
-  padding:28px clamp(18px,7vw,100px) 100px!important;
-  overflow:auto!important
-}
-
-#chatScreen .composer{
-  position:fixed!important;
-  left:clamp(14px,7vw,100px)!important;
-  right:clamp(14px,7vw,100px)!important;
-  bottom:16px!important;
-  margin:0!important;
-  z-index:1000;
-  background:rgba(17,24,36,.94)!important;
-  border:1px solid var(--fc-border)!important;
-  border-radius:18px!important;
-  box-shadow:0 15px 45px rgba(0,0,0,.35)
-}
-
-.message{
-  animation:fcMessageIn .25s var(--fc-ease)
-}
-
-@keyframes fcMessageIn{
-  from{
-    opacity:0;
-    transform:translateY(8px) scale(.98)
-  }
-
-  to{
-    opacity:1;
-    transform:none
-  }
-}
-
-.messageStatus,
-.readTicks,
-.deliveredTicks,
-.sentTick{
-  color:#000!important
-}
-
-/* ---------- profile animation ---------- */
-
-#profileScreen{
-  background:var(--fc-bg)!important
-}
-
-#profileScreen .profilePage{
-  animation:fcProfileIn .42s var(--fc-ease)
-}
-
-@keyframes fcProfileIn{
-  from{
-    opacity:0;
-    transform:translateY(20px) scale(.985)
-  }
-
-  to{
-    opacity:1;
-    transform:none
-  }
-}
-
-/* ---------- mobile ---------- */
-
-@media(max-width:760px){
-
-  .fc-nav-toggle{
-    left:10px;
-    width:44px;
-    height:44px
-  }
-
-  .fc-nav-toggle.is-open{
-    left:220px
-  }
-
-  .fc-sidebar{
-    left:8px;
-    width:200px
-  }
-
-  #homeScreen .profileRow,
-  #homeScreen .search,
-  #homeScreen .friendList{
-    width:calc(100vw - 28px)!important;
-    margin-left:14px!important
-  }
-
-  #homeScreen>header{
-    padding-left:70px!important
-  }
-
-  .fc-quick-actions{
-    right:12px;
-    top:88px
-  }
-
-  .fc-bottom-dock{
-    bottom:10px
-  }
-
-  #messages{
-    padding:18px 12px 100px!important
-  }
-
-  #chatScreen .composer{
-    left:10px!important;
-    right:10px!important;
-    bottom:8px!important
-  }
-}
-
-/* ---------- Spotify ---------- */
-
-.spotify-side-button,
-.spotify-side-bar,
-.spotify-side-icon,
-.spotify-side-text{
-  display:none!important
-}
-
-/* ---------- no artificial left gap ---------- */
-
-#homeScreen>header{
-  margin-left:0!important
-}
-
-#homeScreen .profileRow,
-#homeScreen .search,
-#homeScreen .friendList{
-  margin-left:32px!important;
-  width:min(1120px,calc(100vw - 64px))!important
-}
-
-#homeScreen .profileRow{
-  margin-top:24px!important
-}
-
-#homeScreen .search{
-  margin-top:18px!important
-}
-
-#homeScreen .friendList{
-  margin-top:18px!important
-}
-
-/* ---------- quick actions ---------- */
-
-.fc-quick-actions{
-  top:102px!important;
-  right:22px!important
-}
-
-/* ---------- bottom dock ---------- */
-
-.fc-bottom-dock{
-  left:50%!important;
-  right:auto!important
-}
 
 /* =========================================================
-   FINAL SIDEBAR + ARROW
+   SLIDING SIDEBAR
    ========================================================= */
 
-/*
-  Sidebar:
-  - closed = completely outside screen
-  - open = slides from left
-  - does not move the main page
-  - fixed width makes arrow position exact
-*/
-
-.fc-sidebar,
-#fcCustomSidebar,
-#fc-sidebar{
+.fc-sidebar{
   position:fixed!important;
-
   left:0!important;
-  top:50%!important;
-  bottom:auto!important;
+  top:20px!important;
+  bottom:20px!important;
 
   width:190px!important;
   max-width:190px!important;
-
-  height:calc(100vh - 40px)!important;
-  max-height:calc(100vh - 40px)!important;
-
-  box-sizing:border-box!important;
+  height:auto!important;
+  max-height:none!important;
 
   padding:18px 12px!important;
 
   border:1px solid var(--fc-border)!important;
+  border-left:0!important;
   border-radius:0 20px 20px 0!important;
 
   background:rgba(13,18,27,.97)!important;
@@ -752,44 +111,133 @@ body{
   backdrop-filter:blur(20px);
   -webkit-backdrop-filter:blur(20px);
 
-  box-shadow:0 22px 70px rgba(0,0,0,.48)!important;
+  box-shadow:0 22px 70px rgba(0,0,0,.48);
 
   z-index:10010!important;
 
   overflow-y:auto!important;
   overflow-x:hidden!important;
 
-  transform:translate(-100%,-50%)!important;
+  transform:translateX(-105%)!important;
 
   transition:
     transform .42s cubic-bezier(.22,1,.36,1)!important;
 }
 
-/* OPEN SIDEBAR */
-
-.fc-sidebar.open,
-#fcCustomSidebar.open,
-#fc-sidebar.open{
-  transform:translate(0,-50%)!important
+.fc-sidebar.open{
+  transform:translateX(0)!important;
 }
 
+
+/* Sidebar content */
+
+.fc-sidebar-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 8px 16px;
+}
+
+.fc-sidebar-logo{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+
+  display:grid;
+  place-items:center;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--fc-accent),
+      var(--fc-accent-2)
+    );
+
+  font-weight:900;
+}
+
+.fc-sidebar-title{
+  font-weight:800;
+}
+
+.fc-sidebar-sub{
+  font-size:11px;
+  color:var(--fc-muted);
+}
+
+
+/* Sidebar buttons */
+
+.fc-nav-item{
+  width:100%!important;
+
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  padding:12px 13px;
+  margin:4px 0;
+
+  border:0!important;
+  border-radius:14px;
+
+  background:transparent;
+  color:var(--fc-muted);
+
+  text-align:left;
+
+  transition:
+    background .2s,
+    color .2s,
+    transform .2s;
+}
+
+.fc-nav-item:hover{
+  background:rgba(255,255,255,.05);
+  color:var(--fc-text);
+  transform:translateX(3px);
+}
+
+.fc-nav-item.active{
+  background:
+    linear-gradient(
+      90deg,
+      rgba(108,124,255,.18),
+      rgba(139,92,246,.08)
+    );
+
+  color:var(--fc-text);
+}
+
+.fc-nav-icon{
+  width:24px;
+  text-align:center;
+  font-size:18px;
+}
+
+.fc-nav-divider{
+  height:1px;
+  background:var(--fc-border);
+  margin:10px 4px;
+}
+
+.fc-nav-theme{
+  color:#b9c1ff!important;
+}
+
+
 /* =========================================================
-   SMALL CLOSED ARROW
+   SIDEBAR ARROW
    ========================================================= */
 
-.fc-nav-toggle,
-#fcNavToggle,
-#fc-nav-toggle{
+.fc-nav-toggle{
   position:fixed!important;
 
-  left:0!important;
+  left:2px!important;
   top:50%!important;
 
   width:22px!important;
   height:36px!important;
-
-  min-width:22px!important;
-  min-height:36px!important;
 
   padding:0!important;
   margin:0!important;
@@ -801,15 +249,12 @@ body{
   justify-content:center!important;
 
   border:1px solid var(--fc-border)!important;
-  border-left:0!important;
-
-  border-radius:0 9px 9px 0!important;
+  border-radius:0 10px 10px 0!important;
 
   background:rgba(17,24,36,.96)!important;
-
   color:var(--fc-text)!important;
 
-  box-shadow:0 8px 25px rgba(0,0,0,.35)!important;
+  box-shadow:0 8px 25px rgba(0,0,0,.35);
 
   z-index:10020!important;
 
@@ -822,28 +267,22 @@ body{
     left .42s cubic-bezier(.22,1,.36,1),
     width .2s ease,
     height .2s ease,
-    background .2s ease,
-    box-shadow .2s ease!important;
+    background .2s ease!important;
 }
 
-/* Make the small arrow easier to use when mouse reaches it */
 
-.fc-nav-toggle:hover,
-#fcNavToggle:hover,
-#fc-nav-toggle:hover{
-  width:32px!important;
+/* Arrow gets bigger when mouse is over it */
+
+.fc-nav-toggle:hover{
+  width:34px!important;
   height:44px!important;
-
   background:var(--fc-panel-3)!important;
-
-  box-shadow:0 10px 30px rgba(0,0,0,.45)!important;
 }
+
 
 /* Arrow itself */
 
-.fc-nav-toggle .fc-chevron,
-#fcNavToggle .fc-chevron,
-#fc-nav-toggle .fc-chevron{
+.fc-chevron{
   position:relative!important;
 
   width:100%!important;
@@ -865,186 +304,846 @@ body{
     transform .42s cubic-bezier(.22,1,.36,1)!important;
 }
 
-/* =========================================================
-   OPEN ARROW
-   Arrow moves to the RIGHT EDGE of the sidebar
-   ========================================================= */
 
-.fc-nav-toggle.is-open,
-#fcNavToggle.is-open,
-#fc-nav-toggle.is-open{
+/* Arrow moves with sidebar */
+
+.fc-nav-toggle.is-open{
   left:190px!important;
 
-  width:32px!important;
+  width:34px!important;
   height:44px!important;
 
   top:50%!important;
 
   transform:translateY(-50%)!important;
 
-  border-radius:0 9px 9px 0!important;
+  border-radius:0 10px 10px 0!important;
 }
 
-/* Rotate arrow when sidebar is open */
-
-.fc-nav-toggle.is-open .fc-chevron,
-#fcNavToggle.is-open .fc-chevron,
-#fc-nav-toggle.is-open .fc-chevron{
-  transform:rotate(180deg)!important
+.fc-nav-toggle.is-open .fc-chevron{
+  transform:rotate(180deg)!important;
 }
+
 
 /* =========================================================
-   SIDEBAR CONTENT
+   HOME SCREEN — FULL WIDTH
    ========================================================= */
 
-.fc-sidebar-brand{
-  flex-shrink:0
+#homeScreen{
+  width:100vw!important;
+  height:100vh!important;
+
+  background:
+    radial-gradient(
+      circle at 15% 0%,
+      rgba(108,124,255,.08),
+      transparent 28%
+    ),
+    var(--fc-bg)!important;
+
+  overflow:auto!important;
 }
 
-.fc-nav-item{
-  box-sizing:border-box!important
+
+/* Header covers complete width */
+
+#homeScreen>header{
+  width:100%!important;
+  max-width:none!important;
+
+  min-height:86px;
+
+  margin:0!important;
+  padding:20px 28px!important;
+
+  border:0!important;
+  border-bottom:1px solid var(--fc-border)!important;
+
+  border-radius:0!important;
+
+  background:rgba(7,10,16,.82)!important;
+
+  backdrop-filter:blur(18px);
 }
 
-.fc-nav-theme{
-  color:#b9c1ff!important
+
+/* Main home content */
+
+#homeScreen .profileRow,
+#homeScreen .search,
+#homeScreen .friendList{
+  width:calc(100% - 56px)!important;
+  max-width:none!important;
+
+  margin-left:28px!important;
+  margin-right:28px!important;
 }
+
+#homeScreen .profileRow{
+  margin-top:22px!important;
+}
+
+#homeScreen .search{
+  margin-top:20px!important;
+}
+
+#homeScreen .friendList{
+  margin-top:20px!important;
+  padding-bottom:100px!important;
+}
+
+
+/* Friend cards */
+
+#homeScreen .friendItem{
+  width:100%!important;
+
+  min-height:88px;
+
+  margin:10px 0!important;
+
+  border-radius:18px!important;
+  border:1px solid transparent!important;
+
+  background:rgba(13,18,27,.86)!important;
+
+  transition:
+    transform .2s,
+    background .2s,
+    border-color .2s,
+    box-shadow .2s;
+}
+
+#homeScreen .friendItem:hover{
+  transform:translateX(4px);
+
+  background:var(--fc-panel-2)!important;
+
+  border-color:var(--fc-border)!important;
+
+  box-shadow:0 12px 35px rgba(0,0,0,.22);
+}
+
 
 /* =========================================================
-   MOBILE SIDEBAR
+   QUICK ACTIONS
+   ========================================================= */
+
+.fc-quick-actions{
+  position:fixed!important;
+
+  right:22px!important;
+  top:102px!important;
+
+  display:flex;
+  gap:8px;
+
+  z-index:999;
+}
+
+.fc-quick{
+  width:44px;
+  height:44px;
+
+  border-radius:14px;
+
+  background:var(--fc-panel-2);
+
+  border:1px solid var(--fc-border);
+
+  color:var(--fc-text);
+
+  transition:.2s;
+}
+
+.fc-quick:hover{
+  transform:translateY(-3px);
+  background:var(--fc-panel-3);
+}
+
+.fc-quick.add{
+  color:#9faaff;
+}
+
+.fc-quick.media{
+  color:#8fe4ff;
+}
+
+
+/* =========================================================
+   BOTTOM DOCK
+   ========================================================= */
+
+.fc-bottom-dock{
+  position:fixed!important;
+
+  left:50%!important;
+  right:auto!important;
+  bottom:16px!important;
+
+  transform:translateX(-50%);
+
+  height:64px;
+
+  padding:8px 12px;
+
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  border:1px solid var(--fc-border);
+
+  border-radius:22px;
+
+  background:rgba(13,18,27,.9);
+
+  backdrop-filter:blur(20px);
+
+  box-shadow:0 18px 60px rgba(0,0,0,.4);
+
+  z-index:10000;
+}
+
+.fc-dock-btn{
+  width:46px;
+  height:46px;
+
+  border:0!important;
+  border-radius:15px;
+
+  background:transparent;
+
+  color:var(--fc-muted);
+
+  display:grid;
+  place-items:center;
+
+  font-size:19px;
+
+  transition:.22s;
+}
+
+.fc-dock-btn:hover{
+  background:rgba(255,255,255,.06);
+  color:var(--fc-text);
+}
+
+.fc-dock-center{
+  width:52px;
+  height:52px;
+
+  border-radius:17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--fc-accent),
+      var(--fc-accent-2)
+    );
+
+  box-shadow:0 8px 28px rgba(108,124,255,.3);
+
+  font-weight:900;
+  color:white;
+}
+
+.fc-dock-center:hover{
+  transform:translateY(-4px) scale(1.03);
+}
+
+
+/* =========================================================
+   DISCOVERY
+   ========================================================= */
+
+.fc-discovery{
+  position:fixed;
+
+  left:50%;
+  bottom:92px;
+
+  width:min(430px,calc(100vw - 28px));
+
+  max-height:min(620px,70vh);
+
+  transform:
+    translate(-50%,18px)
+    scale(.96);
+
+  opacity:0;
+  pointer-events:none;
+
+  border:1px solid var(--fc-border);
+  border-radius:22px;
+
+  background:rgba(13,18,27,.97);
+
+  backdrop-filter:blur(24px);
+
+  box-shadow:0 25px 80px rgba(0,0,0,.55);
+
+  z-index:9999;
+
+  transition:
+    opacity .25s var(--fc-ease),
+    transform .25s var(--fc-ease);
+
+  overflow:hidden;
+}
+
+.fc-discovery.open{
+  opacity:1;
+
+  transform:
+    translate(-50%,0)
+    scale(1);
+
+  pointer-events:auto;
+}
+
+.fc-discovery-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:18px;
+
+  border-bottom:1px solid var(--fc-border);
+}
+
+.fc-discovery-list{
+  padding:10px;
+
+  overflow:auto;
+
+  max-height:520px;
+}
+
+.fc-user-suggestion{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  width:100%;
+
+  padding:12px;
+
+  border-radius:15px;
+
+  background:transparent;
+
+  color:var(--fc-text);
+
+  text-align:left;
+}
+
+.fc-user-suggestion:hover{
+  background:rgba(255,255,255,.05);
+}
+
+.fc-user-avatar{
+  width:44px;
+  height:44px;
+
+  border-radius:50%;
+
+  display:grid;
+  place-items:center;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--fc-accent),
+      var(--fc-accent-2)
+    );
+
+  font-weight:800;
+
+  overflow:hidden;
+}
+
+.fc-user-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.fc-user-info{
+  flex:1;
+  min-width:0;
+}
+
+.fc-user-name{
+  font-weight:700;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.fc-user-id{
+  font-size:12px;
+  color:var(--fc-muted);
+}
+
+.fc-user-add{
+  padding:8px 12px;
+
+  border:0!important;
+  border-radius:10px;
+
+  background:var(--fc-accent);
+
+  color:#fff;
+
+  font-size:12px;
+}
+
+
+/* =========================================================
+   THEME PANEL
+   ========================================================= */
+
+.fc-theme-panel{
+  position:fixed;
+
+  left:50%;
+  top:50%;
+
+  width:min(470px,calc(100vw - 28px));
+
+  transform:
+    translate(-50%,-48%)
+    scale(.96);
+
+  opacity:0;
+  pointer-events:none;
+
+  z-index:10030;
+
+  background:rgba(13,18,27,.98);
+
+  border:1px solid var(--fc-border);
+
+  border-radius:24px;
+
+  box-shadow:0 30px 100px rgba(0,0,0,.65);
+
+  transition:.25s var(--fc-ease);
+}
+
+.fc-theme-panel.open{
+  opacity:1;
+
+  pointer-events:auto;
+
+  transform:
+    translate(-50%,-50%)
+    scale(1);
+}
+
+.fc-theme-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:18px;
+
+  border-bottom:1px solid var(--fc-border);
+}
+
+.fc-theme-body{
+  padding:18px;
+}
+
+.fc-theme-grid{
+  display:grid;
+
+  grid-template-columns:repeat(2,1fr);
+
+  gap:10px;
+}
+
+.fc-theme-choice{
+  padding:14px;
+
+  border-radius:16px;
+
+  border:1px solid var(--fc-border);
+
+  background:var(--fc-panel-2);
+
+  text-align:left;
+}
+
+.fc-theme-choice:hover{
+  border-color:rgba(108,124,255,.55);
+}
+
+.fc-theme-swatch{
+  height:38px;
+
+  border-radius:10px;
+
+  margin-bottom:8px;
+}
+
+.fc-theme-name{
+  font-weight:700;
+}
+
+.fc-theme-desc{
+  font-size:11px;
+  color:var(--fc-muted);
+}
+
+.fc-overlay{
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,.48);
+
+  backdrop-filter:blur(3px);
+
+  opacity:0;
+  pointer-events:none;
+
+  z-index:10020;
+
+  transition:.25s;
+}
+
+.fc-overlay.open{
+  opacity:1;
+  pointer-events:auto;
+}
+
+
+/* =========================================================
+   CHAT SCREEN — FULL WIDTH
+   ========================================================= */
+
+#chatScreen{
+  width:100vw!important;
+  height:100vh!important;
+
+  background:var(--fc-bg)!important;
+
+  overflow:hidden!important;
+}
+
+#chatScreen>header{
+  width:100%!important;
+
+  min-height:76px!important;
+
+  padding:14px 22px!important;
+
+  margin:0!important;
+
+  border:0!important;
+  border-bottom:1px solid var(--fc-border)!important;
+
+  border-radius:0!important;
+
+  background:rgba(7,10,16,.86)!important;
+}
+
+#messages{
+  width:100%!important;
+
+  height:calc(100vh - 150px)!important;
+
+  margin:0!important;
+
+  padding:
+    28px
+    clamp(18px,5vw,80px)
+    100px!important;
+
+  overflow:auto!important;
+}
+
+#chatScreen .composer{
+  position:fixed!important;
+
+  left:clamp(14px,5vw,80px)!important;
+  right:clamp(14px,5vw,80px)!important;
+
+  bottom:16px!important;
+
+  margin:0!important;
+
+  z-index:1000;
+
+  background:rgba(17,24,36,.94)!important;
+
+  border:1px solid var(--fc-border)!important;
+
+  border-radius:18px!important;
+
+  box-shadow:0 15px 45px rgba(0,0,0,.35);
+}
+
+.message{
+  animation:fcMessageIn .25s var(--fc-ease);
+}
+
+@keyframes fcMessageIn{
+  from{
+    opacity:0;
+    transform:translateY(8px) scale(.98);
+  }
+
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+.messageStatus,
+.readTicks,
+.deliveredTicks,
+.sentTick{
+  color:#000!important;
+}
+
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+#profileScreen{
+  width:100vw!important;
+  height:100vh!important;
+
+  background:var(--fc-bg)!important;
+
+  overflow:auto!important;
+}
+
+#profileScreen .profilePage{
+  animation:fcProfileIn .42s var(--fc-ease);
+}
+
+@keyframes fcProfileIn{
+  from{
+    opacity:0;
+    transform:translateY(20px) scale(.985);
+  }
+
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+
+/* =========================================================
+   ADD SCREEN
+   ========================================================= */
+
+#addScreen{
+  width:100vw!important;
+  height:100vh!important;
+
+  background:var(--fc-bg)!important;
+
+  overflow:auto!important;
+}
+
+
+/* =========================================================
+   HIDE OLD SPOTIFY SIDE UI
+   ========================================================= */
+
+.spotify-side-button,
+.spotify-side-bar,
+.spotify-side-icon,
+.spotify-side-text{
+  display:none!important;
+}
+
+
+/* =========================================================
+   NO ARTIFICIAL CONTENT SHIFT
+   ========================================================= */
+
+.fc-main-shift{
+  padding-left:0!important;
+  margin-left:0!important;
+
+  transition:none!important;
+}
+
+#homeScreen>header{
+  margin-left:0!important;
+}
+
+#homeScreen .profileRow,
+#homeScreen .search,
+#homeScreen .friendList{
+  margin-left:28px!important;
+  margin-right:28px!important;
+}
+
+
+/* =========================================================
+   MOBILE
    ========================================================= */
 
 @media(max-width:760px){
 
-  .fc-sidebar,
-  #fcCustomSidebar,
-  #fc-sidebar{
+  .fc-sidebar{
     left:0!important;
 
     width:185px!important;
     max-width:185px!important;
-
-    height:calc(100vh - 32px)!important;
-    max-height:calc(100vh - 32px)!important;
-
-    top:50%!important;
-
-    transform:translate(-100%,-50%)!important;
   }
 
-  .fc-sidebar.open,
-  #fcCustomSidebar.open,
-  #fc-sidebar.open{
-    transform:translate(0,-50%)!important
-  }
-
-  .fc-nav-toggle,
-  #fcNavToggle,
-  #fc-nav-toggle{
-    left:0!important;
+  .fc-nav-toggle{
+    left:2px!important;
 
     width:20px!important;
     height:34px!important;
-
-    min-width:20px!important;
-    min-height:34px!important;
-
-    top:50%!important;
-
-    transform:translateY(-50%)!important;
   }
 
-  .fc-nav-toggle:hover,
-  #fcNavToggle:hover,
-  #fc-nav-toggle:hover{
-    width:30px!important;
+  .fc-nav-toggle:hover{
+    width:32px!important;
     height:42px!important;
   }
 
-  .fc-nav-toggle.is-open,
-  #fcNavToggle.is-open,
-  #fc-nav-toggle.is-open{
+  .fc-nav-toggle.is-open{
     left:185px!important;
 
-    width:30px!important;
+    width:32px!important;
     height:42px!important;
+  }
 
-    top:50%!important;
-
-    transform:translateY(-50%)!important;
+  #homeScreen>header{
+    width:100%!important;
+    padding:
+      18px
+      18px!important;
   }
 
   #homeScreen .profileRow,
   #homeScreen .search,
   #homeScreen .friendList{
+    width:calc(100vw - 28px)!important;
+
     margin-left:14px!important;
-    width:calc(100vw - 28px)!important
+    margin-right:14px!important;
   }
 
-  #homeScreen>header{
-    padding-left:70px!important
+  #homeScreen .profileRow{
+    margin-top:18px!important;
+  }
+
+  #homeScreen .search{
+    margin-top:16px!important;
+  }
+
+  #homeScreen .friendList{
+    margin-top:16px!important;
   }
 
   .fc-quick-actions{
     right:12px!important;
-    top:88px!important
+    top:88px!important;
   }
 
   .fc-bottom-dock{
-    bottom:10px!important
+    bottom:10px!important;
   }
 
   #messages{
-    padding:18px 12px 100px!important
+    height:calc(100vh - 130px)!important;
+
+    padding:
+      18px
+      12px
+      100px!important;
   }
 
   #chatScreen .composer{
     left:10px!important;
     right:10px!important;
-    bottom:8px!important
+    bottom:8px!important;
+  }
+
+  .fc-theme-grid{
+    grid-template-columns:1fr;
   }
 }
 
-/* ---------- small phones ---------- */
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
 
 @media(max-width:420px){
 
-  .fc-sidebar,
-  #fcCustomSidebar,
-  #fc-sidebar{
+  .fc-sidebar{
     width:180px!important;
     max-width:180px!important;
   }
 
-  .fc-nav-toggle,
-  #fcNavToggle,
-  #fc-nav-toggle{
+  .fc-nav-toggle{
     width:19px!important;
     height:32px!important;
   }
 
-  .fc-nav-toggle:hover,
-  #fcNavToggle:hover,
-  #fc-nav-toggle:hover{
-    width:29px!important;
+  .fc-nav-toggle:hover{
+    width:30px!important;
     height:40px!important;
   }
 
-  .fc-nav-toggle.is-open,
-  #fcNavToggle.is-open,
-  #fc-nav-toggle.is-open{
+  .fc-nav-toggle.is-open{
     left:180px!important;
-    width:29px!important;
+
+    width:30px!important;
     height:40px!important;
+  }
+
+  #homeScreen .profileRow,
+  #homeScreen .search,
+  #homeScreen .friendList{
+    width:calc(100vw - 20px)!important;
+
+    margin-left:10px!important;
+    margin-right:10px!important;
+  }
+
+  .fc-bottom-dock{
+    gap:8px;
+    padding:7px 9px;
+  }
+
+  .fc-dock-btn{
+    width:42px;
+    height:42px;
+  }
+
+  .fc-dock-center{
+    width:48px;
+    height:48px;
   }
 }
 
-/* ---------- reduced motion ---------- */
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
 
 @media(prefers-reduced-motion:reduce){
 
-  .fc-sidebar,
-  .fc-nav-toggle,
-  .fc-nav-toggle .fc-chevron{
-    transition:none!important
+  *,
+  *::before,
+  *::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
   }
 }
