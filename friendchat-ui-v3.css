@@ -1588,3 +1588,313 @@ body > *,
         min-height: 100dvh !important;
     }
 }
+/* =========================================================
+   FRIENDCHAT THEMES — FINAL FIX
+   Keeps all existing themes visible and clickable
+   ========================================================= */
+
+/* Theme overlay */
+#themeOverlay,
+.themeOverlay,
+.fc-theme-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    padding: 20px !important;
+    box-sizing: border-box !important;
+
+    background: rgba(0, 0, 0, 0.65) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+
+    z-index: 20000 !important;
+}
+
+
+/* Theme overlay hidden state */
+#themeOverlay.hidden,
+.themeOverlay.hidden,
+.fc-theme-overlay.hidden {
+    display: none !important;
+}
+
+
+/* Theme panel */
+#themePanel,
+.themePanel,
+.fc-theme-panel {
+    position: relative !important;
+
+    width: min(520px, calc(100vw - 32px)) !important;
+    max-width: 520px !important;
+
+    max-height: calc(100vh - 40px) !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    padding: 24px !important;
+    box-sizing: border-box !important;
+
+    border-radius: 22px !important;
+
+    background: rgba(18, 24, 35, 0.98) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+
+    box-shadow:
+        0 30px 100px rgba(0, 0, 0, 0.65) !important;
+
+    color: var(--fc-text, #ffffff) !important;
+
+    z-index: 20001 !important;
+}
+
+
+/* Theme title */
+#themePanel h2,
+#themePanel h3,
+.themePanel h2,
+.themePanel h3,
+.fc-theme-panel h2,
+.fc-theme-panel h3 {
+    margin-top: 0 !important;
+    color: var(--fc-text, #fff) !important;
+}
+
+
+/* Theme choices container */
+#themeChoices,
+.themeChoices,
+.fc-theme-choices {
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr)) !important;
+
+    gap: 12px !important;
+
+    width: 100% !important;
+}
+
+
+/* Individual theme buttons/cards */
+#themeChoices button,
+#themeChoices .themeChoice,
+#themeChoices .theme-option,
+
+.themeChoices button,
+.themeChoices .themeChoice,
+.themeChoices .theme-option,
+
+.fc-theme-choices button,
+.fc-theme-choices .themeChoice,
+.fc-theme-choices .theme-option {
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    min-height: 70px !important;
+    width: 100% !important;
+
+    padding: 14px !important;
+
+    box-sizing: border-box !important;
+
+    border-radius: 14px !important;
+
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+
+    background: rgba(255, 255, 255, 0.06) !important;
+
+    color: #ffffff !important;
+
+    cursor: pointer !important;
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+
+/* Theme hover */
+#themeChoices button:hover,
+#themeChoices .themeChoice:hover,
+#themeChoices .theme-option:hover,
+
+.themeChoices button:hover,
+.themeChoices .themeChoice:hover,
+.themeChoices .theme-option:hover,
+
+.fc-theme-choices button:hover,
+.fc-theme-choices .themeChoice:hover,
+.fc-theme-choices .theme-option:hover {
+    transform: translateY(-2px) !important;
+
+    background: rgba(255, 255, 255, 0.12) !important;
+
+    border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+
+/* Theme color preview */
+.themePreview,
+.theme-preview,
+.fc-theme-preview {
+    width: 38px !important;
+    height: 38px !important;
+
+    min-width: 38px !important;
+    min-height: 38px !important;
+
+    border-radius: 50% !important;
+
+    overflow: hidden !important;
+}
+
+
+/* Close button */
+#themePanel .close,
+#themePanel .closeButton,
+#themePanel .themeClose,
+.themePanel .close,
+.themePanel .closeButton,
+.themePanel .themeClose,
+.fc-theme-panel .close,
+.fc-theme-panel .closeButton,
+.fc-theme-panel .themeClose {
+    cursor: pointer !important;
+
+    z-index: 20002 !important;
+}
+
+
+/* =========================================================
+   IMPORTANT:
+   SIDEBAR MUST STAY BELOW THE THEME WINDOW
+   ========================================================= */
+
+.fc-sidebar,
+#fcCustomSidebar,
+#fc-sidebar {
+    z-index: 10010 !important;
+}
+
+.fc-nav-toggle,
+#fcNavToggle,
+#fc-nav-toggle {
+    z-index: 10020 !important;
+}
+
+
+/* =========================================================
+   FULL SCREEN APP
+   ========================================================= */
+
+html,
+body {
+    width: 100% !important;
+    min-width: 100% !important;
+
+    min-height: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+
+.app {
+    width: 100% !important;
+    min-width: 100% !important;
+
+    min-height: 100vh !important;
+}
+
+
+/* Screens should use the whole available screen */
+.screen {
+    width: 100% !important;
+    min-width: 100% !important;
+
+    min-height: 100vh !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* Don't let the floating sidebar change page width */
+body {
+    overflow-x: hidden !important;
+}
+
+
+/* =========================================================
+   MOBILE THEMES
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    #themeOverlay,
+    .themeOverlay,
+    .fc-theme-overlay {
+        padding: 12px !important;
+    }
+
+    #themePanel,
+    .themePanel,
+    .fc-theme-panel {
+        width: calc(100vw - 24px) !important;
+
+        max-height: calc(100vh - 24px) !important;
+
+        padding: 18px !important;
+
+        border-radius: 18px !important;
+    }
+
+    #themeChoices,
+    .themeChoices,
+    .fc-theme-choices {
+        grid-template-columns:
+            1fr 1fr !important;
+
+        gap: 9px !important;
+    }
+
+    #themeChoices button,
+    #themeChoices .themeChoice,
+    #themeChoices .theme-option,
+
+    .themeChoices button,
+    .themeChoices .themeChoice,
+    .themeChoices .theme-option,
+
+    .fc-theme-choices button,
+    .fc-theme-choices .themeChoice,
+    .fc-theme-choices .theme-option {
+        min-height: 62px !important;
+
+        padding: 10px !important;
+    }
+}
+
+
+@media (max-width: 380px) {
+
+    #themeChoices,
+    .themeChoices,
+    .fc-theme-choices {
+        grid-template-columns: 1fr !important;
+    }
+}
