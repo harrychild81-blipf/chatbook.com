@@ -1147,3 +1147,63 @@ body{
     scroll-behavior:auto!important;
   }
 }
+/* ===== FULL SCREEN FIX ===== */
+
+html,
+body {
+    width: 100%;
+    min-width: 100%;
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body {
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Main FriendChat app */
+#app,
+#friendChatApp,
+.app,
+.fc-app,
+.fc-screen,
+.screen {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: none !important;
+    min-height: 100vh !important;
+}
+
+/* Screens should use the complete browser area */
+#homeScreen,
+#addScreen,
+#chatScreen,
+#profileScreen,
+#settingsScreen {
+    width: 100% !important;
+    min-width: 100% !important;
+    min-height: 100vh !important;
+}
+
+/* Prevent an old fixed width from making the page smaller */
+.fc-main,
+.fc-content,
+.fc-page,
+.fc-container {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Remove horizontal gaps caused by old layout */
+body {
+    overflow-x: hidden !important;
+}
