@@ -11,7 +11,6 @@
       accent: "#6c7cff",
       accent2: "#8b5cf6"
     },
-
     emerald: {
       name: "Emerald",
       desc: "Dark green glass",
@@ -20,7 +19,6 @@
       accent: "#22c55e",
       accent2: "#14b8a6"
     },
-
     ocean: {
       name: "Ocean",
       desc: "Deep blue",
@@ -29,7 +27,6 @@
       accent: "#22a6f2",
       accent2: "#6366f1"
     },
-
     sunset: {
       name: "Sunset",
       desc: "Warm orange glow",
@@ -38,7 +35,6 @@
       accent: "#ff7a45",
       accent2: "#ef4444"
     },
-
     rose: {
       name: "Rose",
       desc: "Pink and violet",
@@ -47,7 +43,6 @@
       accent: "#ec4899",
       accent2: "#8b5cf6"
     },
-
     graphite: {
       name: "Graphite",
       desc: "Minimal monochrome",
@@ -86,42 +81,60 @@
     return e;
   }
 
+
+  /* =========================================================
+     MAIN INITIALIZATION
+     ========================================================= */
+
   function init() {
 
     if ($("fcCustomSidebar")) {
       return;
     }
 
-    /* =====================================================
-       SIDEBAR ARROW
-       ===================================================== */
 
-    const toggle = create(
-      "button",
-      "fc-nav-toggle",
-      document.body
-    );
+    /* =======================================================
+       NAVIGATION ARROW
+       ======================================================= */
+
+    const toggle =
+      create(
+        "button",
+        "fc-nav-toggle",
+        document.body
+      );
 
     toggle.id = "fcNavToggle";
-    toggle.title = "Open navigation";
+
+    toggle.title =
+      "Open navigation";
+
+    toggle.setAttribute(
+      "aria-label",
+      "Open navigation"
+    );
 
     toggle.innerHTML =
       '<span class="fc-chevron">›</span>';
 
 
-    /* =====================================================
+    /* =======================================================
        SIDEBAR
-       ===================================================== */
+       ======================================================= */
 
-    const sidebar = create(
-      "aside",
-      "fc-sidebar",
-      document.body
-    );
+    const sidebar =
+      create(
+        "aside",
+        "fc-sidebar",
+        document.body
+      );
 
-    sidebar.id = "fcCustomSidebar";
+    sidebar.id =
+      "fcCustomSidebar";
+
 
     sidebar.innerHTML = `
+
       <div class="fc-sidebar-brand">
 
         <div class="fc-sidebar-logo">
@@ -144,6 +157,7 @@
       <button
         class="fc-nav-item active"
         data-nav="chats"
+        type="button"
       >
         <span class="fc-nav-icon">
           💬
@@ -155,6 +169,7 @@
       <button
         class="fc-nav-item"
         data-nav="friends"
+        type="button"
       >
         <span class="fc-nav-icon">
           👥
@@ -166,6 +181,7 @@
       <button
         class="fc-nav-item"
         data-nav="music"
+        type="button"
       >
         <span class="fc-nav-icon">
           🎵
@@ -180,6 +196,7 @@
       <button
         class="fc-nav-item fc-nav-theme"
         data-nav="theme"
+        type="button"
       >
         <span class="fc-nav-icon">
           🎨
@@ -191,6 +208,7 @@
       <button
         class="fc-nav-item"
         data-nav="settings"
+        type="button"
       >
         <span class="fc-nav-icon">
           ⚙️
@@ -202,133 +220,195 @@
       <button
         class="fc-nav-item"
         data-nav="profile"
+        type="button"
       >
         <span class="fc-nav-icon">
           👤
         </span>
         Profile
       </button>
+
     `;
 
 
-    /* =====================================================
+    /* =======================================================
        SIDEBAR OPEN / CLOSE
-       ===================================================== */
+       ======================================================= */
 
-    toggle.addEventListener("click", () => {
+    toggle.addEventListener(
+      "click",
+      () => {
 
-      const open =
-        sidebar.classList.toggle("open");
-
-      toggle.classList.toggle(
-        "is-open",
-        open
-      );
-
-    });
-
-
-    /* =====================================================
-       SIDEBAR BUTTONS
-       ===================================================== */
-
-    sidebar
-      .querySelectorAll(".fc-nav-item")
-      .forEach(btn => {
-
-        btn.addEventListener("click", () => {
-
-          const action =
-            btn.dataset.nav;
-
-
-          if (
-            action === "chats" ||
-            action === "friends"
-          ) {
-
-            if (
-              typeof showHome === "function"
-            ) {
-              showHome();
-            }
-
-          }
-
-
-          if (action === "music") {
-
-            if (
-              typeof window.openSpotifyPanel ===
-              "function"
-            ) {
-
-              window.openSpotifyPanel();
-
-            } else if (
-              typeof window.toggleSpotifyPanel ===
-              "function"
-            ) {
-
-              window.toggleSpotifyPanel();
-
-            }
-
-          }
-
-
-          if (
-            action === "profile" &&
-            typeof showProfile ===
-            "function"
-          ) {
-
-            showProfile();
-
-          }
-
-
-          if (action === "theme") {
-
-            openThemePanel();
-
-          }
-
-
-          if (action === "settings") {
-
-            openThemePanel();
-
-          }
-
-
-          sidebar.classList.remove(
+        const open =
+          sidebar.classList.toggle(
             "open"
           );
 
-          toggle.classList.remove(
-            "is-open"
-          );
+        toggle.classList.toggle(
+          "is-open",
+          open
+        );
 
-        });
+        toggle.title =
+          open
+            ? "Close navigation"
+            : "Open navigation";
+
+        toggle.setAttribute(
+          "aria-label",
+          open
+            ? "Close navigation"
+            : "Open navigation"
+        );
+
+      }
+    );
+
+
+    /* =======================================================
+       SIDEBAR BUTTONS
+       ======================================================= */
+
+    sidebar
+      .querySelectorAll(
+        ".fc-nav-item"
+      )
+      .forEach(btn => {
+
+        btn.addEventListener(
+          "click",
+          () => {
+
+            const action =
+              btn.dataset.nav;
+
+
+            /* CHATS */
+
+            if (
+              action === "chats"
+            ) {
+
+              if (
+                typeof showHome ===
+                "function"
+              ) {
+                showHome();
+              }
+
+            }
+
+
+            /* FRIENDS */
+
+            if (
+              action === "friends"
+            ) {
+
+              if (
+                typeof showHome ===
+                "function"
+              ) {
+                showHome();
+              }
+
+            }
+
+
+            /* MUSIC */
+
+            if (
+              action === "music"
+            ) {
+
+              if (
+                typeof window.openSpotifyPanel ===
+                "function"
+              ) {
+
+                window.openSpotifyPanel();
+
+              } else if (
+                typeof window.toggleSpotifyPanel ===
+                "function"
+              ) {
+
+                window.toggleSpotifyPanel();
+
+              }
+
+            }
+
+
+            /* PROFILE */
+
+            if (
+              action === "profile"
+            ) {
+
+              if (
+                typeof showProfile ===
+                "function"
+              ) {
+
+                showProfile();
+
+              }
+
+            }
+
+
+            /* THEME */
+
+            if (
+              action === "theme"
+            ) {
+
+              openThemePanel();
+
+            }
+
+
+            /* SETTINGS */
+
+            if (
+              action === "settings"
+            ) {
+
+              openThemePanel();
+
+            }
+
+
+            /* CLOSE SIDEBAR */
+
+            sidebar.classList.remove(
+              "open"
+            );
+
+            toggle.classList.remove(
+              "is-open"
+            );
+
+            toggle.title =
+              "Open navigation";
+
+            toggle.setAttribute(
+              "aria-label",
+              "Open navigation"
+            );
+
+          }
+        );
 
       });
 
 
-    /*
-      IMPORTANT:
+    /* =======================================================
+       OTHER UI
+       ======================================================= */
 
-      The old addQuickActions() function has
-      been removed.
-
-      This removes the bottom:
-      + button
-      ▧ button
-
-      The main header + button remains
-      because it belongs to index.html.
-    */
-
+    addQuickActions();
 
     addBottomDock();
 
@@ -345,114 +425,232 @@
   }
 
 
-  /* =====================================================
-     BOTTOM DOCK
-     ===================================================== */
+  /* =========================================================
+     QUICK ACTION BUTTONS
+     ========================================================= */
 
-  function addBottomDock() {
+  function addQuickActions() {
 
-    const dock = create(
-      "div",
-      "fc-bottom-dock",
-      document.body
-    );
-
-
-    const chats = create(
-      "button",
-      "fc-dock-btn",
-      dock
-    );
-
-    chats.title = "Chats";
-
-    chats.textContent = "💬";
-
-    chats.onclick = () => {
-
-      if (
-        typeof showHome ===
-        "function"
-      ) {
-
-        showHome();
-
-      }
-
-    };
+    const box =
+      create(
+        "div",
+        "fc-quick-actions",
+        document.body
+      );
 
 
-    const center = create(
-      "button",
-      "fc-dock-btn fc-dock-center",
-      dock
-    );
+    /* ADD FRIEND */
 
-    center.title =
-      "Discover FriendChat users";
+    const add =
+      create(
+        "button",
+        "fc-quick add",
+        box
+      );
 
-    center.textContent = "FC";
+    add.title =
+      "Add friend";
 
-    center.onclick = () =>
-      toggleDiscovery();
+    add.textContent =
+      "＋";
 
 
-    const profile = create(
-      "button",
-      "fc-dock-btn",
-      dock
-    );
+    add.onclick =
+      () => {
 
-    profile.title = "Profile";
+        if (
+          typeof showAdd ===
+          "function"
+        ) {
 
-    profile.textContent = "👤";
+          showAdd();
 
-    profile.onclick = () => {
+        }
 
-      if (
-        typeof showProfile ===
-        "function"
-      ) {
+      };
 
-        showProfile();
 
-      }
+    /* PROFILE MEDIA */
 
-    };
+    const media =
+      create(
+        "button",
+        "fc-quick media",
+        box
+      );
+
+    media.title =
+      "Upload profile media";
+
+    media.textContent =
+      "▧";
+
+
+    media.onclick =
+      () => {
+
+        const input =
+          $("profileMediaInput");
+
+
+        if (input) {
+
+          input.click();
+
+        } else if (
+          typeof showProfile ===
+          "function"
+        ) {
+
+          showProfile();
+
+        }
+
+      };
 
   }
 
 
-  /* =====================================================
+  /* =========================================================
+     BOTTOM DOCK
+     ========================================================= */
+
+  function addBottomDock() {
+
+    const dock =
+      create(
+        "div",
+        "fc-bottom-dock",
+        document.body
+      );
+
+
+    /* CHATS */
+
+    const chats =
+      create(
+        "button",
+        "fc-dock-btn",
+        dock
+      );
+
+    chats.title =
+      "Chats";
+
+    chats.textContent =
+      "💬";
+
+
+    chats.onclick =
+      () => {
+
+        if (
+          typeof showHome ===
+          "function"
+        ) {
+
+          showHome();
+
+        }
+
+      };
+
+
+    /* DISCOVER */
+
+    const center =
+      create(
+        "button",
+        "fc-dock-btn fc-dock-center",
+        dock
+      );
+
+    center.title =
+      "Discover FriendChat users";
+
+    center.textContent =
+      "FC";
+
+
+    center.onclick =
+      () => {
+
+        toggleDiscovery();
+
+      };
+
+
+    /* PROFILE */
+
+    const profile =
+      create(
+        "button",
+        "fc-dock-btn",
+        dock
+      );
+
+    profile.title =
+      "Profile";
+
+    profile.textContent =
+      "👤";
+
+
+    profile.onclick =
+      () => {
+
+        if (
+          typeof showProfile ===
+          "function"
+        ) {
+
+          showProfile();
+
+        }
+
+      };
+
+  }
+
+
+  /* =========================================================
      DISCOVERY
-     ===================================================== */
+     ========================================================= */
 
   function addDiscovery() {
 
-    const overlay = create(
-      "div",
-      "fc-overlay",
-      document.body
-    );
+    const overlay =
+      create(
+        "div",
+        "fc-overlay",
+        document.body
+      );
 
     overlay.id =
       "fcDiscoveryOverlay";
 
+
     overlay.onclick =
-      () => closeDiscovery();
+      () => {
+
+        closeDiscovery();
+
+      };
 
 
-    const panel = create(
-      "section",
-      "fc-discovery",
-      document.body
-    );
+    const panel =
+      create(
+        "section",
+        "fc-discovery",
+        document.body
+      );
 
     panel.id =
       "fcDiscovery";
 
 
     panel.innerHTML = `
+
       <div class="fc-discovery-head">
 
         <div>
@@ -471,6 +669,7 @@
         <button
           class="fc-dock-btn"
           data-close
+          type="button"
         >
           ×
         </button>
@@ -482,13 +681,26 @@
         class="fc-discovery-list"
         id="fcDiscoveryList"
       ></div>
+
     `;
 
 
-    panel
-      .querySelector("[data-close]")
-      .onclick =
-      closeDiscovery;
+    const closeButton =
+      panel.querySelector(
+        "[data-close]"
+      );
+
+
+    if (closeButton) {
+
+      closeButton.onclick =
+        () => {
+
+          closeDiscovery();
+
+        };
+
+    }
 
   }
 
@@ -502,8 +714,15 @@
       $("fcDiscoveryOverlay");
 
 
+    if (!p || !o) {
+      return;
+    }
+
+
     if (
-      p.classList.contains("open")
+      p.classList.contains(
+        "open"
+      )
     ) {
 
       closeDiscovery();
@@ -512,9 +731,13 @@
 
       renderDiscovery();
 
-      p.classList.add("open");
+      p.classList.add(
+        "open"
+      );
 
-      o.classList.add("open");
+      o.classList.add(
+        "open"
+      );
 
     }
 
@@ -524,12 +747,14 @@
   function closeDiscovery() {
 
     $("fcDiscovery")
-      ?.classList
-      .remove("open");
+      ?.classList.remove(
+        "open"
+      );
 
     $("fcDiscoveryOverlay")
-      ?.classList
-      .remove("open");
+      ?.classList.remove(
+        "open"
+      );
 
   }
 
@@ -539,13 +764,16 @@
     const list =
       $("fcDiscoveryList");
 
+
     if (!list) {
       return;
     }
 
 
     const friendSource =
-      Array.isArray(window.friends)
+      Array.isArray(
+        window.friends
+      )
         ? window.friends
         : [];
 
@@ -559,26 +787,33 @@
       new Map();
 
 
-    friendSource.forEach(user => {
+    friendSource.forEach(
+      user => {
 
-      map.set(
-        String(
-          user.id || ""
-        ).toUpperCase(),
-        user
-      );
+        map.set(
+          String(
+            user.id || ""
+          ).toUpperCase(),
+          user
+        );
 
-    });
+      }
+    );
 
 
-    Object.keys(presence)
-      .forEach(id => {
+    Object.keys(
+      presence
+    ).forEach(
+      id => {
 
         const key =
-          String(id).toUpperCase();
+          String(id)
+            .toUpperCase();
 
 
-        if (!map.has(key)) {
+        if (
+          !map.has(key)
+        ) {
 
           map.set(
             key,
@@ -590,7 +825,8 @@
 
         }
 
-      });
+      }
+    );
 
 
     const source =
@@ -603,125 +839,170 @@
 
           return (
             !myId ||
-            String(user.id).toUpperCase() !==
-            String(myId).toUpperCase()
+            String(
+              user.id
+            ).toUpperCase() !==
+            String(
+              myId
+            ).toUpperCase()
           );
 
         });
 
 
-    if (!source.length) {
+    if (
+      !source.length
+    ) {
 
       list.innerHTML =
-        '<div style="padding:24px;text-align:center;color:var(--fc-muted)">No users available yet.</div>';
+        `
+          <div
+            style="
+              padding:24px;
+              text-align:center;
+              color:var(--fc-muted);
+            "
+          >
+            No users available yet.
+          </div>
+        `;
 
       return;
 
     }
 
 
-    list.innerHTML = "";
+    list.innerHTML =
+      "";
 
 
-    source.forEach(user => {
+    source.forEach(
+      user => {
 
-      const row = create(
-        "div",
-        "fc-user-suggestion",
-        list
-      );
-
-
-      const avatar = create(
-        "div",
-        "fc-user-avatar",
-        row
-      );
-
-      avatar.textContent =
-        (user.name || "?")
-          .charAt(0)
-          .toUpperCase();
+        const row =
+          create(
+            "div",
+            "fc-user-suggestion",
+            list
+          );
 
 
-      const info = create(
-        "div",
-        "fc-user-info",
-        row
-      );
+        const avatar =
+          create(
+            "div",
+            "fc-user-avatar",
+            row
+          );
 
 
-      info.innerHTML = `
-        <div class="fc-user-name">
-          ${esc(user.name || "Unknown")}
-        </div>
-
-        <div class="fc-user-id">
-          ${esc(user.id || "")}
-        </div>
-      `;
+        avatar.textContent =
+          (
+            user.name ||
+            "?"
+          )
+            .charAt(0)
+            .toUpperCase();
 
 
-      const add = create(
-        "button",
-        "fc-user-add",
-        row
-      );
-
-      add.textContent =
-        "Chat";
+        const info =
+          create(
+            "div",
+            "fc-user-info",
+            row
+          );
 
 
-      add.onclick = () => {
+        info.innerHTML = `
+          <div class="fc-user-name">
+            ${esc(
+              user.name ||
+              "Unknown"
+            )}
+          </div>
 
-        if (
-          typeof openChat ===
-          "function"
-        ) {
+          <div class="fc-user-id">
+            ${esc(
+              user.id ||
+              ""
+            )}
+          </div>
+        `;
 
-          openChat(user);
 
-        }
+        const add =
+          create(
+            "button",
+            "fc-user-add",
+            row
+          );
 
-        closeDiscovery();
 
-      };
+        add.textContent =
+          "Chat";
 
-    });
+
+        add.onclick =
+          () => {
+
+            if (
+              typeof openChat ===
+              "function"
+            ) {
+
+              openChat(
+                user
+              );
+
+            }
+
+            closeDiscovery();
+
+          };
+
+      }
+    );
 
   }
 
 
-  /* =====================================================
+  /* =========================================================
      THEME PANEL
-     ===================================================== */
+     ========================================================= */
 
   function addThemePanel() {
 
-    const overlay = create(
-      "div",
-      "fc-overlay",
-      document.body
-    );
+    const overlay =
+      create(
+        "div",
+        "fc-overlay",
+        document.body
+      );
 
     overlay.id =
       "fcThemeOverlay";
 
+
     overlay.onclick =
-      closeThemePanel;
+      () => {
+
+        closeThemePanel();
+
+      };
 
 
-    const panel = create(
-      "section",
-      "fc-theme-panel",
-      document.body
-    );
+    const panel =
+      create(
+        "section",
+        "fc-theme-panel",
+        document.body
+      );
 
     panel.id =
       "fcThemePanel";
 
 
     panel.innerHTML = `
+
       <div class="fc-theme-head">
 
         <strong>
@@ -732,6 +1013,7 @@
         <button
           class="fc-dock-btn"
           data-close
+          type="button"
         >
           ×
         </button>
@@ -747,13 +1029,26 @@
         ></div>
 
       </div>
+
     `;
 
 
-    panel
-      .querySelector("[data-close]")
-      .onclick =
-      closeThemePanel;
+    const closeButton =
+      panel.querySelector(
+        "[data-close]"
+      );
+
+
+    if (closeButton) {
+
+      closeButton.onclick =
+        () => {
+
+          closeThemePanel();
+
+        };
+
+    }
 
 
     const grid =
@@ -762,36 +1057,64 @@
       );
 
 
-    Object.entries(themes)
-      .forEach(([key, t]) => {
-
-        const b = create(
-          "button",
-          "fc-theme-choice",
-          grid
-        );
+    if (!grid) {
+      return;
+    }
 
 
-        b.innerHTML = `
+    Object.entries(
+      themes
+    ).forEach(
+      ([key, theme]) => {
+
+        const button =
+          create(
+            "button",
+            "fc-theme-choice",
+            grid
+          );
+
+
+        button.type =
+          "button";
+
+
+        button.innerHTML = `
+
           <div
             class="fc-theme-swatch"
-            style="background:linear-gradient(135deg,${t.accent},${t.accent2})"
+            style="
+              background:
+                linear-gradient(
+                  135deg,
+                  ${theme.accent},
+                  ${theme.accent2}
+                )
+            "
           ></div>
 
           <div class="fc-theme-name">
-            ${t.name}
+            ${theme.name}
           </div>
 
           <div class="fc-theme-desc">
-            ${t.desc}
+            ${theme.desc}
           </div>
+
         `;
 
 
-        b.onclick =
-          () => setTheme(key);
+        button.onclick =
+          () => {
 
-      });
+            setTheme(
+              key
+            );
+
+          };
+
+      }
+    );
 
   }
 
@@ -799,12 +1122,14 @@
   function openThemePanel() {
 
     $("fcThemePanel")
-      ?.classList
-      .add("open");
+      ?.classList.add(
+        "open"
+      );
 
     $("fcThemeOverlay")
-      ?.classList
-      .add("open");
+      ?.classList.add(
+        "open"
+      );
 
   }
 
@@ -812,26 +1137,29 @@
   function closeThemePanel() {
 
     $("fcThemePanel")
-      ?.classList
-      .remove("open");
+      ?.classList.remove(
+        "open"
+      );
 
     $("fcThemeOverlay")
-      ?.classList
-      .remove("open");
+      ?.classList.remove(
+        "open"
+      );
 
   }
 
 
-  /* =====================================================
-     THEMES
-     ===================================================== */
+  /* =========================================================
+     THEME
+     ========================================================= */
 
   function setTheme(key) {
 
-    const t =
+    const theme =
       themes[key];
 
-    if (!t) {
+
+    if (!theme) {
       return;
     }
 
@@ -842,31 +1170,31 @@
 
     root.style.setProperty(
       "--fc-bg",
-      t.bg
+      theme.bg
     );
 
 
     root.style.setProperty(
       "--fc-panel",
-      t.panel
+      theme.panel
     );
 
 
     root.style.setProperty(
       "--fc-panel-2",
-      t.panel
+      theme.panel
     );
 
 
     root.style.setProperty(
       "--fc-accent",
-      t.accent
+      theme.accent
     );
 
 
     root.style.setProperty(
       "--fc-accent-2",
-      t.accent2
+      theme.accent2
     );
 
 
@@ -883,18 +1211,23 @@
 
   function applySavedTheme() {
 
-    setTheme(
+    const saved =
       localStorage.getItem(
         "friendchat_theme"
-      ) || "midnight"
+      ) ||
+      "midnight";
+
+
+    setTheme(
+      saved
     );
 
   }
 
 
-  /* =====================================================
-     SCREEN VISIBILITY
-     ===================================================== */
+  /* =========================================================
+     VISIBILITY
+     ========================================================= */
 
   function setupVisibility() {
 
@@ -908,9 +1241,9 @@
         "fcCustomSidebar"
       ),
 
-      /*
-        fc-quick-actions removed
-      */
+      document.querySelector(
+        ".fc-quick-actions"
+      ),
 
       document.querySelector(
         ".fc-bottom-dock"
@@ -919,37 +1252,43 @@
     ].filter(Boolean);
 
 
-    const sync = () => {
+    const sync =
+      () => {
 
-      const active = [
-        "homeScreen",
-        "chatScreen",
-        "profileScreen",
-        "addScreen"
-      ].some(id => {
+        const active = [
+          "homeScreen",
+          "chatScreen",
+          "profileScreen",
+          "addScreen"
+        ].some(
+          id => {
 
-        const e = $(id);
+            const e =
+              $(id);
 
-        return (
-          e &&
-          !e.classList.contains(
-            "hidden"
-          )
+            return (
+              e &&
+              !e.classList.contains(
+                "hidden"
+              )
+            );
+
+          }
         );
 
-      });
 
+        managed.forEach(
+          e => {
 
-      managed.forEach(e => {
+            e.style.display =
+              active
+                ? ""
+                : "none";
 
-        e.style.display =
-          active
-            ? ""
-            : "none";
+          }
+        );
 
-      });
-
-    };
+      };
 
 
     sync();
@@ -981,23 +1320,24 @@
   }
 
 
-  /* =====================================================
-     HIDE OLD SPOTIFY BUTTON
-     ===================================================== */
+  /* =========================================================
+     REMOVE OLD SPOTIFY BUTTON
+     ========================================================= */
 
   function hideOldSpotifyButton() {
 
-    const hide = () => {
+    const hide =
+      () => {
 
-      document
-        .querySelectorAll(
-          ".spotify-side-button,.spotify-side-bar"
-        )
-        .forEach(e =>
-          e.remove()
-        );
+        document
+          .querySelectorAll(
+            ".spotify-side-button,.spotify-side-bar"
+          )
+          .forEach(
+            e => e.remove()
+          );
 
-    };
+      };
 
 
     hide();
@@ -1011,17 +1351,22 @@
 
 
     setTimeout(
-      () =>
-        clearInterval(timer),
+      () => {
+
+        clearInterval(
+          timer
+        );
+
+      },
       15000
     );
 
   }
 
 
-  /* =====================================================
+  /* =========================================================
      START
-     ===================================================== */
+     ========================================================= */
 
   if (
     document.readyState ===
