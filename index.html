@@ -34,6 +34,16 @@
 
 
   <!-- =====================================================
+       SUGGESTIONS / DISCOVER CSS
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="suggestions.css?v=1"
+  >
+
+
+  <!-- =====================================================
        HIDE OLD BOTTOM NAV
        Custom UI V3 provides the new navigation.
        ===================================================== -->
@@ -742,67 +752,115 @@
 
     <div class="reactionRow">
 
-      <button type="button" onclick="reactToMessage('👍')">
+      <button
+        type="button"
+        onclick="reactToMessage('👍')"
+      >
         👍
       </button>
 
-      <button type="button" onclick="reactToMessage('❤️')">
+      <button
+        type="button"
+        onclick="reactToMessage('❤️')"
+      >
         ❤️
       </button>
 
-      <button type="button" onclick="reactToMessage('😂')">
+      <button
+        type="button"
+        onclick="reactToMessage('😂')"
+      >
         😂
       </button>
 
-      <button type="button" onclick="reactToMessage('😮')">
+      <button
+        type="button"
+        onclick="reactToMessage('😮')"
+      >
         😮
       </button>
 
-      <button type="button" onclick="reactToMessage('😢')">
+      <button
+        type="button"
+        onclick="reactToMessage('😢')"
+      >
         😢
       </button>
 
-      <button type="button" onclick="reactToMessage('😡')">
+      <button
+        type="button"
+        onclick="reactToMessage('😡')"
+      >
         😡
       </button>
 
-      <button type="button" onclick="reactToMessage('🔥')">
+      <button
+        type="button"
+        onclick="reactToMessage('🔥')"
+      >
         🔥
       </button>
 
-      <button type="button" onclick="reactToMessage('😍')">
+      <button
+        type="button"
+        onclick="reactToMessage('😍')"
+      >
         😍
       </button>
 
-      <button type="button" onclick="reactToMessage('😭')">
+      <button
+        type="button"
+        onclick="reactToMessage('😭')"
+      >
         😭
       </button>
 
-      <button type="button" onclick="reactToMessage('🤣')">
+      <button
+        type="button"
+        onclick="reactToMessage('🤣')"
+      >
         🤣
       </button>
 
-      <button type="button" onclick="reactToMessage('😎')">
+      <button
+        type="button"
+        onclick="reactToMessage('😎')"
+      >
         😎
       </button>
 
-      <button type="button" onclick="reactToMessage('🥰')">
+      <button
+        type="button"
+        onclick="reactToMessage('🥰')"
+      >
         🥰
       </button>
 
-      <button type="button" onclick="reactToMessage('🎉')">
+      <button
+        type="button"
+        onclick="reactToMessage('🎉')"
+      >
         🎉
       </button>
 
-      <button type="button" onclick="reactToMessage('👏')">
+      <button
+        type="button"
+        onclick="reactToMessage('👏')"
+      >
         👏
       </button>
 
-      <button type="button" onclick="reactToMessage('💀')">
+      <button
+        type="button"
+        onclick="reactToMessage('💀')"
+      >
         💀
       </button>
 
-      <button type="button" onclick="reactToMessage('👎')">
+      <button
+        type="button"
+        onclick="reactToMessage('👎')"
+      >
         👎
       </button>
 
@@ -878,10 +936,7 @@ function toggleStatusInfo() {
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
 
 
-<!-- IMPORTANT:
-     Your Spotify files are in the ROOT of the repository,
-     NOT inside a spotify/ folder.
--->
+<!-- Spotify CSS -->
 
 <link
   rel="stylesheet"
@@ -889,11 +944,17 @@ function toggleStatusInfo() {
 >
 
 
+<!-- Spotify API -->
+
 <script src="spotify-api.js?v=5"></script>
 
 
+<!-- Spotify Player -->
+
 <script src="spotify-player.js?v=5"></script>
 
+
+<!-- Spotify UI -->
 
 <script src="spotify.js?v=5"></script>
 
@@ -913,6 +974,15 @@ function toggleStatusInfo() {
      ===================================================== -->
 
 <script src="friendchat-ui-v3.js?v=5"></script>
+
+
+
+<!-- =====================================================
+     FRIENDCHAT SUGGESTIONS / DISCOVER
+     MUST LOAD AFTER APP + CUSTOM UI
+     ===================================================== -->
+
+<script src="suggestions.js?v=1"></script>
 
 
 </body>
