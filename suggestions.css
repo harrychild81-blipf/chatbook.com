@@ -1,37 +1,44 @@
 /* =========================================================
-   FRIENDCHAT SUGGESTIONS
+   FRIENDCHAT SUGGESTIONS / DISCOVER
    ========================================================= */
 
 .friendchatSuggestions {
   position: fixed;
-
-  top: 70px;
+  top: 50%;
   left: 50%;
 
-  transform: translateX(-50%);
+  width: min(440px, calc(100vw - 32px));
+  max-height: min(680px, calc(100vh - 40px));
 
-  width: min(440px, calc(100vw - 30px));
-  max-height: calc(100vh - 110px);
+  transform: translate(-50%, -50%) scale(1);
 
-  background: rgba(20, 20, 25, 0.97);
+  background: rgba(20, 20, 24, 0.97);
+  color: #ffffff;
 
   border: 1px solid rgba(255, 255, 255, 0.10);
-
-  border-radius: 20px;
+  border-radius: 22px;
 
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.45);
+    0 25px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
 
-  z-index: 9999;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
   overflow: hidden;
 
+  z-index: 99999;
+
+  opacity: 1;
+  visibility: visible;
+
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    visibility 0.22s ease;
+
   display: flex;
   flex-direction: column;
-
-  color: white;
-
-  animation: suggestionsOpen 0.20s ease;
 }
 
 
@@ -40,32 +47,11 @@
    ========================================================= */
 
 .friendchatSuggestions.hidden {
-  display: none !important;
-}
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 
-
-/* =========================================================
-   OPEN ANIMATION
-   ========================================================= */
-
-@keyframes suggestionsOpen {
-
-  from {
-    opacity: 0;
-    transform:
-      translateX(-50%)
-      translateY(12px)
-      scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform:
-      translateX(-50%)
-      translateY(0)
-      scale(1);
-  }
-
+  transform: translate(-50%, -50%) scale(0.94);
 }
 
 
@@ -74,41 +60,34 @@
    ========================================================= */
 
 .suggestionsHeader {
-
   display: flex;
-
   align-items: center;
   justify-content: space-between;
 
-  padding: 18px 18px 14px;
+  padding: 20px 20px 16px;
 
-  border-bottom:
-    1px solid
-    rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
+  flex-shrink: 0;
 }
 
 
 .suggestionsHeader h2 {
-
   margin: 0;
 
-  font-size: 20px;
-
+  font-size: 21px;
   font-weight: 700;
 
+  letter-spacing: -0.3px;
 }
 
 
 .suggestionsHeader p {
-
   margin: 4px 0 0;
 
   font-size: 13px;
 
-  color:
-    rgba(255, 255, 255, 0.55);
-
+  color: rgba(255, 255, 255, 0.55);
 }
 
 
@@ -117,44 +96,39 @@
    ========================================================= */
 
 .suggestionsClose {
+  width: 36px;
+  height: 36px;
 
-  width: 34px;
-  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  border: none;
-
+  border: 0;
   border-radius: 50%;
 
-  background:
-    rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
 
-  color: white;
+  color: #ffffff;
 
   font-size: 23px;
-
   line-height: 1;
 
   cursor: pointer;
 
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
   transition:
-    background 0.15s ease,
-    transform 0.15s ease;
-
+    background 0.18s ease,
+    transform 0.18s ease;
 }
 
 
 .suggestionsClose:hover {
-
-  background:
-    rgba(255, 255, 255, 0.16);
-
+  background: rgba(255, 255, 255, 0.15);
   transform: scale(1.05);
+}
 
+
+.suggestionsClose:active {
+  transform: scale(0.92);
 }
 
 
@@ -163,64 +137,52 @@
    ========================================================= */
 
 .suggestionsLoading {
-
-  padding: 25px;
+  padding: 28px 20px;
 
   text-align: center;
 
   font-size: 14px;
 
-  color:
-    rgba(255, 255, 255, 0.55);
-
-}
-
-
-.suggestionsLoading.hidden {
-
-  display: none;
-
+  color: rgba(255, 255, 255, 0.60);
 }
 
 
 /* =========================================================
-   USERS LIST
+   LIST
    ========================================================= */
 
 .suggestionsList {
-
-  padding: 10px;
+  padding: 12px;
 
   overflow-y: auto;
 
   flex: 1;
 
+  min-height: 0;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.20) transparent;
 }
 
 
-/* Scrollbar */
-
 .suggestionsList::-webkit-scrollbar {
-
   width: 6px;
-
 }
 
 
 .suggestionsList::-webkit-scrollbar-track {
-
   background: transparent;
-
 }
 
 
 .suggestionsList::-webkit-scrollbar-thumb {
-
-  background:
-    rgba(255, 255, 255, 0.15);
-
+  background: rgba(255, 255, 255, 0.20);
   border-radius: 10px;
+}
 
+
+.suggestionsList::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
 }
 
 
@@ -229,43 +191,39 @@
    ========================================================= */
 
 .suggestionCard {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 8px;
-
   width: 100%;
 
-  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
 
-  border-radius: 14px;
+  margin-bottom: 8px;
 
-  background:
-    rgba(255, 255, 255, 0.045);
+  padding: 9px;
+
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.045);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
 
   transition:
-    background 0.15s ease,
-    transform 0.15s ease;
-
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
 }
 
 
 .suggestionCard:hover {
+  background: rgba(255, 255, 255, 0.075);
 
-  background:
-    rgba(255, 255, 255, 0.085);
+  border-color: rgba(255, 255, 255, 0.12);
 
   transform: translateY(-1px);
-
 }
 
 
 .suggestionCard:last-child {
-
   margin-bottom: 0;
-
 }
 
 
@@ -274,29 +232,26 @@
    ========================================================= */
 
 .suggestionMain {
-
   flex: 1;
 
   min-width: 0;
 
   display: flex;
-
   align-items: center;
 
   gap: 12px;
 
-  padding: 11px;
+  padding: 4px;
 
-  border: none;
+  border: 0;
 
   background: transparent;
 
-  color: white;
+  color: inherit;
 
   text-align: left;
 
   cursor: pointer;
-
 }
 
 
@@ -305,7 +260,6 @@
    ========================================================= */
 
 .suggestionAvatar {
-
   position: relative;
 
   width: 48px;
@@ -313,133 +267,119 @@
 
   min-width: 48px;
 
-  border-radius: 50%;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
 
-  background:
-    linear-gradient(
-      135deg,
-      #5865f2,
-      #7c3aed
-    );
+  border-radius: 50%;
 
-  color: white;
+  background: linear-gradient(
+    135deg,
+    #5865f2,
+    #7289da
+  );
 
-  font-size: 19px;
+  color: #ffffff;
 
+  font-size: 18px;
   font-weight: 700;
 
+  overflow: visible;
+}
+
+
+.suggestionAvatar span {
+  user-select: none;
 }
 
 
 /* =========================================================
-   STATUS DOT
+   ONLINE / OFFLINE DOT
    ========================================================= */
 
 .suggestionStatusDot {
-
   position: absolute;
 
-  right: 1px;
-  bottom: 1px;
+  right: -1px;
+  bottom: -1px;
 
-  width: 12px;
-  height: 12px;
+  width: 13px;
+  height: 13px;
 
   border-radius: 50%;
 
-  border: 2px solid #141419;
-
+  border: 3px solid #141418;
 }
 
 
 .suggestionStatusDot.online {
-
-  background: #23c552;
-
+  background: #35d07f;
 }
 
 
 .suggestionStatusDot.offline {
-
-  background: #777;
-
+  background: #777777;
 }
 
 
 /* =========================================================
-   USER INFO
+   USER INFORMATION
    ========================================================= */
 
 .suggestionInfo {
-
   min-width: 0;
 
   display: flex;
-
   flex-direction: column;
 
   gap: 2px;
-
 }
 
 
 .suggestionInfo strong {
+  display: block;
 
-  font-size: 15px;
-
-  font-weight: 650;
-
-  white-space: nowrap;
+  max-width: 250px;
 
   overflow: hidden;
-
   text-overflow: ellipsis;
+  white-space: nowrap;
 
+  font-size: 15px;
+  font-weight: 650;
+
+  color: #ffffff;
 }
 
 
 .suggestionInfo span {
+  display: block;
+
+  max-width: 250px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   font-size: 12px;
 
-  color:
-    rgba(255, 255, 255, 0.48);
-
-  white-space: nowrap;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
+  color: rgba(255, 255, 255, 0.48);
 }
 
 
 .suggestionInfo small {
-
-  font-size: 11px;
-
-  font-weight: 600;
-
+  font-size: 12px;
+  font-weight: 500;
 }
 
 
 .statusOnline {
-
-  color: #35d06f;
-
+  color: #35d07f;
 }
 
 
 .statusOffline {
-
-  color:
-    rgba(255, 255, 255, 0.40);
-
+  color: rgba(255, 255, 255, 0.42);
 }
 
 
@@ -448,44 +388,44 @@
    ========================================================= */
 
 .suggestionChatButton {
-
   width: 38px;
   height: 38px;
 
-  margin-right: 9px;
-
-  border: none;
-
-  border-radius: 11px;
-
-  background:
-    rgba(255, 255, 255, 0.08);
-
-  color: white;
-
-  cursor: pointer;
-
-  font-size: 17px;
+  min-width: 38px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
-  transition:
-    background 0.15s ease,
-    transform 0.15s ease;
+  margin-left: 6px;
 
+  border: 0;
+
+  border-radius: 50%;
+
+  background: rgba(88, 101, 242, 0.16);
+
+  color: #ffffff;
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
 }
 
 
 .suggestionChatButton:hover {
+  background: rgba(88, 101, 242, 0.30);
 
-  background:
-    rgba(88, 101, 242, 0.75);
+  transform: scale(1.06);
+}
 
-  transform: scale(1.05);
 
+.suggestionChatButton:active {
+  transform: scale(0.92);
 }
 
 
@@ -494,85 +434,80 @@
    ========================================================= */
 
 .suggestionsEmpty {
-
-  padding: 40px 20px;
+  padding: 45px 20px;
 
   text-align: center;
 
   font-size: 14px;
 
-  color:
-    rgba(255, 255, 255, 0.50);
+  line-height: 1.5;
 
+  color: rgba(255, 255, 255, 0.50);
 }
 
 
 .suggestionsEmpty.hidden {
-
   display: none;
-
 }
 
 
 /* =========================================================
-   ERROR
+   ERROR STATE
    ========================================================= */
 
 .suggestionsError {
+  margin: 12px;
 
-  padding: 30px 20px;
+  padding: 15px;
+
+  border-radius: 14px;
+
+  background: rgba(255, 70, 70, 0.10);
+
+  border: 1px solid rgba(255, 70, 70, 0.20);
+
+  color: #ff8585;
 
   text-align: center;
 
-}
-
-
-.suggestionsError strong {
-
-  display: block;
-
-  margin-bottom: 8px;
-
-  font-size: 15px;
-
-}
-
-
-.suggestionsError p {
-
-  margin: 0 0 16px;
-
   font-size: 13px;
-
-  color:
-    rgba(255, 255, 255, 0.50);
-
 }
 
 
-.suggestionsError button {
+/* =========================================================
+   ONLINE USER
+   ========================================================= */
 
-  border: none;
-
-  border-radius: 10px;
-
-  padding: 9px 15px;
-
-  background: #5865f2;
-
-  color: white;
-
-  cursor: pointer;
-
-  font-size: 13px;
-
+.suggestionCard.userOnline {
+  border-color: rgba(53, 208, 127, 0.08);
 }
 
 
-.suggestionsError button:hover {
+/* =========================================================
+   OFFLINE USER
+   ========================================================= */
 
-  background: #4752c4;
+.suggestionCard.userOffline {
+  opacity: 0.88;
+}
 
+
+/* =========================================================
+   DARK OVERLAY BEHIND WINDOW
+   ========================================================= */
+
+#friendchatSuggestions::before {
+  content: "";
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: -1;
+
+  background: rgba(0, 0, 0, 0.25);
+
+  pointer-events: none;
 }
 
 
@@ -583,59 +518,138 @@
 @media (max-width: 600px) {
 
   .friendchatSuggestions {
+    width: calc(100vw - 20px);
 
-    top: 55px;
+    max-height: calc(100vh - 24px);
 
-    width:
-      calc(100vw - 20px);
-
-    max-height:
-      calc(100vh - 80px);
-
-    border-radius: 18px;
-
+    border-radius: 20px;
   }
 
 
   .suggestionsHeader {
-
-    padding:
-      16px 15px 12px;
-
+    padding: 17px 16px 14px;
   }
 
 
-  .suggestionMain {
+  .suggestionsHeader h2 {
+    font-size: 19px;
+  }
 
+
+  .suggestionsList {
     padding: 10px;
+  }
 
+
+  .suggestionCard {
+    padding: 8px;
+
+    border-radius: 14px;
   }
 
 
   .suggestionAvatar {
-
     width: 44px;
     height: 44px;
 
     min-width: 44px;
 
-    font-size: 17px;
+    font-size: 16px;
+  }
 
+
+  .suggestionStatusDot {
+    width: 12px;
+    height: 12px;
+
+    border-width: 2px;
   }
 
 
   .suggestionInfo strong {
+    max-width: 180px;
 
     font-size: 14px;
+  }
 
+
+  .suggestionInfo span {
+    max-width: 180px;
+
+    font-size: 11px;
+  }
+
+
+  .suggestionInfo small {
+    font-size: 11px;
   }
 
 
   .suggestionChatButton {
-
     width: 36px;
     height: 36px;
 
+    min-width: 36px;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .friendchatSuggestions {
+    width: calc(100vw - 12px);
   }
 
+
+  .suggestionsHeader {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+
+  .suggestionsList {
+    padding: 7px;
+  }
+
+
+  .suggestionMain {
+    gap: 9px;
+  }
+
+
+  .suggestionAvatar {
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+  }
+
+
+  .suggestionInfo strong {
+    max-width: 145px;
+  }
+
+
+  .suggestionInfo span {
+    max-width: 145px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .friendchatSuggestions,
+  .suggestionCard,
+  .suggestionsClose,
+  .suggestionChatButton {
+    transition: none;
+  }
 }
