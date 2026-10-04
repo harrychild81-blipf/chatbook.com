@@ -1,2795 +1,1903 @@
-/* =========================================================
-   FRIENDCHAT UI v3 - COMPLETE
-   ========================================================= */
-
+/* FRIENDCHAT CUSTOM UI v3 */
 (() => {
-    "use strict";
+  "use strict";
 
-    /* =====================================================
-       HELPERS
-       ===================================================== */
+  const themes = {
+    midnight: {
+      name: "Midnight",
+      desc: "Dark blue and purple",
+      bg: "#070a10",
+      panel: "#0d121b",
+      accent: "#6c7cff",
+      accent2: "#8b5cf6"
+    },
+    emerald: {
+      name: "Emerald",
+      desc: "Dark green glass",
+      bg: "#06100d",
+      panel: "#0c1713",
+      accent: "#22c55e",
+      accent2: "#14b8a6"
+    },
+    ocean: {
+      name: "Ocean",
+      desc: "Deep blue",
+      bg: "#061019",
+      panel: "#0b1722",
+      accent: "#22a6f2",
+      accent2: "#6366f1"
+    },
+    sunset: {
+      name: "Sunset",
+      desc: "Warm orange glow",
+      bg: "#120a08",
+      panel: "#1b100d",
+      accent: "#ff7a45",
+      accent2: "#ef4444"
+    },
+    rose: {
+      name: "Rose",
+      desc: "Pink and violet",
+      bg: "#100810",
+      panel: "#190e19",
+      accent: "#ec4899",
+      accent2: "#8b5cf6"
+    },
+    graphite: {
+      name: "Graphite",
+      desc: "Minimal monochrome",
+      bg: "#090909",
+      panel: "#121212",
+      accent: "#d1d5db",
+      accent2: "#6b7280"
+    }
+  };
 
-    const $ = id => document.getElementById(id);
+  const $ = id => document.getElementById(id);
 
-    function create(tag, className, parent) {
-        const el = document.createElement(tag);
+  const esc = s =>
+    String(s ?? "").replace(
+      /[&<>"']/g,
+      m => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[m])
+    );
 
-        if (className) {
-            el.className = className;
-        }
+  function create(tag, cls, parent) {
+    const e = document.createElement(tag);
 
-        if (parent) {
-            parent.appendChild(el);
-        }
-
-        return el;
+    if (cls) {
+      e.className = cls;
     }
 
-    function escapeHTML(value) {
-        return String(value ?? "").replace(
-            /[&<>"']/g,
-            char => ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#39;"
-            }[char])
-        );
+    if (parent) {
+      parent.appendChild(e);
     }
 
-
-    /* =====================================================
-       THEMES
-       ===================================================== */
-
-    const themes = {
-        midnight: {
-            name: "Midnight",
-            desc: "Dark blue and purple",
-            bg: "#070a10",
-            panel: "#0d121b",
-            accent: "#6c7cff",
-            accent2: "#8b5cf6"
-        },
-
-        emerald: {
-            name: "Emerald",
-            desc: "Dark green glass",
-            bg: "#06100d",
-            panel: "#0c1713",
-            accent: "#22c55e",
-            accent2: "#14b8a6"
-        },
-
-        ocean: {
-            name: "Ocean",
-            desc: "Deep blue",
-            bg: "#061019",
-            panel: "#0b1722",
-            accent: "#22a6f2",
-            accent2: "#6366f1"
-        },
-
-        sunset: {
-            name: "Sunset",
-            desc: "Warm orange glow",
-            bg: "#120a08",
-            panel: "#1b100d",
-            accent: "#ff7a45",
-            accent2: "#ef4444"
-        },
-
-        rose: {
-            name: "Rose",
-            desc: "Pink and violet",
-            bg: "#100810",
-            panel: "#190e19",
-            accent: "#ec4899",
-            accent2: "#8b5cf6"
-        },
-
-        graphite: {
-            name: "Graphite",
-            desc: "Minimal monochrome",
-            bg: "#090909",
-            panel: "#121212",
-            accent: "#d1d5db",
-            accent2: "#6b7280"
-        }
-    };
+    return e;
+  }
 
 
-    /* =====================================================
-       NAVIGATION CSS
-       ===================================================== */
+  /* =========================================================
+     MAIN INITIALIZATION
+     ========================================================= */
 
-    function installStyles() {
+  function installNavigationStyles() {
+    if ($("friendchat-nav-guaranteed-style")) return;
 
-        if ($("fc-navigation-style")) {
-            return;
-        }
+    const style = document.createElement("style");
+    style.id = "friendchat-nav-guaranteed-style";
 
-        const style = document.createElement("style");
+    style.textContent = `
+      /* LEFT ARROW */
+      #fcNavToggle {
+        position: fixed !important;
+        left: 14px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        z-index: 2147483646 !important;
+        width: 28px !important;
+        height: 48px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        border-radius: 14px !important;
+        background: rgba(20,25,38,.96) !important;
+        color: #fff !important;
+        cursor: pointer !important;
+        visibility: visible !important;
+      }
 
-        style.id = "fc-navigation-style";
+      #fcNavToggle.is-open {
+        left: 202px !important;
+      }
 
-        style.textContent = `
+      #fcNavToggle .fc-chevron {
+        font-size: 24px !important;
+        line-height: 1 !important;
+      }
 
-        /* ===============================================
-           LEFT ARROW
-           =============================================== */
+      /* SIDEBAR */
+      #fcCustomSidebar {
+        position: fixed !important;
+        left: 12px !important;
+        top: 50% !important;
+        transform: translateY(-50%) translateX(-115%) !important;
+        width: 185px !important;
+        z-index: 2147483645 !important;
+        box-sizing: border-box !important;
+      }
 
+      #fcCustomSidebar.open {
+        transform: translateY(-50%) translateX(0) !important;
+      }
+
+      /* FINAL COMPACT BOTTOM DOCK */
+      .fc-bottom-dock {
+        position: fixed !important;
+        left: 50% !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: 10px !important;
+        transform: translateX(-50%) !important;
+
+        width: 150px !important;
+        min-width: 150px !important;
+        max-width: 150px !important;
+
+        height: 44px !important;
+        min-height: 44px !important;
+        max-height: 44px !important;
+
+        padding: 3px 5px !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 2px !important;
+
+        border-radius: 14px !important;
+        background: rgba(10,14,22,.98) !important;
+        border: 1px solid rgba(255,255,255,.14) !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,.45) !important;
+
+        z-index: 2147483647 !important;
+      }
+
+      .fc-bottom-dock .fc-dock-btn {
+        flex: 0 0 38px !important;
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+
+        background: transparent !important;
+        color: #fff !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        cursor: pointer !important;
+        box-sizing: border-box !important;
+      }
+
+      /* Icons only — remove Chats/Suggestions/Profile text */
+      .fc-bottom-dock .fc-dock-btn span:last-child {
+        display: none !important;
+      }
+
+      .fc-bottom-dock .fc-dock-btn span:first-child {
+        display: block !important;
+        font-size: 18px !important;
+        line-height: 1 !important;
+      }
+
+      /* FC = smooth square, NOT circle */
+      .fc-bottom-dock .fc-dock-center {
+        flex: 0 0 38px !important;
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+
+        border-radius: 10px !important;
+        background: linear-gradient(135deg,#6855ff,#ad4de3) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 14px rgba(110,80,240,.35) !important;
+      }
+
+      .fc-bottom-dock .fc-dock-center span:first-child {
+        display: block !important;
+        font-size: 14px !important;
+        font-weight: 900 !important;
+      }
+
+      .fc-bottom-dock .fc-dock-btn:not(.fc-dock-center):hover {
+        background: rgba(255,255,255,.08) !important;
+      }
+
+      .fc-bottom-dock .fc-dock-center:hover {
+        transform: scale(1.04) !important;
+      }
+
+      /* NEVER show the dock while chat is open */
+      body.fc-chat-open .fc-bottom-dock {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+
+      /* Hide old bottom navigation */
+      #bottomNav {
+        display: none !important;
+      }
+
+      @media(max-width:600px) {
         #fcNavToggle {
-            position: fixed !important;
-
-            left: 16px !important;
-            top: 50% !important;
-
-            transform: translateY(-50%) !important;
-
-            width: 28px !important;
-            height: 48px !important;
-
-            padding: 0 !important;
-            margin: 0 !important;
-
-            border: 0 !important;
-            border-radius: 14px !important;
-
-            background: rgba(20,25,38,.96) !important;
-
-            color: white !important;
-
-            display: flex !important;
-
-            align-items: center !important;
-            justify-content: center !important;
-
-            z-index: 2147483646 !important;
-
-            cursor: pointer !important;
-
-            box-shadow:
-                0 8px 25px rgba(0,0,0,.3) !important;
-
-            transition:
-                left .22s ease,
-                width .18s ease,
-                background .18s ease !important;
+          left: 4px !important;
+          width: 24px !important;
         }
-
-
-        #fcNavToggle:hover {
-            width: 34px !important;
-            background: rgba(35,42,60,.98) !important;
-        }
-
 
         #fcNavToggle.is-open {
-            left: 204px !important;
+          left: 190px !important;
         }
-
-
-        #fcNavToggle .fc-chevron {
-            font-size: 25px !important;
-            line-height: 1 !important;
-        }
-
-
-        /* ===============================================
-           SIDEBAR
-           =============================================== */
 
         #fcCustomSidebar {
-            position: fixed !important;
-
-            left: 12px !important;
-            top: 50% !important;
-
-            width: 184px !important;
-
-            transform:
-                translateY(-50%)
-                translateX(-120%) !important;
-
-            z-index: 2147483645 !important;
-
-            box-sizing: border-box !important;
-
-            transition:
-                transform .22s ease !important;
+          width: 178px !important;
+          left: 8px !important;
         }
-
-
-        #fcCustomSidebar.open {
-            transform:
-                translateY(-50%)
-                translateX(0) !important;
-        }
-
-
-        #fcCustomSidebar .fc-nav-item {
-            cursor: pointer !important;
-        }
-
-
-        /* ===============================================
-           BOTTOM DOCK
-           =============================================== */
 
         .fc-bottom-dock {
-
-            position: fixed !important;
-
-            left: 50% !important;
-            bottom: 10px !important;
-
-            transform:
-                translateX(-50%) !important;
-
-            width: 190px !important;
-            min-width: 190px !important;
-            max-width: 190px !important;
-
-            height: 48px !important;
-            min-height: 48px !important;
-
-            padding: 4px 6px !important;
-
-            display: flex !important;
-
-            align-items: center !important;
-            justify-content: center !important;
-
-            gap: 2px !important;
-
-            box-sizing: border-box !important;
-
-            border-radius: 16px !important;
-
-            background:
-                rgba(13,18,27,.97) !important;
-
-            border:
-                1px solid rgba(255,255,255,.14) !important;
-
-            box-shadow:
-                0 12px 35px rgba(0,0,0,.45) !important;
-
-            z-index: 2147483647 !important;
+          width: 140px !important;
+          min-width: 140px !important;
+          max-width: 140px !important;
+          height: 42px !important;
+          min-height: 42px !important;
+          max-height: 42px !important;
+          bottom: 8px !important;
         }
 
-
-        /* ===============================================
-           DOCK BUTTONS
-           =============================================== */
-
-        .fc-bottom-dock .fc-dock-btn {
-
-            flex: 0 0 42px !important;
-
-            width: 42px !important;
-            min-width: 42px !important;
-
-            height: 40px !important;
-            min-height: 40px !important;
-
-            padding: 0 !important;
-            margin: 0 !important;
-
-            border: 0 !important;
-
-            border-radius: 11px !important;
-
-            background: transparent !important;
-
-            color: white !important;
-
-            display: flex !important;
-
-            align-items: center !important;
-            justify-content: center !important;
-
-            cursor: pointer !important;
-
-            transition:
-                transform .15s ease,
-                background .15s ease !important;
+        .fc-bottom-dock .fc-dock-btn,
+        .fc-bottom-dock .fc-dock-center {
+          flex-basis: 36px !important;
+          width: 36px !important;
+          min-width: 36px !important;
+          max-width: 36px !important;
+          height: 36px !important;
+          min-height: 36px !important;
+          max-height: 36px !important;
         }
+      }
+    `;
 
+    document.head.appendChild(style);
+  }
 
-        .fc-bottom-dock
-        .fc-dock-btn:hover {
 
-            background:
-                rgba(255,255,255,.07) !important;
+  function init() {
 
-            transform:
-                translateY(-1px) !important;
-        }
+    installNavigationStyles();
 
-
-        /* Hide labels */
-
-        .fc-bottom-dock
-        .fc-dock-btn span:last-child {
-
-            display: none !important;
-        }
-
-
-        /* Icon */
-
-        .fc-bottom-dock
-        .fc-dock-btn span:first-child {
-
-            font-size: 18px !important;
-
-            line-height: 1 !important;
-        }
-
-
-        /* ===============================================
-           FC CENTER BUTTON
-           =============================================== */
-
-        .fc-bottom-dock
-        .fc-dock-center {
-
-            flex: 0 0 40px !important;
-
-            width: 40px !important;
-            min-width: 40px !important;
-
-            height: 40px !important;
-            min-height: 40px !important;
-
-            border-radius: 12px !important;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #6c5cff,
-                    #b34de5
-                ) !important;
-
-            color: white !important;
-
-            box-shadow:
-                0 5px 18px rgba(120,80,240,.35) !important;
-        }
-
-
-        .fc-bottom-dock
-        .fc-dock-center:hover {
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #7668ff,
-                    #bd59eb
-                ) !important;
-
-            transform:
-                translateY(-1px)
-                scale(1.03) !important;
-        }
-
-
-        .fc-bottom-dock
-        .fc-dock-center span:first-child {
-
-            font-size: 14px !important;
-            font-weight: 900 !important;
-        }
-
-
-        /* ===============================================
-           CHAT SCREEN
-           IMPORTANT:
-           Dock is hidden while chat is open.
-           =============================================== */
-
-        body.fc-chat-open
-        .fc-bottom-dock {
-
-            display: none !important;
-
-            visibility: hidden !important;
-
-            opacity: 0 !important;
-        }
-
-
-        /* ===============================================
-           QUICK ACTIONS
-           =============================================== */
-
-        .fc-quick-actions {
-
-            position: fixed !important;
-
-            right: 18px !important;
-            top: 18px !important;
-
-            display: flex !important;
-
-            gap: 8px !important;
-
-            z-index: 10000 !important;
-        }
-
-
-        .fc-quick-actions button {
-
-            width: 52px !important;
-            height: 52px !important;
-
-            border-radius: 15px !important;
-
-            border:
-                1px solid rgba(255,255,255,.10) !important;
-
-            background:
-                rgba(20,20,28,.88) !important;
-
-            color: white !important;
-
-            cursor: pointer !important;
-        }
-
-
-        /* ===============================================
-           DISCOVERY
-           =============================================== */
-
-        #fcDiscoveryOverlay {
-
-            position: fixed !important;
-
-            inset: 0 !important;
-
-            background:
-                rgba(0,0,0,.58) !important;
-
-            opacity: 0 !important;
-
-            pointer-events: none !important;
-
-            transition:
-                opacity .2s ease !important;
-
-            z-index: 20000 !important;
-        }
-
-
-        #fcDiscoveryOverlay.open {
-
-            opacity: 1 !important;
-
-            pointer-events: auto !important;
-        }
-
-
-        #fcDiscovery {
-
-            position: fixed !important;
-
-            left: 50% !important;
-            top: 50% !important;
-
-            width:
-                min(560px, calc(100vw - 30px)) !important;
-
-            max-height:
-                min(700px, calc(100vh - 40px)) !important;
-
-            overflow: auto !important;
-
-            transform:
-                translate(-50%,-46%) !important;
-
-            opacity: 0 !important;
-
-            pointer-events: none !important;
-
-            background:
-                rgba(13,18,27,.98) !important;
-
-            border:
-                1px solid rgba(255,255,255,.12) !important;
-
-            border-radius: 22px !important;
-
-            box-shadow:
-                0 30px 100px rgba(0,0,0,.55) !important;
-
-            z-index: 20001 !important;
-
-            transition:
-                opacity .2s ease,
-                transform .2s ease !important;
-        }
-
-
-        #fcDiscovery.open {
-
-            opacity: 1 !important;
-
-            pointer-events: auto !important;
-
-            transform:
-                translate(-50%,-50%) !important;
-        }
-
-
-        .fc-discovery-head {
-
-            display: flex !important;
-
-            align-items: center !important;
-            justify-content: space-between !important;
-
-            padding: 18px !important;
-
-            border-bottom:
-                1px solid rgba(255,255,255,.08) !important;
-        }
-
-
-        .fc-discovery-list {
-
-            padding: 12px !important;
-        }
-
-
-        .fc-user-suggestion {
-
-            display: flex !important;
-
-            align-items: center !important;
-
-            gap: 12px !important;
-
-            padding: 12px !important;
-
-            border-radius: 14px !important;
-        }
-
-
-        .fc-user-suggestion:hover {
-
-            background:
-                rgba(255,255,255,.05) !important;
-        }
-
-
-        .fc-user-avatar {
-
-            width: 44px !important;
-            height: 44px !important;
-
-            flex: 0 0 44px !important;
-
-            display: flex !important;
-
-            align-items: center !important;
-            justify-content: center !important;
-
-            border-radius: 50% !important;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #6c7cff,
-                    #8b5cf6
-                ) !important;
-
-            color: white !important;
-
-            font-weight: 700 !important;
-        }
-
-
-        .fc-user-info {
-
-            flex: 1 !important;
-
-            min-width: 0 !important;
-        }
-
-
-        .fc-user-name {
-
-            font-weight: 700 !important;
-
-            color: white !important;
-        }
-
-
-        .fc-user-id {
-
-            margin-top: 3px !important;
-
-            font-size: 12px !important;
-
-            color:
-                rgba(255,255,255,.52) !important;
-        }
-
-
-        .fc-user-add {
-
-            border: 0 !important;
-
-            border-radius: 10px !important;
-
-            padding: 9px 13px !important;
-
-            background:
-                #6c7cff !important;
-
-            color: white !important;
-
-            cursor: pointer !important;
-        }
-
-
-        /* ===============================================
-           THEME PANEL
-           =============================================== */
-
-        #fcThemeOverlay {
-
-            position: fixed !important;
-
-            inset: 0 !important;
-
-            background:
-                rgba(0,0,0,.58) !important;
-
-            opacity: 0 !important;
-
-            pointer-events: none !important;
-
-            z-index: 21000 !important;
-
-            transition:
-                opacity .2s ease !important;
-        }
-
-
-        #fcThemeOverlay.open {
-
-            opacity: 1 !important;
-
-            pointer-events: auto !important;
-        }
-
-
-        #fcThemePanel {
-
-            position: fixed !important;
-
-            left: 50% !important;
-            top: 50% !important;
-
-            width:
-                min(540px, calc(100vw - 30px)) !important;
-
-            transform:
-                translate(-50%,-48%) !important;
-
-            opacity: 0 !important;
-
-            pointer-events: none !important;
-
-            z-index: 21001 !important;
-
-            background:
-                rgba(13,18,27,.98) !important;
-
-            border:
-                1px solid rgba(255,255,255,.12) !important;
-
-            border-radius: 22px !important;
-
-            overflow: hidden !important;
-
-            transition:
-                opacity .2s ease,
-                transform .2s ease !important;
-        }
-
-
-        #fcThemePanel.open {
-
-            opacity: 1 !important;
-
-            pointer-events: auto !important;
-
-            transform:
-                translate(-50%,-50%) !important;
-        }
-
-
-        .fc-theme-head {
-
-            display: flex !important;
-
-            align-items: center !important;
-            justify-content: space-between !important;
-
-            padding: 18px !important;
-
-            color: white !important;
-
-            border-bottom:
-                1px solid rgba(255,255,255,.08) !important;
-        }
-
-
-        .fc-theme-body {
-
-            padding: 16px !important;
-        }
-
-
-        .fc-theme-grid {
-
-            display: grid !important;
-
-            grid-template-columns:
-                repeat(2, minmax(0,1fr)) !important;
-
-            gap: 10px !important;
-        }
-
-
-        .fc-theme-choice {
-
-            border:
-                1px solid rgba(255,255,255,.10) !important;
-
-            background:
-                rgba(255,255,255,.03) !important;
-
-            border-radius: 14px !important;
-
-            padding: 12px !important;
-
-            color: white !important;
-
-            text-align: left !important;
-
-            cursor: pointer !important;
-        }
-
-
-        .fc-theme-choice:hover {
-
-            background:
-                rgba(255,255,255,.07) !important;
-        }
-
-
-        .fc-theme-swatch {
-
-            width: 100% !important;
-
-            height: 50px !important;
-
-            border-radius: 10px !important;
-
-            margin-bottom: 8px !important;
-        }
-
-
-        .fc-theme-name {
-
-            font-weight: 700 !important;
-        }
-
-
-        .fc-theme-desc {
-
-            margin-top: 3px !important;
-
-            font-size: 12px !important;
-
-            color:
-                rgba(255,255,255,.50) !important;
-        }
-
-
-        /* ===============================================
-           MOBILE
-           =============================================== */
-
-        @media(max-width:600px) {
-
-            #fcNavToggle {
-
-                left: 4px !important;
-
-                width: 23px !important;
-
-                height: 42px !important;
-            }
-
-
-            #fcNavToggle.is-open {
-
-                left: 194px !important;
-            }
-
-
-            #fcCustomSidebar {
-
-                left: 8px !important;
-
-                width: 178px !important;
-            }
-
-
-            .fc-bottom-dock {
-
-                width: 178px !important;
-
-                min-width: 178px !important;
-
-                max-width: 178px !important;
-
-                height: 46px !important;
-
-                min-height: 46px !important;
-
-                bottom: 8px !important;
-            }
-
-
-            .fc-bottom-dock
-            .fc-dock-btn {
-
-                flex-basis: 39px !important;
-
-                width: 39px !important;
-
-                min-width: 39px !important;
-
-                height: 38px !important;
-
-                min-height: 38px !important;
-            }
-
-
-            .fc-bottom-dock
-            .fc-dock-center {
-
-                flex-basis: 38px !important;
-
-                width: 38px !important;
-
-                min-width: 38px !important;
-
-                height: 38px !important;
-
-                min-height: 38px !important;
-
-                border-radius: 11px !important;
-            }
-
-
-            .fc-theme-grid {
-
-                grid-template-columns:
-                    1fr !important;
-            }
-
-        }
-
-        `;
-
-        document.head.appendChild(style);
+    if ($("fcCustomSidebar")) {
+      return;
     }
 
 
-    /* =====================================================
-       GO HOME
-       ===================================================== */
+    /* =======================================================
+       NAVIGATION ARROW
+       ======================================================= */
 
-    function goHome() {
+    const toggle =
+      create(
+        "button",
+        "fc-nav-toggle",
+        document.body
+      );
+
+    toggle.id = "fcNavToggle";
 
-        /*
-         * First try the real FriendChat function.
-         * This preserves all of your existing app logic.
-         */
-
-        if (
-            typeof window.showHome === "function"
-        ) {
-
-            try {
-
-                window.showHome();
-
-                updateScreenState();
-
-                return;
-
-            } catch (error) {
-
-                console.warn(
-                    "FriendChat showHome failed:",
-                    error
-                );
-            }
-        }
-
-
-        /*
-         * Fallback.
-         * If showHome isn't available, directly switch screens.
-         */
-
-        const screens =
-            document.querySelectorAll(
-                ".screen"
-            );
-
-
-        screens.forEach(
-            screen => {
-
-                screen.classList.add(
-                    "hidden"
-                );
-
-            }
-        );
-
-
-        const home =
-            $("homeScreen");
-
-
-        if (home) {
-
-            home.classList.remove(
-                "hidden"
-            );
-        }
-
-
-        document.body.classList.remove(
-            "fc-chat-open"
-        );
-
-
-        updateScreenState();
-    }
-
-
-    /* =====================================================
-       OPEN PROFILE
-       ===================================================== */
-
-    function goProfile() {
-
-        if (
-            typeof window.showProfile ===
-            "function"
-        ) {
-
-            try {
-
-                window.showProfile();
-
-                updateScreenState();
-
-                return;
-
-            } catch (error) {
-
-                console.warn(
-                    "showProfile failed:",
-                    error
-                );
-            }
-        }
-
-
-        const screens =
-            document.querySelectorAll(
-                ".screen"
-            );
-
-
-        screens.forEach(
-            screen => {
-
-                screen.classList.add(
-                    "hidden"
-                );
-
-            }
-        );
-
-
-        const profile =
-            $("profileScreen");
-
-
-        if (profile) {
-
-            profile.classList.remove(
-                "hidden"
-            );
-        }
-
-
-        updateScreenState();
-    }
-
-
-    /* =====================================================
-       OPEN ADD FRIEND
-       ===================================================== */
-
-    function goAddFriend() {
-
-        if (
-            typeof window.showAdd ===
-            "function"
-        ) {
-
-            try {
-
-                window.showAdd();
-
-                updateScreenState();
-
-                return;
-
-            } catch (error) {
-
-                console.warn(
-                    "showAdd failed:",
-                    error
-                );
-            }
-        }
-
-
-        const screens =
-            document.querySelectorAll(
-                ".screen"
-            );
-
-
-        screens.forEach(
-            screen => {
-
-                screen.classList.add(
-                    "hidden"
-                );
-
-            }
-        );
-
-
-        const add =
-            $("addScreen");
-
-
-        if (add) {
-
-            add.classList.remove(
-                "hidden"
-            );
-        }
-
-
-        updateScreenState();
-    }
-
-
-    /* =====================================================
-       NAVIGATION SIDEBAR
-       ===================================================== */
-
-    function createSidebar() {
-
-        if (
-            $("fcCustomSidebar")
-        ) {
-
-            return;
-
-        }
-
-
-        const toggle =
-            create(
-                "button",
-                "",
-                document.body
-            );
-
-
-        toggle.id =
-            "fcNavToggle";
-
-
-        toggle.type =
-            "button";
-
-
-        toggle.title =
-            "Open navigation";
-
-
-        toggle.setAttribute(
-            "aria-label",
-            "Open navigation"
-        );
-
-
-        toggle.innerHTML =
-            '<span class="fc-chevron">›</span>';
-
-
-        const sidebar =
-            create(
-                "aside",
-                "fc-sidebar",
-                document.body
-            );
-
-
-        sidebar.id =
-            "fcCustomSidebar";
-
-
-        sidebar.innerHTML = `
-
-            <div class="fc-sidebar-brand">
-
-                <div class="fc-sidebar-logo">
-                    FC
-                </div>
-
-                <div>
-
-                    <div class="fc-sidebar-title">
-                        FriendChat
-                    </div>
-
-                    <div class="fc-sidebar-sub">
-                        Your private space
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <button
-                type="button"
-                class="fc-nav-item active"
-                data-action="home"
-            >
-                <span class="fc-nav-icon">
-                    💬
-                </span>
-
-                Chats
-            </button>
-
-
-            <button
-                type="button"
-                class="fc-nav-item"
-                data-action="friends"
-            >
-                <span class="fc-nav-icon">
-                    👥
-                </span>
-
-                Friends
-            </button>
-
-
-            <button
-                type="button"
-                class="fc-nav-item"
-                data-action="music"
-            >
-                <span class="fc-nav-icon">
-                    🎵
-                </span>
-
-                Music
-            </button>
-
-
-            <div class="fc-nav-divider"></div>
-
-
-            <button
-                type="button"
-                class="fc-nav-item"
-                data-action="theme"
-            >
-                <span class="fc-nav-icon">
-                    🎨
-                </span>
-
-                Change theme
-            </button>
-
-
-            <button
-                type="button"
-                class="fc-nav-item"
-                data-action="settings"
-            >
-                <span class="fc-nav-icon">
-                    ⚙️
-                </span>
-
-                Settings
-            </button>
-
-
-            <button
-                type="button"
-                class="fc-nav-item"
-                data-action="profile"
-            >
-                <span class="fc-nav-icon">
-                    👤
-                </span>
-
-                Profile
-            </button>
-
-        `;
-
-
-        /* ================================================
-           ARROW
-           ================================================ */
-
-        toggle.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-                event.stopPropagation();
-
-
-                const open =
-                    sidebar.classList.toggle(
-                        "open"
-                    );
-
-
-                toggle.classList.toggle(
-                    "is-open",
-                    open
-                );
-
-
-                if (open) {
-
-                    toggle.title =
-                        "Close navigation";
-
-                    toggle.setAttribute(
-                        "aria-label",
-                        "Close navigation"
-                    );
-
-                } else {
-
-                    toggle.title =
-                        "Open navigation";
-
-                    toggle.setAttribute(
-                        "aria-label",
-                        "Open navigation"
-                    );
-                }
-
-            }
-        );
-
-
-        /* ================================================
-           SIDEBAR ACTIONS
-           ================================================ */
-
-        sidebar
-            .querySelectorAll(
-                ".fc-nav-item"
-            )
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        event => {
-
-                            event.preventDefault();
-
-                            event.stopPropagation();
-
-
-                            const action =
-                                button.dataset.action;
-
-
-                            if (
-                                action === "home" ||
-                                action === "friends"
-                            ) {
-
-                                goHome();
-
-                            }
-
-
-                            if (
-                                action === "profile"
-                            ) {
-
-                                goProfile();
-
-                            }
-
-
-                            if (
-                                action === "music"
-                            ) {
-
-                                if (
-                                    typeof window.openSpotifyPanel ===
-                                    "function"
-                                ) {
-
-                                    window.openSpotifyPanel();
-
-                                } else if (
-                                    typeof window.toggleSpotifyPanel ===
-                                    "function"
-                                ) {
-
-                                    window.toggleSpotifyPanel();
-
-                                }
-
-                            }
-
-
-                            if (
-                                action === "theme" ||
-                                action === "settings"
-                            ) {
-
-                                openTheme();
-
-                            }
-
-
-                            sidebar.classList.remove(
-                                "open"
-                            );
-
-
-                            toggle.classList.remove(
-                                "is-open"
-                            );
-
-                        }
-                    );
-
-                }
-            );
-    }
-
-
-    /* =====================================================
-       BOTTOM DOCK
-       ===================================================== */
-
-    function createBottomDock() {
-
-        if (
-            document.querySelector(
-                ".fc-bottom-dock"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        const dock =
-            create(
-                "nav",
-                "fc-bottom-dock",
-                document.body
-            );
-
-
-        /* ================================================
-           CHAT BUTTON
-           ================================================ */
-
-        const chat =
-            create(
-                "button",
-                "fc-dock-btn",
-                dock
-            );
-
-
-        chat.type =
-            "button";
-
-
-        chat.title =
-            "Chats";
-
-
-        chat.setAttribute(
-            "aria-label",
-            "Chats"
-        );
-
-
-        chat.innerHTML =
-            `
-            <span>💬</span>
-            <span>Chats</span>
-            `;
-
-
-        chat.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-                event.stopPropagation();
-
-                /*
-                 * This is the important fix.
-                 * It calls the original app's showHome()
-                 * if available, then falls back to directly
-                 * showing homeScreen.
-                 */
-
-                goHome();
-
-            }
-        );
-
-
-        /* ================================================
-           FC BUTTON
-           ================================================ */
-
-        const fc =
-            create(
-                "button",
-                "fc-dock-btn fc-dock-center",
-                dock
-            );
-
-
-        fc.type =
-            "button";
-
-
-        fc.title =
-            "FC Suggestions";
-
-
-        fc.setAttribute(
-            "aria-label",
-            "FC Suggestions"
-        );
-
-
-        fc.innerHTML =
-            `
-            <span>FC</span>
-            <span>Suggestions</span>
-            `;
-
-
-        fc.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-                event.stopPropagation();
-
-                toggleDiscovery();
-
-            }
-        );
-
-
-        /* ================================================
-           PROFILE BUTTON
-           ================================================ */
-
-        const profile =
-            create(
-                "button",
-                "fc-dock-btn",
-                dock
-            );
-
-
-        profile.type =
-            "button";
-
-
-        profile.title =
-            "Profile";
-
-
-        profile.setAttribute(
-            "aria-label",
-            "Profile"
-        );
-
-
-        profile.innerHTML =
-            `
-            <span>👤</span>
-            <span>Profile</span>
-            `;
-
-
-        profile.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-                event.stopPropagation();
-
-                goProfile();
-
-            }
-        );
-    }
-
-
-    /* =====================================================
-       QUICK ACTIONS
-       ===================================================== */
-
-    function createQuickActions() {
-
-        if (
-            document.querySelector(
-                ".fc-quick-actions"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        const box =
-            create(
-                "div",
-                "fc-quick-actions",
-                document.body
-            );
-
-
-        const add =
-            create(
-                "button",
-                "",
-                box
-            );
-
-
-        add.type =
-            "button";
-
-
-        add.title =
-            "Add friend";
-
-
-        add.setAttribute(
-            "aria-label",
-            "Add friend"
-        );
-
-
-        add.textContent =
-            "+";
-
-
-        add.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-                goAddFriend();
-
-            }
-        );
-
-
-        const media =
-            create(
-                "button",
-                "",
-                box
-            );
-
-
-        media.type =
-            "button";
-
-
-        media.title =
-            "Media";
-
-
-        media.setAttribute(
-            "aria-label",
-            "Media"
-        );
-
-
-        media.textContent =
-            "▧";
-
-
-        media.addEventListener(
-            "click",
-            () => {
-
-                const input =
-                    $("profileMediaInput");
-
-
-                if (input) {
-
-                    input.click();
-
-                    return;
-
-                }
-
-
-                goProfile();
-
-            }
-        );
-    }
-
-
-    /* =====================================================
-       DISCOVERY
-       ===================================================== */
-
-    function createDiscovery() {
-
-        if (
-            $("fcDiscovery")
-        ) {
-
-            return;
-
-        }
-
-
-        const overlay =
-            create(
-                "div",
-                "fc-overlay",
-                document.body
-            );
-
-
-        overlay.id =
-            "fcDiscoveryOverlay";
-
-
-        overlay.addEventListener(
-            "click",
-            () => {
-
-                closeDiscovery();
-
-            }
-        );
-
-
-        const panel =
-            create(
-                "section",
-                "fc-discovery",
-                document.body
-            );
-
-
-        panel.id =
-            "fcDiscovery";
-
-
-        panel.innerHTML = `
-
-            <div class="fc-discovery-head">
-
-                <div>
-
-                    <strong>
-                        FC Suggestions
-                    </strong>
-
-                    <div class="fc-sidebar-sub">
-                        People known to FriendChat
-                    </div>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    class="fc-dock-btn"
-                    data-close-discovery
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <div
-                class="fc-discovery-list"
-                id="fcDiscoveryList"
-            ></div>
-
-        `;
-
-
-        const close =
-            panel.querySelector(
-                "[data-close-discovery]"
-            );
-
-
-        if (close) {
-
-            close.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-                    closeDiscovery();
-
-                }
-            );
-
-        }
-    }
-
-
-    function toggleDiscovery() {
-
-        const panel =
-            $("fcDiscovery");
-
-
-        const overlay =
-            $("fcDiscoveryOverlay");
-
-
-        if (
-            !panel ||
-            !overlay
-        ) {
-
-            return;
-
-        }
-
+    toggle.title =
+      "Open navigation";
+
+    toggle.setAttribute(
+      "aria-label",
+      "Open navigation"
+    );
+
+    toggle.innerHTML =
+      '<span class="fc-chevron">›</span>';
+
+
+    /* =======================================================
+       SIDEBAR
+       ======================================================= */
+
+    const sidebar =
+      create(
+        "aside",
+        "fc-sidebar",
+        document.body
+      );
+
+    sidebar.id =
+      "fcCustomSidebar";
+
+
+    sidebar.innerHTML = `
+
+      <div class="fc-sidebar-brand">
+
+        <div class="fc-sidebar-logo">
+          FC
+        </div>
+
+        <div>
+          <div class="fc-sidebar-title">
+            FriendChat
+          </div>
+
+          <div class="fc-sidebar-sub">
+            Your private space
+          </div>
+        </div>
+
+      </div>
+
+
+      <button
+        class="fc-nav-item active"
+        data-nav="chats"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          💬
+        </span>
+        Chats
+      </button>
+
+
+      <button
+        class="fc-nav-item"
+        data-nav="friends"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          👥
+        </span>
+        Friends
+      </button>
+
+
+      <button
+        class="fc-nav-item"
+        data-nav="music"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          🎵
+        </span>
+        Music
+      </button>
+
+
+      <div class="fc-nav-divider"></div>
+
+
+      <button
+        class="fc-nav-item fc-nav-theme"
+        data-nav="theme"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          🎨
+        </span>
+        Change theme
+      </button>
+
+
+      <button
+        class="fc-nav-item"
+        data-nav="settings"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          ⚙️
+        </span>
+        Settings
+      </button>
+
+
+      <button
+        class="fc-nav-item"
+        data-nav="profile"
+        type="button"
+      >
+        <span class="fc-nav-icon">
+          👤
+        </span>
+        Profile
+      </button>
+
+    `;
+
+
+    /* =======================================================
+       SIDEBAR OPEN / CLOSE
+       ======================================================= */
+
+    toggle.addEventListener(
+      "click",
+      () => {
 
         const open =
-            panel.classList.contains(
-                "open"
-            );
-
-
-        if (open) {
-
-            closeDiscovery();
-
-        } else {
-
-            renderDiscovery();
-
-            panel.classList.add(
-                "open"
-            );
-
-            overlay.classList.add(
-                "open"
-            );
-
-        }
-    }
-
-
-    function closeDiscovery() {
-
-        const panel =
-            $("fcDiscovery");
-
-
-        const overlay =
-            $("fcDiscoveryOverlay");
-
-
-        if (panel) {
-
-            panel.classList.remove(
-                "open"
-            );
-
-        }
-
-
-        if (overlay) {
-
-            overlay.classList.remove(
-                "open"
-            );
-
-        }
-    }
-
-
-    function renderDiscovery() {
-
-        const list =
-            $("fcDiscoveryList");
-
-
-        if (!list) {
-
-            return;
-
-        }
-
-
-        list.innerHTML =
-            "";
-
-
-        const known =
-            Array.isArray(
-                window.friends
-            )
-                ? window.friends
-                : [];
-
-
-        const presence =
-            window.friendChatPresence ||
-            {};
-
-
-        const users =
-            new Map();
-
-
-        known.forEach(
-            user => {
-
-                if (!user) {
-                    return;
-                }
-
-
-                const id =
-                    String(
-                        user.id ||
-                        ""
-                    ).toUpperCase();
-
-
-                if (!id) {
-                    return;
-                }
-
-
-                users.set(
-                    id,
-                    user
-                );
-
-            }
-        );
-
-
-        Object.keys(
-            presence
-        ).forEach(
-            id => {
-
-                const key =
-                    String(
-                        id
-                    ).toUpperCase();
-
-
-                if (
-                    !users.has(
-                        key
-                    )
-                ) {
-
-                    users.set(
-                        key,
-                        {
-                            id: key,
-                            name: key
-                        }
-                    );
-
-                }
-
-            }
-        );
-
-
-        const current =
-            window.currentUser;
-
-
-        const currentId =
-            current &&
-            current.id
-                ? String(
-                    current.id
-                ).toUpperCase()
-                : "";
-
-
-        const people =
-            [...users.values()]
-                .filter(
-                    user => {
-
-                        const id =
-                            String(
-                                user.id ||
-                                ""
-                            ).toUpperCase();
-
-
-                        return (
-                            id &&
-                            id !==
-                            currentId
-                        );
-
-                    }
-                );
-
-
-        if (
-            people.length === 0
-        ) {
-
-            list.innerHTML = `
-
-                <div
-                    style="
-                        padding:30px;
-                        text-align:center;
-                        color:rgba(255,255,255,.55);
-                    "
-                >
-                    No people available yet.
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-
-        people.forEach(
-            user => {
-
-                const row =
-                    create(
-                        "div",
-                        "fc-user-suggestion",
-                        list
-                    );
-
-
-                const avatar =
-                    create(
-                        "div",
-                        "fc-user-avatar",
-                        row
-                    );
-
-
-                avatar.textContent =
-                    (
-                        user.name ||
-                        "?"
-                    )
-                        .charAt(0)
-                        .toUpperCase();
-
-
-                const info =
-                    create(
-                        "div",
-                        "fc-user-info",
-                        row
-                    );
-
-
-                const name =
-                    create(
-                        "div",
-                        "fc-user-name",
-                        info
-                    );
-
-
-                name.textContent =
-                    user.name ||
-                    "Unknown";
-
-
-                const id =
-                    create(
-                        "div",
-                        "fc-user-id",
-                        info
-                    );
-
-
-                id.textContent =
-                    user.id ||
-                    "";
-
-
-                const button =
-                    create(
-                        "button",
-                        "fc-user-add",
-                        row
-                    );
-
-
-                button.type =
-                    "button";
-
-
-                button.textContent =
-                    "Chat";
-
-
-                button.addEventListener(
-                    "click",
-                    event => {
-
-                        event.preventDefault();
-
-                        event.stopPropagation();
-
-
-                        if (
-                            typeof window.openChat ===
-                            "function"
-                        ) {
-
-                            window.openChat(
-                                user
-                            );
-
-                        }
-
-
-                        closeDiscovery();
-
-                        setTimeout(
-                            updateScreenState,
-                            50
-                        );
-
-                    }
-                );
-
-            }
-        );
-    }
-
-
-    /* =====================================================
-       THEME PANEL
-       ===================================================== */
-
-    function createThemePanel() {
-
-        if (
-            $("fcThemePanel")
-        ) {
-
-            return;
-
-        }
-
-
-        const overlay =
-            create(
-                "div",
-                "fc-overlay",
-                document.body
-            );
-
-
-        overlay.id =
-            "fcThemeOverlay";
-
-
-        overlay.addEventListener(
-            "click",
-            closeTheme
-        );
-
-
-        const panel =
-            create(
-                "section",
-                "fc-theme-panel",
-                document.body
-            );
-
-
-        panel.id =
-            "fcThemePanel";
-
-
-        panel.innerHTML = `
-
-            <div class="fc-theme-head">
-
-                <strong>
-                    FriendChat Theme
-                </strong>
-
-
-                <button
-                    type="button"
-                    class="fc-dock-btn"
-                    data-close-theme
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <div class="fc-theme-body">
-
-                <div
-                    class="fc-theme-grid"
-                    id="fcThemeGrid"
-                ></div>
-
-            </div>
-
-        `;
-
-
-        const close =
-            panel.querySelector(
-                "[data-close-theme]"
-            );
-
-
-        if (close) {
-
-            close.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-                    closeTheme();
-
-                }
-            );
-
-        }
-
-
-        const grid =
-            $("fcThemeGrid");
-
-
-        Object.entries(
-            themes
-        ).forEach(
-            ([key, theme]) => {
-
-                const button =
-                    create(
-                        "button",
-                        "fc-theme-choice",
-                        grid
-                    );
-
-
-                button.type =
-                    "button";
-
-
-                button.innerHTML = `
-
-                    <div
-                        class="fc-theme-swatch"
-                        style="
-                            background:
-                            linear-gradient(
-                                135deg,
-                                ${theme.accent},
-                                ${theme.accent2}
-                            );
-                        "
-                    ></div>
-
-
-                    <div class="fc-theme-name">
-                        ${escapeHTML(
-                            theme.name
-                        )}
-                    </div>
-
-
-                    <div class="fc-theme-desc">
-                        ${escapeHTML(
-                            theme.desc
-                        )}
-                    </div>
-
-                `;
-
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        applyTheme(
-                            key
-                        );
-
-                    }
-                );
-
-            }
-        );
-    }
-
-
-    function openTheme() {
-
-        const panel =
-            $("fcThemePanel");
-
-
-        const overlay =
-            $("fcThemeOverlay");
-
-
-        if (!panel || !overlay) {
-            return;
-        }
-
-
-        panel.classList.add(
+          sidebar.classList.toggle(
             "open"
+          );
+
+        toggle.classList.toggle(
+          "is-open",
+          open
         );
 
+        toggle.title =
+          open
+            ? "Close navigation"
+            : "Open navigation";
 
-        overlay.classList.add(
-            "open"
-        );
-    }
-
-
-    function closeTheme() {
-
-        const panel =
-            $("fcThemePanel");
-
-
-        const overlay =
-            $("fcThemeOverlay");
-
-
-        if (panel) {
-
-            panel.classList.remove(
-                "open"
-            );
-
-        }
-
-
-        if (overlay) {
-
-            overlay.classList.remove(
-                "open"
-            );
-
-        }
-    }
-
-
-    function applyTheme(key) {
-
-        const theme =
-            themes[key];
-
-
-        if (!theme) {
-            return;
-        }
-
-
-        const root =
-            document.documentElement;
-
-
-        root.style.setProperty(
-            "--fc-bg",
-            theme.bg
+        toggle.setAttribute(
+          "aria-label",
+          open
+            ? "Close navigation"
+            : "Open navigation"
         );
 
+      }
+    );
 
-        root.style.setProperty(
-            "--fc-panel",
-            theme.panel
-        );
 
+    /* =======================================================
+       SIDEBAR BUTTONS
+       ======================================================= */
 
-        root.style.setProperty(
-            "--fc-panel-2",
-            theme.panel
-        );
+    sidebar
+      .querySelectorAll(
+        ".fc-nav-item"
+      )
+      .forEach(btn => {
 
+        btn.addEventListener(
+          "click",
+          () => {
 
-        root.style.setProperty(
-            "--fc-accent",
-            theme.accent
-        );
+            const action =
+              btn.dataset.nav;
 
 
-        root.style.setProperty(
-            "--fc-accent-2",
-            theme.accent2
-        );
+            /* CHATS */
 
+            if (
+              action === "chats"
+            ) {
 
-        try {
+              goHome();
 
-            localStorage.setItem(
-                "friendchat_theme",
-                key
-            );
-
-        } catch (error) {
-
-            console.warn(
-                "Could not save theme",
-                error
-            );
-
-        }
-
-
-        closeTheme();
-    }
-
-
-    function loadTheme() {
-
-        let saved =
-            "midnight";
-
-
-        try {
-
-            saved =
-                localStorage.getItem(
-                    "friendchat_theme"
-                ) ||
-                "midnight";
-
-        } catch (error) {
-
-            console.warn(
-                "Could not load theme",
-                error
-            );
-
-        }
-
-
-        applyTheme(
-            saved
-        );
-    }
-
-
-    /* =====================================================
-       REMOVE OLD SPOTIFY SIDE BUTTON
-       ===================================================== */
-
-    function removeOldSpotifyButton() {
-
-        const remove =
-            () => {
-
-                document
-                    .querySelectorAll(
-                        ".spotify-side-button, .spotify-side-bar"
-                    )
-                    .forEach(
-                        element => {
-
-                            element.remove();
-
-                        }
-                    );
-
-            };
-
-
-        remove();
-
-
-        const timer =
-            setInterval(
-                remove,
-                500
-            );
-
-
-        setTimeout(
-            () => {
-
-                clearInterval(
-                    timer
-                );
-
-            },
-            10000
-        );
-    }
-
-
-    /* =====================================================
-       SCREEN STATE
-       ===================================================== */
-
-    function updateScreenState() {
-
-        const chat =
-            $("chatScreen");
-
-
-        const login =
-            $("loginScreen");
-
-
-        const signup =
-            $("signupScreen");
-
-
-        const chatOpen =
-            !!(
-                chat &&
-                !chat.classList.contains(
-                    "hidden"
-                )
-            );
-
-
-        const loggedIn =
-            !!(
-                login &&
-                login.classList.contains(
-                    "hidden"
-                ) &&
-                (
-                    !signup ||
-                    signup.classList.contains(
-                        "hidden"
-                    )
-                )
-            );
-
-
-        /* ================================================
-           BODY CHAT STATE
-           ================================================ */
-
-        document.body.classList.toggle(
-            "fc-chat-open",
-            chatOpen
-        );
-
-
-        /* ================================================
-           SIDEBAR
-           ================================================ */
-
-        const arrow =
-            $("fcNavToggle");
-
-
-        const sidebar =
-            $("fcCustomSidebar");
-
-
-        if (
-            arrow &&
-            sidebar
-        ) {
-
-            const visible =
-                loggedIn;
-
-
-            arrow.style.setProperty(
-                "display",
-                visible
-                    ? "flex"
-                    : "none",
-                "important"
-            );
-
-
-            arrow.style.setProperty(
-                "visibility",
-                visible
-                    ? "visible"
-                    : "hidden",
-                "important"
-            );
-
-
-            sidebar.style.setProperty(
-                "display",
-                visible
-                    ? "block"
-                    : "none",
-                "important"
-            );
-
-
-            sidebar.style.setProperty(
-                "visibility",
-                visible
-                    ? "visible"
-                    : "hidden",
-                "important"
-            );
-
-        }
-
-
-        /* ================================================
-           BOTTOM DOCK
-           ================================================ */
-
-        document
-            .querySelectorAll(
-                ".fc-bottom-dock"
-            )
-            .forEach(
-                dock => {
-
-                    const show =
-                        loggedIn &&
-                        !chatOpen;
-
-
-                    dock.style.setProperty(
-                        "display",
-                        show
-                            ? "flex"
-                            : "none",
-                        "important"
-                    );
-
-
-                    dock.style.setProperty(
-                        "visibility",
-                        show
-                            ? "visible"
-                            : "hidden",
-                        "important"
-                    );
-
-
-                    dock.style.setProperty(
-                        "opacity",
-                        show
-                            ? "1"
-                            : "0",
-                        "important"
-                    );
-
-                }
-            );
-
-
-        /* ================================================
-           QUICK ACTIONS
-           ================================================ */
-
-        document
-            .querySelectorAll(
-                ".fc-quick-actions"
-            )
-            .forEach(
-                box => {
-
-                    const show =
-                        loggedIn;
-
-
-                    box.style.setProperty(
-                        "display",
-                        show
-                            ? "flex"
-                            : "none",
-                        "important"
-                    );
-
-                }
-            );
-    }
-
-
-    /* =====================================================
-       SCREEN OBSERVER
-       ===================================================== */
-
-    function startScreenObserver() {
-
-        updateScreenState();
-
-
-        const observer =
-            new MutationObserver(
-                () => {
-
-                    updateScreenState();
-
-                }
-            );
-
-
-        observer.observe(
-            document.body,
-            {
-                subtree: true,
-                attributes: true,
-                attributeFilter: [
-                    "class"
-                ]
             }
+
+
+            /* FRIENDS */
+
+            if (
+              action === "friends"
+            ) {
+
+              goHome();
+
+            }
+
+
+            /* MUSIC */
+
+            if (
+              action === "music"
+            ) {
+
+              if (
+                typeof window.openSpotifyPanel ===
+                "function"
+              ) {
+
+                window.openSpotifyPanel();
+
+              } else if (
+                typeof window.toggleSpotifyPanel ===
+                "function"
+              ) {
+
+                window.toggleSpotifyPanel();
+
+              }
+
+            }
+
+
+            /* PROFILE */
+
+            if (
+              action === "profile"
+            ) {
+
+              if (
+                typeof showProfile ===
+                "function"
+              ) {
+
+                showProfile();
+
+              }
+
+            }
+
+
+            /* THEME */
+
+            if (
+              action === "theme"
+            ) {
+
+              openThemePanel();
+
+            }
+
+
+            /* SETTINGS */
+
+            if (
+              action === "settings"
+            ) {
+
+              openThemePanel();
+
+            }
+
+
+            /* CLOSE SIDEBAR */
+
+            sidebar.classList.remove(
+              "open"
+            );
+
+            toggle.classList.remove(
+              "is-open"
+            );
+
+            toggle.title =
+              "Open navigation";
+
+            toggle.setAttribute(
+              "aria-label",
+              "Open navigation"
+            );
+
+          }
         );
 
-
-        setInterval(
-            updateScreenState,
-            500
-        );
-    }
+      });
 
 
-    /* =====================================================
-       INITIALIZE
-       ===================================================== */
+    /* =======================================================
+       OTHER UI
+       ======================================================= */
 
-    function init() {
+    addQuickActions();
 
-        installStyles();
+    addBottomDock();
 
+    addDiscovery();
+
+    addThemePanel();
+
+    hideOldSpotifyButton();
+
+    applySavedTheme();
+
+    setupVisibility();
+
+  }
+
+
+  /* =========================================================
+     QUICK ACTION BUTTONS
+     ========================================================= */
+
+  function addQuickActions() {
+
+    const box =
+      create(
+        "div",
+        "fc-quick-actions",
+        document.body
+      );
+
+
+    /* ADD FRIEND */
+
+    const add =
+      create(
+        "button",
+        "fc-quick add",
+        box
+      );
+
+    add.title =
+      "Add friend";
+
+    add.textContent =
+      "＋";
+
+
+    add.onclick =
+      () => {
 
         if (
-            $("fcCustomSidebar")
+          typeof showAdd ===
+          "function"
         ) {
 
-            updateScreenState();
-
-            return;
+          showAdd();
 
         }
 
-
-        createSidebar();
-
-        createQuickActions();
-
-        createBottomDock();
-
-        createDiscovery();
-
-        createThemePanel();
-
-        removeOldSpotifyButton();
-
-        loadTheme();
-
-        startScreenObserver();
+      };
 
 
-        console.log(
-            "FriendChat UI v3 loaded successfully"
-        );
+    /* PROFILE MEDIA */
+
+    const media =
+      create(
+        "button",
+        "fc-quick media",
+        box
+      );
+
+    media.title =
+      "Upload profile media";
+
+    media.textContent =
+      "▧";
+
+
+    media.onclick =
+      () => {
+
+        const input =
+          $("profileMediaInput");
+
+
+        if (input) {
+
+          input.click();
+
+        } else if (
+          typeof showProfile ===
+          "function"
+        ) {
+
+          showProfile();
+
+        }
+
+      };
+
+  }
+
+
+  /* =========================================================
+     SAFE SCREEN NAVIGATION
+     ========================================================= */
+
+  function goHome() {
+
+    try {
+
+      if (
+        typeof window.showHome ===
+        "function"
+      ) {
+
+        window.showHome();
+
+      }
+
+    } catch (e) {
+
+      console.warn(
+        "FriendChat showHome failed:",
+        e
+      );
+
     }
 
 
-    /* =====================================================
-       START AFTER PAGE LOAD
-       ===================================================== */
+    /* Always provide a fallback so the dock button works even if
+       app.js did not expose showHome globally. */
+
+    const screens =
+      document.querySelectorAll(
+        ".screen"
+      );
+
+
+    screens.forEach(
+      screen =>
+        screen.classList.add(
+          "hidden"
+        )
+    );
+
+
+    const home =
+      document.getElementById(
+        "homeScreen"
+      );
+
+
+    if (home) {
+
+      home.classList.remove(
+        "hidden"
+      );
+
+    }
+
+
+    const chat =
+      document.getElementById(
+        "chatScreen"
+      );
+
+
+    if (chat) {
+
+      chat.classList.add(
+        "hidden"
+      );
+
+    }
+
+
+    const add =
+      document.getElementById(
+        "addScreen"
+      );
+
+
+    if (add) {
+
+      add.classList.add(
+        "hidden"
+      );
+
+    }
+
+
+    const profile =
+      document.getElementById(
+        "profileScreen"
+      );
+
+
+    if (profile) {
+
+      profile.classList.add(
+        "hidden"
+      );
+
+    }
+
+
+    closeDiscovery();
+
+    closeThemePanel();
+
+
+    const dock =
+      document.querySelector(
+        ".fc-bottom-dock"
+      );
+
+
+    if (dock) {
+
+      dock.style.setProperty(
+        "display",
+        "flex",
+        "important"
+      );
+
+      dock.style.setProperty(
+        "visibility",
+        "visible",
+        "important"
+      );
+
+      dock.style.setProperty(
+        "opacity",
+        "1",
+        "important"
+      );
+
+    }
+
+
+    const sidebar =
+      document.getElementById(
+        "fcCustomSidebar"
+      );
+
+
+    const toggle =
+      document.getElementById(
+        "fcNavToggle"
+      );
+
+
+    if (sidebar) {
+
+      sidebar.classList.remove(
+        "open"
+      );
+
+    }
+
+
+    if (toggle) {
+
+      toggle.classList.remove(
+        "is-open"
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     BOTTOM DOCK
+     ========================================================= */
+
+  function addBottomDock() {
+
+    const dock =
+      create(
+        "div",
+        "fc-bottom-dock",
+        document.body
+      );
+
+
+    /* CHATS */
+
+    const chats =
+      create(
+        "button",
+        "fc-dock-btn",
+        dock
+      );
+
+
+    chats.title =
+      "Chats";
+
+
+    chats.innerHTML =
+      '<span>💬</span><span>Chats</span>';
+
+
+    chats.onclick =
+      () => {
+
+        goHome();
+
+      };
+
+
+    /* DISCOVER */
+
+    const center =
+      create(
+        "button",
+        "fc-dock-btn fc-dock-center",
+        dock
+      );
+
+
+    center.title =
+      "Discover FriendChat users";
+
+
+    center.innerHTML =
+      '<span>FC</span><span>Suggestions</span>';
+
+
+    center.onclick =
+      () => {
+
+        toggleDiscovery();
+
+      };
+
+
+    /* PROFILE */
+
+    const profile =
+      create(
+        "button",
+        "fc-dock-btn",
+        dock
+      );
+
+
+    profile.title =
+      "Profile";
+
+
+    profile.innerHTML =
+      '<span>👤</span><span>Profile</span>';
+
+
+    profile.onclick =
+      () => {
+
+        if (
+          typeof showProfile ===
+          "function"
+        ) {
+
+          showProfile();
+
+        }
+
+      };
+
+  }
+
+
+  /* =========================================================
+     DISCOVERY
+     ========================================================= */
+
+  function addDiscovery() {
+
+    const overlay =
+      create(
+        "div",
+        "fc-overlay",
+        document.body
+      );
+
+
+    overlay.id =
+      "fcDiscoveryOverlay";
+
+
+    overlay.onclick =
+      () => {
+
+        closeDiscovery();
+
+      };
+
+
+    const panel =
+      create(
+        "section",
+        "fc-discovery",
+        document.body
+      );
+
+
+    panel.id =
+      "fcDiscovery";
+
+
+    panel.innerHTML = `
+
+      <div class="fc-discovery-head">
+
+        <div>
+
+          <strong>
+            Discover people
+          </strong>
+
+          <div class="fc-sidebar-sub">
+            Everyone currently known to FriendChat
+          </div>
+
+        </div>
+
+
+        <button
+          class="fc-dock-btn"
+          data-close
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        class="fc-discovery-list"
+        id="fcDiscoveryList"
+      ></div>
+
+    `;
+
+
+    const closeButton =
+      panel.querySelector(
+        "[data-close]"
+      );
+
+
+    if (closeButton) {
+
+      closeButton.onclick =
+        () => {
+
+          closeDiscovery();
+
+        };
+
+    }
+
+  }
+
+
+  function toggleDiscovery() {
+
+    const p =
+      $("fcDiscovery");
+
+
+    const o =
+      $("fcDiscoveryOverlay");
+
+
+    if (!p || !o) {
+
+      return;
+
+    }
+
 
     if (
-        document.readyState ===
-        "loading"
+      p.classList.contains(
+        "open"
+      )
     ) {
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            init
-        );
+      closeDiscovery();
 
     } else {
 
-        init();
+      renderDiscovery();
+
+
+      p.classList.add(
+        "open"
+      );
+
+
+      o.classList.add(
+        "open"
+      );
 
     }
+
+  }
+
+
+  function closeDiscovery() {
+
+    $("fcDiscovery")
+      ?.classList.remove(
+        "open"
+      );
+
+
+    $("fcDiscoveryOverlay")
+      ?.classList.remove(
+        "open"
+      );
+
+  }
+
+
+  function renderDiscovery() {
+
+    const list =
+      $("fcDiscoveryList");
+
+
+    if (!list) {
+
+      return;
+
+    }
+
+
+    const friendSource =
+      Array.isArray(
+        window.friends
+      )
+        ? window.friends
+        : [];
+
+
+    const presence =
+      window.friendChatPresence ||
+      {};
+
+
+    const map =
+      new Map();
+
+
+    friendSource.forEach(
+      user => {
+
+        map.set(
+          String(
+            user.id || ""
+          ).toUpperCase(),
+          user
+        );
+
+      }
+    );
+
+
+    Object.keys(
+      presence
+    ).forEach(
+      id => {
+
+        const key =
+          String(id)
+            .toUpperCase();
+
+
+        if (
+          !map.has(key)
+        ) {
+
+          map.set(
+            key,
+            {
+              id: key,
+              name: key
+            }
+          );
+
+        }
+
+      }
+    );
+
+
+    const source =
+      [...map.values()]
+        .filter(
+          user => {
+
+            const myId =
+              window.currentUser?.id;
+
+
+            return (
+              !myId ||
+              String(
+                user.id
+              ).toUpperCase() !==
+              String(
+                myId
+              ).toUpperCase()
+            );
+
+          }
+        );
+
+
+    if (
+      !source.length
+    ) {
+
+      list.innerHTML =
+        `
+          <div
+            style="
+              padding:24px;
+              text-align:center;
+              color:var(--fc-muted);
+            "
+          >
+            No users available yet.
+          </div>
+        `;
+
+
+      return;
+
+    }
+
+
+    list.innerHTML =
+      "";
+
+
+    source.forEach(
+      user => {
+
+        const row =
+          create(
+            "div",
+            "fc-user-suggestion",
+            list
+          );
+
+
+        const avatar =
+          create(
+            "div",
+            "fc-user-avatar",
+            row
+          );
+
+
+        avatar.textContent =
+          (
+            user.name ||
+            "?"
+          )
+            .charAt(0)
+            .toUpperCase();
+
+
+        const info =
+          create(
+            "div",
+            "fc-user-info",
+            row
+          );
+
+
+        info.innerHTML = `
+          <div class="fc-user-name">
+            ${esc(
+              user.name ||
+              "Unknown"
+            )}
+          </div>
+
+          <div class="fc-user-id">
+            ${esc(
+              user.id ||
+              ""
+            )}
+          </div>
+        `;
+
+
+        const add =
+          create(
+            "button",
+            "fc-user-add",
+            row
+          );
+
+
+        add.textContent =
+          "Chat";
+
+
+        add.onclick =
+          () => {
+
+            if (
+              typeof openChat ===
+              "function"
+            ) {
+
+              openChat(
+                user
+              );
+
+            }
+
+            closeDiscovery();
+
+          };
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     THEME PANEL
+     ========================================================= */
+
+  function addThemePanel() {
+
+    const overlay =
+      create(
+        "div",
+        "fc-overlay",
+        document.body
+      );
+
+
+    overlay.id =
+      "fcThemeOverlay";
+
+
+    overlay.onclick =
+      () => {
+
+        closeThemePanel();
+
+      };
+
+
+    const panel =
+      create(
+        "section",
+        "fc-theme-panel",
+        document.body
+      );
+
+
+    panel.id =
+      "fcThemePanel";
+
+
+    panel.innerHTML = `
+
+      <div class="fc-theme-head">
+
+        <strong>
+          Customize FriendChat
+        </strong>
+
+
+        <button
+          class="fc-dock-btn"
+          data-close
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="fc-theme-body">
+
+        <div
+          class="fc-theme-grid"
+          id="fcThemeGrid"
+        ></div>
+
+      </div>
+
+    `;
+
+
+    const closeButton =
+      panel.querySelector(
+        "[data-close]"
+      );
+
+
+    if (closeButton) {
+
+      closeButton.onclick =
+        () => {
+
+          closeThemePanel();
+
+        };
+
+    }
+
+
+    const grid =
+      panel.querySelector(
+        "#fcThemeGrid"
+      );
+
+
+    if (!grid) {
+
+      return;
+
+    }
+
+
+    Object.entries(
+      themes
+    ).forEach(
+      ([key, theme]) => {
+
+        const button =
+          create(
+            "button",
+            "fc-theme-choice",
+            grid
+          );
+
+
+        button.type =
+          "button";
+
+
+        button.innerHTML = `
+
+          <div
+            class="fc-theme-swatch"
+            style="
+              background:
+                linear-gradient(
+                  135deg,
+                  ${theme.accent},
+                  ${theme.accent2}
+                )
+            "
+          ></div>
+
+          <div class="fc-theme-name">
+            ${theme.name}
+          </div>
+
+          <div class="fc-theme-desc">
+            ${theme.desc}
+          </div>
+
+        `;
+
+
+        button.onclick =
+          () => {
+
+            setTheme(
+              key
+            );
+
+          };
+
+      }
+    );
+
+  }
+
+
+  function openThemePanel() {
+
+    $("fcThemePanel")
+      ?.classList.add(
+        "open"
+      );
+
+
+    $("fcThemeOverlay")
+      ?.classList.add(
+        "open"
+      );
+
+  }
+
+
+  function closeThemePanel() {
+
+    $("fcThemePanel")
+      ?.classList.remove(
+        "open"
+      );
+
+
+    $("fcThemeOverlay")
+      ?.classList.remove(
+        "open"
+      );
+
+  }
+
+
+  /* =========================================================
+     THEME
+     ========================================================= */
+
+  function setTheme(key) {
+
+    const theme =
+      themes[key];
+
+
+    if (!theme) {
+
+      return;
+
+    }
+
+
+    const root =
+      document.documentElement;
+
+
+    root.style.setProperty(
+      "--fc-bg",
+      theme.bg
+    );
+
+
+    root.style.setProperty(
+      "--fc-panel",
+      theme.panel
+    );
+
+
+    root.style.setProperty(
+      "--fc-panel-2",
+      theme.panel
+    );
+
+
+    root.style.setProperty(
+      "--fc-accent",
+      theme.accent
+    );
+
+
+    root.style.setProperty(
+      "--fc-accent-2",
+      theme.accent2
+    );
+
+
+    localStorage.setItem(
+      "friendchat_theme",
+      key
+    );
+
+
+    closeThemePanel();
+
+  }
+
+
+  function applySavedTheme() {
+
+    const saved =
+      localStorage.getItem(
+        "friendchat_theme"
+      ) ||
+      "midnight";
+
+
+    setTheme(
+      saved
+    );
+
+  }
+
+
+  /* =========================================================
+     VISIBILITY
+     ========================================================= */
+
+  function setupVisibility() {
+
+    const sync = () => {
+
+      const login =
+        $("loginScreen");
+
+
+      const signup =
+        $("signupScreen");
+
+
+      const authenticated =
+        !!(
+          login &&
+          login.classList.contains(
+            "hidden"
+          ) &&
+          (
+            !signup ||
+            signup.classList.contains(
+              "hidden"
+            )
+          )
+        );
+
+
+      const ids = [
+        "fcNavToggle",
+        "fcCustomSidebar"
+      ];
+
+
+      ids.forEach(
+        id => {
+
+          const el =
+            $(id);
+
+
+          if (!el) {
+
+            return;
+
+          }
+
+
+          el.style.setProperty(
+            "display",
+            authenticated
+              ? "flex"
+              : "none",
+            "important"
+          );
+
+
+          el.style.setProperty(
+            "visibility",
+            authenticated
+              ? "visible"
+              : "hidden",
+            "important"
+          );
+
+
+          el.style.setProperty(
+            "opacity",
+            authenticated
+              ? "1"
+              : "0",
+            "important"
+          );
+
+        }
+      );
+
+
+      const chatScreen =
+        $("chatScreen");
+
+
+      const chatOpen =
+        !!(
+          chatScreen &&
+          !chatScreen.classList.contains(
+            "hidden"
+          )
+        );
+
+
+      document.body.classList.toggle(
+        "fc-chat-open",
+        chatOpen
+      );
+
+
+      /*
+       * The bottom dock belongs to the main navigation.
+       * Never show it while a chat is open, because it overlaps
+       * the message composer at the bottom of the chat screen.
+       */
+
+      document
+        .querySelectorAll(
+          ".fc-bottom-dock"
+        )
+        .forEach(
+          el => {
+
+            const showDock =
+              authenticated &&
+              !chatOpen;
+
+
+            el.style.setProperty(
+              "display",
+              showDock
+                ? "flex"
+                : "none",
+              "important"
+            );
+
+
+            el.style.setProperty(
+              "visibility",
+              showDock
+                ? "visible"
+                : "hidden",
+              "important"
+            );
+
+
+            el.style.setProperty(
+              "opacity",
+              showDock
+                ? "1"
+                : "0",
+              "important"
+            );
+
+          }
+        );
+
+
+      /*
+       * Quick actions can remain available on authenticated screens.
+       */
+
+      document
+        .querySelectorAll(
+          ".fc-quick-actions"
+        )
+        .forEach(
+          el => {
+
+            el.style.setProperty(
+              "display",
+              authenticated
+                ? "flex"
+                : "none",
+              "important"
+            );
+
+
+            el.style.setProperty(
+              "visibility",
+              authenticated
+                ? "visible"
+                : "hidden",
+              "important"
+            );
+
+
+            el.style.setProperty(
+              "opacity",
+              authenticated
+                ? "1"
+                : "0",
+              "important"
+            );
+
+          }
+        );
+
+    };
+
+
+    sync();
+
+
+    const observer =
+      new MutationObserver(
+        sync
+      );
+
+
+    observer.observe(
+      document.body,
+      {
+        subtree: true,
+        attributes: true,
+        attributeFilter: [
+          "class"
+        ]
+      }
+    );
+
+
+    window.setInterval(
+      sync,
+      500
+    );
+
+  }
+
+
+  /* =========================================================
+     REMOVE OLD SPOTIFY BUTTON
+     ========================================================= */
+
+  function hideOldSpotifyButton() {
+
+    const hide =
+      () => {
+
+        document
+          .querySelectorAll(
+            ".spotify-side-button,.spotify-side-bar"
+          )
+          .forEach(
+            e =>
+              e.remove()
+          );
+
+      };
+
+
+    hide();
+
+
+    const timer =
+      setInterval(
+        hide,
+        250
+      );
+
+
+    setTimeout(
+      () => {
+
+        clearInterval(
+          timer
+        );
+
+      },
+      15000
+    );
+
+  }
+
+
+  /* =========================================================
+     START
+     ========================================================= */
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      init
+    );
+
+  } else {
+
+    init();
+
+  }
 
 })();
