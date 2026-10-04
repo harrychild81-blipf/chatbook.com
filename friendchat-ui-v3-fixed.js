@@ -83,131 +83,214 @@
 
 
   /* =========================================================
-     MAIN INITIALIZATION
+     NAVIGATION STYLES
      ========================================================= */
 
   function installNavigationStyles() {
-    if ($("friendchat-nav-guaranteed-style")) return;
+
+    if ($("friendchat-nav-guaranteed-style")) {
+      return;
+    }
 
     const style = document.createElement("style");
 
-    style.id = "friendchat-nav-guaranteed-style";
+    style.id =
+      "friendchat-nav-guaranteed-style";
 
     style.textContent = `
+
       #fcNavToggle {
         position: fixed !important;
         left: 14px !important;
         top: 50% !important;
         transform: translateY(-50%) !important;
+
         z-index: 2147483646 !important;
+
         width: 24px !important;
         height: 42px !important;
+
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+
         border: 0 !important;
         border-radius: 12px !important;
+
         background: rgba(20,25,38,.96) !important;
         color: #fff !important;
+
         cursor: pointer !important;
+
         visibility: visible !important;
       }
+
 
       #fcNavToggle.is-open {
         left: 202px !important;
       }
+
 
       #fcNavToggle .fc-chevron {
         font-size: 24px !important;
         line-height: 1 !important;
       }
 
+
       #fcCustomSidebar {
         position: fixed !important;
+
         left: 12px !important;
         top: 50% !important;
-        transform: translateY(-50%) translateX(-115%) !important;
+
+        transform:
+          translateY(-50%)
+          translateX(-115%) !important;
+
         width: 185px !important;
+
         z-index: 2147483645 !important;
+
         box-sizing: border-box !important;
       }
 
+
       #fcCustomSidebar.open {
-        transform: translateY(-50%) translateX(0) !important;
+        transform:
+          translateY(-50%)
+          translateX(0) !important;
       }
+
 
       #fcCustomSidebar .fc-nav-item {
         cursor: pointer !important;
       }
 
+
+      /* =====================================================
+         BOTTOM DOCK
+         ===================================================== */
+
       .fc-bottom-dock {
         position: fixed !important;
+
         left: 50% !important;
         bottom: 14px !important;
-        transform: translateX(-50%) !important;
+
+        transform:
+          translateX(-50%) !important;
+
         z-index: 2147483647 !important;
-        width: min(560px, calc(100vw - 28px)) !important;
+
+        width:
+          min(560px, calc(100vw - 28px)) !important;
+
         min-height: 62px !important;
+
         display: flex !important;
+
         align-items: center !important;
         justify-content: space-around !important;
+
         gap: 6px !important;
+
         padding: 7px !important;
+
         box-sizing: border-box !important;
+
         border-radius: 20px !important;
-        background: rgba(13,18,27,.96) !important;
-        border: 1px solid rgba(255,255,255,.14) !important;
-        box-shadow: 0 18px 60px rgba(0,0,0,.5) !important;
+
+        background:
+          rgba(13,18,27,.96) !important;
+
+        border:
+          1px solid rgba(255,255,255,.14) !important;
+
+        box-shadow:
+          0 18px 60px rgba(0,0,0,.5) !important;
       }
+
 
       .fc-bottom-dock .fc-dock-btn {
         flex: 1 !important;
+
         min-height: 48px !important;
+
         border: 0 !important;
+
         border-radius: 14px !important;
-        background: transparent !important;
+
+        background:
+          transparent !important;
+
         color: #fff !important;
+
         display: flex !important;
+
         align-items: center !important;
         justify-content: center !important;
+
         gap: 6px !important;
+
         font-size: 14px !important;
+
         cursor: pointer !important;
       }
 
-      .fc-bottom-dock .fc-dock-btn:hover {
-        background: rgba(255,255,255,.10) !important;
+
+      .fc-bottom-dock
+      .fc-dock-btn:hover {
+        background:
+          rgba(255,255,255,.10) !important;
       }
 
+
+      /* =====================================================
+         MOBILE
+         ===================================================== */
+
       @media(max-width:600px) {
+
         #fcNavToggle {
           left: 3px !important;
           width: 22px !important;
         }
 
+
         #fcNavToggle.is-open {
           left: 190px !important;
         }
+
 
         #fcCustomSidebar {
           width: 180px !important;
           left: 8px !important;
         }
 
+
         .fc-bottom-dock {
-          width: calc(100vw - 20px) !important;
+          width:
+            calc(100vw - 20px) !important;
+
           bottom: 10px !important;
         }
+
       }
+
     `;
 
     document.head.appendChild(style);
   }
 
 
+  /* =========================================================
+     INITIALIZATION
+     ========================================================= */
+
   function init() {
 
     installNavigationStyles();
+
 
     if ($("fcCustomSidebar")) {
       return;
@@ -225,15 +308,20 @@
         document.body
       );
 
-    toggle.id = "fcNavToggle";
+
+    toggle.id =
+      "fcNavToggle";
+
 
     toggle.title =
       "Open navigation";
+
 
     toggle.setAttribute(
       "aria-label",
       "Open navigation"
     );
+
 
     toggle.innerHTML =
       '<span class="fc-chevron">›</span>';
@@ -250,6 +338,7 @@
         document.body
       );
 
+
     sidebar.id =
       "fcCustomSidebar";
 
@@ -263,6 +352,7 @@
         </div>
 
         <div>
+
           <div class="fc-sidebar-title">
             FriendChat
           </div>
@@ -270,6 +360,7 @@
           <div class="fc-sidebar-sub">
             Your private space
           </div>
+
         </div>
 
       </div>
@@ -280,10 +371,13 @@
         data-nav="chats"
         type="button"
       >
+
         <span class="fc-nav-icon">
           💬
         </span>
+
         Chats
+
       </button>
 
 
@@ -292,10 +386,13 @@
         data-nav="friends"
         type="button"
       >
+
         <span class="fc-nav-icon">
           👥
         </span>
+
         Friends
+
       </button>
 
 
@@ -304,10 +401,13 @@
         data-nav="music"
         type="button"
       >
+
         <span class="fc-nav-icon">
           🎵
         </span>
+
         Music
+
       </button>
 
 
@@ -319,10 +419,13 @@
         data-nav="theme"
         type="button"
       >
+
         <span class="fc-nav-icon">
           🎨
         </span>
+
         Change theme
+
       </button>
 
 
@@ -331,10 +434,13 @@
         data-nav="settings"
         type="button"
       >
+
         <span class="fc-nav-icon">
           ⚙️
         </span>
+
         Settings
+
       </button>
 
 
@@ -343,10 +449,13 @@
         data-nav="profile"
         type="button"
       >
+
         <span class="fc-nav-icon">
           👤
         </span>
+
         Profile
+
       </button>
 
     `;
@@ -365,15 +474,18 @@
             "open"
           );
 
+
         toggle.classList.toggle(
           "is-open",
           open
         );
 
+
         toggle.title =
           open
             ? "Close navigation"
             : "Open navigation";
+
 
         toggle.setAttribute(
           "aria-label",
@@ -414,7 +526,9 @@
                 typeof showHome ===
                 "function"
               ) {
+
                 showHome();
+
               }
 
             }
@@ -430,7 +544,9 @@
                 typeof showHome ===
                 "function"
               ) {
+
                 showHome();
+
               }
 
             }
@@ -449,7 +565,9 @@
 
                 window.openSpotifyPanel();
 
-              } else if (
+              }
+
+              else if (
                 typeof window.toggleSpotifyPanel ===
                 "function"
               ) {
@@ -507,12 +625,15 @@
               "open"
             );
 
+
             toggle.classList.remove(
               "is-open"
             );
 
+
             toggle.title =
               "Open navigation";
+
 
             toggle.setAttribute(
               "aria-label",
@@ -569,8 +690,10 @@
         box
       );
 
+
     add.title =
       "Add friend";
+
 
     add.textContent =
       "＋";
@@ -600,8 +723,10 @@
         box
       );
 
+
     media.title =
       "Upload profile media";
+
 
     media.textContent =
       "▧";
@@ -618,7 +743,9 @@
 
           input.click();
 
-        } else if (
+        }
+
+        else if (
           typeof showProfile ===
           "function"
         ) {
@@ -655,8 +782,10 @@
         dock
       );
 
+
     chats.title =
       "Chats";
+
 
     chats.innerHTML =
       '<span>💬</span><span>Chats</span>';
@@ -686,8 +815,10 @@
         dock
       );
 
+
     center.title =
       "Discover FriendChat users";
+
 
     center.innerHTML =
       '<span>FC</span><span>Suggestions</span>';
@@ -710,8 +841,10 @@
         dock
       );
 
+
     profile.title =
       "Profile";
+
 
     profile.innerHTML =
       '<span>👤</span><span>Profile</span>';
@@ -747,6 +880,7 @@
         document.body
       );
 
+
     overlay.id =
       "fcDiscoveryOverlay";
 
@@ -765,6 +899,7 @@
         "fc-discovery",
         document.body
       );
+
 
     panel.id =
       "fcDiscovery";
@@ -831,6 +966,7 @@
     const p =
       $("fcDiscovery");
 
+
     const o =
       $("fcDiscoveryOverlay");
 
@@ -848,13 +984,17 @@
 
       closeDiscovery();
 
-    } else {
+    }
+
+    else {
 
       renderDiscovery();
+
 
       p.classList.add(
         "open"
       );
+
 
       o.classList.add(
         "open"
@@ -871,6 +1011,7 @@
       ?.classList.remove(
         "open"
       );
+
 
     $("fcDiscoveryOverlay")
       ?.classList.remove(
@@ -988,6 +1129,7 @@
           </div>
         `;
 
+
       return;
 
     }
@@ -1034,6 +1176,7 @@
 
 
         info.innerHTML = `
+
           <div class="fc-user-name">
             ${esc(
               user.name ||
@@ -1047,6 +1190,7 @@
               ""
             )}
           </div>
+
         `;
 
 
@@ -1076,6 +1220,7 @@
 
             }
 
+
             closeDiscovery();
 
           };
@@ -1099,6 +1244,7 @@
         document.body
       );
 
+
     overlay.id =
       "fcThemeOverlay";
 
@@ -1117,6 +1263,7 @@
         "fc-theme-panel",
         document.body
       );
+
 
     panel.id =
       "fcThemePanel";
@@ -1214,9 +1361,11 @@
             "
           ></div>
 
+
           <div class="fc-theme-name">
             ${theme.name}
           </div>
+
 
           <div class="fc-theme-desc">
             ${theme.desc}
@@ -1247,6 +1396,7 @@
         "open"
       );
 
+
     $("fcThemeOverlay")
       ?.classList.add(
         "open"
@@ -1261,6 +1411,7 @@
       ?.classList.remove(
         "open"
       );
+
 
     $("fcThemeOverlay")
       ?.classList.remove(
@@ -1357,8 +1508,10 @@
       const login =
         $("loginScreen");
 
+
       const signup =
         $("signupScreen");
+
 
       const authenticated =
         !!(
@@ -1374,6 +1527,10 @@
           )
         );
 
+
+      /* =====================================================
+         SIDEBAR + ARROW
+         ===================================================== */
 
       const ids = [
         "fcNavToggle",
@@ -1423,9 +1580,84 @@
       );
 
 
+      /* =====================================================
+         CHECK CHAT SCREEN
+         ===================================================== */
+
+      const chatScreen =
+        $("chatScreen");
+
+
+      const chatOpen =
+        !!(
+          chatScreen &&
+          !chatScreen.classList.contains(
+            "hidden"
+          )
+        );
+
+
+      /* =====================================================
+         BOTTOM DOCK
+
+         IMPORTANT:
+         The dock is attached to BODY, not chatScreen.
+         Therefore #chatScreen .fc-bottom-dock
+         cannot hide it.
+
+         We explicitly hide every dock when chatScreen
+         is open.
+         ===================================================== */
+
       document
         .querySelectorAll(
-          ".fc-quick-actions, .fc-bottom-dock"
+          ".fc-bottom-dock"
+        )
+        .forEach(
+          el => {
+
+            const showDock =
+              authenticated &&
+              !chatOpen;
+
+
+            el.style.setProperty(
+              "display",
+              showDock
+                ? "flex"
+                : "none",
+              "important"
+            );
+
+
+            el.style.setProperty(
+              "visibility",
+              showDock
+                ? "visible"
+                : "hidden",
+              "important"
+            );
+
+
+            el.style.setProperty(
+              "opacity",
+              showDock
+                ? "1"
+                : "0",
+              "important"
+            );
+
+          }
+        );
+
+
+      /* =====================================================
+         QUICK ACTIONS
+         ===================================================== */
+
+      document
+        .querySelectorAll(
+          ".fc-quick-actions"
         )
         .forEach(
           el => {
@@ -1462,8 +1694,14 @@
     };
 
 
+    /* Run immediately */
+
     sync();
 
+
+    /* =====================================================
+       WATCH SCREEN CHANGES
+       ===================================================== */
 
     const observer =
       new MutationObserver(
@@ -1482,6 +1720,8 @@
       }
     );
 
+
+    /* Backup check */
 
     window.setInterval(
       sync,
@@ -1549,7 +1789,9 @@
       init
     );
 
-  } else {
+  }
+
+  else {
 
     init();
 
