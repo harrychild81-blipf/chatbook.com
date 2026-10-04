@@ -81,7 +81,6 @@
     return e;
   }
 
-
   /* =========================================================
      MAIN INITIALIZATION
      ========================================================= */
@@ -91,7 +90,6 @@
     if ($("fcCustomSidebar")) {
       return;
     }
-
 
     /* =======================================================
        NAVIGATION ARROW
@@ -106,8 +104,7 @@
 
     toggle.id = "fcNavToggle";
 
-    toggle.title =
-      "Open navigation";
+    toggle.title = "Open navigation";
 
     toggle.setAttribute(
       "aria-label",
@@ -116,7 +113,6 @@
 
     toggle.innerHTML =
       '<span class="fc-chevron">›</span>';
-
 
     /* =======================================================
        SIDEBAR
@@ -129,9 +125,7 @@
         document.body
       );
 
-    sidebar.id =
-      "fcCustomSidebar";
-
+    sidebar.id = "fcCustomSidebar";
 
     sidebar.innerHTML = `
 
@@ -153,7 +147,6 @@
 
       </div>
 
-
       <button
         class="fc-nav-item active"
         data-nav="chats"
@@ -164,7 +157,6 @@
         </span>
         Chats
       </button>
-
 
       <button
         class="fc-nav-item"
@@ -177,7 +169,6 @@
         Friends
       </button>
 
-
       <button
         class="fc-nav-item"
         data-nav="music"
@@ -189,9 +180,7 @@
         Music
       </button>
 
-
       <div class="fc-nav-divider"></div>
-
 
       <button
         class="fc-nav-item fc-nav-theme"
@@ -204,7 +193,6 @@
         Change theme
       </button>
 
-
       <button
         class="fc-nav-item"
         data-nav="settings"
@@ -215,7 +203,6 @@
         </span>
         Settings
       </button>
-
 
       <button
         class="fc-nav-item"
@@ -230,7 +217,6 @@
 
     `;
 
-
     /* =======================================================
        SIDEBAR OPEN / CLOSE
        ======================================================= */
@@ -240,9 +226,7 @@
       () => {
 
         const open =
-          sidebar.classList.toggle(
-            "open"
-          );
+          sidebar.classList.toggle("open");
 
         toggle.classList.toggle(
           "is-open",
@@ -260,19 +244,15 @@
             ? "Close navigation"
             : "Open navigation"
         );
-
       }
     );
-
 
     /* =======================================================
        SIDEBAR BUTTONS
        ======================================================= */
 
     sidebar
-      .querySelectorAll(
-        ".fc-nav-item"
-      )
+      .querySelectorAll(".fc-nav-item")
       .forEach(btn => {
 
         btn.addEventListener(
@@ -282,12 +262,7 @@
             const action =
               btn.dataset.nav;
 
-
-            /* CHATS */
-
-            if (
-              action === "chats"
-            ) {
+            if (action === "chats") {
 
               if (
                 typeof showHome ===
@@ -298,12 +273,7 @@
 
             }
 
-
-            /* FRIENDS */
-
-            if (
-              action === "friends"
-            ) {
+            if (action === "friends") {
 
               if (
                 typeof showHome ===
@@ -314,12 +284,7 @@
 
             }
 
-
-            /* MUSIC */
-
-            if (
-              action === "music"
-            ) {
+            if (action === "music") {
 
               if (
                 typeof window.openSpotifyPanel ===
@@ -339,56 +304,28 @@
 
             }
 
-
-            /* PROFILE */
-
-            if (
-              action === "profile"
-            ) {
+            if (action === "profile") {
 
               if (
                 typeof showProfile ===
                 "function"
               ) {
-
                 showProfile();
-
               }
 
             }
 
-
-            /* THEME */
-
-            if (
-              action === "theme"
-            ) {
-
+            if (action === "theme") {
               openThemePanel();
-
             }
 
-
-            /* SETTINGS */
-
-            if (
-              action === "settings"
-            ) {
-
+            if (action === "settings") {
               openThemePanel();
-
             }
 
+            sidebar.classList.remove("open");
 
-            /* CLOSE SIDEBAR */
-
-            sidebar.classList.remove(
-              "open"
-            );
-
-            toggle.classList.remove(
-              "is-open"
-            );
+            toggle.classList.remove("is-open");
 
             toggle.title =
               "Open navigation";
@@ -402,7 +339,6 @@
         );
 
       });
-
 
     /* =======================================================
        OTHER UI
@@ -421,9 +357,7 @@
     applySavedTheme();
 
     setupVisibility();
-
   }
-
 
   /* =========================================================
      QUICK ACTION BUTTONS
@@ -438,9 +372,6 @@
         document.body
       );
 
-
-    /* ADD FRIEND */
-
     const add =
       create(
         "button",
@@ -448,29 +379,20 @@
         box
       );
 
-    add.title =
-      "Add friend";
+    add.title = "Add friend";
 
-    add.textContent =
-      "＋";
+    add.textContent = "＋";
 
+    add.onclick = () => {
 
-    add.onclick =
-      () => {
+      if (
+        typeof showAdd ===
+        "function"
+      ) {
+        showAdd();
+      }
 
-        if (
-          typeof showAdd ===
-          "function"
-        ) {
-
-          showAdd();
-
-        }
-
-      };
-
-
-    /* PROFILE MEDIA */
+    };
 
     const media =
       create(
@@ -482,34 +404,29 @@
     media.title =
       "Upload profile media";
 
-    media.textContent =
-      "▧";
+    media.textContent = "▧";
 
+    media.onclick = () => {
 
-    media.onclick =
-      () => {
+      const input =
+        $("profileMediaInput");
 
-        const input =
-          $("profileMediaInput");
+      if (input) {
 
+        input.click();
 
-        if (input) {
+      } else if (
+        typeof showProfile ===
+        "function"
+      ) {
 
-          input.click();
+        showProfile();
 
-        } else if (
-          typeof showProfile ===
-          "function"
-        ) {
+      }
 
-          showProfile();
-
-        }
-
-      };
+    };
 
   }
-
 
   /* =========================================================
      BOTTOM DOCK
@@ -524,7 +441,6 @@
         document.body
       );
 
-
     /* CHATS */
 
     const chats =
@@ -534,29 +450,23 @@
         dock
       );
 
-    chats.title =
-      "Chats";
+    chats.title = "Chats";
 
-    chats.textContent =
-      "💬";
+    chats.innerHTML =
+      '<span class="fc-dock-icon">💬</span><span class="fc-dock-label">Chats</span>';
 
+    chats.onclick = () => {
 
-    chats.onclick =
-      () => {
+      if (
+        typeof showHome ===
+        "function"
+      ) {
+        showHome();
+      }
 
-        if (
-          typeof showHome ===
-          "function"
-        ) {
+    };
 
-          showHome();
-
-        }
-
-      };
-
-
-    /* DISCOVER */
+    /* FC SUGGESTIONS */
 
     const center =
       create(
@@ -568,17 +478,14 @@
     center.title =
       "Discover FriendChat users";
 
-    center.textContent =
-      "FC";
+    center.innerHTML =
+      '<span class="fc-dock-icon">FC</span><span class="fc-dock-label">Suggestions</span>';
 
+    center.onclick = () => {
 
-    center.onclick =
-      () => {
+      toggleDiscovery();
 
-        toggleDiscovery();
-
-      };
-
+    };
 
     /* PROFILE */
 
@@ -589,29 +496,23 @@
         dock
       );
 
-    profile.title =
-      "Profile";
+    profile.title = "Profile";
 
-    profile.textContent =
-      "👤";
+    profile.innerHTML =
+      '<span class="fc-dock-icon">👤</span><span class="fc-dock-label">Profile</span>';
 
+    profile.onclick = () => {
 
-    profile.onclick =
-      () => {
+      if (
+        typeof showProfile ===
+        "function"
+      ) {
+        showProfile();
+      }
 
-        if (
-          typeof showProfile ===
-          "function"
-        ) {
-
-          showProfile();
-
-        }
-
-      };
+    };
 
   }
-
 
   /* =========================================================
      DISCOVERY
@@ -629,7 +530,6 @@
     overlay.id =
       "fcDiscoveryOverlay";
 
-
     overlay.onclick =
       () => {
 
@@ -637,17 +537,15 @@
 
       };
 
-
     const panel =
       create(
         "section",
-        "fc-discovery",
+        "fc-discovery-panel",
         document.body
       );
 
     panel.id =
       "fcDiscovery";
-
 
     panel.innerHTML = `
 
@@ -665,7 +563,6 @@
 
         </div>
 
-
         <button
           class="fc-dock-btn"
           data-close
@@ -676,7 +573,6 @@
 
       </div>
 
-
       <div
         class="fc-discovery-list"
         id="fcDiscoveryList"
@@ -684,12 +580,10 @@
 
     `;
 
-
     const closeButton =
       panel.querySelector(
         "[data-close]"
       );
-
 
     if (closeButton) {
 
@@ -704,7 +598,6 @@
 
   }
 
-
   function toggleDiscovery() {
 
     const p =
@@ -713,16 +606,12 @@
     const o =
       $("fcDiscoveryOverlay");
 
-
     if (!p || !o) {
       return;
     }
 
-
     if (
-      p.classList.contains(
-        "open"
-      )
+      p.classList.contains("open")
     ) {
 
       closeDiscovery();
@@ -731,44 +620,32 @@
 
       renderDiscovery();
 
-      p.classList.add(
-        "open"
-      );
+      p.classList.add("open");
 
-      o.classList.add(
-        "open"
-      );
+      o.classList.add("open");
 
     }
 
   }
 
-
   function closeDiscovery() {
 
     $("fcDiscovery")
-      ?.classList.remove(
-        "open"
-      );
+      ?.classList.remove("open");
 
     $("fcDiscoveryOverlay")
-      ?.classList.remove(
-        "open"
-      );
+      ?.classList.remove("open");
 
   }
-
 
   function renderDiscovery() {
 
     const list =
       $("fcDiscoveryList");
 
-
     if (!list) {
       return;
     }
-
 
     const friendSource =
       Array.isArray(
@@ -777,15 +654,12 @@
         ? window.friends
         : [];
 
-
     const presence =
       window.friendChatPresence ||
       {};
 
-
     const map =
       new Map();
-
 
     friendSource.forEach(
       user => {
@@ -800,20 +674,15 @@
       }
     );
 
-
     Object.keys(
       presence
     ).forEach(
       id => {
 
         const key =
-          String(id)
-            .toUpperCase();
+          String(id).toUpperCase();
 
-
-        if (
-          !map.has(key)
-        ) {
+        if (!map.has(key)) {
 
           map.set(
             key,
@@ -828,7 +697,6 @@
       }
     );
 
-
     const source =
       [...map.values()]
         .filter(user => {
@@ -836,45 +704,32 @@
           const myId =
             window.currentUser?.id;
 
-
           return (
             !myId ||
-            String(
-              user.id
-            ).toUpperCase() !==
-            String(
-              myId
-            ).toUpperCase()
+            String(user.id).toUpperCase() !==
+            String(myId).toUpperCase()
           );
 
         });
 
+    if (!source.length) {
 
-    if (
-      !source.length
-    ) {
-
-      list.innerHTML =
-        `
-          <div
-            style="
-              padding:24px;
-              text-align:center;
-              color:var(--fc-muted);
-            "
-          >
-            No users available yet.
-          </div>
-        `;
+      list.innerHTML = `
+        <div
+          style="
+            padding:24px;
+            text-align:center;
+            color:var(--fc-muted);
+          "
+        >
+          No users available yet.
+        </div>
+      `;
 
       return;
-
     }
 
-
-    list.innerHTML =
-      "";
-
+    list.innerHTML = "";
 
     source.forEach(
       user => {
@@ -886,14 +741,12 @@
             list
           );
 
-
         const avatar =
           create(
             "div",
             "fc-user-avatar",
             row
           );
-
 
         avatar.textContent =
           (
@@ -903,14 +756,12 @@
             .charAt(0)
             .toUpperCase();
 
-
         const info =
           create(
             "div",
             "fc-user-info",
             row
           );
-
 
         info.innerHTML = `
           <div class="fc-user-name">
@@ -928,7 +779,6 @@
           </div>
         `;
 
-
         const add =
           create(
             "button",
@@ -936,34 +786,27 @@
             row
           );
 
+        add.textContent = "Chat";
 
-        add.textContent =
-          "Chat";
+        add.onclick = () => {
 
+          if (
+            typeof openChat ===
+            "function"
+          ) {
 
-        add.onclick =
-          () => {
+            openChat(user);
 
-            if (
-              typeof openChat ===
-              "function"
-            ) {
+          }
 
-              openChat(
-                user
-              );
+          closeDiscovery();
 
-            }
-
-            closeDiscovery();
-
-          };
+        };
 
       }
     );
 
   }
-
 
   /* =========================================================
      THEME PANEL
@@ -981,14 +824,12 @@
     overlay.id =
       "fcThemeOverlay";
 
-
     overlay.onclick =
       () => {
 
         closeThemePanel();
 
       };
-
 
     const panel =
       create(
@@ -1000,7 +841,6 @@
     panel.id =
       "fcThemePanel";
 
-
     panel.innerHTML = `
 
       <div class="fc-theme-head">
@@ -1008,7 +848,6 @@
         <strong>
           Customize FriendChat
         </strong>
-
 
         <button
           class="fc-dock-btn"
@@ -1019,7 +858,6 @@
         </button>
 
       </div>
-
 
       <div class="fc-theme-body">
 
@@ -1032,12 +870,10 @@
 
     `;
 
-
     const closeButton =
       panel.querySelector(
         "[data-close]"
       );
-
 
     if (closeButton) {
 
@@ -1050,17 +886,14 @@
 
     }
 
-
     const grid =
       panel.querySelector(
         "#fcThemeGrid"
       );
 
-
     if (!grid) {
       return;
     }
-
 
     Object.entries(
       themes
@@ -1074,10 +907,7 @@
             grid
           );
 
-
-        button.type =
-          "button";
-
+        button.type = "button";
 
         button.innerHTML = `
 
@@ -1103,13 +933,10 @@
 
         `;
 
-
         button.onclick =
           () => {
 
-            setTheme(
-              key
-            );
+            setTheme(key);
 
           };
 
@@ -1118,36 +945,25 @@
 
   }
 
-
   function openThemePanel() {
 
     $("fcThemePanel")
-      ?.classList.add(
-        "open"
-      );
+      ?.classList.add("open");
 
     $("fcThemeOverlay")
-      ?.classList.add(
-        "open"
-      );
+      ?.classList.add("open");
 
   }
-
 
   function closeThemePanel() {
 
     $("fcThemePanel")
-      ?.classList.remove(
-        "open"
-      );
+      ?.classList.remove("open");
 
     $("fcThemeOverlay")
-      ?.classList.remove(
-        "open"
-      );
+      ?.classList.remove("open");
 
   }
-
 
   /* =========================================================
      THEME
@@ -1158,56 +974,46 @@
     const theme =
       themes[key];
 
-
     if (!theme) {
       return;
     }
 
-
     const root =
       document.documentElement;
-
 
     root.style.setProperty(
       "--fc-bg",
       theme.bg
     );
 
-
     root.style.setProperty(
       "--fc-panel",
       theme.panel
     );
-
 
     root.style.setProperty(
       "--fc-panel-2",
       theme.panel
     );
 
-
     root.style.setProperty(
       "--fc-accent",
       theme.accent
     );
-
 
     root.style.setProperty(
       "--fc-accent-2",
       theme.accent2
     );
 
-
     localStorage.setItem(
       "friendchat_theme",
       key
     );
 
-
     closeThemePanel();
 
   }
-
 
   function applySavedTheme() {
 
@@ -1217,13 +1023,9 @@
       ) ||
       "midnight";
 
-
-    setTheme(
-      saved
-    );
+    setTheme(saved);
 
   }
-
 
   /* =========================================================
      VISIBILITY
@@ -1232,73 +1034,85 @@
   function setupVisibility() {
 
     const managed = [
-
-      document.getElementById(
-        "fcNavToggle"
-      ),
-
-      document.getElementById(
-        "fcCustomSidebar"
-      ),
-
+      $("fcNavToggle"),
+      $("fcCustomSidebar"),
       document.querySelector(
         ".fc-quick-actions"
       ),
-
       document.querySelector(
         ".fc-bottom-dock"
       )
-
     ].filter(Boolean);
 
+    const sync = () => {
 
-    const sync =
-      () => {
+      const login =
+        $("loginScreen");
 
-        const active = [
-          "homeScreen",
-          "chatScreen",
-          "profileScreen",
-          "addScreen"
-        ].some(
-          id => {
+      const signup =
+        $("signupScreen");
 
-            const e =
-              $(id);
-
-            return (
-              e &&
-              !e.classList.contains(
-                "hidden"
-              )
-            );
-
-          }
+      const loggedOut =
+        (
+          login &&
+          !login.classList.contains(
+            "hidden"
+          )
+        ) ||
+        (
+          signup &&
+          !signup.classList.contains(
+            "hidden"
+          )
         );
 
+      managed.forEach(
+        el => {
 
-        managed.forEach(
-          e => {
+          el.style.display =
+            loggedOut
+              ? "none"
+              : "flex";
 
-            e.style.display =
-              active
-                ? ""
-                : "none";
+        }
+      );
 
-          }
+      const sidebar =
+        $("fcCustomSidebar");
+
+      if (
+        sidebar &&
+        loggedOut
+      ) {
+
+        sidebar.classList.remove(
+          "open"
         );
 
-      };
+      }
 
+      const toggle =
+        $("fcNavToggle");
+
+      if (
+        toggle &&
+        loggedOut
+      ) {
+
+        toggle.classList.remove(
+          "is-open"
+        );
+
+      }
+
+    };
 
     sync();
-
 
     const app =
       document.querySelector(
         ".app"
       );
-
 
     if (app) {
 
@@ -1317,8 +1131,20 @@
 
     }
 
-  }
+    new MutationObserver(
+      sync
+    ).observe(
+      document.body,
+      {
+        subtree: true,
+        attributes: true,
+        attributeFilter: [
+          "class"
+        ]
+      }
+    );
 
+  }
 
   /* =========================================================
      REMOVE OLD SPOTIFY BUTTON
@@ -1326,29 +1152,25 @@
 
   function hideOldSpotifyButton() {
 
-    const hide =
-      () => {
+    const hide = () => {
 
-        document
-          .querySelectorAll(
-            ".spotify-side-button,.spotify-side-bar"
-          )
-          .forEach(
-            e => e.remove()
-          );
+      document
+        .querySelectorAll(
+          ".spotify-side-button,.spotify-side-bar"
+        )
+        .forEach(
+          e => e.remove()
+        );
 
-      };
-
+    };
 
     hide();
-
 
     const timer =
       setInterval(
         hide,
         250
       );
-
 
     setTimeout(
       () => {
@@ -1362,7 +1184,6 @@
     );
 
   }
-
 
   /* =========================================================
      START
@@ -1385,204 +1206,3 @@
   }
 
 })();
-body {
-    overflow-x: hidden !important;
-}
-/* =========================================================
-   FRIENDCHAT — FULL SCREEN FIX
-   Keeps the sidebar/bar unchanged
-   ========================================================= */
-
-/* Make the whole page use the complete browser window */
-html,
-body {
-    width: 100% !important;
-    min-width: 100% !important;
-    height: 100% !important;
-    min-height: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-}
-
-/* Main app */
-#app,
-#friendchatApp,
-.friendchat-app,
-.fc-app,
-.app {
-    width: 100% !important;
-    min-width: 100% !important;
-    height: 100vh !important;
-    min-height: 100vh !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-sizing: border-box !important;
-}
-
-/* Every main screen should cover the full browser */
-.screen,
-.fc-screen,
-.page,
-.fc-page,
-#homeScreen,
-#chatScreen,
-#addScreen,
-#profileScreen,
-#settingsScreen {
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 100% !important;
-    height: 100vh !important;
-    min-height: 100vh !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-}
-
-/* Home/content area */
-.fc-home,
-.fc-home-screen,
-.fc-main,
-.fc-content,
-.fc-main-content,
-main {
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 0 !important;
-    height: 100% !important;
-    min-height: 100% !important;
-    box-sizing: border-box !important;
-}
-
-/* Make header span the full width */
-.fc-header,
-.fc-home-header,
-.home-header {
-    width: 100% !important;
-    max-width: none !important;
-    box-sizing: border-box !important;
-}
-
-/* Friend list / main content */
-.fc-friends,
-.fc-friend-list,
-.friend-list,
-.friends-list {
-    width: 100% !important;
-    max-width: none !important;
-    box-sizing: border-box !important;
-}
-
-/* Chat screen */
-.fc-chat,
-.fc-chat-screen,
-.chat-screen {
-    width: 100% !important;
-    height: 100vh !important;
-    min-height: 100vh !important;
-    max-width: none !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-}
-
-/* Chat messages area */
-.fc-messages,
-.messages,
-#messages {
-    width: 100% !important;
-    max-width: none !important;
-    box-sizing: border-box !important;
-}
-
-/* Chat composer */
-.fc-composer,
-.message-composer,
-.chat-composer {
-    width: 100% !important;
-    max-width: none !important;
-    box-sizing: border-box !important;
-}
-
-/* Add-friend screen */
-.fc-add-screen,
-.add-screen {
-    width: 100% !important;
-    min-width: 100% !important;
-    height: 100vh !important;
-    min-height: 100vh !important;
-    box-sizing: border-box !important;
-}
-
-/* Remove accidental centered/max-width containers */
-.fc-container,
-.fc-wrapper,
-.fc-page-container,
-.fc-screen-container {
-    width: 100% !important;
-    max-width: none !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    box-sizing: border-box !important;
-}
-
-/* Prevent horizontal gaps */
-* {
-    box-sizing: border-box;
-}
-
-/* Desktop */
-@media (min-width: 769px) {
-    html,
-    body {
-        width: 100vw !important;
-        height: 100vh !important;
-    }
-
-    #app,
-    #friendchatApp,
-    .friendchat-app,
-    .fc-app {
-        width: 100vw !important;
-        height: 100vh !important;
-    }
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-    html,
-    body {
-        width: 100% !important;
-        height: 100% !important;
-        min-height: 100dvh !important;
-    }
-
-    #app,
-    #friendchatApp,
-    .friendchat-app,
-    .fc-app,
-    .screen,
-    .fc-screen {
-        width: 100% !important;
-        min-width: 100% !important;
-        height: 100dvh !important;
-        min-height: 100dvh !important;
-    }
-}
-
-/* Very small phones */
-@media (max-width: 480px) {
-    html,
-    body {
-        width: 100% !important;
-        height: 100% !important;
-        min-height: 100dvh !important;
-    }
-
-    #app,
-    #friendchatApp,
-    .friendchat-app,
-    .fc-app {
-        width: 100% !important;
-        height: 100dvh !important;
-    }
-}
