@@ -1787,3 +1787,286 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
 
     display: flex !important;
 }
+/* =========================================================
+   FINAL ARROW FIX
+   SMALL normally → BIG only when mouse is over it
+   ========================================================= */
+
+/* CLOSED ARROW — SMALL */
+html body #fcNavToggle,
+html body .fc-nav-toggle,
+html body #fc-nav-toggle {
+
+    position: fixed !important;
+
+    left: 1px !important;
+    top: 50% !important;
+    bottom: auto !important;
+
+    width: 16px !important;
+    min-width: 16px !important;
+    max-width: 16px !important;
+
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    box-sizing: border-box !important;
+
+    border: 1px solid var(--fc-border) !important;
+    border-left: 0 !important;
+
+    border-radius: 0 8px 8px 0 !important;
+
+    background: rgba(17,24,36,.97) !important;
+
+    color: var(--fc-text) !important;
+
+    box-shadow: 0 6px 18px rgba(0,0,0,.35) !important;
+
+    z-index: 2147483647 !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    pointer-events: auto !important;
+
+    cursor: pointer !important;
+
+    transform: translateY(-50%) !important;
+
+    transition:
+        left .42s cubic-bezier(.22,1,.36,1),
+        width .18s ease,
+        height .18s ease,
+        background .18s ease !important;
+}
+
+
+/* =========================================================
+   ARROW ICON
+   ========================================================= */
+
+html body #fcNavToggle .fc-chevron,
+html body .fc-nav-toggle .fc-chevron,
+html body #fc-nav-toggle .fc-chevron {
+
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    font-size: 11px !important;
+
+    line-height: 1 !important;
+
+    transform: none !important;
+
+    transition:
+        transform .42s cubic-bezier(.22,1,.36,1) !important;
+}
+
+
+/* =========================================================
+   HOVER → ARROW BECOMES BIG
+   ========================================================= */
+
+html body #fcNavToggle:hover,
+html body .fc-nav-toggle:hover,
+html body #fc-nav-toggle:hover {
+
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+
+    background: var(--fc-panel-3) !important;
+}
+
+
+/* Bigger arrow icon while hovering */
+
+html body #fcNavToggle:hover .fc-chevron,
+html body .fc-nav-toggle:hover .fc-chevron,
+html body #fc-nav-toggle:hover .fc-chevron {
+
+    font-size: 14px !important;
+}
+
+
+/* =========================================================
+   OPEN → MOVE WITH SIDEBAR
+   ========================================================= */
+
+html body #fcNavToggle.is-open,
+html body .fc-nav-toggle.is-open,
+html body #fc-nav-toggle.is-open {
+
+    left: var(--fc-sidebar-width) !important;
+
+    top: 50% !important;
+
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+
+    transform: translateY(-50%) !important;
+
+    border-radius: 0 8px 8px 0 !important;
+}
+
+
+/* Rotate arrow when sidebar is open */
+
+html body #fcNavToggle.is-open .fc-chevron,
+html body .fc-nav-toggle.is-open .fc-chevron,
+html body #fc-nav-toggle.is-open .fc-chevron {
+
+    transform: rotate(180deg) !important;
+
+    font-size: 14px !important;
+}
+
+
+/* =========================================================
+   IMPORTANT:
+   MOBILE MUST ALSO STAY SMALL
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    html body #fcNavToggle,
+    html body .fc-nav-toggle,
+    html body #fc-nav-toggle {
+
+        left: 1px !important;
+
+        width: 15px !important;
+        min-width: 15px !important;
+        max-width: 15px !important;
+
+        height: 28px !important;
+        min-height: 28px !important;
+        max-height: 28px !important;
+
+        top: 50% !important;
+
+        transform: translateY(-50%) !important;
+    }
+
+
+    /* Mobile hover */
+
+    html body #fcNavToggle:hover,
+    html body .fc-nav-toggle:hover,
+    html body #fc-nav-toggle:hover {
+
+        width: 26px !important;
+        min-width: 26px !important;
+        max-width: 26px !important;
+
+        height: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+    }
+
+
+    /* Mobile open */
+
+    html body #fcNavToggle.is-open,
+    html body .fc-nav-toggle.is-open,
+    html body #fc-nav-toggle.is-open {
+
+        left: var(--fc-sidebar-width) !important;
+
+        width: 26px !important;
+        min-width: 26px !important;
+        max-width: 26px !important;
+
+        height: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+
+        top: 50% !important;
+
+        transform: translateY(-50%) !important;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    html body #fcNavToggle,
+    html body .fc-nav-toggle,
+    html body #fc-nav-toggle {
+
+        left: 1px !important;
+
+        width: 14px !important;
+        min-width: 14px !important;
+        max-width: 14px !important;
+
+        height: 26px !important;
+        min-height: 26px !important;
+        max-height: 26px !important;
+    }
+
+
+    html body #fcNavToggle:hover,
+    html body .fc-nav-toggle:hover,
+    html body #fc-nav-toggle:hover {
+
+        width: 24px !important;
+        min-width: 24px !important;
+        max-width: 24px !important;
+
+        height: 34px !important;
+        min-height: 34px !important;
+        max-height: 34px !important;
+    }
+
+
+    html body #fcNavToggle.is-open,
+    html body .fc-nav-toggle.is-open,
+    html body #fc-nav-toggle.is-open {
+
+        left: var(--fc-sidebar-width) !important;
+
+        width: 24px !important;
+        min-width: 24px !important;
+        max-width: 24px !important;
+
+        height: 34px !important;
+        min-height: 34px !important;
+        max-height: 34px !important;
+    }
+}
