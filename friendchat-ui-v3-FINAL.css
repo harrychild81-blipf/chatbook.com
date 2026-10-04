@@ -2969,3 +2969,234 @@ body:has(#chatScreen:not(.hidden)) #fc-bottom-dock {
     width: 100% !important;
     text-align: right !important;
 }
+/* =========================================================
+   FRIENDCHAT FINAL BOTTOM BAR FIX
+   ========================================================= */
+
+.fc-bottom-dock {
+    position: fixed !important;
+
+    left: 50% !important;
+    right: auto !important;
+    bottom: 10px !important;
+
+    transform: translateX(-50%) !important;
+
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+
+    padding: 3px 5px !important;
+    margin: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    gap: 2px !important;
+
+    box-sizing: border-box !important;
+
+    border-radius: 14px !important;
+
+    background: rgba(10, 14, 22, 0.98) !important;
+
+    border: 1px solid rgba(255,255,255,0.14) !important;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,0.45) !important;
+
+    z-index: 2147483647 !important;
+}
+
+
+/* =========================================
+   ALL THREE BUTTONS
+   ========================================= */
+
+.fc-bottom-dock .fc-dock-btn {
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+
+    flex: 0 0 38px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border: none !important;
+
+    border-radius: 10px !important;
+
+    background: transparent !important;
+
+    color: white !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    cursor: pointer !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* =========================================
+   ICONS ONLY
+   ========================================= */
+
+.fc-bottom-dock .fc-dock-btn span:first-child {
+    display: block !important;
+
+    font-size: 18px !important;
+
+    line-height: 1 !important;
+
+    width: auto !important;
+}
+
+
+/* Hide text */
+
+.fc-bottom-dock .fc-dock-btn span:last-child {
+    display: none !important;
+}
+
+
+/* =========================================
+   NORMAL BUTTON HOVER
+   ========================================= */
+
+.fc-bottom-dock .fc-dock-btn:not(.fc-dock-center):hover {
+    background: rgba(255,255,255,0.08) !important;
+}
+
+
+/* =========================================
+   FC CENTER BUTTON
+   ========================================= */
+
+.fc-bottom-dock .fc-dock-center {
+
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+
+    flex: 0 0 38px !important;
+
+    border-radius: 10px !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6855ff,
+            #ad4de3
+        ) !important;
+
+    color: white !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    box-shadow:
+        0 4px 14px rgba(110,80,240,0.35) !important;
+}
+
+
+/* FC text */
+
+.fc-bottom-dock .fc-dock-center span:first-child {
+
+    display: block !important;
+
+    font-size: 14px !important;
+
+    font-weight: 900 !important;
+
+    line-height: 1 !important;
+}
+
+
+/* FC hover */
+
+.fc-bottom-dock .fc-dock-center:hover {
+
+    transform: scale(1.04) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7664ff,
+            #b85ae8
+        ) !important;
+}
+
+
+/* =========================================
+   NEVER SHOW DOCK INSIDE CHAT
+   ========================================= */
+
+body.fc-chat-open .fc-bottom-dock,
+#chatScreen:not(.hidden) ~ .fc-bottom-dock {
+
+    display: none !important;
+
+    visibility: hidden !important;
+
+    opacity: 0 !important;
+
+    pointer-events: none !important;
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 600px) {
+
+    .fc-bottom-dock {
+
+        width: 140px !important;
+        min-width: 140px !important;
+        max-width: 140px !important;
+
+        height: 42px !important;
+        min-height: 42px !important;
+        max-height: 42px !important;
+
+        bottom: 8px !important;
+    }
+
+
+    .fc-bottom-dock .fc-dock-btn,
+    .fc-bottom-dock .fc-dock-center {
+
+        width: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+
+        height: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+
+        flex-basis: 36px !important;
+    }
+
+}
