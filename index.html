@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -874,9 +874,8 @@
   </section>
 
 
-
-
 </div>
+
 
 
 <!-- =====================================================
@@ -1028,23 +1027,7 @@ function toggleStatusInfo() {
      MUST LOAD AFTER app.js
      ===================================================== -->
 
-<script src="friendchat-ui-v3-fixed.js?v=5"></script>
-
-<script>
-(function(){
-  function fixFriendChatNavigation(){
-    const login=document.getElementById('loginScreen');
-    const signup=document.getElementById('signupScreen');
-    const loggedIn=login && login.classList.contains('hidden') && (!signup || signup.classList.contains('hidden'));
-    const navIds=['fcNavToggle','fcCustomSidebar'];
-    navIds.forEach(id=>{const e=document.getElementById(id); if(e) e.style.display=loggedIn?'flex':'';});
-    const dock=document.querySelector('.fc-bottom-dock');
-    if(dock) dock.style.display=loggedIn?'flex':'';
-  }
-  fixFriendChatNavigation();
-  setInterval(fixFriendChatNavigation,500);
-})();
-</script>
+<script src="friendchat-ui-v3.js?v=6"></script>
 
 
 
