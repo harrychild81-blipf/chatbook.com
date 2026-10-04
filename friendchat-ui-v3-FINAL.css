@@ -2588,3 +2588,163 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
         bottom: 70px !important;
     }
 }
+
+/* =========================================================
+   FINAL COMPACT ICON-ONLY BOTTOM DOCK
+   ========================================================= */
+
+.fc-bottom-dock,
+#fc-bottom-dock {
+    position: fixed !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: 10px !important;
+    transform: translateX(-50%) !important;
+
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 44px !important;
+    min-height: 44px !important;
+
+    padding: 3px 5px !important;
+    gap: 3px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border-radius: 15px !important;
+    background: rgba(13,18,27,.96) !important;
+    border: 1px solid var(--fc-border) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,.45) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+
+    z-index: 10000 !important;
+}
+
+/* All dock buttons: icon only */
+.fc-bottom-dock button,
+.fc-bottom-dock .dockItem,
+.fc-bottom-dock .fc-dock-btn,
+.fc-bottom-dock .fc-dock-button {
+    flex: 0 0 auto !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border: 0 !important;
+    border-radius: 10px !important;
+    background: transparent !important;
+    color: var(--fc-muted) !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+
+    font-size: 17px !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+}
+
+/* Hide names completely */
+.fc-bottom-dock button span:last-child,
+.fc-bottom-dock .dockItem span:last-child {
+    display: none !important;
+}
+
+/* Keep the first icon visible */
+.fc-bottom-dock button span:first-child,
+.fc-bottom-dock .dockItem span:first-child {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.fc-bottom-dock button:hover,
+.fc-bottom-dock .dockItem:hover {
+    background: rgba(255,255,255,.07) !important;
+    color: var(--fc-text) !important;
+}
+
+/* =========================================================
+   FC CENTER BUTTON — OLD STYLE, SMALLER
+   ========================================================= */
+
+.fc-bottom-dock button:nth-child(2),
+.fc-bottom-dock .dockItem:nth-child(2),
+.fc-bottom-dock .fc-dock-center {
+    flex: 0 0 auto !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+
+    margin: 0 1px !important;
+    padding: 0 !important;
+
+    border-radius: 50% !important;
+    background: linear-gradient(135deg,var(--fc-accent),var(--fc-accent-2)) !important;
+    color: #fff !important;
+
+    font-size: 13px !important;
+    font-weight: 900 !important;
+
+    box-shadow: 0 5px 16px rgba(108,124,255,.30) !important;
+}
+
+.fc-bottom-dock button:nth-child(2) span:first-child,
+.fc-bottom-dock .dockItem:nth-child(2) span:first-child,
+.fc-bottom-dock .fc-dock-center span:first-child {
+    font-size: 13px !important;
+    font-weight: 900 !important;
+}
+
+.fc-bottom-dock button:nth-child(2):hover,
+.fc-bottom-dock .dockItem:nth-child(2):hover,
+.fc-bottom-dock .fc-dock-center:hover {
+    transform: scale(1.06) !important;
+    background: linear-gradient(135deg,var(--fc-accent),var(--fc-accent-2)) !important;
+    color: #fff !important;
+}
+
+/* Mobile */
+@media (max-width:600px) {
+    .fc-bottom-dock,
+    #fc-bottom-dock {
+        bottom: 8px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        padding: 2px 4px !important;
+        gap: 2px !important;
+        border-radius: 14px !important;
+        width: auto !important;
+    }
+
+    .fc-bottom-dock button,
+    .fc-bottom-dock .dockItem,
+    .fc-bottom-dock .fc-dock-btn,
+    .fc-bottom-dock .fc-dock-button {
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        min-height: 34px !important;
+    }
+
+    .fc-bottom-dock button:nth-child(2),
+    .fc-bottom-dock .dockItem:nth-child(2),
+    .fc-bottom-dock .fc-dock-center {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+    }
+}
