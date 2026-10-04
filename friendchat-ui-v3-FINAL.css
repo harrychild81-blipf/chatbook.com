@@ -2748,3 +2748,139 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
         min-height: 36px !important;
     }
 }
+
+/* =========================================================
+   FINAL COMPACT BOTTOM DOCK — SHORT WIDTH + ROUNDED FC
+   ========================================================= */
+
+.fc-bottom-dock,
+#fc-bottom-dock {
+    left: 50% !important;
+    bottom: 10px !important;
+
+    width: 190px !important;
+    max-width: 190px !important;
+    min-width: 190px !important;
+
+    height: 48px !important;
+    min-height: 48px !important;
+
+    padding: 4px 6px !important;
+    gap: 2px !important;
+
+    border-radius: 16px !important;
+    transform: translateX(-50%) !important;
+    box-sizing: border-box !important;
+}
+
+.fc-bottom-dock button,
+.fc-bottom-dock .dockItem,
+.fc-bottom-dock .fc-dock-btn,
+.fc-bottom-dock .fc-dock-button {
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 11px !important;
+    background: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--fc-muted) !important;
+}
+
+.fc-bottom-dock button span:last-child,
+.fc-bottom-dock .dockItem span:last-child,
+.fc-bottom-dock .fc-dock-btn span:last-child,
+.fc-bottom-dock .fc-dock-button span:last-child {
+    display: none !important;
+}
+
+.fc-bottom-dock button span:first-child,
+.fc-bottom-dock .dockItem span:first-child,
+.fc-bottom-dock .fc-dock-btn span:first-child,
+.fc-bottom-dock .fc-dock-button span:first-child {
+    font-size: 18px !important;
+    line-height: 1 !important;
+}
+
+/* FC = smooth rounded square, NOT a circle */
+.fc-bottom-dock button:nth-child(2),
+.fc-bottom-dock .dockItem:nth-child(2),
+.fc-bottom-dock .fc-dock-center {
+    flex: 0 0 40px !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg,#6d5dfc,#b34de5) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 14px rgba(109,93,252,.28) !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+}
+
+.fc-bottom-dock button:nth-child(2) span:first-child,
+.fc-bottom-dock .dockItem:nth-child(2) span:first-child,
+.fc-bottom-dock .fc-dock-center span:first-child {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+}
+
+.fc-bottom-dock button:hover,
+.fc-bottom-dock .dockItem:hover,
+.fc-bottom-dock .fc-dock-btn:hover,
+.fc-bottom-dock .fc-dock-button:hover {
+    background: rgba(255,255,255,.06) !important;
+}
+
+.fc-bottom-dock button:nth-child(2):hover,
+.fc-bottom-dock .dockItem:nth-child(2):hover,
+.fc-bottom-dock .fc-dock-center:hover {
+    transform: scale(1.04) !important;
+    background: linear-gradient(135deg,#7869ff,#bd59eb) !important;
+}
+
+@media (max-width:600px) {
+    .fc-bottom-dock,
+    #fc-bottom-dock {
+        width: 178px !important;
+        max-width: 178px !important;
+        min-width: 178px !important;
+        height: 46px !important;
+        min-height: 46px !important;
+        bottom: 8px !important;
+        padding: 3px 5px !important;
+        gap: 2px !important;
+        border-radius: 15px !important;
+    }
+
+    .fc-bottom-dock button,
+    .fc-bottom-dock .dockItem,
+    .fc-bottom-dock .fc-dock-btn,
+    .fc-bottom-dock .fc-dock-button {
+        flex-basis: 39px !important;
+        width: 39px !important;
+        min-width: 39px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+    }
+
+    .fc-bottom-dock button:nth-child(2),
+    .fc-bottom-dock .dockItem:nth-child(2),
+    .fc-bottom-dock .fc-dock-center {
+        flex-basis: 38px !important;
+        width: 38px !important;
+        min-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        border-radius: 11px !important;
+    }
+}
