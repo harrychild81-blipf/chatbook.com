@@ -29,7 +29,7 @@
 
   <link
     rel="stylesheet"
-    href="friendchat-ui-v3.css?v=5"
+    href="friendchat-ui-v3-FINAL.css?v=6"
   >
 
 
@@ -1029,6 +1029,22 @@ function toggleStatusInfo() {
      ===================================================== -->
 
 <script src="friendchat-ui-v3-fixed.js?v=5"></script>
+
+<script>
+(function(){
+  function fixFriendChatNavigation(){
+    const login=document.getElementById('loginScreen');
+    const signup=document.getElementById('signupScreen');
+    const loggedIn=login && login.classList.contains('hidden') && (!signup || signup.classList.contains('hidden'));
+    const navIds=['fcNavToggle','fcCustomSidebar'];
+    navIds.forEach(id=>{const e=document.getElementById(id); if(e) e.style.display=loggedIn?'flex':'';});
+    const dock=document.querySelector('.fc-bottom-dock');
+    if(dock) dock.style.display=loggedIn?'flex':'';
+  }
+  fixFriendChatNavigation();
+  setInterval(fixFriendChatNavigation,500);
+})();
+</script>
 
 
 
