@@ -2884,3 +2884,17 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
         border-radius: 11px !important;
     }
 }
+/* =========================================================
+   HIDE BOTTOM NAVIGATION INSIDE CHAT
+   ========================================================= */
+
+#chatScreen .fc-bottom-dock,
+#chatScreen #fc-bottom-dock {
+    display: none !important;
+}
+
+/* Also hide it when chat screen is active/visible */
+body:has(#chatScreen:not(.hidden)) .fc-bottom-dock,
+body:has(#chatScreen:not(.hidden)) #fc-bottom-dock {
+    display: none !important;
+}
