@@ -81,15 +81,138 @@
     return e;
   }
 
+
   /* =========================================================
      MAIN INITIALIZATION
      ========================================================= */
 
+  function installNavigationStyles() {
+    if ($("friendchat-nav-guaranteed-style")) return;
+
+    const style = document.createElement("style");
+
+    style.id = "friendchat-nav-guaranteed-style";
+
+    style.textContent = `
+      #fcNavToggle {
+        position: fixed !important;
+        left: 14px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        z-index: 2147483646 !important;
+        width: 24px !important;
+        height: 42px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: 0 !important;
+        border-radius: 12px !important;
+        background: rgba(20,25,38,.96) !important;
+        color: #fff !important;
+        cursor: pointer !important;
+        visibility: visible !important;
+      }
+
+      #fcNavToggle.is-open {
+        left: 202px !important;
+      }
+
+      #fcNavToggle .fc-chevron {
+        font-size: 24px !important;
+        line-height: 1 !important;
+      }
+
+      #fcCustomSidebar {
+        position: fixed !important;
+        left: 12px !important;
+        top: 50% !important;
+        transform: translateY(-50%) translateX(-115%) !important;
+        width: 185px !important;
+        z-index: 2147483645 !important;
+        box-sizing: border-box !important;
+      }
+
+      #fcCustomSidebar.open {
+        transform: translateY(-50%) translateX(0) !important;
+      }
+
+      #fcCustomSidebar .fc-nav-item {
+        cursor: pointer !important;
+      }
+
+      .fc-bottom-dock {
+        position: fixed !important;
+        left: 50% !important;
+        bottom: 14px !important;
+        transform: translateX(-50%) !important;
+        z-index: 2147483647 !important;
+        width: min(560px, calc(100vw - 28px)) !important;
+        min-height: 62px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-around !important;
+        gap: 6px !important;
+        padding: 7px !important;
+        box-sizing: border-box !important;
+        border-radius: 20px !important;
+        background: rgba(13,18,27,.96) !important;
+        border: 1px solid rgba(255,255,255,.14) !important;
+        box-shadow: 0 18px 60px rgba(0,0,0,.5) !important;
+      }
+
+      .fc-bottom-dock .fc-dock-btn {
+        flex: 1 !important;
+        min-height: 48px !important;
+        border: 0 !important;
+        border-radius: 14px !important;
+        background: transparent !important;
+        color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+      }
+
+      .fc-bottom-dock .fc-dock-btn:hover {
+        background: rgba(255,255,255,.10) !important;
+      }
+
+      @media(max-width:600px) {
+        #fcNavToggle {
+          left: 3px !important;
+          width: 22px !important;
+        }
+
+        #fcNavToggle.is-open {
+          left: 190px !important;
+        }
+
+        #fcCustomSidebar {
+          width: 180px !important;
+          left: 8px !important;
+        }
+
+        .fc-bottom-dock {
+          width: calc(100vw - 20px) !important;
+          bottom: 10px !important;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+
   function init() {
+
+    installNavigationStyles();
 
     if ($("fcCustomSidebar")) {
       return;
     }
+
 
     /* =======================================================
        NAVIGATION ARROW
@@ -104,7 +227,8 @@
 
     toggle.id = "fcNavToggle";
 
-    toggle.title = "Open navigation";
+    toggle.title =
+      "Open navigation";
 
     toggle.setAttribute(
       "aria-label",
@@ -113,6 +237,7 @@
 
     toggle.innerHTML =
       '<span class="fc-chevron">›</span>';
+
 
     /* =======================================================
        SIDEBAR
@@ -125,7 +250,9 @@
         document.body
       );
 
-    sidebar.id = "fcCustomSidebar";
+    sidebar.id =
+      "fcCustomSidebar";
+
 
     sidebar.innerHTML = `
 
@@ -147,6 +274,7 @@
 
       </div>
 
+
       <button
         class="fc-nav-item active"
         data-nav="chats"
@@ -157,6 +285,7 @@
         </span>
         Chats
       </button>
+
 
       <button
         class="fc-nav-item"
@@ -169,6 +298,7 @@
         Friends
       </button>
 
+
       <button
         class="fc-nav-item"
         data-nav="music"
@@ -180,7 +310,9 @@
         Music
       </button>
 
+
       <div class="fc-nav-divider"></div>
+
 
       <button
         class="fc-nav-item fc-nav-theme"
@@ -193,6 +325,7 @@
         Change theme
       </button>
 
+
       <button
         class="fc-nav-item"
         data-nav="settings"
@@ -203,6 +336,7 @@
         </span>
         Settings
       </button>
+
 
       <button
         class="fc-nav-item"
@@ -217,6 +351,7 @@
 
     `;
 
+
     /* =======================================================
        SIDEBAR OPEN / CLOSE
        ======================================================= */
@@ -226,7 +361,9 @@
       () => {
 
         const open =
-          sidebar.classList.toggle("open");
+          sidebar.classList.toggle(
+            "open"
+          );
 
         toggle.classList.toggle(
           "is-open",
@@ -244,15 +381,19 @@
             ? "Close navigation"
             : "Open navigation"
         );
+
       }
     );
+
 
     /* =======================================================
        SIDEBAR BUTTONS
        ======================================================= */
 
     sidebar
-      .querySelectorAll(".fc-nav-item")
+      .querySelectorAll(
+        ".fc-nav-item"
+      )
       .forEach(btn => {
 
         btn.addEventListener(
@@ -262,7 +403,12 @@
             const action =
               btn.dataset.nav;
 
-            if (action === "chats") {
+
+            /* CHATS */
+
+            if (
+              action === "chats"
+            ) {
 
               if (
                 typeof showHome ===
@@ -273,7 +419,12 @@
 
             }
 
-            if (action === "friends") {
+
+            /* FRIENDS */
+
+            if (
+              action === "friends"
+            ) {
 
               if (
                 typeof showHome ===
@@ -284,7 +435,12 @@
 
             }
 
-            if (action === "music") {
+
+            /* MUSIC */
+
+            if (
+              action === "music"
+            ) {
 
               if (
                 typeof window.openSpotifyPanel ===
@@ -304,28 +460,56 @@
 
             }
 
-            if (action === "profile") {
+
+            /* PROFILE */
+
+            if (
+              action === "profile"
+            ) {
 
               if (
                 typeof showProfile ===
                 "function"
               ) {
+
                 showProfile();
+
               }
 
             }
 
-            if (action === "theme") {
+
+            /* THEME */
+
+            if (
+              action === "theme"
+            ) {
+
               openThemePanel();
+
             }
 
-            if (action === "settings") {
+
+            /* SETTINGS */
+
+            if (
+              action === "settings"
+            ) {
+
               openThemePanel();
+
             }
 
-            sidebar.classList.remove("open");
 
-            toggle.classList.remove("is-open");
+            /* CLOSE SIDEBAR */
+
+            sidebar.classList.remove(
+              "open"
+            );
+
+            toggle.classList.remove(
+              "is-open"
+            );
 
             toggle.title =
               "Open navigation";
@@ -339,6 +523,7 @@
         );
 
       });
+
 
     /* =======================================================
        OTHER UI
@@ -357,7 +542,9 @@
     applySavedTheme();
 
     setupVisibility();
+
   }
+
 
   /* =========================================================
      QUICK ACTION BUTTONS
@@ -372,6 +559,9 @@
         document.body
       );
 
+
+    /* ADD FRIEND */
+
     const add =
       create(
         "button",
@@ -379,20 +569,29 @@
         box
       );
 
-    add.title = "Add friend";
+    add.title =
+      "Add friend";
 
-    add.textContent = "＋";
+    add.textContent =
+      "＋";
 
-    add.onclick = () => {
 
-      if (
-        typeof showAdd ===
-        "function"
-      ) {
-        showAdd();
-      }
+    add.onclick =
+      () => {
 
-    };
+        if (
+          typeof showAdd ===
+          "function"
+        ) {
+
+          showAdd();
+
+        }
+
+      };
+
+
+    /* PROFILE MEDIA */
 
     const media =
       create(
@@ -404,29 +603,34 @@
     media.title =
       "Upload profile media";
 
-    media.textContent = "▧";
+    media.textContent =
+      "▧";
 
-    media.onclick = () => {
 
-      const input =
-        $("profileMediaInput");
+    media.onclick =
+      () => {
 
-      if (input) {
+        const input =
+          $("profileMediaInput");
 
-        input.click();
 
-      } else if (
-        typeof showProfile ===
-        "function"
-      ) {
+        if (input) {
 
-        showProfile();
+          input.click();
 
-      }
+        } else if (
+          typeof showProfile ===
+          "function"
+        ) {
 
-    };
+          showProfile();
+
+        }
+
+      };
 
   }
+
 
   /* =========================================================
      BOTTOM DOCK
@@ -441,6 +645,7 @@
         document.body
       );
 
+
     /* CHATS */
 
     const chats =
@@ -450,23 +655,29 @@
         dock
       );
 
-    chats.title = "Chats";
+    chats.title =
+      "Chats";
 
     chats.innerHTML =
-      '<span class="fc-dock-icon">💬</span><span class="fc-dock-label">Chats</span>';
+      '<span>💬</span><span>Chats</span>';
 
-    chats.onclick = () => {
 
-      if (
-        typeof showHome ===
-        "function"
-      ) {
-        showHome();
-      }
+    chats.onclick =
+      () => {
 
-    };
+        if (
+          typeof showHome ===
+          "function"
+        ) {
 
-    /* FC SUGGESTIONS */
+          showHome();
+
+        }
+
+      };
+
+
+    /* DISCOVER */
 
     const center =
       create(
@@ -479,13 +690,16 @@
       "Discover FriendChat users";
 
     center.innerHTML =
-      '<span class="fc-dock-icon">FC</span><span class="fc-dock-label">Suggestions</span>';
+      '<span>FC</span><span>Suggestions</span>';
 
-    center.onclick = () => {
 
-      toggleDiscovery();
+    center.onclick =
+      () => {
 
-    };
+        toggleDiscovery();
+
+      };
+
 
     /* PROFILE */
 
@@ -496,23 +710,29 @@
         dock
       );
 
-    profile.title = "Profile";
+    profile.title =
+      "Profile";
 
     profile.innerHTML =
-      '<span class="fc-dock-icon">👤</span><span class="fc-dock-label">Profile</span>';
+      '<span>👤</span><span>Profile</span>';
 
-    profile.onclick = () => {
 
-      if (
-        typeof showProfile ===
-        "function"
-      ) {
-        showProfile();
-      }
+    profile.onclick =
+      () => {
 
-    };
+        if (
+          typeof showProfile ===
+          "function"
+        ) {
+
+          showProfile();
+
+        }
+
+      };
 
   }
+
 
   /* =========================================================
      DISCOVERY
@@ -530,6 +750,7 @@
     overlay.id =
       "fcDiscoveryOverlay";
 
+
     overlay.onclick =
       () => {
 
@@ -537,15 +758,17 @@
 
       };
 
+
     const panel =
       create(
         "section",
-        "fc-discovery-panel",
+        "fc-discovery",
         document.body
       );
 
     panel.id =
       "fcDiscovery";
+
 
     panel.innerHTML = `
 
@@ -563,6 +786,7 @@
 
         </div>
 
+
         <button
           class="fc-dock-btn"
           data-close
@@ -573,6 +797,7 @@
 
       </div>
 
+
       <div
         class="fc-discovery-list"
         id="fcDiscoveryList"
@@ -580,10 +805,12 @@
 
     `;
 
+
     const closeButton =
       panel.querySelector(
         "[data-close]"
       );
+
 
     if (closeButton) {
 
@@ -598,6 +825,7 @@
 
   }
 
+
   function toggleDiscovery() {
 
     const p =
@@ -606,12 +834,16 @@
     const o =
       $("fcDiscoveryOverlay");
 
+
     if (!p || !o) {
       return;
     }
 
+
     if (
-      p.classList.contains("open")
+      p.classList.contains(
+        "open"
+      )
     ) {
 
       closeDiscovery();
@@ -620,32 +852,44 @@
 
       renderDiscovery();
 
-      p.classList.add("open");
+      p.classList.add(
+        "open"
+      );
 
-      o.classList.add("open");
+      o.classList.add(
+        "open"
+      );
 
     }
 
   }
 
+
   function closeDiscovery() {
 
     $("fcDiscovery")
-      ?.classList.remove("open");
+      ?.classList.remove(
+        "open"
+      );
 
     $("fcDiscoveryOverlay")
-      ?.classList.remove("open");
+      ?.classList.remove(
+        "open"
+      );
 
   }
+
 
   function renderDiscovery() {
 
     const list =
       $("fcDiscoveryList");
 
+
     if (!list) {
       return;
     }
+
 
     const friendSource =
       Array.isArray(
@@ -654,12 +898,15 @@
         ? window.friends
         : [];
 
+
     const presence =
       window.friendChatPresence ||
       {};
 
+
     const map =
       new Map();
+
 
     friendSource.forEach(
       user => {
@@ -674,15 +921,20 @@
       }
     );
 
+
     Object.keys(
       presence
     ).forEach(
       id => {
 
         const key =
-          String(id).toUpperCase();
+          String(id)
+            .toUpperCase();
 
-        if (!map.has(key)) {
+
+        if (
+          !map.has(key)
+        ) {
 
           map.set(
             key,
@@ -697,6 +949,7 @@
       }
     );
 
+
     const source =
       [...map.values()]
         .filter(user => {
@@ -704,32 +957,45 @@
           const myId =
             window.currentUser?.id;
 
+
           return (
             !myId ||
-            String(user.id).toUpperCase() !==
-            String(myId).toUpperCase()
+            String(
+              user.id
+            ).toUpperCase() !==
+            String(
+              myId
+            ).toUpperCase()
           );
 
         });
 
-    if (!source.length) {
 
-      list.innerHTML = `
-        <div
-          style="
-            padding:24px;
-            text-align:center;
-            color:var(--fc-muted);
-          "
-        >
-          No users available yet.
-        </div>
-      `;
+    if (
+      !source.length
+    ) {
+
+      list.innerHTML =
+        `
+          <div
+            style="
+              padding:24px;
+              text-align:center;
+              color:var(--fc-muted);
+            "
+          >
+            No users available yet.
+          </div>
+        `;
 
       return;
+
     }
 
-    list.innerHTML = "";
+
+    list.innerHTML =
+      "";
+
 
     source.forEach(
       user => {
@@ -741,12 +1007,14 @@
             list
           );
 
+
         const avatar =
           create(
             "div",
             "fc-user-avatar",
             row
           );
+
 
         avatar.textContent =
           (
@@ -756,12 +1024,14 @@
             .charAt(0)
             .toUpperCase();
 
+
         const info =
           create(
             "div",
             "fc-user-info",
             row
           );
+
 
         info.innerHTML = `
           <div class="fc-user-name">
@@ -779,6 +1049,7 @@
           </div>
         `;
 
+
         const add =
           create(
             "button",
@@ -786,27 +1057,34 @@
             row
           );
 
-        add.textContent = "Chat";
 
-        add.onclick = () => {
+        add.textContent =
+          "Chat";
 
-          if (
-            typeof openChat ===
-            "function"
-          ) {
 
-            openChat(user);
+        add.onclick =
+          () => {
 
-          }
+            if (
+              typeof openChat ===
+              "function"
+            ) {
 
-          closeDiscovery();
+              openChat(
+                user
+              );
 
-        };
+            }
+
+            closeDiscovery();
+
+          };
 
       }
     );
 
   }
+
 
   /* =========================================================
      THEME PANEL
@@ -824,12 +1102,14 @@
     overlay.id =
       "fcThemeOverlay";
 
+
     overlay.onclick =
       () => {
 
         closeThemePanel();
 
       };
+
 
     const panel =
       create(
@@ -841,6 +1121,7 @@
     panel.id =
       "fcThemePanel";
 
+
     panel.innerHTML = `
 
       <div class="fc-theme-head">
@@ -848,6 +1129,7 @@
         <strong>
           Customize FriendChat
         </strong>
+
 
         <button
           class="fc-dock-btn"
@@ -858,6 +1140,7 @@
         </button>
 
       </div>
+
 
       <div class="fc-theme-body">
 
@@ -870,10 +1153,12 @@
 
     `;
 
+
     const closeButton =
       panel.querySelector(
         "[data-close]"
       );
+
 
     if (closeButton) {
 
@@ -886,14 +1171,17 @@
 
     }
 
+
     const grid =
       panel.querySelector(
         "#fcThemeGrid"
       );
 
+
     if (!grid) {
       return;
     }
+
 
     Object.entries(
       themes
@@ -907,7 +1195,10 @@
             grid
           );
 
-        button.type = "button";
+
+        button.type =
+          "button";
+
 
         button.innerHTML = `
 
@@ -933,10 +1224,13 @@
 
         `;
 
+
         button.onclick =
           () => {
 
-            setTheme(key);
+            setTheme(
+              key
+            );
 
           };
 
@@ -945,25 +1239,36 @@
 
   }
 
+
   function openThemePanel() {
 
     $("fcThemePanel")
-      ?.classList.add("open");
+      ?.classList.add(
+        "open"
+      );
 
     $("fcThemeOverlay")
-      ?.classList.add("open");
+      ?.classList.add(
+        "open"
+      );
 
   }
+
 
   function closeThemePanel() {
 
     $("fcThemePanel")
-      ?.classList.remove("open");
+      ?.classList.remove(
+        "open"
+      );
 
     $("fcThemeOverlay")
-      ?.classList.remove("open");
+      ?.classList.remove(
+        "open"
+      );
 
   }
+
 
   /* =========================================================
      THEME
@@ -974,46 +1279,56 @@
     const theme =
       themes[key];
 
+
     if (!theme) {
       return;
     }
 
+
     const root =
       document.documentElement;
+
 
     root.style.setProperty(
       "--fc-bg",
       theme.bg
     );
 
+
     root.style.setProperty(
       "--fc-panel",
       theme.panel
     );
+
 
     root.style.setProperty(
       "--fc-panel-2",
       theme.panel
     );
 
+
     root.style.setProperty(
       "--fc-accent",
       theme.accent
     );
+
 
     root.style.setProperty(
       "--fc-accent-2",
       theme.accent2
     );
 
+
     localStorage.setItem(
       "friendchat_theme",
       key
     );
 
+
     closeThemePanel();
 
   }
+
 
   function applySavedTheme() {
 
@@ -1023,26 +1338,19 @@
       ) ||
       "midnight";
 
-    setTheme(saved);
+
+    setTheme(
+      saved
+    );
 
   }
+
 
   /* =========================================================
      VISIBILITY
      ========================================================= */
 
   function setupVisibility() {
-
-    const managed = [
-      $("fcNavToggle"),
-      $("fcCustomSidebar"),
-      document.querySelector(
-        ".fc-quick-actions"
-      ),
-      document.querySelector(
-        ".fc-bottom-dock"
-      )
-    ].filter(Boolean);
 
     const sync = () => {
 
@@ -1052,88 +1360,118 @@
       const signup =
         $("signupScreen");
 
-      const loggedOut =
-        (
+      const authenticated =
+        !!(
           login &&
-          !login.classList.contains(
+          login.classList.contains(
             "hidden"
-          )
-        ) ||
-        (
-          signup &&
-          !signup.classList.contains(
-            "hidden"
+          ) &&
+          (
+            !signup ||
+            signup.classList.contains(
+              "hidden"
+            )
           )
         );
 
-      managed.forEach(
-        el => {
 
-          el.style.display =
-            loggedOut
-              ? "none"
-              : "flex";
+      const ids = [
+        "fcNavToggle",
+        "fcCustomSidebar"
+      ];
+
+
+      ids.forEach(
+        id => {
+
+          const el =
+            $(id);
+
+
+          if (!el) {
+            return;
+          }
+
+
+          el.style.setProperty(
+            "display",
+            authenticated
+              ? "flex"
+              : "none",
+            "important"
+          );
+
+
+          el.style.setProperty(
+            "visibility",
+            authenticated
+              ? "visible"
+              : "hidden",
+            "important"
+          );
+
+
+          el.style.setProperty(
+            "opacity",
+            authenticated
+              ? "1"
+              : "0",
+            "important"
+          );
 
         }
       );
 
-      const sidebar =
-        $("fcCustomSidebar");
 
-      if (
-        sidebar &&
-        loggedOut
-      ) {
+      document
+        .querySelectorAll(
+          ".fc-quick-actions, .fc-bottom-dock"
+        )
+        .forEach(
+          el => {
 
-        sidebar.classList.remove(
-          "open"
+            el.style.setProperty(
+              "display",
+              authenticated
+                ? "flex"
+                : "none",
+              "important"
+            );
+
+
+            el.style.setProperty(
+              "visibility",
+              authenticated
+                ? "visible"
+                : "hidden",
+              "important"
+            );
+
+
+            el.style.setProperty(
+              "opacity",
+              authenticated
+                ? "1"
+                : "0",
+              "important"
+            );
+
+          }
         );
-
-      }
-
-      const toggle =
-        $("fcNavToggle");
-
-      if (
-        toggle &&
-        loggedOut
-      ) {
-
-        toggle.classList.remove(
-          "is-open"
-        );
-
-      }
 
     };
 
+
     sync();
 
-    const app =
-      document.querySelector(
-        ".app"
-      );
 
-    if (app) {
-
+    const observer =
       new MutationObserver(
         sync
-      ).observe(
-        app,
-        {
-          subtree: true,
-          attributes: true,
-          attributeFilter: [
-            "class"
-          ]
-        }
       );
 
-    }
 
-    new MutationObserver(
-      sync
-    ).observe(
+    observer.observe(
       document.body,
       {
         subtree: true,
@@ -1144,7 +1482,14 @@
       }
     );
 
+
+    window.setInterval(
+      sync,
+      500
+    );
+
   }
+
 
   /* =========================================================
      REMOVE OLD SPOTIFY BUTTON
@@ -1152,25 +1497,29 @@
 
   function hideOldSpotifyButton() {
 
-    const hide = () => {
+    const hide =
+      () => {
 
-      document
-        .querySelectorAll(
-          ".spotify-side-button,.spotify-side-bar"
-        )
-        .forEach(
-          e => e.remove()
-        );
+        document
+          .querySelectorAll(
+            ".spotify-side-button,.spotify-side-bar"
+          )
+          .forEach(
+            e => e.remove()
+          );
 
-    };
+      };
+
 
     hide();
+
 
     const timer =
       setInterval(
         hide,
         250
       );
+
 
     setTimeout(
       () => {
@@ -1184,6 +1533,7 @@
     );
 
   }
+
 
   /* =========================================================
      START
