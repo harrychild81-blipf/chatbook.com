@@ -58,13 +58,12 @@
        ===================================================== -->
 
   <style>
+    /* FULL SCREEN / VIEWPORT FIX */
+    *,
+    *::before,
+    *::after { box-sizing: border-box; }
 
-    /* -----------------------------------------------------
-       PAGE SIZE
-       ----------------------------------------------------- */
-
-    html,
-    body {
+    html, body {
       width: 100%;
       min-width: 100%;
       height: 100%;
@@ -73,72 +72,57 @@
       padding: 0;
     }
 
-
-    body {
-      overflow-x: hidden;
+    html {
+      overflow: hidden;
+      background: #0b0f16;
     }
 
-
-    /* -----------------------------------------------------
-       MAIN APP
-       ----------------------------------------------------- */
+    body {
+      overflow: hidden;
+      width: 100vw;
+      min-width: 100vw;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
 
     .app {
+      position: relative;
       width: 100vw !important;
       min-width: 100vw !important;
       max-width: none !important;
-
-      height: 100vh !important;
-      min-height: 100vh !important;
-      max-height: none !important;
-
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+      max-height: 100dvh !important;
       margin: 0 !important;
       padding: 0 !important;
-
       box-sizing: border-box !important;
+      overflow: hidden !important;
     }
 
-
-    /* -----------------------------------------------------
-       ALL SCREENS
-       ----------------------------------------------------- */
-
     .screen {
+      position: relative;
       width: 100% !important;
       min-width: 100% !important;
       max-width: none !important;
-
-      min-height: 100vh !important;
-
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+      max-height: 100dvh !important;
+      margin: 0 !important;
       box-sizing: border-box !important;
     }
 
-
-    /* -----------------------------------------------------
-       HIDDEN SCREEN
-       ----------------------------------------------------- */
-
-    .screen.hidden {
-      display: none !important;
-    }
-
-
-    /* -----------------------------------------------------
-       AUTH SCREENS
-       ----------------------------------------------------- */
+    .screen.hidden { display: none !important; }
 
     .screen.auth {
       width: 100vw !important;
       min-width: 100vw !important;
-      min-height: 100vh !important;
-
-      box-sizing: border-box !important;
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
     }
-
-
-    /* -----------------------------------------------------
-       HOME / ADD / CHAT / PROFILE
-       ----------------------------------------------------- */
 
     #homeScreen,
     #addScreen,
@@ -147,83 +131,79 @@
       width: 100vw !important;
       min-width: 100vw !important;
       max-width: none !important;
-
-      min-height: 100vh !important;
-
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+      max-height: 100dvh !important;
+      margin: 0 !important;
       box-sizing: border-box !important;
     }
 
-
-    /* -----------------------------------------------------
-       CHAT SCREEN
-       ----------------------------------------------------- */
+    #homeScreen,
+    #addScreen {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
 
     #chatScreen {
-      display: flex;
-      flex-direction: column;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
     }
 
-
-    #chatScreen.hidden {
-      display: none !important;
-    }
-
-
-    /* Messages take remaining screen space */
+    #chatScreen.hidden { display: none !important; }
 
     #chatScreen .messages {
-      flex: 1 1 auto;
-      min-height: 0;
-      width: 100%;
-      box-sizing: border-box;
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+      box-sizing: border-box !important;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
-
-
-    /* Composer stays at bottom */
 
     #chatScreen .composer {
-      flex-shrink: 0;
-      box-sizing: border-box;
+      flex: 0 0 auto !important;
+      width: 100% !important;
+      max-width: none !important;
+      box-sizing: border-box !important;
     }
-
-
-    /* -----------------------------------------------------
-       FRIEND LIST
-       ----------------------------------------------------- */
 
     #friendList {
-      width: 100%;
-      box-sizing: border-box;
+      width: 100% !important;
+      max-width: none !important;
+      box-sizing: border-box !important;
     }
-
-
-    /* -----------------------------------------------------
-       PROFILE PAGE
-       ----------------------------------------------------- */
 
     .profilePage {
-      box-sizing: border-box;
-      width: 100%;
+      width: 100% !important;
+      max-width: none !important;
+      box-sizing: border-box !important;
     }
-
-
-    /* -----------------------------------------------------
-       ADD SCREEN
-       ----------------------------------------------------- */
 
     #addScreen .card.wide {
-      box-sizing: border-box;
+      width: min(100% - 32px, 900px);
+      max-width: calc(100vw - 32px);
+      box-sizing: border-box !important;
     }
 
+    #bottomNav { display: none !important; }
 
-    /* -----------------------------------------------------
-       OLD BOTTOM NAV
-       ----------------------------------------------------- */
+    img, video, canvas, iframe { max-width: 100%; }
 
-    #bottomNav {
-      display: none !important;
+    input, button, textarea, select { max-width: 100%; }
+
+    @media (max-width: 600px) {
+      html, body, .app, .screen {
+        width: 100vw !important;
+        min-width: 100vw !important;
+      }
+
+      .app, .screen {
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+      }
     }
-
   </style>
 
 </head>
