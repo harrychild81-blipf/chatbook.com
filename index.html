@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,7 +19,7 @@
 
   <link
     rel="stylesheet"
-    href="style.css?v=5"
+    href="style.css?v=6"
   >
 
 
@@ -28,7 +29,7 @@
 
   <link
     rel="stylesheet"
-    href="friendchat-ui-v3-FINAL.css?v=6"
+    href="friendchat-ui-v3-FINAL.css?v=7"
   >
 
 
@@ -38,7 +39,7 @@
 
   <link
     rel="stylesheet"
-    href="suggestions.css?v=1"
+    href="suggestions.css?v=2"
   >
 
 
@@ -48,17 +49,19 @@
 
   <link
     rel="stylesheet"
-    href="spotify.css?v=5"
+    href="spotify.css?v=6"
   >
 
 
   <!-- =====================================================
-       FULL SCREEN FIX
+       FULL SCREEN + NAVIGATION FIX
        ===================================================== -->
 
   <style>
 
-    /* FULL SCREEN / VIEWPORT FIX */
+    /* =====================================================
+       GLOBAL
+       ===================================================== */
 
     *,
     *::before,
@@ -73,6 +76,7 @@
       min-width: 100%;
       height: 100%;
       min-height: 100%;
+
       margin: 0;
       padding: 0;
     }
@@ -80,21 +84,34 @@
 
     html {
       overflow: hidden;
-      background: #0b0f16;
+      background: #080b12;
     }
 
 
     body {
       overflow: hidden;
+
       width: 100vw;
       min-width: 100vw;
+
+      height: 100vh;
       min-height: 100vh;
+
+      height: 100dvh;
       min-height: 100dvh;
+
+      background: #080b12;
     }
 
 
+    /* =====================================================
+       APP
+       ===================================================== */
+
     .app {
+
       position: relative;
+
       width: 100vw !important;
       min-width: 100vw !important;
       max-width: none !important;
@@ -106,13 +123,18 @@
       margin: 0 !important;
       padding: 0 !important;
 
-      box-sizing: border-box !important;
-
       overflow: hidden !important;
+
+      box-sizing: border-box !important;
     }
 
 
+    /* =====================================================
+       ALL SCREENS
+       ===================================================== */
+
     .screen {
+
       position: relative;
 
       width: 100% !important;
@@ -134,7 +156,12 @@
     }
 
 
+    /* =====================================================
+       LOGIN / SIGNUP
+       ===================================================== */
+
     .screen.auth {
+
       width: 100vw !important;
       min-width: 100vw !important;
 
@@ -146,13 +173,170 @@
       align-items: center;
       justify-content: center;
 
-      overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
 
-    #homeScreen,
-    #addScreen,
-    #chatScreen,
+    /* =====================================================
+       HOME
+       ===================================================== */
+
+    #homeScreen {
+
+      width: 100vw !important;
+      min-width: 100vw !important;
+      max-width: none !important;
+
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+      max-height: 100dvh !important;
+
+      margin: 0 !important;
+
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      box-sizing: border-box !important;
+    }
+
+
+    /* =====================================================
+       ADD SCREEN
+       ===================================================== */
+
+    #addScreen {
+
+      width: 100vw !important;
+      min-width: 100vw !important;
+      max-width: none !important;
+
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+      max-height: 100dvh !important;
+
+      margin: 0 !important;
+
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      box-sizing: border-box !important;
+    }
+
+
+    /* =====================================================
+       CHAT SCREEN
+       ===================================================== */
+
+    #chatScreen {
+
+      position: relative !important;
+
+      display: flex !important;
+
+      flex-direction: column !important;
+
+      width: 100vw !important;
+      min-width: 100vw !important;
+      max-width: none !important;
+
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+      max-height: 100dvh !important;
+
+      margin: 0 !important;
+      padding: 0 !important;
+
+      overflow: hidden !important;
+
+      box-sizing: border-box !important;
+    }
+
+
+    #chatScreen.hidden {
+      display: none !important;
+    }
+
+
+    /* =====================================================
+       CHAT HEADER
+       ===================================================== */
+
+    #chatScreen > header {
+
+      flex: 0 0 auto;
+
+      width: 100% !important;
+      max-width: none !important;
+
+      box-sizing: border-box !important;
+
+      z-index: 20;
+    }
+
+
+    /* =====================================================
+       MESSAGE AREA
+       ===================================================== */
+
+    #chatScreen .messages {
+
+      flex: 1 1 auto !important;
+
+      min-height: 0 !important;
+
+      width: 100% !important;
+      max-width: none !important;
+
+      margin: 0 !important;
+
+      box-sizing: border-box !important;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      padding-bottom: 12px;
+    }
+
+
+    /* =====================================================
+       COMPOSER
+       ===================================================== */
+
+    #chatScreen .composer {
+
+      position: relative !important;
+
+      flex: 0 0 auto !important;
+
+      width: 100% !important;
+      max-width: none !important;
+
+      margin: 0 !important;
+
+      box-sizing: border-box !important;
+
+      z-index: 50;
+    }
+
+
+    /* =====================================================
+       FRIEND LIST
+       ===================================================== */
+
+    #friendList {
+
+      width: 100% !important;
+      max-width: none !important;
+
+      box-sizing: border-box !important;
+    }
+
+
+    /* =====================================================
+       PROFILE
+       ===================================================== */
+
     #profileScreen {
 
       width: 100vw !important;
@@ -165,66 +349,8 @@
 
       margin: 0 !important;
 
-      box-sizing: border-box !important;
-    }
-
-
-    #homeScreen,
-    #addScreen {
       overflow-x: hidden;
       overflow-y: auto;
-    }
-
-
-    #chatScreen {
-
-      display: flex !important;
-
-      flex-direction: column !important;
-
-      overflow: hidden !important;
-    }
-
-
-    #chatScreen.hidden {
-      display: none !important;
-    }
-
-
-    #chatScreen .messages {
-
-      flex: 1 1 auto !important;
-
-      min-height: 0 !important;
-
-      width: 100% !important;
-
-      max-width: none !important;
-
-      box-sizing: border-box !important;
-
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-
-
-    #chatScreen .composer {
-
-      flex: 0 0 auto !important;
-
-      width: 100% !important;
-
-      max-width: none !important;
-
-      box-sizing: border-box !important;
-    }
-
-
-    #friendList {
-
-      width: 100% !important;
-
-      max-width: none !important;
 
       box-sizing: border-box !important;
     }
@@ -233,16 +359,22 @@
     .profilePage {
 
       width: 100% !important;
-
       max-width: none !important;
 
       box-sizing: border-box !important;
     }
 
 
+    /* =====================================================
+       ADD CARD
+       ===================================================== */
+
     #addScreen .card.wide {
 
-      width: min(100% - 32px, 900px);
+      width: min(
+        calc(100vw - 32px),
+        900px
+      );
 
       max-width: calc(100vw - 32px);
 
@@ -250,52 +382,332 @@
     }
 
 
-    /*
-      Hide the old navigation.
-      The new navigation is created by
-      friendchat-ui-v3-fixed.js
-    */
+    /* =====================================================
+       OLD BOTTOM NAVIGATION
+       ===================================================== */
 
     #bottomNav {
       display: none !important;
     }
 
 
+    /* =====================================================
+       OLD NAVIGATION ELEMENTS
+       ===================================================== */
+
+    .bottomNav {
+      display: none !important;
+    }
+
+
+    /* =====================================================
+       IMAGES
+       ===================================================== */
+
     img,
     video,
     canvas,
     iframe {
+
       max-width: 100%;
     }
 
+
+    /* =====================================================
+       FORM ELEMENTS
+       ===================================================== */
 
     input,
     button,
     textarea,
     select {
+
       max-width: 100%;
     }
 
 
+    /* =====================================================
+       CUSTOM FRIENDCHAT NAVIGATION
+       ===================================================== */
+
+    /*
+       These styles are a backup.
+       friendchat-ui-v3-fixed.js also creates/stylizes
+       these elements.
+    */
+
+
+    /* LEFT ARROW */
+
+    #fcNavToggle {
+
+      position: fixed !important;
+
+      left: 16px !important;
+      top: 50% !important;
+
+      transform: translateY(-50%) !important;
+
+      width: 36px !important;
+      height: 48px !important;
+
+      min-width: 36px !important;
+      min-height: 48px !important;
+
+      padding: 0 !important;
+      margin: 0 !important;
+
+      border: 0 !important;
+
+      border-radius: 16px !important;
+
+      z-index: 99999 !important;
+
+      display: flex !important;
+
+      align-items: center !important;
+      justify-content: center !important;
+
+      cursor: pointer !important;
+    }
+
+
+    /* CUSTOM SIDEBAR */
+
+    #fcCustomSidebar {
+
+      position: fixed !important;
+
+      left: 0 !important;
+      top: 50% !important;
+
+      transform: translateY(-50%) translateX(-100%) !important;
+
+      z-index: 99998 !important;
+    }
+
+
+    #fcCustomSidebar.open {
+
+      transform:
+        translateY(-50%)
+        translateX(0) !important;
+    }
+
+
+    /* =====================================================
+       BOTTOM DOCK
+       ===================================================== */
+
+    .fc-bottom-dock {
+
+      position: fixed !important;
+
+      left: 50% !important;
+      bottom: 14px !important;
+
+      transform: translateX(-50%) !important;
+
+      z-index: 99999 !important;
+
+      display: flex !important;
+
+      align-items: center !important;
+      justify-content: center !important;
+
+      gap: 8px !important;
+
+      width: auto !important;
+
+      min-width: 0 !important;
+
+      max-width: calc(100vw - 32px) !important;
+
+      height: 64px !important;
+
+      padding: 7px 10px !important;
+
+      border-radius: 20px !important;
+
+      box-sizing: border-box !important;
+    }
+
+
+    /* =====================================================
+       DOCK BUTTONS
+       ===================================================== */
+
+    .fc-bottom-dock button {
+
+      width: 48px !important;
+      height: 48px !important;
+
+      min-width: 48px !important;
+      min-height: 48px !important;
+
+      padding: 0 !important;
+      margin: 0 !important;
+
+      border-radius: 14px !important;
+
+      display: flex !important;
+
+      align-items: center !important;
+      justify-content: center !important;
+
+      flex-direction: column !important;
+
+      cursor: pointer !important;
+
+      box-sizing: border-box !important;
+    }
+
+
+    /* Hide text if the JS creates labels */
+
+    .fc-bottom-dock button span:nth-child(2) {
+
+      display: none !important;
+    }
+
+
+    /* FC BUTTON */
+
+    .fc-bottom-dock button.fc-center,
+    .fc-bottom-dock button[data-action="suggestions"],
+    .fc-bottom-dock button:nth-child(2) {
+
+      width: 48px !important;
+      height: 48px !important;
+
+      min-width: 48px !important;
+      min-height: 48px !important;
+
+      border-radius: 14px !important;
+
+      font-size: 15px !important;
+
+      font-weight: 700 !important;
+    }
+
+
+    /* =====================================================
+       DOCK ON CHAT SCREEN
+       ===================================================== */
+
+    /*
+       IMPORTANT:
+       The bottom navigation must NOT appear over
+       the message composer.
+    */
+
+    body:has(#chatScreen:not(.hidden))
+      .fc-bottom-dock {
+
+      display: none !important;
+    }
+
+
+    body:has(#chatScreen:not(.hidden))
+      #fcNavToggle {
+
+      display: flex !important;
+    }
+
+
+    body:has(#chatScreen:not(.hidden))
+      #fcCustomSidebar {
+
+      display: none !important;
+    }
+
+
+    /* =====================================================
+       AUTH SCREENS
+       ===================================================== */
+
+    body:has(#loginScreen:not(.hidden))
+      #fcNavToggle,
+
+    body:has(#loginScreen:not(.hidden))
+      #fcCustomSidebar,
+
+    body:has(#loginScreen:not(.hidden))
+      .fc-bottom-dock,
+
+    body:has(#signupScreen:not(.hidden))
+      #fcNavToggle,
+
+    body:has(#signupScreen:not(.hidden))
+      #fcCustomSidebar,
+
+    body:has(#signupScreen:not(.hidden))
+      .fc-bottom-dock {
+
+      display: none !important;
+    }
+
+
+    /* =====================================================
+       MOBILE
+       ===================================================== */
+
     @media (max-width: 600px) {
 
       html,
-      body,
-      .app,
-      .screen {
+      body {
 
         width: 100vw !important;
-
         min-width: 100vw !important;
+
+        height: 100dvh !important;
+        min-height: 100dvh !important;
       }
 
 
       .app,
       .screen {
 
-        height: 100dvh !important;
+        width: 100vw !important;
+        min-width: 100vw !important;
 
+        height: 100dvh !important;
         min-height: 100dvh !important;
+      }
+
+
+      #fcNavToggle {
+
+        left: 8px !important;
+
+        width: 34px !important;
+        height: 44px !important;
+      }
+
+
+      .fc-bottom-dock {
+
+        bottom: 10px !important;
+
+        height: 58px !important;
+
+        padding: 5px 7px !important;
+
+        gap: 5px !important;
+
+        border-radius: 18px !important;
+      }
+
+
+      .fc-bottom-dock button {
+
+        width: 44px !important;
+        height: 44px !important;
+
+        min-width: 44px !important;
+        min-height: 44px !important;
+
+        border-radius: 13px !important;
       }
 
     }
@@ -473,8 +885,6 @@
       </div>
 
 
-      <!-- STATUS INFO -->
-
       <button
         type="button"
         class="statusInfoButton"
@@ -484,8 +894,6 @@
         ⓘ
       </button>
 
-
-      <!-- ADD FRIEND -->
 
       <button
         type="button"
@@ -500,9 +908,7 @@
 
 
 
-    <!-- ===================================================
-         STATUS EXPLANATION
-         =================================================== -->
+    <!-- STATUS INFO -->
 
     <div
       id="statusInfo"
@@ -596,9 +1002,7 @@
 
 
 
-    <!-- ===================================================
-         PROFILE PREVIEW
-         =================================================== -->
+    <!-- PROFILE PREVIEW -->
 
     <div class="profileRow">
 
@@ -637,9 +1041,7 @@
 
 
 
-    <!-- ===================================================
-         SEARCH
-         =================================================== -->
+    <!-- SEARCH -->
 
     <input
       id="search"
@@ -651,9 +1053,7 @@
 
 
 
-    <!-- ===================================================
-         FRIEND LIST
-         =================================================== -->
+    <!-- FRIEND LIST -->
 
     <div
       id="friendList"
@@ -758,9 +1158,7 @@
 
 
 
-    <!-- ===================================================
-         MESSAGES
-         =================================================== -->
+    <!-- MESSAGES -->
 
     <div
       id="messages"
@@ -769,9 +1167,7 @@
 
 
 
-    <!-- ===================================================
-         MESSAGE COMPOSER
-         =================================================== -->
+    <!-- MESSAGE COMPOSER -->
 
     <div class="composer">
 
@@ -823,9 +1219,7 @@
 
 
 
-    <!-- ===================================================
-         EMOJI PICKER
-         =================================================== -->
+    <!-- EMOJI PICKER -->
 
     <div
       id="emojiPicker"
@@ -876,8 +1270,6 @@
           ?
         </div>
 
-
-        <!-- CHANGE PHOTO -->
 
         <label class="changePhotoButton">
 
@@ -998,122 +1390,25 @@
 
     <div class="reactionRow">
 
-      <button
-        type="button"
-        onclick="reactToMessage('👍')"
-      >
-        👍
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('❤️')"
-      >
-        ❤️
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😂')"
-      >
-        😂
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😮')"
-      >
-        😮
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😢')"
-      >
-        😢
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😡')"
-      >
-        😡
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('🔥')"
-      >
-        🔥
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😍')"
-      >
-        😍
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😭')"
-      >
-        😭
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('🤣')"
-      >
-        🤣
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('😎')"
-      >
-        😎
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('🥰')"
-      >
-        🥰
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('🎉')"
-      >
-        🎉
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('👏')"
-      >
-        👏
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('💀')"
-      >
-        💀
-      </button>
-
-      <button
-        type="button"
-        onclick="reactToMessage('👎')"
-      >
-        👎
-      </button>
+      <button type="button" onclick="reactToMessage('👍')">👍</button>
+      <button type="button" onclick="reactToMessage('❤️')">❤️</button>
+      <button type="button" onclick="reactToMessage('😂')">😂</button>
+      <button type="button" onclick="reactToMessage('😮')">😮</button>
+      <button type="button" onclick="reactToMessage('😢')">😢</button>
+      <button type="button" onclick="reactToMessage('😡')">😡</button>
+      <button type="button" onclick="reactToMessage('🔥')">🔥</button>
+      <button type="button" onclick="reactToMessage('😍')">😍</button>
+      <button type="button" onclick="reactToMessage('😭')">😭</button>
+      <button type="button" onclick="reactToMessage('🤣')">🤣</button>
+      <button type="button" onclick="reactToMessage('😎')">😎</button>
+      <button type="button" onclick="reactToMessage('🥰')">🥰</button>
+      <button type="button" onclick="reactToMessage('🎉')">🎉</button>
+      <button type="button" onclick="reactToMessage('👏')">👏</button>
+      <button type="button" onclick="reactToMessage('💀')">💀</button>
+      <button type="button" onclick="reactToMessage('👎')">👎</button>
 
     </div>
 
-
-    <!-- UNSEND -->
 
     <button
       type="button"
@@ -1124,8 +1419,6 @@
     </button>
 
 
-    <!-- DELETE -->
-
     <button
       type="button"
       class="menuAction danger"
@@ -1134,8 +1427,6 @@
       Delete
     </button>
 
-
-    <!-- CANCEL -->
 
     <button
       type="button"
@@ -1152,7 +1443,7 @@
 
 
 <!-- =====================================================
-     STATUS INFO JAVASCRIPT
+     STATUS INFO
      ===================================================== -->
 
 <script>
@@ -1162,11 +1453,9 @@ function toggleStatusInfo() {
   const box =
     document.getElementById("statusInfo");
 
-
   if (!box) {
     return;
   }
-
 
   box.classList.toggle("hidden");
 
@@ -1178,75 +1467,56 @@ function toggleStatusInfo() {
 
 <!-- =====================================================
      SPOTIFY WEB PLAYBACK SDK
+     LOAD ONLY ONCE
      ===================================================== -->
 
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
-
 
 
 <!-- =====================================================
      SPOTIFY API
      ===================================================== -->
 
-<script src="spotify-api.js?v=5"></script>
-
+<script src="spotify-api.js?v=6"></script>
 
 
 <!-- =====================================================
      SPOTIFY PLAYER
      ===================================================== -->
 
-<script src="spotify-player.js?v=5"></script>
-
+<script src="spotify-player.js?v=6"></script>
 
 
 <!-- =====================================================
      SPOTIFY UI
      ===================================================== -->
 
-<script src="spotify.js?v=5"></script>
-
+<script src="spotify.js?v=6"></script>
 
 
 <!-- =====================================================
      MAIN FRIENDCHAT APP
      ===================================================== -->
 
-<script src="app.js?v=5"></script>
-
+<script src="app.js?v=6"></script>
 
 
 <!-- =====================================================
      CUSTOM FRIENDCHAT UI
-     MUST LOAD AFTER app.js
+     LOAD ONLY ONCE
      ===================================================== -->
 
-<script src="friendchat-ui-v3-fixed.js?v=9"></script>
-
+<script src="friendchat-ui-v3-fixed.js?v=12"></script>
 
 
 <!-- =====================================================
-     FRIENDCHAT SUGGESTIONS / DISCOVER
-     MUST LOAD AFTER APP + CUSTOM UI
+     FRIENDCHAT SUGGESTIONS
+     LOAD ONLY ONCE
      ===================================================== -->
 
-<script src="suggestions.js?v=1"></script>
+<script src="suggestions.js?v=2"></script>
 
 
 </body>
 
-</html>
-<script src="https://sdk.scdn.co/spotify-player.js"></script>
-
-<script src="spotify-api.js?v=5"></script>
-<script src="spotify-player.js?v=5"></script>
-<script src="spotify.js?v=5"></script>
-
-<script src="app.js?v=5"></script>
-
-<script src="friendchat-ui-v3-fixed.js?v=11"></script>
-
-<script src="suggestions.js?v=1"></script>
-
-</body>
 </html>
