@@ -454,8 +454,8 @@ body .fc-nav-divider {
 
 
 /* =========================================================
-   THE IMPORTANT ARROW
-   VERY CLOSE TO SCREEN EDGE
+   ARROW
+   SMALL BY DEFAULT
    ========================================================= */
 
 body #fcNavToggle,
@@ -464,17 +464,13 @@ body #fc-nav-toggle {
 
     position: fixed !important;
 
-    /*
-       Almost touching the left edge.
-       1px = practically at screen edge.
-    */
     left: 1px !important;
 
     top: 50% !important;
     bottom: auto !important;
 
-    width: 22px !important;
-    height: 36px !important;
+    width: 20px !important;
+    height: 32px !important;
 
     margin: 0 !important;
     padding: 0 !important;
@@ -492,7 +488,7 @@ body #fc-nav-toggle {
     border-left: 0 !important;
 
     border-radius:
-        0 10px 10px 0 !important;
+        0 9px 9px 0 !important;
 
     background:
         rgba(17,24,36,.97) !important;
@@ -517,25 +513,29 @@ body #fc-nav-toggle {
 
     transition:
         left .42s cubic-bezier(.22,1,.36,1),
-        width .2s ease,
-        height .2s ease,
-        background .2s ease !important;
+        width .18s ease,
+        height .18s ease,
+        background .18s ease,
+        border-radius .18s ease !important;
 }
 
 
 /* =========================================================
-   ARROW HOVER
+   ARROW GETS BIG ONLY WHEN MOUSE IS OVER IT
    ========================================================= */
 
 body #fcNavToggle:hover,
 body .fc-nav-toggle:hover,
 body #fc-nav-toggle:hover {
 
-    width: 32px !important;
-    height: 44px !important;
+    width: 30px !important;
+    height: 42px !important;
 
     background:
         var(--fc-panel-3) !important;
+
+    border-radius:
+        0 11px 11px 0 !important;
 }
 
 
@@ -562,7 +562,7 @@ body #fc-nav-toggle .fc-chevron {
     align-items: center !important;
     justify-content: center !important;
 
-    font-size: 15px !important;
+    font-size: 13px !important;
 
     line-height: 1 !important;
 
@@ -574,8 +574,9 @@ body #fc-nav-toggle .fc-chevron {
 
 
 /* =========================================================
-   ARROW OPEN
-   ARROW MOVES WITH SIDEBAR
+   OPEN ARROW
+   MOVES WITH SIDEBAR
+   BUT STAYS SMALL
    ========================================================= */
 
 body #fcNavToggle.is-open,
@@ -589,16 +590,42 @@ body #fc-nav-toggle.is-open {
 
     bottom: auto !important;
 
-    width: 32px !important;
-    height: 44px !important;
+    /* IMPORTANT:
+       Still SMALL when not hovered */
+    width: 20px !important;
+    height: 32px !important;
 
     transform:
         translateY(-50%) !important;
 
     border-radius:
-        0 10px 10px 0 !important;
+        0 9px 9px 0 !important;
 }
 
+
+/* =========================================================
+   OPEN ARROW + HOVER
+   BIG ONLY WHILE MOUSE IS OVER IT
+   ========================================================= */
+
+body #fcNavToggle.is-open:hover,
+body .fc-nav-toggle.is-open:hover,
+body #fc-nav-toggle.is-open:hover {
+
+    width: 30px !important;
+    height: 42px !important;
+
+    background:
+        var(--fc-panel-3) !important;
+
+    border-radius:
+        0 11px 11px 0 !important;
+}
+
+
+/* =========================================================
+   ARROW ROTATION
+   ========================================================= */
 
 body #fcNavToggle.is-open .fc-chevron,
 body .fc-nav-toggle.is-open .fc-chevron,
@@ -665,10 +692,6 @@ body #fc-bottom-dock {
 
     transform:
         translateX(-50%) !important;
-
-    /*
-       SMALLER BAR
-    */
 
     width: 150px !important;
     min-width: 150px !important;
@@ -762,7 +785,6 @@ body .fc-bottom-dock .fc-dock-btn span:last-child {
     display: none !important;
 }
 
-
 body .fc-bottom-dock .fc-dock-btn span:first-child {
 
     display: block !important;
@@ -775,7 +797,6 @@ body .fc-bottom-dock .fc-dock-btn span:first-child {
 
 /* =========================================================
    FC BUTTON
-   SMOOTH SQUARE — NOT CIRCLE
    ========================================================= */
 
 body .fc-bottom-dock .fc-dock-center {
@@ -806,7 +827,6 @@ body .fc-bottom-dock .fc-dock-center {
     box-shadow:
         0 4px 14px rgba(110,80,240,.35) !important;
 }
-
 
 body .fc-bottom-dock .fc-dock-center span:first-child {
 
@@ -913,7 +933,6 @@ body .fc-discovery {
     overflow: hidden !important;
 }
 
-
 body #fcDiscovery.open,
 body .fc-discovery.open {
 
@@ -953,7 +972,6 @@ body #fcDiscoveryOverlay {
 
     z-index: 10014 !important;
 }
-
 
 body #fcDiscoveryOverlay.open {
 
@@ -1147,7 +1165,6 @@ body #fcThemeOverlay {
     z-index: 10029 !important;
 }
 
-
 body #fcThemeOverlay.open {
 
     opacity: 1;
@@ -1200,7 +1217,6 @@ body #fcThemePanel {
 
     overflow: hidden !important;
 }
-
 
 body #fcThemePanel.open {
 
@@ -1314,6 +1330,7 @@ body .fc-theme-swatch {
 #chatScreen {
 
     width: 100vw !important;
+
     min-height: 100vh !important;
 
     background:
@@ -1472,7 +1489,7 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
     }
 
 
-    /* Arrow stays at screen edge */
+    /* Arrow small */
 
     body #fcNavToggle,
     body .fc-nav-toggle,
@@ -1480,8 +1497,8 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
 
         left: 1px !important;
 
-        width: 20px !important;
-        height: 34px !important;
+        width: 19px !important;
+        height: 31px !important;
 
         top: 50% !important;
 
@@ -1490,16 +1507,18 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
     }
 
 
+    /* Arrow big ONLY on hover */
+
     body #fcNavToggle:hover,
     body .fc-nav-toggle:hover,
     body #fc-nav-toggle:hover {
 
-        width: 30px !important;
-        height: 42px !important;
+        width: 29px !important;
+        height: 41px !important;
     }
 
 
-    /* Open arrow follows sidebar */
+    /* Open arrow stays small */
 
     body #fcNavToggle.is-open,
     body .fc-nav-toggle.is-open,
@@ -1508,13 +1527,24 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
         left:
             var(--fc-sidebar-width) !important;
 
-        width: 30px !important;
-        height: 42px !important;
+        width: 19px !important;
+        height: 31px !important;
 
         top: 50% !important;
 
         transform:
             translateY(-50%) !important;
+    }
+
+
+    /* Open + hover = big */
+
+    body #fcNavToggle.is-open:hover,
+    body .fc-nav-toggle.is-open:hover,
+    body #fc-nav-toggle.is-open:hover {
+
+        width: 29px !important;
+        height: 41px !important;
     }
 
 
@@ -1628,8 +1658,17 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
 
         left: 1px !important;
 
-        width: 19px !important;
-        height: 32px !important;
+        width: 18px !important;
+        height: 30px !important;
+    }
+
+
+    body #fcNavToggle:hover,
+    body .fc-nav-toggle:hover,
+    body #fc-nav-toggle:hover {
+
+        width: 28px !important;
+        height: 40px !important;
     }
 
 
@@ -1640,7 +1679,16 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
         left:
             var(--fc-sidebar-width) !important;
 
-        width: 29px !important;
+        width: 18px !important;
+        height: 30px !important;
+    }
+
+
+    body #fcNavToggle.is-open:hover,
+    body .fc-nav-toggle.is-open:hover,
+    body #fc-nav-toggle.is-open:hover {
+
+        width: 28px !important;
         height: 40px !important;
     }
 
@@ -1686,38 +1734,56 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
             .01ms !important;
     }
 }
+
+
 /* =========================================================
    REMOVE LOWER + / QUICK ACTION BUTTONS
    KEEP TOP-RIGHT + BUTTON
    ========================================================= */
 
-/* Remove the floating lower quick-action area */
+/* Remove floating lower quick-action area */
+
 .fc-quick-actions {
+
     display: none !important;
+
     visibility: hidden !important;
+
     pointer-events: none !important;
 }
 
-/* Remove the media/attachment button inside chat composer */
+
+/* Remove media/attachment button */
+
 #chatScreen .mediaButton {
+
     display: none !important;
+
     visibility: hidden !important;
+
     pointer-events: none !important;
 }
 
-/* Hide any extra floating add/media buttons created by the custom UI */
+
+/* Hide extra floating buttons */
+
 #chatScreen .fc-add-button,
 #chatScreen .fc-media-button,
 #chatScreen .fc-quick-add,
 #chatScreen .fc-quick-media {
+
     display: none !important;
+
     visibility: hidden !important;
+
     pointer-events: none !important;
 }
 
-/* IMPORTANT:
-   Keep the normal header + button visible */
+
+/* Keep normal header + button visible */
+
 #homeScreen header .icon,
 #addScreen header .icon {
+
     display: flex !important;
 }
