@@ -2420,3 +2420,670 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
         height:40px !important;
     }
 }
+/* =========================================================
+   FRIENDCHAT FULL SCREEN + FLOATING SIDEBAR + BOTTOM BAR
+   FINAL OVERRIDE
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   FULL SCREEN
+   --------------------------------------------------------- */
+
+html,
+body {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: hidden !important;
+}
+
+body {
+  box-sizing: border-box !important;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+
+/* ---------------------------------------------------------
+   MAIN APP — FULL SCREEN
+   --------------------------------------------------------- */
+
+.app {
+  position: relative !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+
+  min-width: 100vw !important;
+  min-height: 100vh !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  max-width: none !important;
+
+  overflow: hidden !important;
+}
+
+
+/* ---------------------------------------------------------
+   EVERY SCREEN USES FULL AVAILABLE SCREEN
+   --------------------------------------------------------- */
+
+.screen {
+  position: relative !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+
+  min-width: 100vw !important;
+  min-height: 100vh !important;
+
+  max-width: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: hidden !important;
+}
+
+
+/* ---------------------------------------------------------
+   HOME / MAIN CONTENT
+   IMPORTANT:
+   DO NOT ADD LEFT MARGIN FOR SIDEBAR.
+   SIDEBAR FLOATS ABOVE THE SITE.
+   --------------------------------------------------------- */
+
+#homeScreen,
+#addScreen,
+#profileScreen,
+#settingsScreen,
+#chatScreen {
+  width: 100vw !important;
+  min-width: 100vw !important;
+
+  height: 100vh !important;
+  min-height: 100vh !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  padding-left: 0 !important;
+
+  max-width: none !important;
+}
+
+
+/* ---------------------------------------------------------
+   HOME CONTENT
+   --------------------------------------------------------- */
+
+#homeScreen {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+
+/* ---------------------------------------------------------
+   HEADER
+   --------------------------------------------------------- */
+
+#homeScreen > header,
+#homeScreen header {
+  width: 100% !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  max-width: none !important;
+}
+
+
+/* ---------------------------------------------------------
+   FRIEND LIST
+   --------------------------------------------------------- */
+
+#friendList {
+  width: 100% !important;
+  max-width: none !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+
+/* =========================================================
+   FLOATING LEFT SIDEBAR
+   ========================================================= */
+
+.fc-sidebar,
+#fcCustomSidebar,
+#fc-sidebar {
+
+  position: fixed !important;
+
+  left: 0 !important;
+  top: 20px !important;
+  bottom: 20px !important;
+
+  width: 190px !important;
+  min-width: 190px !important;
+  max-width: 190px !important;
+
+  height: auto !important;
+
+  margin: 0 !important;
+
+  padding: 18px 12px !important;
+
+  border-radius: 0 20px 20px 0 !important;
+
+  background: rgba(13, 18, 27, 0.97) !important;
+
+  border: 1px solid var(--fc-border) !important;
+
+  box-shadow:
+    0 22px 70px rgba(0, 0, 0, 0.48) !important;
+
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+
+  z-index: 10010 !important;
+
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+
+  /* CLOSED */
+  transform: translateX(-105%) !important;
+
+  transition:
+    transform 0.42s cubic-bezier(.22, 1, .36, 1) !important;
+}
+
+
+/* ---------------------------------------------------------
+   SIDEBAR OPEN
+   --------------------------------------------------------- */
+
+.fc-sidebar.open,
+#fcCustomSidebar.open,
+#fc-sidebar.open {
+
+  transform: translateX(0) !important;
+}
+
+
+/* ---------------------------------------------------------
+   SIDEBAR CONTENT
+   --------------------------------------------------------- */
+
+.fc-sidebar-brand,
+.fc-sidebar-logo,
+.fc-nav-item {
+
+  position: relative !important;
+}
+
+
+/* ---------------------------------------------------------
+   NAV ITEMS
+   --------------------------------------------------------- */
+
+.fc-nav-item {
+
+  width: 100% !important;
+
+  min-height: 44px !important;
+
+  margin: 4px 0 !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+
+  gap: 10px !important;
+
+  cursor: pointer !important;
+}
+
+
+/* =========================================================
+   SMALL CLOSED ARROW
+   ========================================================= */
+
+.fc-nav-toggle,
+#fcNavToggle,
+#fc-nav-toggle {
+
+  position: fixed !important;
+
+  left: 2px !important;
+  top: 50% !important;
+
+  width: 22px !important;
+  height: 36px !important;
+
+  min-width: 22px !important;
+  min-height: 36px !important;
+
+  max-width: 22px !important;
+  max-height: 36px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  transform: translateY(-50%) !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1px solid var(--fc-border) !important;
+
+  border-radius: 0 10px 10px 0 !important;
+
+  background: rgba(17, 24, 36, 0.96) !important;
+
+  color: var(--fc-text) !important;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.35) !important;
+
+  z-index: 10020 !important;
+
+  cursor: pointer !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  transition:
+    left 0.42s cubic-bezier(.22, 1, .36, 1),
+    width 0.2s ease,
+    height 0.2s ease,
+    background 0.2s ease !important;
+}
+
+
+/* ---------------------------------------------------------
+   ARROW HOVER
+   --------------------------------------------------------- */
+
+.fc-nav-toggle:hover,
+#fcNavToggle:hover,
+#fc-nav-toggle:hover {
+
+  width: 34px !important;
+  height: 44px !important;
+
+  min-width: 34px !important;
+  min-height: 44px !important;
+
+  max-width: 34px !important;
+  max-height: 44px !important;
+
+  background: var(--fc-panel-3) !important;
+}
+
+
+/* ---------------------------------------------------------
+   CHEVRON
+   --------------------------------------------------------- */
+
+.fc-chevron {
+
+  position: relative !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  font-size: 15px !important;
+
+  line-height: 1 !important;
+
+  transform: none !important;
+
+  transition:
+    transform 0.42s cubic-bezier(.22, 1, .36, 1) !important;
+}
+
+
+/* =========================================================
+   OPEN ARROW
+   ARROW MOVES WITH SIDEBAR
+   ========================================================= */
+
+.fc-nav-toggle.is-open,
+#fcNavToggle.is-open,
+#fc-nav-toggle.is-open {
+
+  left: 190px !important;
+
+  top: 50% !important;
+
+  width: 34px !important;
+  height: 44px !important;
+
+  min-width: 34px !important;
+  min-height: 44px !important;
+
+  max-width: 34px !important;
+  max-height: 44px !important;
+
+  transform: translateY(-50%) !important;
+
+  border-radius: 0 10px 10px 0 !important;
+}
+
+
+/* ---------------------------------------------------------
+   ROTATE ARROW
+   --------------------------------------------------------- */
+
+.fc-nav-toggle.is-open .fc-chevron,
+#fcNavToggle.is-open .fc-chevron,
+#fc-nav-toggle.is-open .fc-chevron {
+
+  transform: rotate(180deg) !important;
+}
+
+
+/* =========================================================
+   BOTTOM NAVIGATION
+   ========================================================= */
+
+#bottomNav {
+  display: none !important;
+}
+
+
+/* ---------------------------------------------------------
+   CUSTOM BOTTOM BAR
+   --------------------------------------------------------- */
+
+.fc-bottom-dock,
+#fcBottomDock,
+.fc-bottom-nav {
+
+  position: fixed !important;
+
+  left: 50% !important;
+  bottom: 14px !important;
+
+  transform: translateX(-50%) !important;
+
+  width: min(
+    calc(100vw - 28px),
+    620px
+  ) !important;
+
+  max-width: 620px !important;
+
+  min-height: 64px !important;
+
+  padding: 8px !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+  justify-content: space-around !important;
+
+  gap: 6px !important;
+
+  border-radius: 22px !important;
+
+  background: rgba(13, 18, 27, 0.94) !important;
+
+  border: 1px solid var(--fc-border) !important;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45) !important;
+
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+
+  z-index: 10000 !important;
+}
+
+
+/* ---------------------------------------------------------
+   BOTTOM BAR BUTTONS
+   --------------------------------------------------------- */
+
+.fc-bottom-dock button,
+#fcBottomDock button,
+.fc-bottom-nav button {
+
+  flex: 1 1 0 !important;
+
+  min-width: 0 !important;
+
+  height: 48px !important;
+
+  border: 0 !important;
+
+  border-radius: 15px !important;
+
+  background: transparent !important;
+
+  color: var(--fc-text) !important;
+
+  cursor: pointer !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease !important;
+}
+
+
+.fc-bottom-dock button:hover,
+#fcBottomDock button:hover,
+.fc-bottom-nav button:hover {
+
+  background: rgba(255, 255, 255, 0.08) !important;
+
+  transform: translateY(-2px) !important;
+}
+
+
+/* =========================================================
+   IMPORTANT:
+   MAIN SITE MUST NOT SHRINK BECAUSE OF SIDEBAR/BOTTOM BAR
+   ========================================================= */
+
+main,
+.app,
+.screen,
+#homeScreen,
+#addScreen,
+#profileScreen,
+#settingsScreen,
+#chatScreen {
+
+  max-width: none !important;
+}
+
+
+/* =========================================================
+   CHAT SCREEN
+   ========================================================= */
+
+#chatScreen {
+
+  width: 100vw !important;
+  height: 100vh !important;
+
+  max-width: none !important;
+
+  margin: 0 !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .fc-sidebar,
+  #fcCustomSidebar,
+  #fc-sidebar {
+
+    width: 185px !important;
+    min-width: 185px !important;
+    max-width: 185px !important;
+  }
+
+
+  .fc-nav-toggle,
+  #fcNavToggle,
+  #fc-nav-toggle {
+
+    width: 20px !important;
+    height: 34px !important;
+
+    min-width: 20px !important;
+    min-height: 34px !important;
+
+    left: 2px !important;
+  }
+
+
+  .fc-nav-toggle:hover,
+  #fcNavToggle:hover,
+  #fc-nav-toggle:hover {
+
+    width: 32px !important;
+    height: 42px !important;
+
+    min-width: 32px !important;
+    min-height: 42px !important;
+  }
+
+
+  .fc-nav-toggle.is-open,
+  #fcNavToggle.is-open,
+  #fc-nav-toggle.is-open {
+
+    left: 185px !important;
+
+    width: 32px !important;
+    height: 42px !important;
+
+    min-width: 32px !important;
+    min-height: 42px !important;
+  }
+
+
+  .fc-bottom-dock,
+  #fcBottomDock,
+  .fc-bottom-nav {
+
+    left: 10px !important;
+    right: 10px !important;
+
+    bottom: 10px !important;
+
+    width: auto !important;
+    max-width: none !important;
+
+    min-height: 60px !important;
+
+    border-radius: 19px !important;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .fc-sidebar,
+  #fcCustomSidebar,
+  #fc-sidebar {
+
+    width: 180px !important;
+    min-width: 180px !important;
+    max-width: 180px !important;
+  }
+
+
+  .fc-nav-toggle.is-open,
+  #fcNavToggle.is-open,
+  #fc-nav-toggle.is-open {
+
+    left: 180px !important;
+  }
+
+
+  .fc-bottom-dock,
+  #fcBottomDock,
+  .fc-bottom-nav {
+
+    left: 7px !important;
+    right: 7px !important;
+
+    bottom: 7px !important;
+
+    width: auto !important;
+
+    padding: 6px !important;
+
+    border-radius: 17px !important;
+  }
+}
+
+
+/* =========================================================
+   LOGIN / SIGNUP
+   DO NOT SHOW NAVIGATION
+   ========================================================= */
+
+#loginScreen.fc-active ~ .fc-sidebar,
+#signupScreen.fc-active ~ .fc-sidebar {
+
+  display: none !important;
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .fc-sidebar,
+  #fcCustomSidebar,
+  #fc-sidebar,
+  .fc-nav-toggle,
+  #fcNavToggle,
+  #fc-nav-toggle {
+
+    transition: none !important;
+  }
+}
