@@ -57,12 +57,18 @@
        ===================================================== -->
 
   <style>
+
     /* FULL SCREEN / VIEWPORT FIX */
+
     *,
     *::before,
-    *::after { box-sizing: border-box; }
+    *::after {
+      box-sizing: border-box;
+    }
 
-    html, body {
+
+    html,
+    body {
       width: 100%;
       min-width: 100%;
       height: 100%;
@@ -71,10 +77,12 @@
       padding: 0;
     }
 
+
     html {
       overflow: hidden;
       background: #0b0f16;
     }
+
 
     body {
       overflow: hidden;
@@ -84,58 +92,82 @@
       min-height: 100dvh;
     }
 
+
     .app {
       position: relative;
       width: 100vw !important;
       min-width: 100vw !important;
       max-width: none !important;
+
       height: 100dvh !important;
       min-height: 100dvh !important;
       max-height: 100dvh !important;
+
       margin: 0 !important;
       padding: 0 !important;
+
       box-sizing: border-box !important;
+
       overflow: hidden !important;
     }
 
+
     .screen {
       position: relative;
+
       width: 100% !important;
       min-width: 100% !important;
       max-width: none !important;
+
       height: 100dvh !important;
       min-height: 100dvh !important;
       max-height: 100dvh !important;
+
       margin: 0 !important;
+
       box-sizing: border-box !important;
     }
 
-    .screen.hidden { display: none !important; }
+
+    .screen.hidden {
+      display: none !important;
+    }
+
 
     .screen.auth {
       width: 100vw !important;
       min-width: 100vw !important;
+
       height: 100dvh !important;
       min-height: 100dvh !important;
+
       display: flex;
+
       align-items: center;
       justify-content: center;
+
       overflow: auto;
     }
+
 
     #homeScreen,
     #addScreen,
     #chatScreen,
     #profileScreen {
+
       width: 100vw !important;
       min-width: 100vw !important;
       max-width: none !important;
+
       height: 100dvh !important;
       min-height: 100dvh !important;
       max-height: 100dvh !important;
+
       margin: 0 !important;
+
       box-sizing: border-box !important;
     }
+
 
     #homeScreen,
     #addScreen {
@@ -143,66 +175,131 @@
       overflow-y: auto;
     }
 
+
     #chatScreen {
+
       display: flex !important;
+
       flex-direction: column !important;
+
       overflow: hidden !important;
     }
 
-    #chatScreen.hidden { display: none !important; }
+
+    #chatScreen.hidden {
+      display: none !important;
+    }
+
 
     #chatScreen .messages {
+
       flex: 1 1 auto !important;
+
       min-height: 0 !important;
+
       width: 100% !important;
+
       max-width: none !important;
+
       box-sizing: border-box !important;
+
       overflow-y: auto;
       overflow-x: hidden;
     }
 
+
     #chatScreen .composer {
+
       flex: 0 0 auto !important;
+
       width: 100% !important;
+
       max-width: none !important;
+
       box-sizing: border-box !important;
     }
+
 
     #friendList {
+
       width: 100% !important;
+
       max-width: none !important;
+
       box-sizing: border-box !important;
     }
+
 
     .profilePage {
+
       width: 100% !important;
+
       max-width: none !important;
+
       box-sizing: border-box !important;
     }
+
 
     #addScreen .card.wide {
+
       width: min(100% - 32px, 900px);
+
       max-width: calc(100vw - 32px);
+
       box-sizing: border-box !important;
     }
 
-    #bottomNav { display: none !important; }
 
-    img, video, canvas, iframe { max-width: 100%; }
+    /*
+      Hide the old navigation.
+      The new navigation is created by
+      friendchat-ui-v3-fixed.js
+    */
 
-    input, button, textarea, select { max-width: 100%; }
+    #bottomNav {
+      display: none !important;
+    }
+
+
+    img,
+    video,
+    canvas,
+    iframe {
+      max-width: 100%;
+    }
+
+
+    input,
+    button,
+    textarea,
+    select {
+      max-width: 100%;
+    }
+
 
     @media (max-width: 600px) {
-      html, body, .app, .screen {
+
+      html,
+      body,
+      .app,
+      .screen {
+
         width: 100vw !important;
+
         min-width: 100vw !important;
       }
 
-      .app, .screen {
+
+      .app,
+      .screen {
+
         height: 100dvh !important;
+
         min-height: 100dvh !important;
       }
+
     }
+
   </style>
 
 </head>
@@ -901,22 +998,117 @@
 
     <div class="reactionRow">
 
-      <button type="button" onclick="reactToMessage('👍')">👍</button>
-      <button type="button" onclick="reactToMessage('❤️')">❤️</button>
-      <button type="button" onclick="reactToMessage('😂')">😂</button>
-      <button type="button" onclick="reactToMessage('😮')">😮</button>
-      <button type="button" onclick="reactToMessage('😢')">😢</button>
-      <button type="button" onclick="reactToMessage('😡')">😡</button>
-      <button type="button" onclick="reactToMessage('🔥')">🔥</button>
-      <button type="button" onclick="reactToMessage('😍')">😍</button>
-      <button type="button" onclick="reactToMessage('😭')">😭</button>
-      <button type="button" onclick="reactToMessage('🤣')">🤣</button>
-      <button type="button" onclick="reactToMessage('😎')">😎</button>
-      <button type="button" onclick="reactToMessage('🥰')">🥰</button>
-      <button type="button" onclick="reactToMessage('🎉')">🎉</button>
-      <button type="button" onclick="reactToMessage('👏')">👏</button>
-      <button type="button" onclick="reactToMessage('💀')">💀</button>
-      <button type="button" onclick="reactToMessage('👎')">👎</button>
+      <button
+        type="button"
+        onclick="reactToMessage('👍')"
+      >
+        👍
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('❤️')"
+      >
+        ❤️
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😂')"
+      >
+        😂
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😮')"
+      >
+        😮
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😢')"
+      >
+        😢
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😡')"
+      >
+        😡
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('🔥')"
+      >
+        🔥
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😍')"
+      >
+        😍
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😭')"
+      >
+        😭
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('🤣')"
+      >
+        🤣
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('😎')"
+      >
+        😎
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('🥰')"
+      >
+        🥰
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('🎉')"
+      >
+        🎉
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('👏')"
+      >
+        👏
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('💀')"
+      >
+        💀
+      </button>
+
+      <button
+        type="button"
+        onclick="reactToMessage('👎')"
+      >
+        👎
+      </button>
 
     </div>
 
@@ -970,11 +1162,14 @@ function toggleStatusInfo() {
   const box =
     document.getElementById("statusInfo");
 
+
   if (!box) {
     return;
   }
 
+
   box.classList.toggle("hidden");
+
 }
 
 </script>
@@ -1026,7 +1221,7 @@ function toggleStatusInfo() {
      MUST LOAD AFTER app.js
      ===================================================== -->
 
-<script src="friendchat-ui-v3-fixed.js?v=7"></script>
+<script src="friendchat-ui-v3-fixed.js?v=9"></script>
 
 
 
