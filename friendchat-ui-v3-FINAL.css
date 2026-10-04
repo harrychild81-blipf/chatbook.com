@@ -1686,3 +1686,38 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
             .01ms !important;
     }
 }
+/* =========================================================
+   REMOVE LOWER + / QUICK ACTION BUTTONS
+   KEEP TOP-RIGHT + BUTTON
+   ========================================================= */
+
+/* Remove the floating lower quick-action area */
+.fc-quick-actions {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Remove the media/attachment button inside chat composer */
+#chatScreen .mediaButton {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Hide any extra floating add/media buttons created by the custom UI */
+#chatScreen .fc-add-button,
+#chatScreen .fc-media-button,
+#chatScreen .fc-quick-add,
+#chatScreen .fc-quick-media {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* IMPORTANT:
+   Keep the normal header + button visible */
+#homeScreen header .icon,
+#addScreen header .icon {
+    display: flex !important;
+}
