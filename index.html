@@ -874,8 +874,138 @@
   </section>
 
 
+  <!-- =====================================================
+       FRIENDCHAT SIDEBAR
+       ===================================================== -->
+
+  <button
+    id="fcNavToggle"
+    class="fc-nav-toggle"
+    type="button"
+    aria-label="Open navigation"
+  >
+    <span class="fc-chevron">›</span>
+  </button>
+
+
+  <aside id="fcCustomSidebar" class="fc-sidebar">
+
+    <div class="fc-sidebar-brand">
+      <div class="fc-sidebar-logo">FC</div>
+      <div>
+        <strong>FriendChat</strong>
+        <small>Private chat</small>
+      </div>
+    </div>
+
+    <div class="fc-nav-list">
+
+      <button type="button" class="fc-nav-item active" data-nav="home" onclick="showHome(); closeFriendChatNav();">
+        <span class="fc-nav-icon">⌂</span>
+        <span class="fc-nav-text">Home</span>
+      </button>
+
+      <button type="button" class="fc-nav-item" data-nav="chats" onclick="showHome(); closeFriendChatNav();">
+        <span class="fc-nav-icon">💬</span>
+        <span class="fc-nav-text">Chats</span>
+      </button>
+
+      <button type="button" class="fc-nav-item" data-nav="friends" onclick="showHome(); closeFriendChatNav();">
+        <span class="fc-nav-icon">👥</span>
+        <span class="fc-nav-text">Friends</span>
+      </button>
+
+      <button type="button" class="fc-nav-item" data-nav="add" onclick="showAdd(); closeFriendChatNav();">
+        <span class="fc-nav-icon">＋</span>
+        <span class="fc-nav-text">Add Friend</span>
+      </button>
+
+    </div>
+
+    <div class="fc-nav-divider"></div>
+
+    <div class="fc-nav-list">
+
+      <button type="button" class="fc-nav-item" data-nav="profile" onclick="showProfile(); closeFriendChatNav();">
+        <span class="fc-nav-icon">👤</span>
+        <span class="fc-nav-text">Profile</span>
+      </button>
+
+      <button type="button" class="fc-nav-item" onclick="logout(); closeFriendChatNav();">
+        <span class="fc-nav-icon">↪</span>
+        <span class="fc-nav-text">Log out</span>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =====================================================
+       FRIENDCHAT BOTTOM BAR
+       ===================================================== -->
+
+  <nav id="fc-bottom-dock" class="fc-bottom-dock">
+
+    <button type="button" class="fc-dock-btn" onclick="showHome()" title="Home">
+      <span>⌂</span>
+    </button>
+
+    <button type="button" class="fc-dock-btn" onclick="showHome()" title="Chats">
+      <span>💬</span>
+    </button>
+
+    <button type="button" class="fc-dock-center" onclick="showAdd()" title="Add Friend">
+      FC
+    </button>
+
+    <button type="button" class="fc-dock-btn" onclick="showHome()" title="Friends">
+      <span>👥</span>
+    </button>
+
+    <button type="button" class="fc-dock-btn" onclick="showProfile()" title="Profile">
+      <span>👤</span>
+    </button>
+
+  </nav>
+
+
 </div>
 
+
+<!-- =====================================================
+     SIDEBAR JAVASCRIPT
+     ===================================================== -->
+
+<script>
+(function () {
+
+  const toggle = document.getElementById("fcNavToggle");
+  const sidebar = document.getElementById("fcCustomSidebar");
+
+  if (!toggle || !sidebar) return;
+
+  toggle.addEventListener("click", function (event) {
+    event.stopPropagation();
+    sidebar.classList.toggle("open");
+    toggle.classList.toggle("is-open");
+  });
+
+  window.closeFriendChatNav = function () {
+    sidebar.classList.remove("open");
+    toggle.classList.remove("is-open");
+  };
+
+  document.addEventListener("click", function (event) {
+    if (!sidebar.classList.contains("open")) return;
+
+    if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+      closeFriendChatNav();
+    }
+  });
+
+})();
+</script>
 
 
 <!-- =====================================================
