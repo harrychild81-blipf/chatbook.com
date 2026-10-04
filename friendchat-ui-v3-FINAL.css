@@ -2898,3 +2898,74 @@ body:has(#chatScreen:not(.hidden)) .fc-bottom-dock,
 body:has(#chatScreen:not(.hidden)) #fc-bottom-dock {
     display: none !important;
 }
+/* =========================================================
+   FINAL MESSAGE ALIGNMENT FIX
+   ========================================================= */
+
+#chatScreen #messages {
+    width: 100% !important;
+    max-width: none !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+
+    box-sizing: border-box !important;
+
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+}
+
+
+/* Every message */
+#chatScreen #messages .message {
+    width: fit-content !important;
+    max-width: 70% !important;
+
+    box-sizing: border-box !important;
+
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+}
+
+
+/* YOUR messages → RIGHT */
+#chatScreen #messages .message.mine {
+    align-self: flex-end !important;
+
+    margin-left: auto !important;
+    margin-right: 0 !important;
+
+    text-align: left !important;
+}
+
+
+/* FRIEND messages → LEFT */
+#chatScreen #messages .message.theirs {
+    align-self: flex-start !important;
+
+    margin-left: 0 !important;
+    margin-right: auto !important;
+
+    text-align: left !important;
+}
+
+
+/* Media messages */
+#chatScreen #messages .message.mine img,
+#chatScreen #messages .message.mine video {
+    margin-left: auto !important;
+}
+
+
+#chatScreen #messages .message.theirs img,
+#chatScreen #messages .message.theirs video {
+    margin-right: auto !important;
+}
+
+
+/* Message time */
+#chatScreen #messages .messageTime {
+    width: 100% !important;
+    text-align: right !important;
+}
