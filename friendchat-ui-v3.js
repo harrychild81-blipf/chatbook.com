@@ -1385,3 +1385,204 @@
   }
 
 })();
+body {
+    overflow-x: hidden !important;
+}
+/* =========================================================
+   FRIENDCHAT — FULL SCREEN FIX
+   Keeps the sidebar/bar unchanged
+   ========================================================= */
+
+/* Make the whole page use the complete browser window */
+html,
+body {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Main app */
+#app,
+#friendchatApp,
+.friendchat-app,
+.fc-app,
+.app {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Every main screen should cover the full browser */
+.screen,
+.fc-screen,
+.page,
+.fc-page,
+#homeScreen,
+#chatScreen,
+#addScreen,
+#profileScreen,
+#settingsScreen {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Home/content area */
+.fc-home,
+.fc-home-screen,
+.fc-main,
+.fc-content,
+.fc-main-content,
+main {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Make header span the full width */
+.fc-header,
+.fc-home-header,
+.home-header {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Friend list / main content */
+.fc-friends,
+.fc-friend-list,
+.friend-list,
+.friends-list {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Chat screen */
+.fc-chat,
+.fc-chat-screen,
+.chat-screen {
+    width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Chat messages area */
+.fc-messages,
+.messages,
+#messages {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Chat composer */
+.fc-composer,
+.message-composer,
+.chat-composer {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Add-friend screen */
+.fc-add-screen,
+.add-screen {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    box-sizing: border-box !important;
+}
+
+/* Remove accidental centered/max-width containers */
+.fc-container,
+.fc-wrapper,
+.fc-page-container,
+.fc-screen-container {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Prevent horizontal gaps */
+* {
+    box-sizing: border-box;
+}
+
+/* Desktop */
+@media (min-width: 769px) {
+    html,
+    body {
+        width: 100vw !important;
+        height: 100vh !important;
+    }
+
+    #app,
+    #friendchatApp,
+    .friendchat-app,
+    .fc-app {
+        width: 100vw !important;
+        height: 100vh !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    html,
+    body {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 100dvh !important;
+    }
+
+    #app,
+    #friendchatApp,
+    .friendchat-app,
+    .fc-app,
+    .screen,
+    .fc-screen {
+        width: 100% !important;
+        min-width: 100% !important;
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+    }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+    html,
+    body {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 100dvh !important;
+    }
+
+    #app,
+    #friendchatApp,
+    .friendchat-app,
+    .fc-app {
+        width: 100% !important;
+        height: 100dvh !important;
+    }
+}
