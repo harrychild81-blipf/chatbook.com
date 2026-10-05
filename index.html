@@ -29,7 +29,7 @@
 
   <link
     rel="stylesheet"
-    href="friendchat-ui-v3-FINAL.css?v=7"
+    href="friendchat-ui-v3-FINAL.css?v=8"
   >
 
 
@@ -54,7 +54,7 @@
 
 
   <!-- =====================================================
-       FULL SCREEN + NAVIGATION FIX
+       FULL SCREEN + NAVIGATION + THEMES + MEDIA
        ===================================================== -->
 
   <style>
@@ -100,7 +100,320 @@
       height: 100dvh;
       min-height: 100dvh;
 
-      background: #080b12;
+      background: var(--fc-bg, #080b12);
+    }
+
+
+    /* =====================================================
+       FRIENDCHAT THEME VARIABLES
+       ===================================================== */
+
+    :root {
+
+      --fc-bg: #070a10;
+      --fc-panel: #0d121b;
+      --fc-panel-2: #111824;
+      --fc-panel-3: #151d2a;
+
+      --fc-text: #f5f7ff;
+      --fc-muted: #8d97aa;
+
+      --fc-accent: #6c7cff;
+      --fc-accent-2: #8b5cf6;
+
+      --fc-border: rgba(255,255,255,.08);
+    }
+
+
+    /* =====================================================
+       ORIGINAL THEMES
+       ===================================================== */
+
+    body.fc-theme-midnight {
+
+      --fc-bg: #070a10;
+      --fc-panel: #0d121b;
+      --fc-panel-2: #111824;
+      --fc-panel-3: #151d2a;
+
+      --fc-accent: #6c7cff;
+      --fc-accent-2: #8b5cf6;
+    }
+
+
+    body.fc-theme-emerald {
+
+      --fc-bg: #07120f;
+      --fc-panel: #0d1b17;
+      --fc-panel-2: #12251f;
+      --fc-panel-3: #193028;
+
+      --fc-accent: #10b981;
+      --fc-accent-2: #059669;
+    }
+
+
+    body.fc-theme-ocean {
+
+      --fc-bg: #071118;
+      --fc-panel: #0d1922;
+      --fc-panel-2: #122431;
+      --fc-panel-3: #19313f;
+
+      --fc-accent: #0ea5e9;
+      --fc-accent-2: #2563eb;
+    }
+
+
+    body.fc-theme-sunset {
+
+      --fc-bg: #160c08;
+      --fc-panel: #21120d;
+      --fc-panel-2: #2b1811;
+      --fc-panel-3: #392018;
+
+      --fc-accent: #f97316;
+      --fc-accent-2: #ef4444;
+    }
+
+
+    body.fc-theme-rose {
+
+      --fc-bg: #150a11;
+      --fc-panel: #21101a;
+      --fc-panel-2: #2c1522;
+      --fc-panel-3: #391a2c;
+
+      --fc-accent: #ec4899;
+      --fc-accent-2: #8b5cf6;
+    }
+
+
+    body.fc-theme-graphite {
+
+      --fc-bg: #0c0d0f;
+      --fc-panel: #15171a;
+      --fc-panel-2: #1d2024;
+      --fc-panel-3: #272b30;
+
+      --fc-accent: #94a3b8;
+      --fc-accent-2: #64748b;
+    }
+
+
+    /* =====================================================
+       NEW THEME 7 — CYBER
+       ===================================================== */
+
+    body.fc-theme-cyber {
+
+      --fc-bg: #05050a;
+      --fc-panel: #0b0b15;
+      --fc-panel-2: #111122;
+      --fc-panel-3: #17172b;
+
+      --fc-accent: #00f5ff;
+      --fc-accent-2: #8b5cf6;
+
+      --fc-border: rgba(0,245,255,.12);
+    }
+
+
+    /* =====================================================
+       NEW THEME 8 — CRIMSON
+       ===================================================== */
+
+    body.fc-theme-crimson {
+
+      --fc-bg: #100608;
+      --fc-panel: #1a0a0d;
+      --fc-panel-2: #241014;
+      --fc-panel-3: #30151b;
+
+      --fc-accent: #ef4444;
+      --fc-accent-2: #b91c1c;
+
+      --fc-border: rgba(239,68,68,.12);
+    }
+
+
+    /* =====================================================
+       NEW THEME 9 — LIME
+       ===================================================== */
+
+    body.fc-theme-lime {
+
+      --fc-bg: #071007;
+      --fc-panel: #0d180d;
+      --fc-panel-2: #142214;
+      --fc-panel-3: #1b2d1b;
+
+      --fc-accent: #84cc16;
+      --fc-accent-2: #22c55e;
+
+      --fc-border: rgba(132,204,22,.12);
+    }
+
+
+    /* =====================================================
+       NEW THEME 10 — GOLD
+       ===================================================== */
+
+    body.fc-theme-gold {
+
+      --fc-bg: #100d05;
+      --fc-panel: #1a1508;
+      --fc-panel-2: #241d0c;
+      --fc-panel-3: #30270f;
+
+      --fc-accent: #f59e0b;
+      --fc-accent-2: #eab308;
+
+      --fc-border: rgba(245,158,11,.14);
+    }
+
+
+    /* =====================================================
+       NEW THEME 11 — ICE
+       ===================================================== */
+
+    body.fc-theme-ice {
+
+      --fc-bg: #071016;
+      --fc-panel: #0d1921;
+      --fc-panel-2: #12232d;
+      --fc-panel-3: #18303c;
+
+      --fc-accent: #67e8f9;
+      --fc-accent-2: #3b82f6;
+
+      --fc-border: rgba(103,232,249,.12);
+    }
+
+
+    /* =====================================================
+       NEW THEME 12 — VIOLET
+       ===================================================== */
+
+    body.fc-theme-violet {
+
+      --fc-bg: #0c0713;
+      --fc-panel: #160d20;
+      --fc-panel-2: #21132e;
+      --fc-panel-3: #2b193b;
+
+      --fc-accent: #a855f7;
+      --fc-accent-2: #6366f1;
+
+      --fc-border: rgba(168,85,247,.14);
+    }
+
+
+    /* =====================================================
+       NEW THEME 13 — NEON
+       ===================================================== */
+
+    body.fc-theme-neon {
+
+      --fc-bg: #10050d;
+      --fc-panel: #1b0917;
+      --fc-panel-2: #271025;
+      --fc-panel-3: #341532;
+
+      --fc-accent: #f43f5e;
+      --fc-accent-2: #ec4899;
+
+      --fc-border: rgba(244,63,94,.14);
+    }
+
+
+    /* =====================================================
+       NEW THEME 14 — MATRIX
+       ===================================================== */
+
+    body.fc-theme-matrix {
+
+      --fc-bg: #030806;
+      --fc-panel: #07100b;
+      --fc-panel-2: #0b1710;
+      --fc-panel-3: #102117;
+
+      --fc-accent: #22c55e;
+      --fc-accent-2: #16a34a;
+
+      --fc-border: rgba(34,197,94,.14);
+    }
+
+
+    /* =====================================================
+       NEW THEME 15 — ROYAL BLUE
+       ===================================================== */
+
+    body.fc-theme-royal {
+
+      --fc-bg: #050914;
+      --fc-panel: #0a1224;
+      --fc-panel-2: #101d36;
+      --fc-panel-3: #172747;
+
+      --fc-accent: #3b82f6;
+      --fc-accent-2: #1d4ed8;
+
+      --fc-border: rgba(59,130,246,.14);
+    }
+
+
+    /* =====================================================
+       NEW THEME 16 — LAVENDER
+       ===================================================== */
+
+    body.fc-theme-lavender {
+
+      --fc-bg: #0d0a14;
+      --fc-panel: #171321;
+      --fc-panel-2: #211c2e;
+      --fc-panel-3: #2b253b;
+
+      --fc-accent: #c084fc;
+      --fc-accent-2: #a78bfa;
+
+      --fc-border: rgba(192,132,252,.14);
+    }
+
+
+    /* =====================================================
+       NEW THEME 17 — COFFEE
+       ===================================================== */
+
+    body.fc-theme-coffee {
+
+      --fc-bg: #100a07;
+      --fc-panel: #1b100b;
+      --fc-panel-2: #26170f;
+      --fc-panel-3: #332016;
+
+      --fc-accent: #d97706;
+      --fc-accent-2: #92400e;
+
+      --fc-border: rgba(217,119,6,.14);
+    }
+
+
+    /* =====================================================
+       NEW THEME 18 — MONO
+       ===================================================== */
+
+    body.fc-theme-mono {
+
+      --fc-bg: #080808;
+      --fc-panel: #111111;
+      --fc-panel-2: #191919;
+      --fc-panel-3: #222222;
+
+      --fc-accent: #f5f5f5;
+      --fc-accent-2: #a3a3a3;
+
+      --fc-border: rgba(255,255,255,.12);
     }
 
 
@@ -224,6 +537,19 @@
     }
 
 
+    #addScreen .card.wide {
+
+      width: min(
+        calc(100vw - 32px),
+        900px
+      );
+
+      max-width: calc(100vw - 32px);
+
+      box-sizing: border-box !important;
+    }
+
+
     /* =====================================================
        CHAT SCREEN
        ===================================================== */
@@ -317,6 +643,75 @@
       box-sizing: border-box !important;
 
       z-index: 50;
+
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+    }
+
+
+    /* =====================================================
+       MEDIA BUTTON
+       ===================================================== */
+
+    #chatScreen .mediaButton {
+
+      width: 44px !important;
+      height: 44px !important;
+
+      min-width: 44px !important;
+      min-height: 44px !important;
+
+      display: flex !important;
+
+      align-items: center !important;
+      justify-content: center !important;
+
+      padding: 0 !important;
+      margin: 0 !important;
+
+      border-radius: 13px !important;
+
+      background: rgba(255,255,255,.055) !important;
+
+      border: 0 !important;
+
+      color: var(--fc-text) !important;
+
+      font-size: 20px !important;
+
+      cursor: pointer !important;
+
+      flex-shrink: 0 !important;
+
+      transition:
+        background .2s ease,
+        transform .2s ease,
+        color .2s ease !important;
+    }
+
+
+    #chatScreen .mediaButton:hover {
+
+      background:
+        color-mix(
+          in srgb,
+          var(--fc-accent) 18%,
+          transparent
+        ) !important;
+
+      color:
+        var(--fc-text) !important;
+
+      transform:
+        translateY(-2px) !important;
+    }
+
+
+    #chatScreen .mediaButton:active {
+
+      transform:
+        scale(.94) !important;
     }
 
 
@@ -366,36 +761,12 @@
 
 
     /* =====================================================
-       ADD CARD
-       ===================================================== */
-
-    #addScreen .card.wide {
-
-      width: min(
-        calc(100vw - 32px),
-        900px
-      );
-
-      max-width: calc(100vw - 32px);
-
-      box-sizing: border-box !important;
-    }
-
-
-    /* =====================================================
        OLD BOTTOM NAVIGATION
        ===================================================== */
 
-    #bottomNav {
-      display: none !important;
-    }
-
-
-    /* =====================================================
-       OLD NAVIGATION ELEMENTS
-       ===================================================== */
-
+    #bottomNav,
     .bottomNav {
+
       display: none !important;
     }
 
@@ -427,41 +798,33 @@
 
 
     /* =====================================================
-       CUSTOM FRIENDCHAT NAVIGATION
+       LEFT NAVIGATION ARROW
        ===================================================== */
-
-    /*
-       These styles are a backup.
-       friendchat-ui-v3-fixed.js also creates/stylizes
-       these elements.
-    */
-
-
-    /* LEFT ARROW */
 
     #fcNavToggle {
 
       position: fixed !important;
 
-      left: 16px !important;
+      left: 12px !important;
       top: 50% !important;
 
-      transform: translateY(-50%) !important;
+      transform:
+        translateY(-50%) !important;
 
-      width: 36px !important;
-      height: 48px !important;
+      width: 42px !important;
+      height: 42px !important;
 
-      min-width: 36px !important;
-      min-height: 48px !important;
+      min-width: 42px !important;
+      min-height: 42px !important;
 
       padding: 0 !important;
       margin: 0 !important;
 
       border: 0 !important;
 
-      border-radius: 16px !important;
+      border-radius: 50% !important;
 
-      z-index: 99999 !important;
+      z-index: 2147483000 !important;
 
       display: flex !important;
 
@@ -472,26 +835,65 @@
     }
 
 
-    /* CUSTOM SIDEBAR */
+    #fcNavToggle:hover {
+
+      width: 48px !important;
+      height: 48px !important;
+    }
+
+
+    #fcNavToggle.is-open {
+
+      left: 205px !important;
+
+      top: 50% !important;
+
+      transform:
+        translateY(-50%) !important;
+    }
+
+
+    /* =====================================================
+       CUSTOM SIDEBAR
+       ===================================================== */
 
     #fcCustomSidebar {
 
       position: fixed !important;
 
-      left: 0 !important;
+      left: 12px !important;
       top: 50% !important;
 
-      transform: translateY(-50%) translateX(-100%) !important;
+      width: 185px !important;
+      max-width: 185px !important;
 
-      z-index: 99998 !important;
+      max-height:
+        calc(100vh - 40px) !important;
+
+      transform:
+        translate(-110%, -50%) !important;
+
+      z-index: 2147482999 !important;
+
+      pointer-events: none !important;
+
+      opacity: 1 !important;
+      visibility: visible !important;
+
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+
+      transition:
+        transform .35s cubic-bezier(.22,1,.36,1) !important;
     }
 
 
     #fcCustomSidebar.open {
 
       transform:
-        translateY(-50%)
-        translateX(0) !important;
+        translate(0, -50%) !important;
+
+      pointer-events: auto !important;
     }
 
 
@@ -506,49 +908,47 @@
       left: 50% !important;
       bottom: 14px !important;
 
-      transform: translateX(-50%) !important;
+      transform:
+        translateX(-50%) !important;
 
-      z-index: 99999 !important;
+      z-index: 2147482998 !important;
 
       display: flex !important;
 
       align-items: center !important;
       justify-content: center !important;
 
-      gap: 8px !important;
+      gap: 6px !important;
 
-      width: auto !important;
+      width:
+        min(560px, calc(100vw - 28px)) !important;
 
-      min-width: 0 !important;
+      min-height: 62px !important;
 
-      max-width: calc(100vw - 32px) !important;
-
-      height: 64px !important;
-
-      padding: 7px 10px !important;
+      padding: 7px !important;
 
       border-radius: 20px !important;
 
       box-sizing: border-box !important;
+
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
 
-    /* =====================================================
-       DOCK BUTTONS
-       ===================================================== */
-
     .fc-bottom-dock button {
 
-      width: 48px !important;
-      height: 48px !important;
+      flex: 1 !important;
 
-      min-width: 48px !important;
-      min-height: 48px !important;
+      min-width: 86px !important;
+      min-height: 54px !important;
 
-      padding: 0 !important;
+      padding: 5px !important;
       margin: 0 !important;
 
       border-radius: 14px !important;
+
+      border: 0 !important;
 
       display: flex !important;
 
@@ -557,49 +957,24 @@
 
       flex-direction: column !important;
 
+      gap: 3px !important;
+
       cursor: pointer !important;
 
       box-sizing: border-box !important;
     }
 
 
-    /* Hide text if the JS creates labels */
+    .fc-dock-label {
 
-    .fc-bottom-dock button span:nth-child(2) {
-
-      display: none !important;
-    }
-
-
-    /* FC BUTTON */
-
-    .fc-bottom-dock button.fc-center,
-    .fc-bottom-dock button[data-action="suggestions"],
-    .fc-bottom-dock button:nth-child(2) {
-
-      width: 48px !important;
-      height: 48px !important;
-
-      min-width: 48px !important;
-      min-height: 48px !important;
-
-      border-radius: 14px !important;
-
-      font-size: 15px !important;
-
-      font-weight: 700 !important;
+      font-size: 11px !important;
+      line-height: 1 !important;
     }
 
 
     /* =====================================================
-       DOCK ON CHAT SCREEN
+       HIDE DOCK ON CHAT
        ===================================================== */
-
-    /*
-       IMPORTANT:
-       The bottom navigation must NOT appear over
-       the message composer.
-    */
 
     body:has(#chatScreen:not(.hidden))
       .fc-bottom-dock {
@@ -609,16 +984,16 @@
 
 
     body:has(#chatScreen:not(.hidden))
-      #fcNavToggle {
+      #fcCustomSidebar {
 
-      display: flex !important;
+      display: none !important;
     }
 
 
     body:has(#chatScreen:not(.hidden))
-      #fcCustomSidebar {
+      #fcNavToggle {
 
-      display: none !important;
+      display: flex !important;
     }
 
 
@@ -649,10 +1024,75 @@
 
 
     /* =====================================================
+       THEME CHOICE COLORS
+       ===================================================== */
+
+    .fc-theme-choice[data-theme="cyber"] {
+      background:
+        linear-gradient(135deg,#07151a,#10102a) !important;
+    }
+
+    .fc-theme-choice[data-theme="crimson"] {
+      background:
+        linear-gradient(135deg,#1c080b,#2b1117) !important;
+    }
+
+    .fc-theme-choice[data-theme="lime"] {
+      background:
+        linear-gradient(135deg,#091509,#15240f) !important;
+    }
+
+    .fc-theme-choice[data-theme="gold"] {
+      background:
+        linear-gradient(135deg,#171006,#29200b) !important;
+    }
+
+    .fc-theme-choice[data-theme="ice"] {
+      background:
+        linear-gradient(135deg,#07161d,#102638) !important;
+    }
+
+    .fc-theme-choice[data-theme="violet"] {
+      background:
+        linear-gradient(135deg,#11091a,#211137) !important;
+    }
+
+    .fc-theme-choice[data-theme="neon"] {
+      background:
+        linear-gradient(135deg,#180711,#301027) !important;
+    }
+
+    .fc-theme-choice[data-theme="matrix"] {
+      background:
+        linear-gradient(135deg,#031008,#0b2113) !important;
+    }
+
+    .fc-theme-choice[data-theme="royal"] {
+      background:
+        linear-gradient(135deg,#061025,#102a57) !important;
+    }
+
+    .fc-theme-choice[data-theme="lavender"] {
+      background:
+        linear-gradient(135deg,#120b1b,#292040) !important;
+    }
+
+    .fc-theme-choice[data-theme="coffee"] {
+      background:
+        linear-gradient(135deg,#140b06,#332015) !important;
+    }
+
+    .fc-theme-choice[data-theme="mono"] {
+      background:
+        linear-gradient(135deg,#090909,#242424) !important;
+    }
+
+
+    /* =====================================================
        MOBILE
        ===================================================== */
 
-    @media (max-width: 600px) {
+    @media (max-width:600px) {
 
       html,
       body {
@@ -680,8 +1120,30 @@
 
         left: 8px !important;
 
-        width: 34px !important;
+        width: 40px !important;
+        height: 40px !important;
+      }
+
+
+      #fcNavToggle:hover {
+
+        width: 44px !important;
         height: 44px !important;
+      }
+
+
+      #fcNavToggle.is-open {
+
+        left: 196px !important;
+      }
+
+
+      #fcCustomSidebar {
+
+        left: 8px !important;
+
+        width: 180px !important;
+        max-width: 180px !important;
       }
 
 
@@ -689,25 +1151,93 @@
 
         bottom: 10px !important;
 
-        height: 58px !important;
+        width:
+          calc(100vw - 20px) !important;
 
-        padding: 5px 7px !important;
+        min-height: 58px !important;
 
-        gap: 5px !important;
-
-        border-radius: 18px !important;
+        padding: 5px !important;
       }
 
 
       .fc-bottom-dock button {
 
-        width: 44px !important;
-        height: 44px !important;
+        min-width: 0 !important;
 
-        min-width: 44px !important;
-        min-height: 44px !important;
+        min-height: 48px !important;
 
-        border-radius: 13px !important;
+        flex: 1 1 0 !important;
+      }
+
+
+      .fc-dock-label {
+
+        font-size: 10px !important;
+      }
+
+
+      #chatScreen .mediaButton {
+
+        width: 42px !important;
+        height: 42px !important;
+
+        min-width: 42px !important;
+        min-height: 42px !important;
+
+        font-size: 19px !important;
+      }
+
+    }
+
+
+    /* =====================================================
+       SMALL PHONES
+       ===================================================== */
+
+    @media (max-width:420px) {
+
+      #fcCustomSidebar {
+
+        width: 175px !important;
+        max-width: 175px !important;
+      }
+
+
+      #fcNavToggle.is-open {
+
+        left: 189px !important;
+      }
+
+
+      .fc-dock-label {
+
+        font-size: 9px !important;
+      }
+
+    }
+
+
+    /* =====================================================
+       REDUCED MOTION
+       ===================================================== */
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+
+        animation-duration:
+          .01ms !important;
+
+        animation-iteration-count:
+          1 !important;
+
+        transition-duration:
+          .01ms !important;
+
+        scroll-behavior:
+          auto !important;
       }
 
     }
@@ -790,7 +1320,6 @@
   </section>
 
 
-
   <!-- =====================================================
        SIGNUP SCREEN
        ===================================================== -->
@@ -862,7 +1391,6 @@
   </section>
 
 
-
   <!-- =====================================================
        HOME SCREEN
        ===================================================== -->
@@ -905,7 +1433,6 @@
       </button>
 
     </header>
-
 
 
     <!-- STATUS INFO -->
@@ -1001,7 +1528,6 @@
     </div>
 
 
-
     <!-- PROFILE PREVIEW -->
 
     <div class="profileRow">
@@ -1040,7 +1566,6 @@
     </div>
 
 
-
     <!-- SEARCH -->
 
     <input
@@ -1052,7 +1577,6 @@
     >
 
 
-
     <!-- FRIEND LIST -->
 
     <div
@@ -1061,7 +1585,6 @@
     ></div>
 
   </section>
-
 
 
   <!-- =====================================================
@@ -1123,7 +1646,6 @@
   </section>
 
 
-
   <!-- =====================================================
        CHAT SCREEN
        ===================================================== -->
@@ -1157,7 +1679,6 @@
     </header>
 
 
-
     <!-- MESSAGES -->
 
     <div
@@ -1166,10 +1687,12 @@
     ></div>
 
 
-
     <!-- MESSAGE COMPOSER -->
 
     <div class="composer">
+
+
+      <!-- EMOJI -->
 
       <button
         type="button"
@@ -1181,6 +1704,8 @@
       </button>
 
 
+      <!-- MESSAGE INPUT -->
+
       <input
         id="messageInput"
         type="text"
@@ -1189,6 +1714,8 @@
         onkeydown="if(event.key === 'Enter') sendMessage()"
       >
 
+
+      <!-- MEDIA -->
 
       <label
         class="mediaButton"
@@ -1208,6 +1735,8 @@
       </label>
 
 
+      <!-- SEND -->
+
       <button
         type="button"
         onclick="sendMessage()"
@@ -1218,7 +1747,6 @@
     </div>
 
 
-
     <!-- EMOJI PICKER -->
 
     <div
@@ -1227,7 +1755,6 @@
     ></div>
 
   </section>
-
 
 
   <!-- =====================================================
@@ -1288,13 +1815,9 @@
       </div>
 
 
-
       <!-- PROFILE NAME -->
 
-      <h2
-        id="profilePageName"
-      ></h2>
-
+      <h2 id="profilePageName"></h2>
 
 
       <!-- FRIENDCHAT ID -->
@@ -1310,7 +1833,6 @@
       </p>
 
 
-
       <!-- EDIT PROFILE -->
 
       <button
@@ -1319,7 +1841,6 @@
       >
         Edit profile
       </button>
-
 
 
       <!-- MY MEDIA -->
@@ -1348,7 +1869,6 @@
       </div>
 
 
-
       <!-- MEDIA GRID -->
 
       <div
@@ -1361,9 +1881,7 @@
 
   </section>
 
-
 </div>
-
 
 
 <!-- =====================================================
@@ -1441,7 +1959,6 @@
 </div>
 
 
-
 <!-- =====================================================
      STATUS INFO
      ===================================================== -->
@@ -1464,10 +1981,8 @@ function toggleStatusInfo() {
 </script>
 
 
-
 <!-- =====================================================
      SPOTIFY WEB PLAYBACK SDK
-     LOAD ONLY ONCE
      ===================================================== -->
 
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
@@ -1503,15 +2018,13 @@ function toggleStatusInfo() {
 
 <!-- =====================================================
      CUSTOM FRIENDCHAT UI
-     LOAD ONLY ONCE
      ===================================================== -->
 
-<script src="friendchat-ui-v3-fixed.js?v=12"></script>
+<script src="friendchat-ui-v3-fixed.js?v=13"></script>
 
 
 <!-- =====================================================
      FRIENDCHAT SUGGESTIONS
-     LOAD ONLY ONCE
      ===================================================== -->
 
 <script src="suggestions.js?v=2"></script>
