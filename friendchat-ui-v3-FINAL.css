@@ -2468,3 +2468,450 @@ html body #chatScreen #messages > * {
         font-size: 13px !important;
     }
 }
+/* =========================================================
+   FRIENDCHAT - INSTAGRAM STYLE CHAT MESSAGES
+   ========================================================= */
+
+/* MESSAGE AREA */
+html body #chatScreen #messages,
+html body #chatScreen .messages {
+    position: fixed !important;
+
+    left: 0 !important;
+    right: 0 !important;
+
+    top: 76px !important;
+    bottom: 92px !important;
+
+    width: 100% !important;
+    height: auto !important;
+
+    margin: 0 !important;
+
+    padding: 18px 22px 30px 22px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+
+    gap: 4px !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    background: transparent !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* =========================================================
+   ALL MESSAGE BUBBLES
+   ========================================================= */
+
+html body #chatScreen #messages .message,
+html body #chatScreen .messages .message {
+
+    position: relative !important;
+
+    display: block !important;
+
+    width: fit-content !important;
+
+    min-width: 0 !important;
+
+    max-width: min(65%, 520px) !important;
+
+    margin: 3px 0 !important;
+
+    padding: 9px 13px 7px 13px !important;
+
+    border-radius: 19px !important;
+
+    box-sizing: border-box !important;
+
+    font-size: 15px !important;
+
+    line-height: 1.35 !important;
+
+    word-break: break-word !important;
+
+    overflow-wrap: anywhere !important;
+
+    white-space: normal !important;
+
+    box-shadow: none !important;
+
+    border: 0 !important;
+
+    animation: fcInstagramMessage .18s ease-out !important;
+}
+
+
+/* =========================================================
+   FRIEND MESSAGE
+   LEFT SIDE
+   ========================================================= */
+
+html body #chatScreen #messages .message.theirs,
+html body #chatScreen .messages .message.theirs {
+
+    align-self: flex-start !important;
+
+    margin-right: auto !important;
+    margin-left: 0 !important;
+
+    background: #20242b !important;
+
+    color: #ffffff !important;
+
+    border-radius: 19px 19px 19px 6px !important;
+
+    box-shadow:
+        0 1px 2px rgba(0,0,0,.18) !important;
+}
+
+
+/* =========================================================
+   YOUR MESSAGE
+   RIGHT SIDE
+   ========================================================= */
+
+html body #chatScreen #messages .message.mine,
+html body #chatScreen .messages .message.mine {
+
+    align-self: flex-end !important;
+
+    margin-left: auto !important;
+    margin-right: 0 !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6855ff,
+            #8b5cf6
+        ) !important;
+
+    color: #ffffff !important;
+
+    border-radius: 19px 19px 6px 19px !important;
+
+    box-shadow:
+        0 3px 12px rgba(90,70,200,.18) !important;
+}
+
+
+/* =========================================================
+   MESSAGE TEXT
+   ========================================================= */
+
+html body #chatScreen #messages .message > div:first-child,
+html body #chatScreen .messages .message > div:first-child {
+
+    display: block !important;
+
+    width: auto !important;
+
+    max-width: 100% !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    color: inherit !important;
+
+    white-space: pre-wrap !important;
+
+    word-break: break-word !important;
+
+    overflow-wrap: anywhere !important;
+}
+
+
+/* =========================================================
+   MESSAGE TIME
+   ========================================================= */
+
+html body #chatScreen #messages .message .messageTime,
+html body #chatScreen .messages .message .messageTime {
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: flex-end !important;
+
+    width: 100% !important;
+
+    margin-top: 4px !important;
+
+    padding: 0 !important;
+
+    font-size: 9px !important;
+
+    line-height: 10px !important;
+
+    white-space: nowrap !important;
+
+    opacity: .65 !important;
+
+    color: rgba(255,255,255,.75) !important;
+}
+
+
+/* Friend timestamp */
+
+html body #chatScreen #messages .message.theirs .messageTime {
+
+    color: rgba(255,255,255,.55) !important;
+
+    justify-content: flex-end !important;
+}
+
+
+/* Your timestamp */
+
+html body #chatScreen #messages .message.mine .messageTime {
+
+    color: rgba(255,255,255,.78) !important;
+
+    justify-content: flex-end !important;
+}
+
+
+/* =========================================================
+   MESSAGE TICKS
+   ========================================================= */
+
+html body #chatScreen #messages .messageStatus {
+
+    display: inline-block !important;
+
+    margin-left: 4px !important;
+
+    font-size: 10px !important;
+
+    line-height: 10px !important;
+
+    font-weight: 900 !important;
+
+    letter-spacing: -2px !important;
+
+    color: #000000 !important;
+}
+
+
+/* =========================================================
+   MEDIA
+   ========================================================= */
+
+html body #chatScreen #messages .message img,
+html body #chatScreen #messages .message video {
+
+    display: block !important;
+
+    width: auto !important;
+
+    max-width: 280px !important;
+
+    max-height: 360px !important;
+
+    margin: 0 !important;
+
+    border-radius: 14px !important;
+
+    object-fit: cover !important;
+}
+
+
+/* =========================================================
+   REACTION
+   ========================================================= */
+
+html body #chatScreen #messages .messageReaction {
+
+    position: absolute !important;
+
+    right: 5px !important;
+
+    bottom: -12px !important;
+
+    min-width: 25px !important;
+
+    height: 25px !important;
+
+    padding: 2px 6px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    border-radius: 50% !important;
+
+    border: 2px solid #0b0e14 !important;
+
+    background: #252b36 !important;
+
+    font-size: 13px !important;
+
+    line-height: 1 !important;
+
+    box-shadow:
+        0 3px 10px rgba(0,0,0,.35) !important;
+
+    z-index: 5 !important;
+}
+
+
+/* =========================================================
+   MESSAGE SPACING
+   ========================================================= */
+
+/* Two messages from same person sit closer together */
+
+html body #chatScreen #messages .message + .message {
+    margin-top: 2px !important;
+}
+
+
+/* Give a little more space when direction changes */
+
+html body #chatScreen #messages .message.theirs + .message.mine,
+html body #chatScreen #messages .message.mine + .message.theirs {
+
+    margin-top: 9px !important;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+html body #chatScreen #messages .message.mine:hover,
+html body #chatScreen #messages .message.theirs:hover {
+
+    filter: brightness(1.05) !important;
+
+}
+
+
+/* =========================================================
+   ANIMATION
+   ========================================================= */
+
+@keyframes fcInstagramMessage {
+
+    from {
+        opacity: 0;
+        transform: translateY(4px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (min-width: 601px) {
+
+    html body #chatScreen #messages {
+        padding-left: 28px !important;
+        padding-right: 28px !important;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    html body #chatScreen #messages,
+    html body #chatScreen .messages {
+
+        top: 76px !important;
+
+        bottom: 76px !important;
+
+        padding:
+            14px
+            12px
+            24px
+            12px !important;
+
+        gap: 3px !important;
+    }
+
+
+    html body #chatScreen #messages .message,
+    html body #chatScreen .messages .message {
+
+        max-width: 78% !important;
+
+        padding:
+            8px
+            12px
+            6px
+            12px !important;
+
+        font-size: 14px !important;
+
+        border-radius: 18px !important;
+    }
+
+
+    html body #chatScreen #messages .message.theirs {
+
+        border-radius:
+            18px
+            18px
+            18px
+            5px !important;
+    }
+
+
+    html body #chatScreen #messages .message.mine {
+
+        border-radius:
+            18px
+            18px
+            5px
+            18px !important;
+    }
+
+
+    html body #chatScreen #messages .message img,
+    html body #chatScreen #messages .message video {
+
+        max-width: 240px !important;
+
+        max-height: 320px !important;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONE
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    html body #chatScreen #messages .message {
+
+        max-width: 82% !important;
+
+        font-size: 14px !important;
+    }
+
+}
