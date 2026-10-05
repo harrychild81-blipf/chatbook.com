@@ -2703,3 +2703,379 @@ html body #chatScreen #messages .fc-chat-video {
         max-width: 82% !important;
     }
 }
+/* =========================================================
+   FRIENDCHAT - FINAL EMOJI PICKER FIX
+   Opens directly above the 😊 button
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   CHAT SCREEN
+   --------------------------------------------------------- */
+
+html body #chatScreen {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+
+/* ---------------------------------------------------------
+   EMOJI BUTTON
+   --------------------------------------------------------- */
+
+html body #chatScreen .emojiButton {
+    position: relative !important;
+
+    width: 56px !important;
+    min-width: 56px !important;
+    max-width: 56px !important;
+
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+
+    flex: 0 0 56px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 1px solid rgba(255,255,255,.08) !important;
+    border-radius: 16px !important;
+
+    background: #111824 !important;
+
+    color: white !important;
+
+    font-size: 22px !important;
+    line-height: 1 !important;
+
+    cursor: pointer !important;
+
+    transition:
+        transform .15s ease,
+        background .15s ease !important;
+}
+
+
+html body #chatScreen .emojiButton:hover {
+    background: #192231 !important;
+
+    transform: scale(1.04) !important;
+}
+
+
+html body #chatScreen .emojiButton:active {
+    transform: scale(.96) !important;
+}
+
+
+/* ---------------------------------------------------------
+   EMOJI PICKER
+   --------------------------------------------------------- */
+
+html body #emojiPicker {
+
+    position: fixed !important;
+
+    /*
+       IMPORTANT:
+       Keep this aligned with the left side of
+       the message composer / emoji button.
+    */
+    left: clamp(20px, 7vw, 108px) !important;
+
+    /*
+       Composer is at the bottom.
+       Picker opens ABOVE it.
+    */
+    bottom: 96px !important;
+
+    width: 330px !important;
+    max-width: calc(100vw - 40px) !important;
+
+    height: auto !important;
+    max-height: 300px !important;
+
+    margin: 0 !important;
+    padding: 12px !important;
+
+    box-sizing: border-box !important;
+
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(8, 1fr) !important;
+
+    gap: 5px !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    border: 1px solid rgba(255,255,255,.10) !important;
+
+    border-radius: 18px !important;
+
+    background:
+        rgba(15,21,31,.98) !important;
+
+    box-shadow:
+        0 18px 55px rgba(0,0,0,.55),
+        0 4px 18px rgba(0,0,0,.25) !important;
+
+    backdrop-filter:
+        blur(20px) !important;
+
+    -webkit-backdrop-filter:
+        blur(20px) !important;
+
+    z-index: 2147483640 !important;
+
+    transform-origin:
+        bottom left !important;
+
+    animation:
+        fcEmojiOpen .16s ease-out !important;
+}
+
+
+/* ---------------------------------------------------------
+   HIDDEN STATE
+   --------------------------------------------------------- */
+
+html body #emojiPicker.hidden {
+
+    display: none !important;
+
+    visibility: hidden !important;
+
+    opacity: 0 !important;
+
+    pointer-events: none !important;
+}
+
+
+/* ---------------------------------------------------------
+   EMOJI BUTTONS INSIDE PICKER
+   --------------------------------------------------------- */
+
+html body #emojiPicker > button {
+
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    border: 0 !important;
+
+    border-radius: 9px !important;
+
+    background: transparent !important;
+
+    color: white !important;
+
+    font-size: 21px !important;
+
+    line-height: 1 !important;
+
+    cursor: pointer !important;
+
+    transition:
+        background .12s ease,
+        transform .12s ease !important;
+}
+
+
+html body #emojiPicker > button:hover {
+
+    background:
+        rgba(255,255,255,.10) !important;
+
+    transform:
+        scale(1.12) !important;
+}
+
+
+html body #emojiPicker > button:active {
+
+    transform:
+        scale(.92) !important;
+}
+
+
+/* ---------------------------------------------------------
+   EMOJI PICKER SCROLLBAR
+   --------------------------------------------------------- */
+
+html body #emojiPicker::-webkit-scrollbar {
+
+    width: 6px !important;
+}
+
+
+html body #emojiPicker::-webkit-scrollbar-track {
+
+    background: transparent !important;
+}
+
+
+html body #emojiPicker::-webkit-scrollbar-thumb {
+
+    background:
+        rgba(255,255,255,.16) !important;
+
+    border-radius: 10px !important;
+}
+
+
+html body #emojiPicker::-webkit-scrollbar-thumb:hover {
+
+    background:
+        rgba(255,255,255,.25) !important;
+}
+
+
+/* ---------------------------------------------------------
+   OPEN ANIMATION
+   --------------------------------------------------------- */
+
+@keyframes fcEmojiOpen {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(8px)
+            scale(.96);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    html body #chatScreen .emojiButton {
+
+        width: 52px !important;
+        min-width: 52px !important;
+        max-width: 52px !important;
+
+        height: 52px !important;
+        min-height: 52px !important;
+        max-height: 52px !important;
+
+        flex-basis: 52px !important;
+
+        border-radius: 15px !important;
+
+        font-size: 21px !important;
+    }
+
+
+    html body #emojiPicker {
+
+        left: 12px !important;
+
+        bottom: 82px !important;
+
+        width:
+            min(320px, calc(100vw - 24px)) !important;
+
+        max-width:
+            calc(100vw - 24px) !important;
+
+        max-height: 270px !important;
+
+        padding: 10px !important;
+
+        grid-template-columns:
+            repeat(7, 1fr) !important;
+
+        gap: 4px !important;
+
+        border-radius: 17px !important;
+    }
+
+
+    html body #emojiPicker > button {
+
+        width: 35px !important;
+        min-width: 35px !important;
+        max-width: 35px !important;
+
+        height: 35px !important;
+        min-height: 35px !important;
+        max-height: 35px !important;
+
+        font-size: 20px !important;
+    }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    html body #emojiPicker {
+
+        left: 8px !important;
+
+        bottom: 78px !important;
+
+        width:
+            calc(100vw - 16px) !important;
+
+        max-width:
+            calc(100vw - 16px) !important;
+
+        max-height: 250px !important;
+
+        grid-template-columns:
+            repeat(7, 1fr) !important;
+
+        padding: 9px !important;
+    }
+
+
+    html body #emojiPicker > button {
+
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
+
+        font-size: 19px !important;
+    }
+}
