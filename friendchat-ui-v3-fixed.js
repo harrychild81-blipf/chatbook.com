@@ -1,14 +1,14 @@
 /* =========================================================
    FRIENDCHAT CUSTOM UI v3
-   FIXED VERSION
-   - Removes lower + button
-   - Removes lower media button
-   - Keeps top-right + button
-   - Left arrow stays against screen edge
-   - Arrow moves with sidebar when opened
-   - Keeps bottom dock
-   - Keeps discovery
-   - Keeps themes
+   COMPLETE VERSION
+   - Left navigation arrow
+   - Sliding sidebar
+   - Bottom dock
+   - Discovery
+   - 12 themes
+   - Theme persistence
+   - Spotify button cleanup
+   - Navigation visibility control
    ========================================================= */
 
 (() => {
@@ -27,8 +27,11 @@
       desc: "Dark blue and purple",
       bg: "#070a10",
       panel: "#0d121b",
+      panel2: "#111827",
       accent: "#6c7cff",
-      accent2: "#8b5cf6"
+      accent2: "#8b5cf6",
+      text: "#ffffff",
+      muted: "#9ca3af"
     },
 
     emerald: {
@@ -36,8 +39,11 @@
       desc: "Dark green glass",
       bg: "#06100d",
       panel: "#0c1713",
+      panel2: "#10221a",
       accent: "#22c55e",
-      accent2: "#14b8a6"
+      accent2: "#14b8a6",
+      text: "#ffffff",
+      muted: "#9ca3af"
     },
 
     ocean: {
@@ -45,8 +51,11 @@
       desc: "Deep blue",
       bg: "#061019",
       panel: "#0b1722",
+      panel2: "#102435",
       accent: "#22a6f2",
-      accent2: "#6366f1"
+      accent2: "#6366f1",
+      text: "#ffffff",
+      muted: "#9ca3af"
     },
 
     sunset: {
@@ -54,8 +63,11 @@
       desc: "Warm orange glow",
       bg: "#120a08",
       panel: "#1b100d",
+      panel2: "#291611",
       accent: "#ff7a45",
-      accent2: "#ef4444"
+      accent2: "#ef4444",
+      text: "#ffffff",
+      muted: "#c0a8a2"
     },
 
     rose: {
@@ -63,8 +75,11 @@
       desc: "Pink and violet",
       bg: "#100810",
       panel: "#190e19",
+      panel2: "#281329",
       accent: "#ec4899",
-      accent2: "#8b5cf6"
+      accent2: "#8b5cf6",
+      text: "#ffffff",
+      muted: "#c0a5bb"
     },
 
     graphite: {
@@ -72,8 +87,83 @@
       desc: "Minimal monochrome",
       bg: "#090909",
       panel: "#121212",
+      panel2: "#1b1b1b",
       accent: "#d1d5db",
-      accent2: "#6b7280"
+      accent2: "#6b7280",
+      text: "#ffffff",
+      muted: "#a1a1aa"
+    },
+
+    light: {
+      name: "Light",
+      desc: "Clean bright interface",
+      bg: "#f4f6f8",
+      panel: "#ffffff",
+      panel2: "#eef1f5",
+      accent: "#4f46e5",
+      accent2: "#7c3aed",
+      text: "#111827",
+      muted: "#6b7280"
+    },
+
+    lavender: {
+      name: "Lavender",
+      desc: "Soft purple",
+      bg: "#110d1c",
+      panel: "#1b1429",
+      panel2: "#251b38",
+      accent: "#a78bfa",
+      accent2: "#c084fc",
+      text: "#ffffff",
+      muted: "#b8abc9"
+    },
+
+    cyber: {
+      name: "Cyber",
+      desc: "Futuristic neon",
+      bg: "#050509",
+      panel: "#0b0b14",
+      panel2: "#111122",
+      accent: "#00f5ff",
+      accent2: "#ff00c8",
+      text: "#ffffff",
+      muted: "#9292aa"
+    },
+
+    forest: {
+      name: "Forest",
+      desc: "Deep natural green",
+      bg: "#07110a",
+      panel: "#0d1c11",
+      panel2: "#142719",
+      accent: "#84cc16",
+      accent2: "#22c55e",
+      text: "#ffffff",
+      muted: "#9eb09f"
+    },
+
+    cherry: {
+      name: "Cherry",
+      desc: "Deep red and pink",
+      bg: "#110609",
+      panel: "#1c0b10",
+      panel2: "#2a1017",
+      accent: "#f43f5e",
+      accent2: "#fb7185",
+      text: "#ffffff",
+      muted: "#c49da5"
+    },
+
+    amoled: {
+      name: "AMOLED",
+      desc: "Pure black",
+      bg: "#000000",
+      panel: "#000000",
+      panel2: "#0a0a0a",
+      accent: "#ffffff",
+      accent2: "#737373",
+      text: "#ffffff",
+      muted: "#8b8b8b"
     }
 
   };
@@ -115,6 +205,611 @@
     }
 
     return e;
+
+  }
+
+
+  /* =========================================================
+     THEME CSS
+     ========================================================= */
+
+  function installThemeStyles() {
+
+    if ($("friendchat-theme-guaranteed-style")) {
+      return;
+    }
+
+
+    const style =
+      document.createElement("style");
+
+    style.id =
+      "friendchat-theme-guaranteed-style";
+
+
+    style.textContent = `
+
+      /* =====================================================
+         FRIENDCHAT THEME VARIABLES
+         ===================================================== */
+
+      :root {
+
+        --fc-bg: #070a10;
+        --fc-panel: #0d121b;
+        --fc-panel-2: #111827;
+        --fc-accent: #6c7cff;
+        --fc-accent-2: #8b5cf6;
+        --fc-text: #ffffff;
+        --fc-muted: #9ca3af;
+
+      }
+
+
+      /* =====================================================
+         MAIN BACKGROUND
+         ===================================================== */
+
+      body {
+
+        background:
+          var(--fc-bg) !important;
+
+        color:
+          var(--fc-text);
+
+      }
+
+
+      .app {
+
+        background:
+          var(--fc-bg) !important;
+
+        color:
+          var(--fc-text);
+
+      }
+
+
+      .screen {
+
+        background:
+          var(--fc-bg);
+
+        color:
+          var(--fc-text);
+
+      }
+
+
+      /* =====================================================
+         COMMON PANELS
+         ===================================================== */
+
+      .card,
+      .panel,
+      .modal,
+      .profile-card,
+      .friend-card,
+      .chat-card,
+      .settings-card {
+
+        background:
+          var(--fc-panel) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border-color:
+          color-mix(
+            in srgb,
+            var(--fc-accent) 20%,
+            transparent
+          ) !important;
+
+      }
+
+
+      /* =====================================================
+         INPUTS
+         ===================================================== */
+
+      input,
+      textarea,
+      select {
+
+        background:
+          var(--fc-panel-2) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border-color:
+          rgba(255,255,255,.12) !important;
+
+      }
+
+
+      input::placeholder,
+      textarea::placeholder {
+
+        color:
+          var(--fc-muted) !important;
+
+      }
+
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+
+        border-color:
+          var(--fc-accent) !important;
+
+        box-shadow:
+          0 0 0 2px
+          color-mix(
+            in srgb,
+            var(--fc-accent) 15%,
+            transparent
+          ) !important;
+
+      }
+
+
+      /* =====================================================
+         COMMON BUTTONS
+         ===================================================== */
+
+      button {
+
+        --button-accent:
+          var(--fc-accent);
+
+      }
+
+
+      .primary,
+      .primaryButton,
+      .mainButton,
+      .sendButton,
+      .loginButton,
+      .signupButton {
+
+        background:
+          linear-gradient(
+            135deg,
+            var(--fc-accent),
+            var(--fc-accent-2)
+          ) !important;
+
+        color:
+          #fff !important;
+
+      }
+
+
+      /* =====================================================
+         LEFT SIDEBAR
+         ===================================================== */
+
+      #fcCustomSidebar {
+
+        background:
+          var(--fc-panel) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border:
+          1px solid
+          rgba(255,255,255,.10) !important;
+
+        box-shadow:
+          8px 0 35px
+          rgba(0,0,0,.45) !important;
+
+      }
+
+
+      .fc-sidebar-logo {
+
+        background:
+          linear-gradient(
+            135deg,
+            var(--fc-accent),
+            var(--fc-accent-2)
+          ) !important;
+
+        color:
+          #fff !important;
+
+      }
+
+
+      .fc-sidebar-title {
+
+        color:
+          var(--fc-text) !important;
+
+      }
+
+
+      .fc-sidebar-sub {
+
+        color:
+          var(--fc-muted) !important;
+
+      }
+
+
+      .fc-nav-item {
+
+        color:
+          var(--fc-text) !important;
+
+      }
+
+
+      .fc-nav-item:hover {
+
+        background:
+          color-mix(
+            in srgb,
+            var(--fc-accent) 12%,
+            transparent
+          ) !important;
+
+      }
+
+
+      .fc-nav-item.active {
+
+        background:
+          color-mix(
+            in srgb,
+            var(--fc-accent) 18%,
+            transparent
+          ) !important;
+
+        color:
+          var(--fc-accent) !important;
+
+      }
+
+
+      /* =====================================================
+         ARROW
+         ===================================================== */
+
+      #fcNavToggle {
+
+        background:
+          var(--fc-panel) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border:
+          1px solid
+          rgba(255,255,255,.10) !important;
+
+      }
+
+
+      #fcNavToggle:hover {
+
+        background:
+          color-mix(
+            in srgb,
+            var(--fc-accent) 18%,
+            var(--fc-panel)
+          ) !important;
+
+      }
+
+
+      /* =====================================================
+         BOTTOM DOCK
+         ===================================================== */
+
+      .fc-bottom-dock {
+
+        background:
+          var(--fc-panel) !important;
+
+        border-color:
+          rgba(255,255,255,.12) !important;
+
+      }
+
+
+      .fc-bottom-dock
+      .fc-dock-btn {
+
+        color:
+          var(--fc-text) !important;
+
+      }
+
+
+      .fc-bottom-dock
+      .fc-dock-btn:hover {
+
+        background:
+          color-mix(
+            in srgb,
+            var(--fc-accent) 12%,
+            transparent
+          ) !important;
+
+      }
+
+
+      .fc-bottom-dock
+      .fc-dock-center {
+
+        background:
+          linear-gradient(
+            135deg,
+            var(--fc-accent),
+            var(--fc-accent-2)
+          ) !important;
+
+      }
+
+
+      /* =====================================================
+         DISCOVERY
+         ===================================================== */
+
+      .fc-discovery {
+
+        background:
+          var(--fc-panel) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border-color:
+          rgba(255,255,255,.10) !important;
+
+      }
+
+
+      .fc-user-suggestion {
+
+        background:
+          var(--fc-panel-2) !important;
+
+        color:
+          var(--fc-text) !important;
+
+      }
+
+
+      .fc-user-suggestion:hover {
+
+        border-color:
+          color-mix(
+            in srgb,
+            var(--fc-accent) 45%,
+            transparent
+          ) !important;
+
+      }
+
+
+      .fc-user-avatar {
+
+        background:
+          linear-gradient(
+            135deg,
+            var(--fc-accent),
+            var(--fc-accent-2)
+          ) !important;
+
+      }
+
+
+      .fc-user-name {
+
+        color:
+          var(--fc-text) !important;
+
+      }
+
+
+      .fc-user-id {
+
+        color:
+          var(--fc-muted) !important;
+
+      }
+
+
+      .fc-user-add {
+
+        background:
+          linear-gradient(
+            135deg,
+            var(--fc-accent),
+            var(--fc-accent-2)
+          ) !important;
+
+        color:
+          #fff !important;
+
+      }
+
+
+      /* =====================================================
+         THEME PANEL
+         ===================================================== */
+
+      .fc-theme-panel {
+
+        background:
+          var(--fc-panel) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border-color:
+          rgba(255,255,255,.12) !important;
+
+      }
+
+
+      .fc-theme-choice {
+
+        background:
+          var(--fc-panel-2) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border:
+          1px solid
+          rgba(255,255,255,.08) !important;
+
+      }
+
+
+      .fc-theme-choice:hover {
+
+        border-color:
+          var(--fc-accent) !important;
+
+        transform:
+          translateY(-2px);
+
+      }
+
+
+      .fc-theme-name {
+
+        color:
+          var(--fc-text) !important;
+
+      }
+
+
+      .fc-theme-desc {
+
+        color:
+          var(--fc-muted) !important;
+
+      }
+
+
+      /* =====================================================
+         THEME PANEL ANIMATION
+         ===================================================== */
+
+      .fc-theme-choice {
+
+        transition:
+          transform .18s ease,
+          border-color .18s ease,
+          background .18s ease;
+
+      }
+
+
+      /* =====================================================
+         LIGHT THEME SPECIAL TEXT
+         ===================================================== */
+
+      html[data-fc-theme="light"] {
+
+        color-scheme:
+          light;
+
+      }
+
+
+      html[data-fc-theme="light"] body,
+      html[data-fc-theme="light"] .app,
+      html[data-fc-theme="light"] .screen {
+
+        color:
+          #111827 !important;
+
+      }
+
+
+      html[data-fc-theme="light"]
+      .fc-bottom-dock {
+
+        box-shadow:
+          0 8px 30px
+          rgba(0,0,0,.16) !important;
+
+      }
+
+
+      /* =====================================================
+         AMOLED
+         ===================================================== */
+
+      html[data-fc-theme="amoled"]
+      body,
+      html[data-fc-theme="amoled"]
+      .app,
+      html[data-fc-theme="amoled"]
+      .screen {
+
+        background:
+          #000 !important;
+
+      }
+
+
+      html[data-fc-theme="amoled"]
+      #fcCustomSidebar,
+      html[data-fc-theme="amoled"]
+      .fc-bottom-dock {
+
+        background:
+          #000 !important;
+
+        border-color:
+          #222 !important;
+
+      }
+
+
+      /* =====================================================
+         MOBILE THEME PANEL
+         ===================================================== */
+
+      @media(max-width:600px) {
+
+        .fc-theme-panel {
+
+          width:
+            calc(100vw - 24px) !important;
+
+          max-width:
+            420px !important;
+
+        }
+
+        .fc-theme-grid {
+
+          grid-template-columns:
+            repeat(2, minmax(0,1fr)) !important;
+
+        }
+
+      }
+
+    `;
+
+
+    document.head.appendChild(style);
 
   }
 
@@ -197,7 +892,8 @@
           visible !important;
 
         box-shadow:
-          3px 0 12px rgba(0,0,0,.25) !important;
+          3px 0 12px
+          rgba(0,0,0,.25) !important;
 
         transition:
           left .22s ease,
@@ -213,8 +909,6 @@
 
       }
 
-
-      /* Arrow follows sidebar */
 
       #fcNavToggle.is-open {
 
@@ -244,7 +938,8 @@
       }
 
 
-      #fcNavToggle.is-open .fc-chevron {
+      #fcNavToggle.is-open
+      .fc-chevron {
 
         transform:
           rotate(180deg) !important;
@@ -357,10 +1052,12 @@
           rgba(10,14,22,.98) !important;
 
         border:
-          1px solid rgba(255,255,255,.14) !important;
+          1px solid
+          rgba(255,255,255,.14) !important;
 
         box-shadow:
-          0 8px 25px rgba(0,0,0,.45) !important;
+          0 8px 25px
+          rgba(0,0,0,.45) !important;
 
         z-index:
           2147483647 !important;
@@ -368,7 +1065,8 @@
       }
 
 
-      .fc-bottom-dock .fc-dock-btn {
+      .fc-bottom-dock
+      .fc-dock-btn {
 
         flex:
           0 0 38px !important;
@@ -427,21 +1125,12 @@
       }
 
 
-      /* Hide dock labels */
+      /* =====================================================
+         DOCK ICONS
+         ===================================================== */
 
       .fc-bottom-dock
-      .fc-dock-btn
-      span:last-child {
-
-        display:
-          none !important;
-
-      }
-
-
-      .fc-bottom-dock
-      .fc-dock-btn
-      span:first-child {
+      .fc-dock-btn span:first-child {
 
         display:
           block !important;
@@ -455,7 +1144,19 @@
       }
 
 
-      /* FC CENTER */
+      .fc-bottom-dock
+      .fc-dock-btn
+      span:last-child {
+
+        display:
+          none !important;
+
+      }
+
+
+      /* =====================================================
+         FC CENTER
+         ===================================================== */
 
       .fc-bottom-dock
       .fc-dock-center {
@@ -487,8 +1188,8 @@
         background:
           linear-gradient(
             135deg,
-            #6855ff,
-            #ad4de3
+            var(--fc-accent),
+            var(--fc-accent-2)
           ) !important;
 
         color:
@@ -682,16 +1383,19 @@
 
   function init() {
 
+    installThemeStyles();
+
     installNavigationStyles();
 
 
-    /*
-     * Prevent duplicate navigation
-     */
+    /* Prevent duplicate navigation */
 
     if ($("fcCustomSidebar")) {
+
       setupVisibility();
+
       return;
+
     }
 
 
@@ -1026,16 +1730,6 @@
       });
 
 
-    /* =======================================================
-       IMPORTANT:
-       DO NOT CREATE QUICK ACTIONS
-       
-       This removes:
-       - lower +
-       - lower media button
-       ======================================================= */
-
-
     addBottomDock();
 
     addDiscovery();
@@ -1163,11 +1857,13 @@
         "important"
       );
 
+
       dock.style.setProperty(
         "visibility",
         "visible",
         "important"
       );
+
 
       dock.style.setProperty(
         "opacity",
@@ -1212,10 +1908,6 @@
 
   function addBottomDock() {
 
-    /*
-     * Prevent duplicate dock
-     */
-
     if (
       document.querySelector(
         ".fc-bottom-dock"
@@ -1235,9 +1927,7 @@
       );
 
 
-    /* =======================================================
-       CHATS
-       ======================================================= */
+    /* CHATS */
 
     const chats =
       create(
@@ -1267,9 +1957,7 @@
       };
 
 
-    /* =======================================================
-       FC DISCOVER
-       ======================================================= */
+    /* FC DISCOVER */
 
     const center =
       create(
@@ -1299,9 +1987,7 @@
       };
 
 
-    /* =======================================================
-       PROFILE
-       ======================================================= */
+    /* PROFILE */
 
     const profile =
       create(
@@ -1466,9 +2152,11 @@
 
       renderDiscovery();
 
+
       p.classList.add(
         "open"
       );
+
 
       o.classList.add(
         "open"
@@ -1764,9 +2452,17 @@
 
       <div class="fc-theme-head">
 
-        <strong>
-          Customize FriendChat
-        </strong>
+        <div>
+
+          <strong>
+            Customize FriendChat
+          </strong>
+
+          <div class="fc-sidebar-sub">
+            Choose your FriendChat theme
+          </div>
+
+        </div>
 
 
         <button
@@ -1836,6 +2532,10 @@
 
         button.type =
           "button";
+
+
+        button.dataset.theme =
+          key;
 
 
         button.innerHTML = `
@@ -1913,7 +2613,7 @@
 
 
   /* =========================================================
-     THEME
+     APPLY THEME
      ========================================================= */
 
   function setTheme(key) {
@@ -1931,6 +2631,16 @@
       document.documentElement;
 
 
+    /* Theme attribute */
+
+    root.setAttribute(
+      "data-fc-theme",
+      key
+    );
+
+
+    /* CSS variables */
+
     root.style.setProperty(
       "--fc-bg",
       theme.bg
@@ -1945,7 +2655,7 @@
 
     root.style.setProperty(
       "--fc-panel-2",
-      theme.panel
+      theme.panel2
     );
 
 
@@ -1961,13 +2671,42 @@
     );
 
 
+    root.style.setProperty(
+      "--fc-text",
+      theme.text
+    );
+
+
+    root.style.setProperty(
+      "--fc-muted",
+      theme.muted
+    );
+
+
+    /* Save */
+
     localStorage.setItem(
       "friendchat_theme",
       key
     );
 
 
-    closeThemePanel();
+    /* Highlight selected theme */
+
+    document
+      .querySelectorAll(
+        ".fc-theme-choice"
+      )
+      .forEach(
+        button => {
+
+          button.classList.toggle(
+            "selected",
+            button.dataset.theme === key
+          );
+
+        }
+      );
 
   }
 
@@ -1982,7 +2721,9 @@
 
 
     setTheme(
-      saved
+      themes[saved]
+        ? saved
+        : "midnight"
     );
 
   }
