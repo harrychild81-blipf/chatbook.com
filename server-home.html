@@ -107,7 +107,9 @@
         <main class="main-content">
 
 
-            <!-- SERVER HERO -->
+            <!-- =================================================
+                 SERVER HERO
+                 ================================================= -->
 
             <section class="server-hero">
 
@@ -143,8 +145,12 @@
                         Welcome to your FriendChat server.
                     </p>
 
+
                     <div class="server-id">
-                        <span>SERVER ID</span>
+
+                        <span>
+                            SERVER ID
+                        </span>
 
                         <code id="serverID">
                             —
@@ -156,9 +162,109 @@
                         >
                             Copy
                         </button>
+
                     </div>
 
                 </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 CHANNELS
+                 ================================================= -->
+
+            <section
+                class="section channels-section"
+                id="channelsSection"
+            >
+
+                <div class="section-heading channels-heading">
+
+                    <div>
+
+                        <h2>
+                            Channels
+                        </h2>
+
+                        <p>
+                            Create spaces for conversations and activities.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="create-channel-button"
+                        id="createChannelButton"
+                        type="button"
+                    >
+
+                        <span>
+                            +
+                        </span>
+
+                        <span>
+                            Create Channel
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- TEXT CHANNELS -->
+
+                <div class="channel-group">
+
+                    <div class="channel-group-title">
+
+                        <span>
+                            TEXT CHANNELS
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="channel-list"
+                        id="textChannelList"
+                    >
+
+                        <!-- Channels will be inserted here -->
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- VOICE CHANNELS -->
+
+                <div class="channel-group">
+
+                    <div class="channel-group-title">
+
+                        <span>
+                            VOICE CHANNELS
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="channel-list"
+                        id="voiceChannelList"
+                    >
+
+                        <!-- Voice channels will be inserted here -->
+
+                    </div>
+
+                </div>
+
 
             </section>
 
@@ -173,6 +279,7 @@
                 <div class="section-heading">
 
                     <div>
+
                         <h2>
                             Your server
                         </h2>
@@ -180,6 +287,7 @@
                         <p>
                             Manage and customize your space.
                         </p>
+
                     </div>
 
                 </div>
@@ -193,6 +301,7 @@
                     <button
                         class="action-card"
                         id="channelsCard"
+                        type="button"
                     >
 
                         <div class="action-icon">
@@ -224,6 +333,7 @@
                     <button
                         class="action-card"
                         id="membersCard"
+                        type="button"
                     >
 
                         <div class="action-icon">
@@ -255,6 +365,7 @@
                     <button
                         class="action-card"
                         id="rulesCard"
+                        type="button"
                     >
 
                         <div class="action-icon">
@@ -286,6 +397,7 @@
                     <button
                         class="action-card"
                         id="rolesCard"
+                        type="button"
                     >
 
                         <div class="action-icon">
@@ -317,6 +429,7 @@
                     <button
                         class="action-card"
                         id="aiCard"
+                        type="button"
                     >
 
                         <div class="action-icon">
@@ -348,6 +461,7 @@
                     <button
                         class="action-card"
                         id="musicCard"
+                        type="button"
                     >
 
                         <div class="action-icon">
@@ -379,6 +493,7 @@
                     <button
                         class="action-card"
                         id="activityCard"
+                        type="button"
                     >
 
                         <div class="action-icon">
@@ -410,6 +525,7 @@
                     <button
                         class="action-card"
                         id="serverSettingsCard"
+                        type="button"
                     >
 
                         <div class="action-icon">
@@ -501,19 +617,12 @@
                     <div class="preview-line"></div>
 
 
-                    <div class="preview-content">
+                    <div
+                        class="preview-content"
+                        id="previewChannelList"
+                    >
 
-                        <div class="preview-channel">
-                            # General
-                        </div>
-
-                        <div class="preview-channel muted">
-                            # Announcements
-                        </div>
-
-                        <div class="preview-channel muted">
-                            # Media
-                        </div>
+                        <!-- Preview channels inserted by JS -->
 
                     </div>
 
@@ -525,6 +634,196 @@
         </main>
 
 
+
+        <!-- =================================================
+             CREATE CHANNEL MODAL
+             ================================================= -->
+
+        <div
+            class="channel-modal"
+            id="channelModal"
+            aria-hidden="true"
+        >
+
+            <div
+                class="channel-modal-backdrop"
+                id="channelModalBackdrop"
+            ></div>
+
+
+            <div
+                class="channel-modal-box"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="channelModalTitle"
+            >
+
+
+                <div class="channel-modal-header">
+
+                    <div>
+
+                        <div
+                            class="channel-modal-title"
+                            id="channelModalTitle"
+                        >
+                            Create Channel
+                        </div>
+
+                        <div class="channel-modal-subtitle">
+                            Add a new space to your server.
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="channel-modal-close"
+                        id="closeChannelModal"
+                        type="button"
+                        aria-label="Close"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+
+                <!-- CHANNEL NAME -->
+
+                <div class="form-group">
+
+                    <label for="channelNameInput">
+                        Channel name
+                    </label>
+
+                    <input
+                        id="channelNameInput"
+                        type="text"
+                        maxlength="40"
+                        placeholder="e.g. gaming"
+                        autocomplete="off"
+                    >
+
+                    <div
+                        class="form-error"
+                        id="channelFormError"
+                    ></div>
+
+                </div>
+
+
+
+                <!-- CHANNEL TYPE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Channel type
+                    </label>
+
+
+                    <div class="channel-type-options">
+
+
+                        <label
+                            class="channel-type-option selected"
+                            id="textChannelOption"
+                        >
+
+                            <input
+                                type="radio"
+                                name="channelType"
+                                value="text"
+                                checked
+                            >
+
+                            <div class="channel-type-icon">
+                                #
+                            </div>
+
+                            <div class="channel-type-info">
+
+                                <strong>
+                                    Text
+                                </strong>
+
+                                <span>
+                                    Chat with messages
+                                </span>
+
+                            </div>
+
+                        </label>
+
+
+
+                        <label
+                            class="channel-type-option"
+                            id="voiceChannelOption"
+                        >
+
+                            <input
+                                type="radio"
+                                name="channelType"
+                                value="voice"
+                            >
+
+                            <div class="channel-type-icon">
+                                🔊
+                            </div>
+
+                            <div class="channel-type-info">
+
+                                <strong>
+                                    Voice
+                                </strong>
+
+                                <span>
+                                    Talk with your friends
+                                </span>
+
+                            </div>
+
+                        </label>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- MODAL BUTTONS -->
+
+                <div class="channel-modal-actions">
+
+                    <button
+                        class="modal-cancel-button"
+                        id="cancelChannelButton"
+                        type="button"
+                    >
+                        Cancel
+                    </button>
+
+
+                    <button
+                        class="modal-create-button"
+                        id="saveChannelButton"
+                        type="button"
+                    >
+                        Create Channel
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
         <!-- =================================================
              TOAST
              ================================================= -->
@@ -533,9 +832,11 @@
             class="toast"
             id="toast"
         >
+
             <span id="toastMessage">
                 Done
             </span>
+
         </div>
 
 
