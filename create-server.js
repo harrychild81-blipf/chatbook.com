@@ -1,11 +1,12 @@
 /* =========================================================
    FRIENDCHAT
-   CREATE SERVER - PHASE 1
+   CREATE SERVER
+   PHASE 1
    ========================================================= */
 
 
 /* =========================================================
-   GET ELEMENTS
+   ELEMENTS
    ========================================================= */
 
 const serverName =
@@ -42,171 +43,193 @@ const nameCounter =
     document.getElementById("nameCounter");
 
 const descriptionCounter =
-    document.getElementById(
-        "descriptionCounter"
-    );
+    document.getElementById("descriptionCounter");
 
 
 /* =========================================================
-   SERVER ICON PICKER
+   OPEN IMAGE PICKER
    ========================================================= */
 
 function openIconPicker() {
 
-    serverIcon.click();
+    if (serverIcon) {
+        serverIcon.click();
+    }
 }
 
 
-/*
- * Click "Upload server icon"
- */
+/* =========================================================
+   UPLOAD BUTTON
+   ========================================================= */
 
-uploadIconButton.addEventListener(
-    "click",
-    openIconPicker
-);
+if (uploadIconButton) {
 
-
-/*
- * Click the actual icon preview
- */
-
-serverIconPreview.addEventListener(
-    "click",
-    openIconPicker
-);
+    uploadIconButton.addEventListener(
+        "click",
+        openIconPicker
+    );
+}
 
 
 /* =========================================================
-   ICON SELECTION
+   ICON PREVIEW CLICK
    ========================================================= */
 
-serverIcon.addEventListener(
-    "change",
-    function () {
+if (serverIconPreview) {
 
-        const file =
-            this.files[0];
-
-
-        /*
-         * User cancelled file picker.
-         */
-
-        if (!file) {
-            return;
-        }
+    serverIconPreview.addEventListener(
+        "click",
+        openIconPicker
+    );
+}
 
 
-        /*
-         * Make sure the selected file
-         * is actually an image.
-         */
+/* =========================================================
+   SELECT SERVER ICON
+   ========================================================= */
 
-        if (
-            !file.type.startsWith("image/")
-        ) {
+if (serverIcon) {
 
-            showError(
-                "Please select an image file."
-            );
+    serverIcon.addEventListener(
+        "change",
+        function () {
 
-            this.value = "";
+            const file =
+                this.files[0];
 
-            return;
-        }
+            /* No file selected */
 
-
-        /*
-         * 5 MB maximum for this prototype.
-         */
-
-        if (
-            file.size >
-            5 * 1024 * 1024
-        ) {
-
-            showError(
-                "Server icon must be smaller than 5 MB."
-            );
-
-            this.value = "";
-
-            return;
-        }
+            if (!file) {
+                return;
+            }
 
 
-        /*
-         * Read the selected image.
-         */
+            /* Make sure it is an image */
 
-        const reader =
-            new FileReader();
-
-
-        reader.onload =
-            function (event) {
-
-                iconImage.src =
-                    event.target.result;
-
-                iconImage.style.display =
-                    "block";
-
-                iconText.style.display =
-                    "none";
-
-                clearError();
-            };
-
-
-        reader.onerror =
-            function () {
+            if (
+                !file.type ||
+                !file.type.startsWith("image/")
+            ) {
 
                 showError(
-                    "Could not read the selected image."
+                    "Please select an image file."
                 );
-            };
+
+                this.value = "";
+
+                return;
+            }
 
 
-        reader.readAsDataURL(file);
-    }
-);
+            /* Maximum 5 MB */
+
+            const maxSize =
+                5 * 1024 * 1024;
+
+            if (file.size > maxSize) {
+
+                showError(
+                    "Server icon must be smaller than 5 MB."
+                );
+
+                this.value = "";
+
+                return;
+            }
+
+
+            /* Read image */
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function (event) {
+
+                    if (!iconImage) {
+                        return;
+                    }
+
+                    iconImage.src =
+                        event.target.result;
+
+                    iconImage.style.display =
+                        "block";
+
+
+                    if (iconText) {
+
+                        iconText.style.display =
+                            "none";
+                    }
+
+
+                    clearError();
+                };
+
+
+            reader.onerror =
+                function () {
+
+                    showError(
+                        "Could not read the selected image."
+                    );
+                };
+
+
+            reader.readAsDataURL(file);
+        }
+    );
+}
 
 
 /* =========================================================
-   NAME CHARACTER COUNTER
+   SERVER NAME COUNTER
    ========================================================= */
 
-serverName.addEventListener(
-    "input",
-    function () {
+if (serverName && nameCounter) {
 
-        nameCounter.textContent =
-            this.value.length;
-    }
-);
+    serverName.addEventListener(
+        "input",
+        function () {
+
+            nameCounter.textContent =
+                this.value.length;
+        }
+    );
+}
 
 
 /* =========================================================
-   DESCRIPTION CHARACTER COUNTER
+   DESCRIPTION COUNTER
    ========================================================= */
 
-serverDescription.addEventListener(
-    "input",
-    function () {
+if (
+    serverDescription &&
+    descriptionCounter
+) {
 
-        descriptionCounter.textContent =
-            this.value.length;
-    }
-);
+    serverDescription.addEventListener(
+        "input",
+        function () {
+
+            descriptionCounter.textContent =
+                this.value.length;
+        }
+    );
+}
 
 
 /* =========================================================
-   ERROR FUNCTIONS
+   ERROR
    ========================================================= */
 
 function showError(message) {
+
+    if (!errorMessage) {
+        return;
+    }
 
     errorMessage.textContent =
         message;
@@ -215,39 +238,192 @@ function showError(message) {
 
 function clearError() {
 
+    if (!errorMessage) {
+        return;
+    }
+
     errorMessage.textContent =
         "";
 }
 
 
 /* =========================================================
-   CREATE SERVER BUTTON
+   GET OWNER ID
    ========================================================= */
 
-createServerButton.addEventListener(
-    "click",
-    createServer
-);
+function getOwnerID() {
 
+    let ownerID = null;
+
+
+    try {
+
+        ownerID =
+            localStorage.getItem(
+                "friendchat_user_id"
+            );
+
+    } catch (error) {
+
+        console.error(
+            "Could not read user ID:",
+            error
+        );
+    }
+
+
+    /*
+     * Temporary ID for the prototype.
+     *
+     * Later this will come from your
+     * real FriendChat login system.
+     */
+
+    if (!ownerID) {
+
+        ownerID =
+            "user_" +
+            Date.now().toString(36) +
+            "_" +
+            Math.random()
+                .toString(36)
+                .substring(2, 8);
+
+
+        try {
+
+            localStorage.setItem(
+                "friendchat_user_id",
+                ownerID
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Could not save user ID:",
+                error
+            );
+        }
+    }
+
+
+    return ownerID;
+}
+
+
+/* =========================================================
+   CREATE UNIQUE SERVER ID
+   ========================================================= */
+
+function generateServerID() {
+
+    return (
+        "srv_" +
+        Date.now().toString(36) +
+        "_" +
+        Math.random()
+            .toString(36)
+            .substring(2, 10)
+    );
+}
+
+
+/* =========================================================
+   GET SAVED SERVERS
+   ========================================================= */
+
+function getSavedServers() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "friendchat_servers"
+            );
+
+
+        if (!saved) {
+            return [];
+        }
+
+
+        const servers =
+            JSON.parse(saved);
+
+
+        if (!Array.isArray(servers)) {
+            return [];
+        }
+
+
+        return servers;
+
+    } catch (error) {
+
+        console.error(
+            "Could not load servers:",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+/* =========================================================
+   SAVE SERVERS
+   ========================================================= */
+
+function saveServers(servers) {
+
+    try {
+
+        localStorage.setItem(
+            "friendchat_servers",
+            JSON.stringify(servers)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Could not save servers:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+/* =========================================================
+   CREATE SERVER
+   ========================================================= */
 
 function createServer() {
 
     clearError();
 
 
-    /*
-     * Get form values.
-     */
+    /* =====================================================
+       GET VALUES
+       ===================================================== */
 
     const name =
-        serverName.value.trim();
+        serverName
+            ? serverName.value.trim()
+            : "";
+
 
     const description =
-        serverDescription.value.trim();
+        serverDescription
+            ? serverDescription.value.trim()
+            : "";
 
 
     /* =====================================================
-       VALIDATE SERVER NAME
+       VALIDATE NAME
        ===================================================== */
 
     if (!name) {
@@ -256,11 +432,15 @@ function createServer() {
             "Please enter a server name."
         );
 
-        serverName.focus();
+        if (serverName) {
+            serverName.focus();
+        }
 
         return;
     }
 
+
+    /* Minimum 2 characters */
 
     if (name.length < 2) {
 
@@ -268,33 +448,39 @@ function createServer() {
             "Server name must be at least 2 characters."
         );
 
-        serverName.focus();
+        if (serverName) {
+            serverName.focus();
+        }
+
+        return;
+    }
+
+
+    /* Maximum 40 characters */
+
+    if (name.length > 40) {
+
+        showError(
+            "Server name cannot be longer than 40 characters."
+        );
+
+        if (serverName) {
+            serverName.focus();
+        }
 
         return;
     }
 
 
     /* =====================================================
-       CREATE SERVER ID
-       ===================================================== */
-
-    const serverID =
-        "srv_" +
-        Date.now().toString(36) +
-        "_" +
-        Math.random()
-            .toString(36)
-            .substring(2, 8);
-
-
-    /* =====================================================
-       GET SERVER ICON
+       SERVER ICON
        ===================================================== */
 
     let icon = null;
 
 
     if (
+        iconImage &&
         iconImage.src &&
         iconImage.style.display !== "none"
     ) {
@@ -310,18 +496,69 @@ function createServer() {
 
     const newServer = {
 
-        serverID: serverID,
+        /* Unique server ID */
 
-        ownerID: getOwnerID(),
+        serverID:
+            generateServerID(),
 
-        name: name,
 
-        description: description,
+        /* Server owner */
 
-        icon: icon,
+        ownerID:
+            getOwnerID(),
+
+
+        /* Basic information */
+
+        name:
+            name,
+
+        description:
+            description,
+
+
+        /* Server icon */
+
+        icon:
+            icon,
+
+
+        /* Server creation time */
 
         createdAt:
-            new Date().toISOString()
+            new Date().toISOString(),
+
+
+        /* =================================================
+           INITIAL SERVER DATA
+
+           These will be used in later phases.
+           ================================================= */
+
+        channels: [],
+
+        members: [],
+
+        roles: [],
+
+        rules: [],
+
+        invites: [],
+
+
+        /* Default server settings */
+
+        settings: {
+
+            theme:
+                "dark",
+
+            accentColor:
+                "#6c63ff",
+
+            background:
+                null
+        }
     };
 
 
@@ -329,27 +566,8 @@ function createServer() {
        GET EXISTING SERVERS
        ===================================================== */
 
-    let existingServers = [];
-
-
-    try {
-
-        existingServers =
-            JSON.parse(
-                localStorage.getItem(
-                    "friendchat_servers"
-                )
-            ) || [];
-
-    } catch (error) {
-
-        console.error(
-            "Could not read saved servers:",
-            error
-        );
-
-        existingServers = [];
-    }
+    const existingServers =
+        getSavedServers();
 
 
     /* =====================================================
@@ -362,32 +580,19 @@ function createServer() {
 
 
     /* =====================================================
-       SAVE SERVERS
+       SAVE SERVER
        ===================================================== */
 
-    try {
-
-        localStorage.setItem(
-            "friendchat_servers",
-            JSON.stringify(
-                existingServers
-            )
+    const saved =
+        saveServers(
+            existingServers
         );
 
-        localStorage.setItem(
-            "friendchat_current_server",
-            serverID
-        );
 
-    } catch (error) {
-
-        console.error(
-            "Could not save server:",
-            error
-        );
+    if (!saved) {
 
         showError(
-            "Could not save the server in this browser."
+            "Could not save the server. Please try again."
         );
 
         return;
@@ -395,7 +600,27 @@ function createServer() {
 
 
     /* =====================================================
-       SERVER CREATED
+       SAVE CURRENT SERVER
+       ===================================================== */
+
+    try {
+
+        localStorage.setItem(
+            "friendchat_current_server",
+            newServer.serverID
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Could not save current server:",
+            error
+        );
+    }
+
+
+    /* =====================================================
+       LOG
        ===================================================== */
 
     console.log(
@@ -404,92 +629,47 @@ function createServer() {
     );
 
 
-    /*
-     * For Phase 1 we show the result.
-     *
-     * Later we will replace this with:
-     *
-     * create-server.html
-     *       ↓
-     * server-home.html
-     *
-     * without using an alert.
-     */
+    /* =====================================================
+       OPEN SERVER HOME
+       ===================================================== */
 
-    showCreatedMessage(
-        newServer
+    window.location.href =
+        "server-home.html";
+}
+
+
+/* =========================================================
+   CREATE BUTTON
+   ========================================================= */
+
+if (createServerButton) {
+
+    createServerButton.addEventListener(
+        "click",
+        createServer
     );
 }
 
 
 /* =========================================================
-   OWNER ID
+   ENTER KEY
    ========================================================= */
 
-function getOwnerID() {
+if (serverName) {
 
-    /*
-     * First try to use your existing FriendChat
-     * login user ID.
-     */
+    serverName.addEventListener(
+        "keydown",
+        function (event) {
 
-    let ownerID =
-        localStorage.getItem(
-            "friendchat_user_id"
-        );
+            if (
+                event.key === "Enter"
+            ) {
 
+                event.preventDefault();
 
-    /*
-     * If your current login system hasn't
-     * created one yet, make a temporary ID.
-     */
-
-    if (!ownerID) {
-
-        ownerID =
-            "user_" +
-            Math.random()
-                .toString(36)
-                .substring(2, 10);
-
-
-        localStorage.setItem(
-            "friendchat_user_id",
-            ownerID
-        );
-    }
-
-
-    return ownerID;
-}
-
-
-/* =========================================================
-   CREATED MESSAGE
-   ========================================================= */
-
-function showCreatedMessage(server) {
-
-    /*
-     * For now use a simple message.
-     *
-     * We will build the actual Server Home
-     * in the next phase.
-     */
-
-    alert(
-        "Server created successfully!\n\n" +
-        "Server: " +
-        server.name +
-        "\n\n" +
-        "Server ID: " +
-        server.serverID
-    );
-
-
-    console.log(
-        "Created server:",
-        server
+                createServer();
+            }
+        }
     );
 }
 
@@ -498,24 +678,27 @@ function showCreatedMessage(server) {
    CANCEL
    ========================================================= */
 
-cancelButton.addEventListener(
-    "click",
-    function () {
+if (cancelButton) {
 
-        /*
-         * Go back to the previous page.
-         */
+    cancelButton.addEventListener(
+        "click",
+        function () {
 
-        if (
-            window.history.length > 1
-        ) {
+            /*
+             * Go back to FriendChat.
+             */
 
-            window.history.back();
+            if (
+                window.history.length > 1
+            ) {
 
-        } else {
+                window.history.back();
 
-            window.location.href =
-                "index.html";
+            } else {
+
+                window.location.href =
+                    "index.html";
+            }
         }
-    }
-);
+    );
+}
