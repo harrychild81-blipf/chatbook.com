@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>FriendChat - Server</title>
+
+    <link
+        rel="stylesheet"
+        href="server-home.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div class="server-app">
+
+
+        <!-- =================================================
+             TOP BAR
+             ================================================= -->
+
+        <header class="top-bar">
+
+            <div class="top-left">
+
+                <button
+                    class="back-button"
+                    id="backButton"
+                    title="Back"
+                >
+                    ←
+                </button>
+
+
+                <div class="mini-server-icon">
+
+                    <img
+                        id="topServerIcon"
+                        src=""
+                        alt=""
+                    >
+
+                    <span id="topServerIconText">
+                        FC
+                    </span>
+
+                </div>
+
+
+                <div class="top-server-info">
+
+                    <div
+                        class="top-server-name"
+                        id="topServerName"
+                    >
+                        Server
+                    </div>
+
+                    <div class="top-server-status">
+                        Your server
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="top-right">
+
+                <button
+                    class="top-button"
+                    id="membersButton"
+                >
+                    <span>👥</span>
+                    <span>Members</span>
+                </button>
+
+
+                <button
+                    class="top-button"
+                    id="settingsButton"
+                >
+                    <span>⚙</span>
+                    <span>Settings</span>
+                </button>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             MAIN CONTENT
+             ================================================= -->
+
+        <main class="main-content">
+
+
+            <!-- SERVER HERO -->
+
+            <section class="server-hero">
+
+                <div class="hero-glow"></div>
+
+
+                <div class="large-server-icon">
+
+                    <img
+                        id="serverIcon"
+                        src=""
+                        alt="Server icon"
+                    >
+
+                    <span id="serverIconText">
+                        FC
+                    </span>
+
+                </div>
+
+
+                <div class="hero-info">
+
+                    <div class="server-label">
+                        YOUR SERVER
+                    </div>
+
+                    <h1 id="serverName">
+                        Server
+                    </h1>
+
+                    <p id="serverDescription">
+                        Welcome to your FriendChat server.
+                    </p>
+
+                    <div class="server-id">
+                        <span>SERVER ID</span>
+
+                        <code id="serverID">
+                            —
+                        </code>
+
+                        <button
+                            id="copyServerID"
+                            title="Copy Server ID"
+                        >
+                            Copy
+                        </button>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 QUICK ACTIONS
+                 ================================================= -->
+
+            <section class="section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h2>
+                            Your server
+                        </h2>
+
+                        <p>
+                            Manage and customize your space.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="action-grid">
+
+
+                    <!-- CHANNELS -->
+
+                    <button
+                        class="action-card"
+                        id="channelsCard"
+                    >
+
+                        <div class="action-icon">
+                            💬
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Channels
+                            </strong>
+
+                            <span>
+                                Create rooms for conversations
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- MEMBERS -->
+
+                    <button
+                        class="action-card"
+                        id="membersCard"
+                    >
+
+                        <div class="action-icon">
+                            👥
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Members
+                            </strong>
+
+                            <span>
+                                See people in your server
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- RULES -->
+
+                    <button
+                        class="action-card"
+                        id="rulesCard"
+                    >
+
+                        <div class="action-icon">
+                            📜
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Rules
+                            </strong>
+
+                            <span>
+                                Set rules for your community
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- ROLES -->
+
+                    <button
+                        class="action-card"
+                        id="rolesCard"
+                    >
+
+                        <div class="action-icon">
+                            🛡
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Roles
+                            </strong>
+
+                            <span>
+                                Manage roles and permissions
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- AI -->
+
+                    <button
+                        class="action-card"
+                        id="aiCard"
+                    >
+
+                        <div class="action-icon">
+                            ✦
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                FriendChat AI
+                            </strong>
+
+                            <span>
+                                AI tools for your server
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- MUSIC -->
+
+                    <button
+                        class="action-card"
+                        id="musicCard"
+                    >
+
+                        <div class="action-icon">
+                            ♪
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Music
+                            </strong>
+
+                            <span>
+                                Shared listening and music
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- ACTIVITY -->
+
+                    <button
+                        class="action-card"
+                        id="activityCard"
+                    >
+
+                        <div class="action-icon">
+                            ◉
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Activity
+                            </strong>
+
+                            <span>
+                                See what's happening
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- SETTINGS -->
+
+                    <button
+                        class="action-card"
+                        id="serverSettingsCard"
+                    >
+
+                        <div class="action-icon">
+                            ⚙
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Server Settings
+                            </strong>
+
+                            <span>
+                                Customize your server
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SERVER PREVIEW
+                 ================================================= -->
+
+            <section class="section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <h2>
+                            Server preview
+                        </h2>
+
+                        <p>
+                            This is how your server currently looks.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="preview-box">
+
+
+                    <div class="preview-header">
+
+                        <div class="preview-server-icon">
+
+                            <img
+                                id="previewIcon"
+                                src=""
+                                alt=""
+                            >
+
+                            <span id="previewIconText">
+                                FC
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <strong id="previewName">
+                                Server
+                            </strong>
+
+                            <p>
+                                FriendChat server
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="preview-line"></div>
+
+
+                    <div class="preview-content">
+
+                        <div class="preview-channel">
+                            # General
+                        </div>
+
+                        <div class="preview-channel muted">
+                            # Announcements
+                        </div>
+
+                        <div class="preview-channel muted">
+                            # Media
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </main>
+
+
+        <!-- =================================================
+             TOAST
+             ================================================= -->
+
+        <div
+            class="toast"
+            id="toast"
+        >
+            <span id="toastMessage">
+                Done
+            </span>
+        </div>
+
+
+    </div>
+
+
+    <script src="server-home.js"></script>
+
+</body>
+
+</html>
