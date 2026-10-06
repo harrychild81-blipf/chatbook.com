@@ -14,28 +14,28 @@
      MAIN FRIENDCHAT CSS
      ===================================================== -->
 
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 
 
 <!-- =====================================================
      CUSTOM FRIENDCHAT UI
      ===================================================== -->
 
-<link rel="stylesheet" href="friendchat-ui-v3-FINAL.css?v=8">
+<link rel="stylesheet" href="friendchat-ui-v3-FINAL.css?v=9">
 
 
 <!-- =====================================================
      SUGGESTIONS / DISCOVER CSS
      ===================================================== -->
 
-<link rel="stylesheet" href="suggestions.css?v=2">
+<link rel="stylesheet" href="suggestions.css?v=3">
 
 
 <!-- =====================================================
      SPOTIFY CSS
      ===================================================== -->
 
-<link rel="stylesheet" href="spotify.css?v=6">
+<link rel="stylesheet" href="spotify.css?v=7">
 
 
 <style>
@@ -102,7 +102,7 @@ body {
 
 
 /* =====================================================
-   1 — MIDNIGHT BLUE
+   01 — MIDNIGHT BLUE
    ===================================================== */
 
 body.fc-theme-midnight {
@@ -120,7 +120,7 @@ body.fc-theme-midnight {
 
 
 /* =====================================================
-   2 — PURPLE NEON
+   02 — PURPLE NEON
    ===================================================== */
 
 body.fc-theme-purple-neon {
@@ -138,7 +138,7 @@ body.fc-theme-purple-neon {
 
 
 /* =====================================================
-   3 — OCEAN
+   03 — OCEAN
    ===================================================== */
 
 body.fc-theme-ocean {
@@ -156,7 +156,7 @@ body.fc-theme-ocean {
 
 
 /* =====================================================
-   4 — FOREST
+   04 — FOREST
    ===================================================== */
 
 body.fc-theme-forest {
@@ -174,7 +174,7 @@ body.fc-theme-forest {
 
 
 /* =====================================================
-   5 — CHERRY BLOSSOM
+   05 — CHERRY BLOSSOM
    ===================================================== */
 
 body.fc-theme-cherry {
@@ -192,7 +192,7 @@ body.fc-theme-cherry {
 
 
 /* =====================================================
-   6 — CRIMSON
+   06 — CRIMSON
    ===================================================== */
 
 body.fc-theme-crimson {
@@ -210,7 +210,7 @@ body.fc-theme-crimson {
 
 
 /* =====================================================
-   7 — SUNSET
+   07 — SUNSET
    ===================================================== */
 
 body.fc-theme-sunset {
@@ -228,7 +228,7 @@ body.fc-theme-sunset {
 
 
 /* =====================================================
-   8 — ARCTIC
+   08 — ARCTIC
    ===================================================== */
 
 body.fc-theme-arctic {
@@ -246,7 +246,7 @@ body.fc-theme-arctic {
 
 
 /* =====================================================
-   9 — CYBER GREEN
+   09 — CYBER GREEN
    ===================================================== */
 
 body.fc-theme-cyber-green {
@@ -372,7 +372,7 @@ body.fc-theme-aurora {
 
 
 /* =====================================================
-   16 — DISCORD-STYLE BLUE
+   16 — DISCORD BLUE
    ===================================================== */
 
 body.fc-theme-discord {
@@ -476,7 +476,6 @@ body.fc-theme-glass {
   margin:0 !important;
   padding:0 !important;
   overflow:hidden !important;
-  box-sizing:border-box !important;
 }
 
 
@@ -861,38 +860,98 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
 
 
 /* =====================================================
-   THEME PANEL
+   THEME OVERLAY
    ===================================================== */
 
 #fcThemeOverlay {
-  position:fixed;
-  inset:0;
-  z-index:2147483640;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
+
+  position:fixed !important;
+
+  inset:0 !important;
+
+  width:100vw !important;
+
+  height:100vh !important;
+
+  height:100dvh !important;
+
+  margin:0 !important;
+
+  padding:16px !important;
+
+  display:none !important;
+
+  align-items:center !important;
+
+  justify-content:center !important;
+
+  overflow-y:auto !important;
+
+  overflow-x:hidden !important;
+
+  overscroll-behavior:contain !important;
+
+  background:rgba(0,0,0,.62) !important;
+
+  backdrop-filter:blur(10px) !important;
+
+  -webkit-backdrop-filter:blur(10px) !important;
+
+  z-index:2147483647 !important;
 }
+
+
+/* OPEN */
 
 #fcThemeOverlay.fc-theme-visible {
-  display:flex;
+
+  display:flex !important;
+
 }
 
 
+/* =====================================================
+   THEME PANEL
+   ===================================================== */
+
 #fcThemePanel {
-  width:min(720px,calc(100vw - 30px));
-  max-height:min(780px,calc(100dvh - 30px));
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-  border:1px solid var(--fc-border);
-  border-radius:24px;
-  background:var(--fc-panel);
-  color:var(--fc-text);
-  box-shadow:0 25px 80px rgba(0,0,0,.5);
+
+  position:relative !important;
+
+  width:min(760px,calc(100vw - 32px)) !important;
+
+  height:auto !important;
+
+  min-height:0 !important;
+
+  max-height:calc(100dvh - 32px) !important;
+
+  margin:auto !important;
+
+  padding:0 !important;
+
+  display:flex !important;
+
+  flex-direction:column !important;
+
+  overflow:hidden !important;
+
+  flex-shrink:0 !important;
+
+  border:1px solid var(--fc-border) !important;
+
+  border-radius:24px !important;
+
+  background:var(--fc-panel) !important;
+
+  color:var(--fc-text) !important;
+
+  box-shadow:
+    0 25px 90px rgba(0,0,0,.6),
+    0 0 0 1px rgba(255,255,255,.04) !important;
+
+  z-index:2147483647 !important;
+
 }
 
 
@@ -901,72 +960,139 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
    ===================================================== */
 
 .fc-theme-header {
-  flex:0 0 auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:18px 20px;
-  border-bottom:1px solid var(--fc-border);
+
+  flex:0 0 auto !important;
+
+  display:flex !important;
+
+  align-items:center !important;
+
+  justify-content:space-between !important;
+
+  gap:15px !important;
+
+  padding:18px 20px !important;
+
+  border-bottom:1px solid var(--fc-border) !important;
+
 }
+
 
 .fc-theme-header h2 {
-  margin:0;
-  font-size:20px;
+
+  margin:0 !important;
+
+  font-size:20px !important;
+
 }
+
 
 .fc-theme-header p {
-  margin:4px 0 0;
-  color:var(--fc-muted);
-  font-size:12px;
+
+  margin:4px 0 0 !important;
+
+  color:var(--fc-muted) !important;
+
+  font-size:12px !important;
+
 }
 
+
 #fcThemeClose {
-  width:38px;
-  height:38px;
-  border:0;
-  border-radius:50%;
-  background:var(--fc-panel-2);
-  color:var(--fc-text);
-  font-size:22px;
-  cursor:pointer;
+
+  width:38px !important;
+
+  height:38px !important;
+
+  min-width:38px !important;
+
+  min-height:38px !important;
+
+  border:0 !important;
+
+  border-radius:50% !important;
+
+  background:var(--fc-panel-2) !important;
+
+  color:var(--fc-text) !important;
+
+  font-size:22px !important;
+
+  cursor:pointer !important;
+
+  display:flex !important;
+
+  align-items:center !important;
+
+  justify-content:center !important;
+
+  flex-shrink:0 !important;
+
 }
 
 
 /* =====================================================
-   SCROLLABLE THEME AREA
+   THEME LIST — SCROLLABLE
    ===================================================== */
 
 #fcThemeList {
-  flex:1 1 auto;
-  min-height:0;
-  overflow-y:auto;
-  overflow-x:hidden;
-  padding:18px;
 
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
+  flex:1 1 auto !important;
 
-  overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;
+  min-height:0 !important;
+
+  height:auto !important;
+
+  max-height:calc(100dvh - 120px) !important;
+
+  overflow-y:auto !important;
+
+  overflow-x:hidden !important;
+
+  padding:18px !important;
+
+  display:grid !important;
+
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+
+  gap:12px !important;
+
+  overscroll-behavior:contain !important;
+
+  -webkit-overflow-scrolling:touch !important;
+
 }
+
 
 #fcThemeList::-webkit-scrollbar {
+
   width:8px;
+
 }
+
 
 #fcThemeList::-webkit-scrollbar-track {
+
   background:transparent;
+
 }
+
 
 #fcThemeList::-webkit-scrollbar-thumb {
-  background:rgba(255,255,255,.18);
+
+  background:rgba(255,255,255,.2);
+
   border-radius:20px;
+
 }
 
+
 #fcThemeList {
+
   scrollbar-width:thin;
+
   scrollbar-color:rgba(255,255,255,.25) transparent;
+
 }
 
 
@@ -975,53 +1101,108 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
    ===================================================== */
 
 .fc-theme-choice {
-  position:relative;
-  min-height:108px;
-  padding:14px;
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:18px;
-  overflow:hidden;
-  cursor:pointer;
-  text-align:left;
-  color:white;
+
+  position:relative !important;
+
+  min-height:108px !important;
+
+  width:100% !important;
+
+  padding:14px !important;
+
+  border:1px solid rgba(255,255,255,.1) !important;
+
+  border-radius:18px !important;
+
+  overflow:hidden !important;
+
+  cursor:pointer !important;
+
+  text-align:left !important;
+
+  color:white !important;
+
+  font-family:inherit !important;
+
   transition:
     transform .18s ease,
     border-color .18s ease,
-    box-shadow .18s ease;
+    box-shadow .18s ease !important;
+
 }
+
 
 .fc-theme-choice:hover {
-  transform:translateY(-2px);
-  border-color:rgba(255,255,255,.4);
+
+  transform:translateY(-2px) !important;
+
+  border-color:rgba(255,255,255,.4) !important;
+
 }
+
+
+.fc-theme-choice:active {
+
+  transform:scale(.98) !important;
+
+}
+
 
 .fc-theme-choice.fc-theme-selected {
-  border:2px solid var(--fc-accent);
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--fc-accent) 20%,transparent);
+
+  border:2px solid var(--fc-accent) !important;
+
+  box-shadow:
+    0 0 0 3px color-mix(
+      in srgb,
+      var(--fc-accent) 20%,
+      transparent
+    ) !important;
+
 }
+
 
 .fc-theme-number {
-  position:absolute;
-  top:9px;
-  right:11px;
-  font-size:11px;
-  opacity:.65;
+
+  position:absolute !important;
+
+  top:9px !important;
+
+  right:11px !important;
+
+  font-size:11px !important;
+
+  opacity:.65 !important;
+
 }
+
 
 .fc-theme-icon {
-  font-size:27px;
-  margin-bottom:8px;
+
+  font-size:27px !important;
+
+  margin-bottom:8px !important;
+
 }
+
 
 .fc-theme-name {
-  font-size:14px;
-  font-weight:700;
+
+  font-size:14px !important;
+
+  font-weight:700 !important;
+
 }
 
+
 .fc-theme-description {
-  margin-top:4px;
-  font-size:10px;
-  opacity:.7;
+
+  margin-top:4px !important;
+
+  font-size:10px !important;
+
+  opacity:.7 !important;
+
 }
 
 
@@ -1030,81 +1211,81 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
    ===================================================== */
 
 .fc-theme-choice[data-theme="midnight"] {
-  background:linear-gradient(135deg,#070a18,#172348);
+  background:linear-gradient(135deg,#070a18,#172348) !important;
 }
 
 .fc-theme-choice[data-theme="purple-neon"] {
-  background:linear-gradient(135deg,#0c0614,#7c3aed,#b84dff);
+  background:linear-gradient(135deg,#0c0614,#7c3aed,#b84dff) !important;
 }
 
 .fc-theme-choice[data-theme="ocean"] {
-  background:linear-gradient(135deg,#041018,#0e2938,#00bfff);
+  background:linear-gradient(135deg,#041018,#0e2938,#00bfff) !important;
 }
 
 .fc-theme-choice[data-theme="forest"] {
-  background:linear-gradient(135deg,#06100a,#10281a,#22c55e);
+  background:linear-gradient(135deg,#06100a,#10281a,#22c55e) !important;
 }
 
 .fc-theme-choice[data-theme="cherry"] {
-  background:linear-gradient(135deg,#160a11,#351525,#ff75a8);
+  background:linear-gradient(135deg,#160a11,#351525,#ff75a8) !important;
 }
 
 .fc-theme-choice[data-theme="crimson"] {
-  background:linear-gradient(135deg,#110507,#2c0d13,#ff334d);
+  background:linear-gradient(135deg,#110507,#2c0d13,#ff334d) !important;
 }
 
 .fc-theme-choice[data-theme="sunset"] {
-  background:linear-gradient(135deg,#180907,#35160c,#ff7a18);
+  background:linear-gradient(135deg,#180907,#35160c,#ff7a18) !important;
 }
 
 .fc-theme-choice[data-theme="arctic"] {
-  color:#102433;
-  background:linear-gradient(135deg,#edf8ff,#d6eaf5,#67d9ff);
+  color:#102433 !important;
+  background:linear-gradient(135deg,#edf8ff,#d6eaf5,#67d9ff) !important;
 }
 
 .fc-theme-choice[data-theme="cyber-green"] {
-  background:linear-gradient(135deg,#020806,#09200f,#00ff66);
+  background:linear-gradient(135deg,#020806,#09200f,#00ff66) !important;
 }
 
 .fc-theme-choice[data-theme="golden"] {
-  background:linear-gradient(135deg,#100c03,#281f08,#fbbf24);
+  background:linear-gradient(135deg,#100c03,#281f08,#fbbf24) !important;
 }
 
 .fc-theme-choice[data-theme="cyber-pink"] {
-  background:linear-gradient(135deg,#10030d,#2c0b26,#ff2bd6);
+  background:linear-gradient(135deg,#10030d,#2c0b26,#ff2bd6) !important;
 }
 
 .fc-theme-choice[data-theme="black"] {
-  background:linear-gradient(135deg,#000,#050505,#222);
+  background:linear-gradient(135deg,#000,#050505,#222) !important;
 }
 
 .fc-theme-choice[data-theme="white"] {
-  color:#101418;
-  background:linear-gradient(135deg,#fff,#f0f2f5,#d9dde3);
+  color:#101418 !important;
+  background:linear-gradient(135deg,#fff,#f0f2f5,#d9dde3) !important;
 }
 
 .fc-theme-choice[data-theme="galaxy"] {
-  background:linear-gradient(135deg,#050414,#151034,#8b5cf6,#ec4899);
+  background:linear-gradient(135deg,#050414,#151034,#8b5cf6,#ec4899) !important;
 }
 
 .fc-theme-choice[data-theme="aurora"] {
-  background:linear-gradient(135deg,#04100f,#0b2928,#2dd4bf,#8b5cf6);
+  background:linear-gradient(135deg,#04100f,#0b2928,#2dd4bf,#8b5cf6) !important;
 }
 
 .fc-theme-choice[data-theme="discord"] {
-  background:linear-gradient(135deg,#313338,#232428,#5865f2);
+  background:linear-gradient(135deg,#313338,#232428,#5865f2) !important;
 }
 
 .fc-theme-choice[data-theme="cyber-orange"] {
-  background:linear-gradient(135deg,#100703,#2b1107,#ff6a00);
+  background:linear-gradient(135deg,#100703,#2b1107,#ff6a00) !important;
 }
 
 .fc-theme-choice[data-theme="graphite"] {
-  background:linear-gradient(135deg,#101214,#202328,#9ca3af);
+  background:linear-gradient(135deg,#101214,#202328,#9ca3af) !important;
 }
 
 .fc-theme-choice[data-theme="gothic"] {
-  background:linear-gradient(135deg,#080609,#1b0e19,#8b1e3f);
+  background:linear-gradient(135deg,#080609,#1b0e19,#8b1e3f) !important;
 }
 
 .fc-theme-choice[data-theme="glass"] {
@@ -1113,8 +1294,10 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
       135deg,
       rgba(100,180,255,.35),
       rgba(160,100,255,.35)
-    );
-  backdrop-filter:blur(14px);
+    ) !important;
+
+  backdrop-filter:blur(14px) !important;
+
 }
 
 
@@ -1123,16 +1306,36 @@ body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
    ===================================================== */
 
 body.fc-theme-glass::before {
+
   content:"";
+
   position:fixed;
+
   inset:0;
+
   pointer-events:none;
+
   z-index:-1;
+
   background:
-    radial-gradient(circle at 15% 20%,rgba(0,200,255,.25),transparent 30%),
-    radial-gradient(circle at 85% 20%,rgba(140,80,255,.25),transparent 30%),
-    radial-gradient(circle at 50% 90%,rgba(0,150,255,.18),transparent 35%);
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(0,200,255,.25),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 20%,
+      rgba(140,80,255,.25),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 50% 90%,
+      rgba(0,150,255,.18),
+      transparent 35%
+    );
+
 }
+
 
 body.fc-theme-glass .card,
 body.fc-theme-glass header,
@@ -1141,10 +1344,15 @@ body.fc-theme-glass .profileRow,
 body.fc-theme-glass .friendList,
 body.fc-theme-glass .fc-bottom-dock,
 body.fc-theme-glass #fcCustomSidebar {
+
   background:rgba(255,255,255,.08) !important;
+
   border-color:rgba(255,255,255,.18) !important;
+
   backdrop-filter:blur(18px);
+
   -webkit-backdrop-filter:blur(18px);
+
 }
 
 
@@ -1152,46 +1360,47 @@ body.fc-theme-glass #fcCustomSidebar {
    GENERAL THEME COLORS
    ===================================================== */
 
-body.fc-theme-midnight,
-body.fc-theme-purple-neon,
-body.fc-theme-ocean,
-body.fc-theme-forest,
-body.fc-theme-cherry,
-body.fc-theme-crimson,
-body.fc-theme-sunset,
-body.fc-theme-cyber-green,
-body.fc-theme-golden,
-body.fc-theme-cyber-pink,
-body.fc-theme-black,
-body.fc-theme-galaxy,
-body.fc-theme-aurora,
-body.fc-theme-discord,
-body.fc-theme-cyber-orange,
-body.fc-theme-graphite,
-body.fc-theme-gothic,
-body.fc-theme-glass {
+body[class*="fc-theme-"] {
+
   color:var(--fc-text);
+
 }
 
-
-/* =====================================================
-   COMMON THEME SURFACES
-   ===================================================== */
 
 body[class*="fc-theme-"] input,
 body[class*="fc-theme-"] textarea,
 body[class*="fc-theme-"] select {
+
   color:var(--fc-text);
+
   border-color:var(--fc-border);
+
 }
+
 
 body[class*="fc-theme-"] input::placeholder,
 body[class*="fc-theme-"] textarea::placeholder {
+
   color:var(--fc-muted);
+
 }
 
+
 body[class*="fc-theme-"] .muted {
+
   color:var(--fc-muted);
+
+}
+
+
+/* =====================================================
+   THEME OPEN STATE
+   ===================================================== */
+
+body.fc-theme-open {
+
+  overflow:hidden !important;
+
 }
 
 
@@ -1203,85 +1412,157 @@ body[class*="fc-theme-"] .muted {
 
   html,
   body {
+
     width:100vw !important;
+
     min-width:100vw !important;
+
     height:100dvh !important;
+
     min-height:100dvh !important;
+
   }
+
 
   .app,
   .screen {
+
     width:100vw !important;
+
     min-width:100vw !important;
+
     height:100dvh !important;
+
     min-height:100dvh !important;
+
   }
+
 
   #fcNavToggle {
+
     left:8px !important;
+
     width:40px !important;
+
     height:40px !important;
+
   }
+
 
   #fcNavToggle:hover {
+
     width:44px !important;
+
     height:44px !important;
+
   }
+
 
   #fcNavToggle.is-open {
+
     left:196px !important;
+
   }
+
 
   #fcCustomSidebar {
+
     left:8px !important;
+
     width:180px !important;
+
     max-width:180px !important;
+
   }
+
 
   .fc-bottom-dock {
+
     bottom:10px !important;
+
     width:calc(100vw - 20px) !important;
+
     min-height:58px !important;
+
     padding:5px !important;
+
   }
+
 
   .fc-bottom-dock button {
+
     min-width:0 !important;
+
     min-height:48px !important;
+
     flex:1 1 0 !important;
+
   }
+
 
   .fc-dock-label {
+
     font-size:10px !important;
+
   }
+
 
   #chatScreen .mediaButton {
+
     width:42px !important;
+
     height:42px !important;
+
     min-width:42px !important;
+
     min-height:42px !important;
+
     font-size:19px !important;
+
   }
+
 
   #fcThemeOverlay {
-    padding:10px;
+
+    padding:10px !important;
+
+    align-items:flex-start !important;
+
   }
+
 
   #fcThemePanel {
-    width:calc(100vw - 20px);
-    max-height:calc(100dvh - 20px);
-    border-radius:20px;
+
+    width:calc(100vw - 20px) !important;
+
+    max-height:calc(100dvh - 20px) !important;
+
+    margin:auto 0 !important;
+
+    border-radius:20px !important;
+
   }
+
 
   #fcThemeList {
-    grid-template-columns:1fr;
-    padding:12px;
-    gap:10px;
+
+    grid-template-columns:1fr !important;
+
+    padding:12px !important;
+
+    gap:10px !important;
+
+    max-height:calc(100dvh - 100px) !important;
+
   }
 
+
   .fc-theme-choice {
-    min-height:92px;
+
+    min-height:92px !important;
+
   }
+
 }
 
 
@@ -1292,17 +1573,27 @@ body[class*="fc-theme-"] .muted {
 @media (max-width:420px) {
 
   #fcCustomSidebar {
+
     width:175px !important;
+
     max-width:175px !important;
+
   }
+
 
   #fcNavToggle.is-open {
+
     left:189px !important;
+
   }
 
+
   .fc-dock-label {
+
     font-size:9px !important;
+
   }
+
 }
 
 
@@ -1315,11 +1606,17 @@ body[class*="fc-theme-"] .muted {
   *,
   *::before,
   *::after {
+
     animation-duration:.01ms !important;
+
     animation-iteration-count:1 !important;
+
     transition-duration:.01ms !important;
+
     scroll-behavior:auto !important;
+
   }
+
 }
 
 </style>
@@ -1476,8 +1773,6 @@ body[class*="fc-theme-"] .muted {
   </header>
 
 
-  <!-- STATUS INFO -->
-
   <div
     id="statusInfo"
     class="statusInfo hidden"
@@ -1554,8 +1849,6 @@ body[class*="fc-theme-"] .muted {
   </div>
 
 
-  <!-- PROFILE PREVIEW -->
-
   <div class="profileRow">
 
     <div
@@ -1590,8 +1883,6 @@ body[class*="fc-theme-"] .muted {
   </div>
 
 
-  <!-- SEARCH -->
-
   <input
     id="search"
     class="search"
@@ -1600,8 +1891,6 @@ body[class*="fc-theme-"] .muted {
     oninput="renderFriends()"
   >
 
-
-  <!-- FRIEND LIST -->
 
   <div
     id="friendList"
@@ -1694,20 +1983,13 @@ body[class*="fc-theme-"] .muted {
   </header>
 
 
-  <!-- MESSAGES -->
-
   <div
     id="messages"
     class="messages"
   ></div>
 
 
-  <!-- COMPOSER -->
-
   <div class="composer">
-
-
-    <!-- EMOJI -->
 
     <button
       type="button"
@@ -1719,8 +2001,6 @@ body[class*="fc-theme-"] .muted {
     </button>
 
 
-    <!-- INPUT -->
-
     <input
       id="messageInput"
       type="text"
@@ -1729,8 +2009,6 @@ body[class*="fc-theme-"] .muted {
       onkeydown="if(event.key === 'Enter') sendMessage()"
     >
 
-
-    <!-- MEDIA -->
 
     <label
       class="mediaButton"
@@ -1750,8 +2028,6 @@ body[class*="fc-theme-"] .muted {
     </label>
 
 
-    <!-- SEND -->
-
     <button
       type="button"
       onclick="sendMessage()"
@@ -1761,8 +2037,6 @@ body[class*="fc-theme-"] .muted {
 
   </div>
 
-
-  <!-- EMOJI PICKER -->
 
   <div
     id="emojiPicker"
@@ -1798,9 +2072,6 @@ body[class*="fc-theme-"] .muted {
 
   <div class="profilePage">
 
-
-    <!-- PROFILE PHOTO -->
-
     <div class="bigProfile">
 
       <div
@@ -1827,12 +2098,8 @@ body[class*="fc-theme-"] .muted {
     </div>
 
 
-    <!-- PROFILE NAME -->
-
     <h2 id="profilePageName"></h2>
 
-
-    <!-- ID -->
 
     <p class="muted">
 
@@ -1843,8 +2110,6 @@ body[class*="fc-theme-"] .muted {
     </p>
 
 
-    <!-- EDIT -->
-
     <button
       type="button"
       onclick="editProfileName()"
@@ -1852,8 +2117,6 @@ body[class*="fc-theme-"] .muted {
       Edit profile
     </button>
 
-
-    <!-- MEDIA -->
 
     <div class="profileMediaHeader">
 
@@ -1987,7 +2250,6 @@ body[class*="fc-theme-"] .muted {
       <button
         id="fcThemeClose"
         type="button"
-        onclick="closeFCThemePicker()"
         title="Close"
       >
         ×
@@ -1996,350 +2258,166 @@ body[class*="fc-theme-"] .muted {
     </div>
 
 
-    <!-- THIS AREA IS SCROLLABLE -->
-
     <div id="fcThemeList">
 
-
       <button class="fc-theme-choice" data-theme="midnight">
-
         <span class="fc-theme-number">01</span>
-
         <div class="fc-theme-icon">🌌</div>
-
-        <div class="fc-theme-name">
-          Midnight Blue
-        </div>
-
-        <div class="fc-theme-description">
-          Deep blue night
-        </div>
-
+        <div class="fc-theme-name">Midnight Blue</div>
+        <div class="fc-theme-description">Deep blue night</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="purple-neon">
-
         <span class="fc-theme-number">02</span>
-
         <div class="fc-theme-icon">🟣</div>
-
-        <div class="fc-theme-name">
-          Purple Neon
-        </div>
-
-        <div class="fc-theme-description">
-          Neon purple glow
-        </div>
-
+        <div class="fc-theme-name">Purple Neon</div>
+        <div class="fc-theme-description">Neon purple glow</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="ocean">
-
         <span class="fc-theme-number">03</span>
-
         <div class="fc-theme-icon">🔵</div>
-
-        <div class="fc-theme-name">
-          Ocean
-        </div>
-
-        <div class="fc-theme-description">
-          Deep ocean blue
-        </div>
-
+        <div class="fc-theme-name">Ocean</div>
+        <div class="fc-theme-description">Deep ocean blue</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="forest">
-
         <span class="fc-theme-number">04</span>
-
         <div class="fc-theme-icon">🌲</div>
-
-        <div class="fc-theme-name">
-          Forest
-        </div>
-
-        <div class="fc-theme-description">
-          Natural green
-        </div>
-
+        <div class="fc-theme-name">Forest</div>
+        <div class="fc-theme-description">Natural green</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="cherry">
-
         <span class="fc-theme-number">05</span>
-
         <div class="fc-theme-icon">🌸</div>
-
-        <div class="fc-theme-name">
-          Cherry Blossom
-        </div>
-
-        <div class="fc-theme-description">
-          Soft pink
-        </div>
-
+        <div class="fc-theme-name">Cherry Blossom</div>
+        <div class="fc-theme-description">Soft pink</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="crimson">
-
         <span class="fc-theme-number">06</span>
-
         <div class="fc-theme-icon">🔥</div>
-
-        <div class="fc-theme-name">
-          Crimson
-        </div>
-
-        <div class="fc-theme-description">
-          Powerful red
-        </div>
-
+        <div class="fc-theme-name">Crimson</div>
+        <div class="fc-theme-description">Powerful red</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="sunset">
-
         <span class="fc-theme-number">07</span>
-
         <div class="fc-theme-icon">🌅</div>
-
-        <div class="fc-theme-name">
-          Sunset
-        </div>
-
-        <div class="fc-theme-description">
-          Orange sunset
-        </div>
-
+        <div class="fc-theme-name">Sunset</div>
+        <div class="fc-theme-description">Orange sunset</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="arctic">
-
         <span class="fc-theme-number">08</span>
-
         <div class="fc-theme-icon">🧊</div>
-
-        <div class="fc-theme-name">
-          Arctic
-        </div>
-
-        <div class="fc-theme-description">
-          Clean icy white
-        </div>
-
+        <div class="fc-theme-name">Arctic</div>
+        <div class="fc-theme-description">Clean icy white</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="cyber-green">
-
         <span class="fc-theme-number">09</span>
-
         <div class="fc-theme-icon">🟢</div>
-
-        <div class="fc-theme-name">
-          Cyber Green
-        </div>
-
-        <div class="fc-theme-description">
-          Neon hacker green
-        </div>
-
+        <div class="fc-theme-name">Cyber Green</div>
+        <div class="fc-theme-description">Neon hacker green</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="golden">
-
         <span class="fc-theme-number">10</span>
-
         <div class="fc-theme-icon">🟡</div>
-
-        <div class="fc-theme-name">
-          Golden
-        </div>
-
-        <div class="fc-theme-description">
-          Gold luxury
-        </div>
-
+        <div class="fc-theme-name">Golden</div>
+        <div class="fc-theme-description">Gold luxury</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="cyber-pink">
-
         <span class="fc-theme-number">11</span>
-
         <div class="fc-theme-icon">🩷</div>
-
-        <div class="fc-theme-name">
-          Cyber Pink
-        </div>
-
-        <div class="fc-theme-description">
-          Neon pink
-        </div>
-
+        <div class="fc-theme-name">Cyber Pink</div>
+        <div class="fc-theme-description">Neon pink</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="black">
-
         <span class="fc-theme-number">12</span>
-
         <div class="fc-theme-icon">🖤</div>
-
-        <div class="fc-theme-name">
-          Pure Black
-        </div>
-
-        <div class="fc-theme-description">
-          True AMOLED black
-        </div>
-
+        <div class="fc-theme-name">Pure Black</div>
+        <div class="fc-theme-description">True AMOLED black</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="white">
-
         <span class="fc-theme-number">13</span>
-
         <div class="fc-theme-icon">🤍</div>
-
-        <div class="fc-theme-name">
-          Clean White
-        </div>
-
-        <div class="fc-theme-description">
-          Bright and clean
-        </div>
-
+        <div class="fc-theme-name">Clean White</div>
+        <div class="fc-theme-description">Bright and clean</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="galaxy">
-
         <span class="fc-theme-number">14</span>
-
         <div class="fc-theme-icon">🌌</div>
-
-        <div class="fc-theme-name">
-          Galaxy
-        </div>
-
-        <div class="fc-theme-description">
-          Purple cosmic space
-        </div>
-
+        <div class="fc-theme-name">Galaxy</div>
+        <div class="fc-theme-description">Purple cosmic space</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="aurora">
-
         <span class="fc-theme-number">15</span>
-
         <div class="fc-theme-icon">💜</div>
-
-        <div class="fc-theme-name">
-          Aurora
-        </div>
-
-        <div class="fc-theme-description">
-          Aurora glow
-        </div>
-
+        <div class="fc-theme-name">Aurora</div>
+        <div class="fc-theme-description">Aurora glow</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="discord">
-
         <span class="fc-theme-number">16</span>
-
         <div class="fc-theme-icon">🩵</div>
-
-        <div class="fc-theme-name">
-          Discord-style Blue
-        </div>
-
-        <div class="fc-theme-description">
-          Dark blue interface
-        </div>
-
+        <div class="fc-theme-name">Discord-style Blue</div>
+        <div class="fc-theme-description">Dark blue interface</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="cyber-orange">
-
         <span class="fc-theme-number">17</span>
-
         <div class="fc-theme-icon">🟠</div>
-
-        <div class="fc-theme-name">
-          Cyber Orange
-        </div>
-
-        <div class="fc-theme-description">
-          Neon orange
-        </div>
-
+        <div class="fc-theme-name">Cyber Orange</div>
+        <div class="fc-theme-description">Neon orange</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="graphite">
-
         <span class="fc-theme-number">18</span>
-
         <div class="fc-theme-icon">🩶</div>
-
-        <div class="fc-theme-name">
-          Graphite
-        </div>
-
-        <div class="fc-theme-description">
-          Modern grey
-        </div>
-
+        <div class="fc-theme-name">Graphite</div>
+        <div class="fc-theme-description">Modern grey</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="gothic">
-
         <span class="fc-theme-number">19</span>
-
         <div class="fc-theme-icon">🧛</div>
-
-        <div class="fc-theme-name">
-          Dark Gothic
-        </div>
-
-        <div class="fc-theme-description">
-          Dark red gothic
-        </div>
-
+        <div class="fc-theme-name">Dark Gothic</div>
+        <div class="fc-theme-description">Dark red gothic</div>
       </button>
 
 
       <button class="fc-theme-choice" data-theme="glass">
-
         <span class="fc-theme-number">20</span>
-
         <div class="fc-theme-icon">💎</div>
-
-        <div class="fc-theme-name">
-          Glass Crystal
-        </div>
-
-        <div class="fc-theme-description">
-          Glass + crystal blur
-        </div>
-
+        <div class="fc-theme-name">Glass Crystal</div>
+        <div class="fc-theme-description">Glass + crystal blur</div>
       </button>
-
 
     </div>
 
@@ -2369,18 +2447,74 @@ function toggleStatusInfo() {
 
 
 <!-- =====================================================
-     THEME SYSTEM
+     SPOTIFY WEB PLAYBACK SDK
+     ===================================================== -->
+
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
+
+
+<!-- =====================================================
+     SPOTIFY API
+     ===================================================== -->
+
+<script src="spotify-api.js?v=7"></script>
+
+
+<!-- =====================================================
+     SPOTIFY PLAYER
+     ===================================================== -->
+
+<script src="spotify-player.js?v=7"></script>
+
+
+<!-- =====================================================
+     SPOTIFY UI
+     ===================================================== -->
+
+<script src="spotify.js?v=7"></script>
+
+
+<!-- =====================================================
+     MAIN FRIENDCHAT APP
+     ===================================================== -->
+
+<script src="app.js?v=7"></script>
+
+
+<!-- =====================================================
+     CUSTOM FRIENDCHAT UI
+     ===================================================== -->
+
+<script src="friendchat-ui-v3-fixed.js?v=14"></script>
+
+
+<!-- =====================================================
+     FRIENDCHAT SUGGESTIONS
+     ===================================================== -->
+
+<script src="suggestions.js?v=3"></script>
+
+
+<!-- =====================================================
+     FRIENDCHAT THEME SYSTEM
+     
+     IMPORTANT:
+     THIS MUST BE AFTER THE CUSTOM UI SCRIPT.
      ===================================================== -->
 
 <script>
 
 (function () {
 
+  "use strict";
+
+
   const STORAGE_KEY =
     "friendchat-theme-v20";
 
 
   const THEMES = [
+
     "midnight",
     "purple-neon",
     "ocean",
@@ -2401,30 +2535,72 @@ function toggleStatusInfo() {
     "graphite",
     "gothic",
     "glass"
+
   ];
 
+
+  /* =====================================================
+     GET THEME
+     ===================================================== */
+
+  function getSavedTheme() {
+
+    try {
+
+      const saved =
+        localStorage.getItem(STORAGE_KEY);
+
+      if (
+        saved &&
+        THEMES.includes(saved)
+      ) {
+
+        return saved;
+
+      }
+
+    } catch (error) {}
+
+    return "midnight";
+
+  }
+
+
+  /* =====================================================
+     APPLY THEME
+     ===================================================== */
 
   function applyTheme(theme, save) {
 
     if (!THEMES.includes(theme)) {
+
       theme = "midnight";
+
     }
 
 
-    /* Remove only FriendChat theme classes */
+    const body =
+      document.body;
 
-    document.body.classList.forEach(function (className) {
 
-      if (className.indexOf("fc-theme-") === 0) {
+    /* Remove old FriendChat theme */
 
-        document.body.classList.remove(className);
+    Array.from(body.classList).forEach(function (className) {
+
+      if (
+        className.indexOf("fc-theme-") === 0
+      ) {
+
+        body.classList.remove(className);
 
       }
 
     });
 
 
-    document.body.classList.add(
+    /* Add selected theme */
+
+    body.classList.add(
       "fc-theme-" + theme
     );
 
@@ -2434,6 +2610,8 @@ function toggleStatusInfo() {
       theme
     );
 
+
+    /* Save */
 
     if (save !== false) {
 
@@ -2465,449 +2643,699 @@ function toggleStatusInfo() {
   }
 
 
-  function getSavedTheme() {
+  /* =====================================================
+     OPEN THEME PANEL
+     ===================================================== */
 
-    try {
+  function openThemePanel() {
 
-      const saved =
-        localStorage.getItem(STORAGE_KEY);
+    const overlay =
+      document.getElementById(
+        "fcThemeOverlay"
+      );
 
-      if (
-        saved &&
-        THEMES.includes(saved)
-      ) {
 
-        return saved;
+    const panel =
+      document.getElementById(
+        "fcThemePanel"
+      );
 
-      }
 
-    } catch (error) {}
+    if (!overlay || !panel) {
 
-    return "midnight";
+      console.error(
+        "FriendChat: Theme panel not found."
+      );
+
+      return;
+
+    }
+
+
+    /* Make absolutely sure overlay is above everything */
+
+    overlay.style.setProperty(
+      "display",
+      "flex",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "visibility",
+      "visible",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "opacity",
+      "1",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "pointer-events",
+      "auto",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "z-index",
+      "2147483647",
+      "important"
+    );
+
+
+    overlay.classList.add(
+      "fc-theme-visible"
+    );
+
+
+    overlay.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+
+
+    document.body.classList.add(
+      "fc-theme-open"
+    );
+
+
+    document.body.style.overflow =
+      "hidden";
+
+
+    /* Start theme list from top */
+
+    const list =
+      document.getElementById(
+        "fcThemeList"
+      );
+
+
+    if (list) {
+
+      list.scrollTop = 0;
+
+    }
+
+
+    /* Focus close button */
+
+    const closeButton =
+      document.getElementById(
+        "fcThemeClose"
+      );
+
+
+    if (closeButton) {
+
+      setTimeout(function () {
+
+        closeButton.focus();
+
+      },50);
+
+    }
 
   }
+
+
+  /* =====================================================
+     CLOSE THEME PANEL
+     ===================================================== */
+
+  function closeThemePanel() {
+
+    const overlay =
+      document.getElementById(
+        "fcThemeOverlay"
+      );
+
+
+    if (!overlay) return;
+
+
+    overlay.classList.remove(
+      "fc-theme-visible"
+    );
+
+
+    overlay.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+
+    overlay.style.setProperty(
+      "display",
+      "none",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "pointer-events",
+      "none",
+      "important"
+    );
+
+
+    document.body.classList.remove(
+      "fc-theme-open"
+    );
+
+
+    document.body.style.overflow =
+      "hidden";
+
+  }
+
+
+  /* =====================================================
+     CHANGE THEME
+     ===================================================== */
+
+  function changeTheme(theme) {
+
+    /*
+     * If a valid theme was supplied,
+     * apply it.
+     *
+     * Otherwise open the picker.
+     */
+
+    if (
+      typeof theme === "string" &&
+      THEMES.includes(theme)
+    ) {
+
+      applyTheme(theme,true);
+
+      return;
+
+    }
+
+
+    openThemePanel();
+
+  }
+
+
+  /* =====================================================
+     GLOBAL FUNCTIONS
+     ===================================================== */
+
+  window.openThemePanel =
+    openThemePanel;
+
+
+  window.closeThemePanel =
+    closeThemePanel;
+
+
+  window.openFCThemePicker =
+    openThemePanel;
+
+
+  window.closeFCThemePicker =
+    closeThemePanel;
+
+
+  window.openThemePicker =
+    openThemePanel;
+
+
+  window.changeTheme =
+    changeTheme;
+
+
+  window.toggleTheme =
+    openThemePanel;
 
 
   window.applyFriendChatTheme =
     function (theme) {
 
-      applyTheme(theme,true);
+      if (THEMES.includes(theme)) {
+
+        applyTheme(
+          theme,
+          true
+        );
+
+      }
 
     };
 
 
-  window.openFCThemePicker =
-    function () {
+  /* =====================================================
+     CONNECT SIDEBAR THEME BUTTON
+     ===================================================== */
 
-      const overlay =
-        document.getElementById("fcThemeOverlay");
+  function isThemeButton(element) {
 
-      if (!overlay) return;
+    if (!element) return false;
 
-      overlay.classList.add(
-        "fc-theme-visible"
+
+    const text =
+      (element.textContent || "")
+        .replace(/\s+/g," ")
+        .trim()
+        .toLowerCase();
+
+
+    if (!text) return false;
+
+
+    /*
+     * Exact/common names used by
+     * FriendChat sidebar.
+     */
+
+    if (
+      text === "change theme" ||
+      text === "🎨 change theme" ||
+      text === "theme" ||
+      text === "🎨 theme" ||
+      text === "themes" ||
+      text === "🎨 themes"
+    ) {
+
+      return true;
+
+    }
+
+
+    if (
+      text.includes("change theme")
+    ) {
+
+      return true;
+
+    }
+
+
+    return false;
+
+  }
+
+
+  function connectThemeButtons() {
+
+    const elements =
+      document.querySelectorAll(
+        "button, a, [role='button'], .sidebar-item, .menu-item, .fc-nav-item"
       );
 
-      overlay.setAttribute(
-        "aria-hidden",
-        "false"
+
+    elements.forEach(function (element) {
+
+      if (!isThemeButton(element)) {
+
+        return;
+
+      }
+
+
+      /*
+       * Don't attach multiple listeners.
+       */
+
+      if (
+        element.dataset.fcThemeConnected === "true"
+      ) {
+
+        return;
+
+      }
+
+
+      element.dataset.fcThemeConnected =
+        "true";
+
+
+      /*
+       * Capture phase makes this run
+       * before most normal click handlers.
+       */
+
+      element.addEventListener(
+        "click",
+        function (event) {
+
+          event.preventDefault();
+
+          event.stopPropagation();
+
+          event.stopImmediatePropagation();
+
+          openThemePanel();
+
+        },
+        true
       );
 
-      document.body.style.overflow =
-        "hidden";
+    });
 
-    };
-
-
-  window.closeFCThemePicker =
-    function () {
-
-      const overlay =
-        document.getElementById("fcThemeOverlay");
-
-      if (!overlay) return;
-
-      overlay.classList.remove(
-        "fc-theme-visible"
-      );
-
-      overlay.setAttribute(
-        "aria-hidden",
-        "true"
-      );
-
-      document.body.style.overflow =
-        "hidden";
-
-    };
+  }
 
 
-  /* Compatibility aliases */
-
-  window.changeTheme =
-    window.openFCThemePicker;
-
-  window.openThemePicker =
-    window.openFCThemePicker;
-
-  window.toggleTheme =
-    window.openFCThemePicker;
-
+  /* =====================================================
+     GLOBAL CLICK BACKUP
+     
+     This catches a dynamically created
+     sidebar button even if its own
+     listener was created later.
+     ===================================================== */
 
   document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+    "click",
+    function (event) {
+
+      const target =
+        event.target;
+
+
+      if (!target) return;
+
+
+      const button =
+        target.closest(
+          "button, a, [role='button'], .sidebar-item, .menu-item, .fc-nav-item"
+        );
+
+
+      if (!button) return;
+
+
+      if (!isThemeButton(button)) {
+
+        return;
+
+      }
+
+
+      /*
+       * Ignore the close button itself.
+       */
+
+      if (
+        button.id === "fcThemeClose"
+      ) {
+
+        return;
+
+      }
+
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
+      event.stopImmediatePropagation();
+
+      openThemePanel();
+
+    },
+    true
+  );
+
+
+  /* =====================================================
+     THEME CARD CLICKS
+     ===================================================== */
+
+  document.addEventListener(
+    "click",
+    function (event) {
+
+      const card =
+        event.target.closest(
+          ".fc-theme-choice"
+        );
+
+
+      if (!card) return;
+
+
+      const theme =
+        card.dataset.theme;
+
+
+      if (
+        !theme ||
+        !THEMES.includes(theme)
+      ) {
+
+        return;
+
+      }
+
+
+      event.preventDefault();
+
+      event.stopPropagation();
+
 
       applyTheme(
-        getSavedTheme(),
-        false
+        theme,
+        true
       );
 
-
-      /* Theme cards */
-
-      document
-        .querySelectorAll(".fc-theme-choice")
-        .forEach(function (button) {
-
-          button.addEventListener(
-            "click",
-            function () {
-
-              applyTheme(
-                button.dataset.theme,
-                true
-              );
-
-            }
-          );
-
-        });
+    },
+    false
+  );
 
 
-      /* Close when clicking outside panel */
+  /* =====================================================
+     CLOSE BUTTON
+     ===================================================== */
+
+  document.addEventListener(
+    "click",
+    function (event) {
+
+      if (
+        event.target &&
+        event.target.id === "fcThemeClose"
+      ) {
+
+        event.preventDefault();
+
+        closeThemePanel();
+
+      }
+
+    }
+  );
+
+
+  /* =====================================================
+     CLICK OUTSIDE
+     ===================================================== */
+
+  document.addEventListener(
+    "click",
+    function (event) {
 
       const overlay =
         document.getElementById(
           "fcThemeOverlay"
         );
 
-      if (overlay) {
 
-        overlay.addEventListener(
-          "click",
-          function (event) {
-
-            if (
-              event.target === overlay
-            ) {
-
-              window.closeFCThemePicker();
-
-            }
-
-          }
-        );
-
-      }
-
-
-      /* ESC closes theme panel */
-
-      document.addEventListener(
-        "keydown",
-        function (event) {
-
-          if (
-            event.key === "Escape"
-          ) {
-
-            const overlay =
-              document.getElementById(
-                "fcThemeOverlay"
-              );
-
-            if (
-              overlay &&
-              overlay.classList.contains(
-                "fc-theme-visible"
-              )
-            ) {
-
-              window.closeFCThemePicker();
-
-            }
-
-          }
-
-        }
-      );
-
-
-      /*
-       * Find the existing sidebar
-       * "Change theme" button.
-       *
-       * This does NOT change the sidebar.
-       * It only makes that existing button
-       * open our theme window.
-       */
-
-      function connectThemeButton() {
-
-        const elements =
-          document.querySelectorAll(
-            "button,a,[role='button']"
-          );
-
-
-        elements.forEach(function (element) {
-
-          if (
-            element.dataset.fcThemeConnected
-          ) {
-
-            return;
-
-          }
-
-
-          const text =
-            (element.textContent || "")
-              .trim()
-              .toLowerCase();
-
-
-          if (
-            text === "change theme" ||
-            text === "🎨 change theme" ||
-            text.includes("change theme")
-          ) {
-
-            element.dataset.fcThemeConnected =
-              "true";
-
-
-            element.addEventListener(
-              "click",
-              function (event) {
-
-                event.preventDefault();
-                event.stopImmediatePropagation();
-
-                window.openFCThemePicker();
-
-              },
-              true
-            );
-
-          }
-
-        });
-
-      }
-
-
-      connectThemeButton();
-
-
-      /*
-       * The sidebar is created by
-       * friendchat-ui-v3-fixed.js,
-       * so watch for it appearing.
-       */
-
-      const observer =
-        new MutationObserver(
-          function () {
-
-            connectThemeButton();
-
-          }
+      const panel =
+        document.getElementById(
+          "fcThemePanel"
         );
 
 
-      observer.observe(
-        document.body,
-        {
-          childList:true,
-          subtree:true
-        }
-      );
+      if (!overlay || !panel) return;
 
 
-      setTimeout(
-        connectThemeButton,
-        500
-      );
+      if (
+        overlay.classList.contains(
+          "fc-theme-visible"
+        ) &&
+        event.target === overlay
+      ) {
 
-      setTimeout(
-        connectThemeButton,
-        1500
-      );
+        closeThemePanel();
 
-      setTimeout(
-        connectThemeButton,
-        3000
-      );
+      }
 
     }
   );
 
+
+  /* =====================================================
+     ESCAPE
+     ===================================================== */
+
+  document.addEventListener(
+    "keydown",
+    function (event) {
+
+      if (
+        event.key === "Escape"
+      ) {
+
+        const overlay =
+          document.getElementById(
+            "fcThemeOverlay"
+          );
+
+
+        if (
+          overlay &&
+          overlay.classList.contains(
+            "fc-theme-visible"
+          )
+        ) {
+
+          closeThemePanel();
+
+        }
+
+      }
+
+    }
+  );
+
+
+  /* =====================================================
+     MUTATION OBSERVER
+     
+     Sidebar is dynamically created by
+     friendchat-ui-v3-fixed.js.
+     ===================================================== */
+
+  const observer =
+    new MutationObserver(
+      function () {
+
+        connectThemeButtons();
+
+      }
+    );
+
+
+  function startObserver() {
+
+    if (!document.body) return;
+
+
+    observer.observe(
+      document.body,
+      {
+        childList:true,
+        subtree:true
+      }
+    );
+
+
+    connectThemeButtons();
+
+  }
+
+
+  /* =====================================================
+     INITIALIZE
+     ===================================================== */
+
+  function initializeThemeSystem() {
+
+    applyTheme(
+      getSavedTheme(),
+      false
+    );
+
+
+    connectThemeButtons();
+
+
+    const overlay =
+      document.getElementById(
+        "fcThemeOverlay"
+      );
+
+
+    if (overlay) {
+
+      overlay.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      overlay.style.setProperty(
+        "display",
+        "none",
+        "important"
+      );
+
+    }
+
+
+    startObserver();
+
+
+    /*
+     * Extra checks because the sidebar
+     * can be created shortly after login.
+     */
+
+    setTimeout(
+      connectThemeButtons,
+      300
+    );
+
+
+    setTimeout(
+      connectThemeButtons,
+      800
+    );
+
+
+    setTimeout(
+      connectThemeButtons,
+      1500
+    );
+
+
+    setTimeout(
+      connectThemeButtons,
+      3000
+    );
+
+  }
+
+
+  if (
+    document.readyState === "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeThemeSystem
+    );
+
+  } else {
+
+    initializeThemeSystem();
+
+  }
+
 })();
 
 </script>
-
-
-<!-- =====================================================
-     SPOTIFY WEB PLAYBACK SDK
-     ===================================================== -->
-
-<script src="https://sdk.scdn.co/spotify-player.js"></script>
-
-
-<!-- =====================================================
-     SPOTIFY API
-     ===================================================== -->
-
-<script src="spotify-api.js?v=6"></script>
-
-
-<!-- =====================================================
-     SPOTIFY PLAYER
-     ===================================================== -->
-
-<script src="spotify-player.js?v=6"></script>
-
-
-<!-- =====================================================
-     SPOTIFY UI
-     ===================================================== -->
-
-<script src="spotify.js?v=6"></script>
-
-
-<!-- =====================================================
-     MAIN FRIENDCHAT APP
-     ===================================================== -->
-
-<script src="app.js?v=6"></script>
-
-
-<!-- =====================================================
-     CUSTOM FRIENDCHAT UI
-     ===================================================== -->
-
-<script src="friendchat-ui-v3-fixed.js?v=13"></script>
-
-
-<!-- =====================================================
-     FRIENDCHAT SUGGESTIONS
-     ===================================================== -->
-
-<script src="suggestions.js?v=2"></script>
 
 
 </body>
 
 </html>
-<script>
-(function () {
-  function openFriendChatThemes() {
-    const panel = document.getElementById("fcThemeOverlay");
-
-    if (!panel) {
-      console.error("FriendChat theme panel not found.");
-      return;
-    }
-
-    panel.classList.remove("hidden");
-    panel.style.display = "flex";
-    document.body.classList.add("fc-theme-open");
-  }
-
-  function closeFriendChatThemes() {
-    const panel = document.getElementById("fcThemeOverlay");
-
-    if (!panel) return;
-
-    panel.classList.add("hidden");
-    panel.style.display = "none";
-    document.body.classList.remove("fc-theme-open");
-  }
-
-  // Make these functions available to your existing sidebar
-  window.changeTheme = openFriendChatThemes;
-  window.openThemePicker = openFriendChatThemes;
-  window.toggleTheme = openFriendChatThemes;
-  window.closeThemePanel = closeFriendChatThemes;
-
-  // Detect the existing "Change theme" button
-  function connectThemeButton() {
-    const elements = document.querySelectorAll(
-      "button, a, [role='button'], .sidebar-item, .menu-item"
-    );
-
-    elements.forEach(function (el) {
-      const text = (el.textContent || "")
-        .trim()
-        .replace(/\s+/g, " ")
-        .toLowerCase();
-
-      if (
-        text === "change theme" ||
-        text.includes("change theme")
-      ) {
-        if (el.dataset.fcThemeConnected === "1") return;
-
-        el.dataset.fcThemeConnected = "1";
-
-        el.addEventListener(
-          "click",
-          function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-
-            openFriendChatThemes();
-          },
-          true
-        );
-      }
-    });
-  }
-
-  // Run now
-  connectThemeButton();
-
-  // Your sidebar is created dynamically, so keep checking for it
-  const observer = new MutationObserver(function () {
-    connectThemeButton();
-  });
-
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-
-  // Close when clicking outside the theme panel
-  document.addEventListener("click", function (event) {
-    const overlay = document.getElementById("fcThemeOverlay");
-
-    if (
-      overlay &&
-      event.target === overlay &&
-      !overlay.classList.contains("hidden")
-    ) {
-      closeFriendChatThemes();
-    }
-  });
-
-  // ESC closes themes
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") {
-      closeFriendChatThemes();
-    }
-  });
-})();
-</script>
