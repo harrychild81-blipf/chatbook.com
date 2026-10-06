@@ -1,5 +1,5 @@
 /* =========================================================
-   FRIENDCHAT CUSTOM UI v5
+   FRIENDCHAT CUSTOM UI v5.1
    COMPLETE FIXED VERSION
 
    FIXES:
@@ -17,6 +17,8 @@
    - Spotify cleanup
    - Navigation visibility
    - Existing sidebar does not break initialization
+   - MutationObserver loop FIXED
+   - Duplicate listeners FIXED
    ========================================================= */
 
 (() => {
@@ -277,6 +279,7 @@
 
   const $ = id => document.getElementById(id);
 
+
   const esc = value =>
     String(value ?? "").replace(
       /[&<>"']/g,
@@ -289,13 +292,15 @@
       }[char])
     );
 
+
   function create(tag, className, parent) {
 
     const element =
       document.createElement(tag);
 
     if (className) {
-      element.className = className;
+      element.className =
+        className;
     }
 
     if (parent) {
@@ -315,6 +320,7 @@
     let style =
       $("friendchat-theme-guaranteed-style");
 
+
     if (!style) {
 
       style =
@@ -324,7 +330,9 @@
         "friendchat-theme-guaranteed-style";
 
       document.head.appendChild(style);
+
     }
+
 
     style.textContent = `
 
@@ -339,7 +347,9 @@
       }
 
 
+      html,
       body {
+
         background:
           var(--fc-bg) !important;
 
@@ -348,7 +358,14 @@
       }
 
 
+      body {
+
+        margin: 0;
+      }
+
+
       .app {
+
         background:
           var(--fc-bg) !important;
 
@@ -358,6 +375,7 @@
 
 
       .screen {
+
         background:
           var(--fc-bg) !important;
 
@@ -472,24 +490,28 @@
 
 
       .fc-sidebar-title {
+
         color:
           var(--fc-text) !important;
       }
 
 
       .fc-sidebar-sub {
+
         color:
           var(--fc-muted) !important;
       }
 
 
       .fc-nav-item {
+
         color:
           var(--fc-text) !important;
       }
 
 
       .fc-nav-item:hover {
+
         background:
           rgba(255,255,255,.06) !important;
       }
@@ -517,7 +539,7 @@
 
       /* =====================================================
          BOTTOM DOCK
-         Keep its behavior/layout.
+         DO NOT CHANGE BEHAVIOR / LAYOUT
          ===================================================== */
 
       .fc-bottom-dock {
@@ -586,15 +608,13 @@
           ) !important;
 
         color:
-          white !important;
+          #fff !important;
       }
 
 
       /* =====================================================
          THEME OVERLAY
-
-         IMPORTANT:
-         The overlay itself is the scroll container.
+         THE OVERLAY ITSELF IS THE SCROLL CONTAINER
          ===================================================== */
 
       html body #fcThemeOverlay {
@@ -611,14 +631,20 @@
         height:
           100vh !important;
 
+        min-height:
+          100vh !important;
+
+        max-height:
+          100vh !important;
+
         display:
           none !important;
 
-        padding:
-          20px !important;
-
         box-sizing:
           border-box !important;
+
+        padding:
+          20px !important;
 
         background:
           rgba(0,0,0,.78) !important;
@@ -637,6 +663,9 @@
 
         touch-action:
           pan-y !important;
+
+        scrollbar-gutter:
+          stable !important;
 
         z-index:
           2147483647 !important;
@@ -661,9 +690,7 @@
 
       /* =====================================================
          THEME PANEL
-
-         Panel is INSIDE overlay.
-         Therefore overlay controls scrolling.
+         MUST BE INSIDE OVERLAY
          ===================================================== */
 
       html body #fcThemeOverlay #fcThemePanel {
@@ -676,6 +703,9 @@
 
         width:
           min(760px, calc(100vw - 40px)) !important;
+
+        min-width:
+          0 !important;
 
         min-height:
           auto !important;
@@ -717,11 +747,13 @@
 
         z-index:
           2147483647 !important;
+
+        transform:
+          none !important;
       }
 
 
-      html body #fcThemeOverlay
-      #fcThemePanel.open {
+      html body #fcThemeOverlay.open #fcThemePanel {
 
         display:
           block !important;
@@ -816,7 +848,7 @@
 
 
       /* =====================================================
-         THEME GRID
+         THEME BODY
          ===================================================== */
 
       .fc-theme-body {
@@ -826,6 +858,9 @@
 
         height:
           auto !important;
+
+        min-height:
+          0 !important;
 
         max-height:
           none !important;
@@ -852,6 +887,9 @@
         height:
           auto !important;
 
+        min-height:
+          0 !important;
+
         max-height:
           none !important;
 
@@ -860,10 +898,17 @@
       }
 
 
+      /* =====================================================
+         THEME BUTTON
+         ===================================================== */
+
       .fc-theme-choice {
 
         width:
           100% !important;
+
+        min-width:
+          0 !important;
 
         min-height:
           112px !important;
@@ -907,6 +952,13 @@
 
         border-color:
           var(--fc-accent) !important;
+      }
+
+
+      .fc-theme-choice:active {
+
+        transform:
+          translateY(0) !important;
       }
 
 
@@ -965,7 +1017,7 @@
 
 
       /* =====================================================
-         MOBILE
+         MOBILE THEME
          ===================================================== */
 
       @media(max-width:600px) {
@@ -1023,6 +1075,7 @@
     let style =
       $("friendchat-nav-guaranteed-style");
 
+
     if (!style) {
 
       style =
@@ -1032,7 +1085,9 @@
         "friendchat-nav-guaranteed-style";
 
       document.head.appendChild(style);
+
     }
+
 
     style.textContent = `
 
@@ -1207,12 +1262,13 @@
     let toggle =
       $("fcNavToggle");
 
+
     let sidebar =
       $("fcCustomSidebar");
 
 
     /* =======================================================
-       CREATE ARROW IF MISSING
+       CREATE ARROW
        ======================================================= */
 
     if (!toggle) {
@@ -1224,19 +1280,24 @@
           document.body
         );
 
+
       toggle.id =
         "fcNavToggle";
+
 
       toggle.type =
         "button";
 
+
       toggle.title =
         "Open navigation";
+
 
       toggle.setAttribute(
         "aria-label",
         "Open navigation"
       );
+
 
       toggle.innerHTML =
         '<span class="fc-chevron">›</span>';
@@ -1245,7 +1306,7 @@
 
 
     /* =======================================================
-       CREATE SIDEBAR IF MISSING
+       CREATE SIDEBAR
        ======================================================= */
 
     if (!sidebar) {
@@ -1257,8 +1318,10 @@
           document.body
         );
 
+
       sidebar.id =
         "fcCustomSidebar";
+
 
       sidebar.innerHTML = `
 
@@ -1361,6 +1424,7 @@
       toggle.dataset.fcBound =
         "1";
 
+
       toggle.addEventListener(
         "click",
         event => {
@@ -1368,15 +1432,18 @@
           event.preventDefault();
           event.stopPropagation();
 
+
           const isOpen =
             sidebar.classList.toggle(
               "open"
             );
 
+
           toggle.classList.toggle(
             "is-open",
             isOpen
           );
+
 
           toggle.title =
             isOpen
@@ -1402,7 +1469,9 @@
         if (
           button.dataset.fcBound === "1"
         ) {
+
           return;
+
         }
 
 
@@ -1416,6 +1485,7 @@
 
             event.preventDefault();
             event.stopPropagation();
+
 
             const action =
               button.dataset.nav;
@@ -1431,11 +1501,10 @@
 
               closeSidebar();
 
-              addThemePanel();
-
               openThemePanel();
 
               return;
+
             }
 
 
@@ -1449,11 +1518,10 @@
 
               closeSidebar();
 
-              addThemePanel();
-
               openThemePanel();
 
               return;
+
             }
 
 
@@ -1470,6 +1538,7 @@
               closeSidebar();
 
               return;
+
             }
 
 
@@ -1490,9 +1559,11 @@
 
               }
 
+
               closeSidebar();
 
               return;
+
             }
 
 
@@ -1521,9 +1592,11 @@
 
               }
 
+
               closeSidebar();
 
               return;
+
             }
 
 
@@ -1544,6 +1617,7 @@
 
               }
 
+
               closeSidebar();
 
             }
@@ -1562,29 +1636,39 @@
   }
 
 
+  /* =========================================================
+     CLOSE SIDEBAR
+     ========================================================= */
+
   function closeSidebar() {
 
     const sidebar =
       $("fcCustomSidebar");
+
 
     const toggle =
       $("fcNavToggle");
 
 
     if (sidebar) {
+
       sidebar.classList.remove(
         "open"
       );
+
     }
 
 
     if (toggle) {
+
       toggle.classList.remove(
         "is-open"
       );
 
+
       toggle.title =
         "Open navigation";
+
     }
 
   }
@@ -1698,9 +1782,7 @@
   function addBottomDock() {
 
     /*
-       IMPORTANT:
-       If your existing bottom dock already exists,
-       DON'T create another one.
+       Existing dock = don't create another.
     */
 
     if (
@@ -1733,8 +1815,10 @@
     chats.type =
       "button";
 
+
     chats.title =
       "Chats";
+
 
     chats.innerHTML =
       "<span>💬</span><span>Chats</span>";
@@ -1759,8 +1843,10 @@
     center.type =
       "button";
 
+
     center.title =
       "Discover FriendChat users";
+
 
     center.innerHTML =
       "<span>FC</span><span>Suggestions</span>";
@@ -1785,8 +1871,10 @@
     profile.type =
       "button";
 
+
     profile.title =
       "Profile";
+
 
     profile.innerHTML =
       "<span>👤</span><span>Profile</span>";
@@ -1850,6 +1938,7 @@
       background:rgba(0,0,0,.72);
       z-index:2147483640;
       overflow-y:auto;
+      overflow-x:hidden;
       padding:20px;
       box-sizing:border-box;
 
@@ -1995,9 +2084,7 @@
       $("fcDiscoveryOverlay");
 
 
-    if (
-      !overlay
-    ) {
+    if (!overlay) {
 
       return;
 
@@ -2017,9 +2104,11 @@
 
       renderDiscovery();
 
+
       overlay.classList.add(
         "open"
       );
+
 
       overlay.style.display =
         "block";
@@ -2036,7 +2125,9 @@
 
 
     if (!overlay) {
+
       return;
+
     }
 
 
@@ -2058,7 +2149,9 @@
 
 
     if (!list) {
+
       return;
+
     }
 
 
@@ -2210,6 +2303,7 @@
         chat.type =
           "button";
 
+
         chat.textContent =
           "Chat";
 
@@ -2228,6 +2322,7 @@
 
             }
 
+
             closeDiscovery();
 
           };
@@ -2245,12 +2340,23 @@
   function addThemePanel() {
 
     /*
-       If it already exists, keep it.
+       If both already exist,
+       keep them.
     */
 
+    const existingOverlay =
+      $("fcThemeOverlay");
+
+
+    const existingPanel =
+      $("fcThemePanel");
+
+
     if (
-      $("fcThemeOverlay") &&
-      $("fcThemePanel")
+      existingOverlay &&
+      existingPanel &&
+      existingPanel.parentElement ===
+        existingOverlay
     ) {
 
       return;
@@ -2259,12 +2365,12 @@
 
 
     /*
-       Remove incomplete/broken old versions.
+       Remove broken/incomplete versions.
     */
 
-    $("fcThemeOverlay")?.remove();
+    existingOverlay?.remove();
 
-    $("fcThemePanel")?.remove();
+    existingPanel?.remove();
 
 
     /* =======================================================
@@ -2283,9 +2389,15 @@
       "fcThemeOverlay";
 
 
+    overlay.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+
     /* =======================================================
        CREATE PANEL INSIDE OVERLAY
-       THIS IS THE IMPORTANT SCROLL FIX
+       IMPORTANT FOR SCROLLING
        ======================================================= */
 
     const panel =
@@ -2298,6 +2410,18 @@
 
     panel.id =
       "fcThemePanel";
+
+
+    panel.setAttribute(
+      "role",
+      "dialog"
+    );
+
+
+    panel.setAttribute(
+      "aria-modal",
+      "true"
+    );
 
 
     /* =======================================================
@@ -2328,9 +2452,7 @@
 
       <div
         class="fc-sidebar-sub"
-        style="
-          margin-top:5px;
-        "
+        style="margin-top:5px;"
       >
         Choose your FriendChat theme
       </div>
@@ -2349,11 +2471,19 @@
     close.type =
       "button";
 
+
     close.textContent =
       "×";
 
+
     close.title =
       "Close themes";
+
+
+    close.setAttribute(
+      "aria-label",
+      "Close themes"
+    );
 
 
     close.addEventListener(
@@ -2374,7 +2504,7 @@
        THEME BODY
        ======================================================= */
 
-    const body =
+    const themeBody =
       create(
         "div",
         "fc-theme-body",
@@ -2386,7 +2516,7 @@
       create(
         "div",
         "fc-theme-grid",
-        body
+        themeBody
       );
 
 
@@ -2417,6 +2547,12 @@
 
         button.dataset.theme =
           key;
+
+
+        button.setAttribute(
+          "aria-label",
+          `Use ${theme.name} theme`
+        );
 
 
         const swatch =
@@ -2477,7 +2613,7 @@
 
 
     /* =======================================================
-       CLICK DARK BACKGROUND TO CLOSE
+       CLICK BACKGROUND TO CLOSE
        ======================================================= */
 
     overlay.addEventListener(
@@ -2505,7 +2641,7 @@
   function openThemePanel() {
 
     /*
-       ALWAYS ensure panel exists.
+       Always create/reuse it.
     */
 
     addThemePanel();
@@ -2534,8 +2670,20 @@
 
 
     /*
-       Force everything open.
+       Ensure panel is correctly inside overlay.
     */
+
+    if (
+      panel.parentElement !==
+      overlay
+    ) {
+
+      overlay.appendChild(
+        panel
+      );
+
+    }
+
 
     overlay.classList.add(
       "open"
@@ -2544,6 +2692,12 @@
 
     panel.classList.add(
       "open"
+    );
+
+
+    overlay.setAttribute(
+      "aria-hidden",
+      "false"
     );
 
 
@@ -2578,6 +2732,13 @@
     overlay.style.setProperty(
       "z-index",
       "2147483647",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "overflow-y",
+      "auto",
       "important"
     );
 
@@ -2618,8 +2779,8 @@
 
 
     /*
-       Lock the MAIN page.
-       Overlay remains independently scrollable.
+       Lock only the main page.
+       Theme overlay itself can still scroll.
     */
 
     if (
@@ -2640,7 +2801,7 @@
 
 
     /*
-       Start at top.
+       Always start from top.
     */
 
     overlay.scrollTop =
@@ -2648,7 +2809,7 @@
 
 
     /*
-       Update selected theme.
+       Highlight saved theme.
     */
 
     updateThemeSelection(
@@ -2676,6 +2837,12 @@
 
       overlay.classList.remove(
         "open"
+      );
+
+
+      overlay.setAttribute(
+        "aria-hidden",
+        "true"
       );
 
 
@@ -2738,6 +2905,10 @@
 
     }
 
+
+    /*
+       Restore body overflow.
+    */
 
     if (
       document.body.dataset
@@ -2818,7 +2989,9 @@
 
 
     if (!theme) {
+
       return;
+
     }
 
 
@@ -2910,7 +3083,7 @@
           button.classList.toggle(
             "selected",
             button.dataset.theme ===
-            selectedKey
+              selectedKey
           );
 
         }
@@ -2959,42 +3132,45 @@
       event => {
 
         if (
-          event.key ===
+          event.key !==
           "Escape"
         ) {
 
-          const theme =
-            $("fcThemeOverlay");
+          return;
+
+        }
 
 
-          if (
-            theme &&
-            theme.classList.contains(
-              "open"
-            )
-          ) {
-
-            closeThemePanel();
-
-            return;
-
-          }
+        const theme =
+          $("fcThemeOverlay");
 
 
-          const discovery =
-            $("fcDiscoveryOverlay");
+        if (
+          theme &&
+          theme.classList.contains(
+            "open"
+          )
+        ) {
+
+          closeThemePanel();
+
+          return;
+
+        }
 
 
-          if (
-            discovery &&
-            discovery.classList.contains(
-              "open"
-            )
-          ) {
+        const discovery =
+          $("fcDiscoveryOverlay");
 
-            closeDiscovery();
 
-          }
+        if (
+          discovery &&
+          discovery.classList.contains(
+            "open"
+          )
+        ) {
+
+          closeDiscovery();
 
         }
 
@@ -3005,15 +3181,50 @@
 
 
   /* =========================================================
+     SAFE STYLE HELPER
+     Prevents MutationObserver loops.
+     ========================================================= */
+
+  function setStyleIfDifferent(
+    element,
+    property,
+    value
+  ) {
+
+    if (!element) {
+
+      return;
+
+    }
+
+
+    const current =
+      element.style.getPropertyValue(
+        property
+      );
+
+
+    if (
+      current !==
+      value
+    ) {
+
+      element.style.setProperty(
+        property,
+        value,
+        "important"
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
      VISIBILITY
      ========================================================= */
 
   function setupVisibility() {
-
-    /*
-       Don't return if login screen isn't present.
-       Your app may use a different login implementation.
-    */
 
     const sync =
       () => {
@@ -3031,8 +3242,7 @@
 
 
         /*
-           If these screens exist,
-           use them to determine authentication.
+           Login screen exists?
         */
 
         if (login) {
@@ -3050,6 +3260,10 @@
 
         }
 
+
+        /*
+           Signup screen exists?
+        */
 
         if (
           authenticated &&
@@ -3078,22 +3292,35 @@
           $("fcCustomSidebar");
 
 
+        /*
+           Navigation visibility
+        */
+
         if (toggle) {
 
-          toggle.style.setProperty(
-            "display",
+          const display =
             authenticated
               ? "flex"
-              : "none",
-            "important"
-          );
+              : "none";
 
-          toggle.style.setProperty(
-            "visibility",
+
+          const visibility =
             authenticated
               ? "visible"
-              : "hidden",
-            "important"
+              : "hidden";
+
+
+          setStyleIfDifferent(
+            toggle,
+            "display",
+            display
+          );
+
+
+          setStyleIfDifferent(
+            toggle,
+            "visibility",
+            visibility
           );
 
         }
@@ -3101,30 +3328,70 @@
 
         if (sidebar) {
 
-          sidebar.style.setProperty(
-            "display",
+          const display =
             authenticated
               ? "block"
-              : "none",
-            "important"
-          );
+              : "none";
 
-          sidebar.style.setProperty(
-            "visibility",
+
+          const visibility =
             authenticated
               ? "visible"
-              : "hidden",
-            "important"
+              : "hidden";
+
+
+          setStyleIfDifferent(
+            sidebar,
+            "display",
+            display
+          );
+
+
+          setStyleIfDifferent(
+            sidebar,
+            "visibility",
+            visibility
           );
 
         }
 
 
+        /*
+           If logged out, close extra panels.
+        */
+
         if (!authenticated) {
 
-          closeThemePanel();
+          const theme =
+            $("fcThemeOverlay");
 
-          closeDiscovery();
+
+          if (
+            theme &&
+            theme.classList.contains(
+              "open"
+            )
+          ) {
+
+            closeThemePanel();
+
+          }
+
+
+          const discovery =
+            $("fcDiscoveryOverlay");
+
+
+          if (
+            discovery &&
+            discovery.classList.contains(
+              "open"
+            )
+          ) {
+
+            closeDiscovery();
+
+          }
 
         }
 
@@ -3133,6 +3400,10 @@
 
     sync();
 
+
+    /*
+       Only create one observer.
+    */
 
     if (
       document.body.dataset
@@ -3152,23 +3423,52 @@
 
     const observer =
       new MutationObserver(
-        () => {
+        mutations => {
+
+          let relevant =
+            false;
+
+
+          for (
+            const mutation
+            of mutations
+          ) {
+
+            /*
+               Ignore our own navigation
+               style changes where possible.
+            */
+
+            if (
+              mutation.type ===
+              "attributes"
+            ) {
+
+              relevant =
+                true;
+
+              break;
+
+            }
+
+          }
+
+
+          if (!relevant) {
+
+            return;
+
+          }
+
 
           sync();
 
+
           /*
-             If some other FriendChat code
-             recreates the sidebar buttons,
-             bind them again.
+             Make sure navigation still exists.
           */
 
-          const navigation =
-            ensureNavigation();
-
-
-          if (navigation) {
-            /* intentionally empty */
-          }
+          ensureNavigation();
 
         }
       );
@@ -3246,15 +3546,6 @@
     closeThemePanel;
 
 
-  /*
-     Correct behavior:
-     changeTheme("purple")
-     actually changes to purple.
-
-     If called without an argument,
-     it simply opens the theme panel.
-  */
-
   window.changeTheme =
     function(key) {
 
@@ -3263,7 +3554,9 @@
         themes[key]
       ) {
 
-        setTheme(key);
+        setTheme(
+          key
+        );
 
       }
       else {
@@ -3316,19 +3609,9 @@
   function init() {
 
     /*
-       IMPORTANT FIX:
-
-       The old code did:
-
-       if ($("fcCustomSidebar")) {
-         setupVisibility();
-         return;
-       }
-
-       That meant if the sidebar already existed,
-       THEME PANEL WAS NEVER CREATED.
-
-       This version NEVER exits early.
+       IMPORTANT:
+       NEVER RETURN EARLY JUST BECAUSE
+       THE SIDEBAR ALREADY EXISTS.
     */
 
     installThemeStyles();
