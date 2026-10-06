@@ -2,6 +2,7 @@
    FRIENDCHAT
    SERVER HOME
    PHASE 3 — CHANNELS
+   PHASE 4 — MEMBERS NAVIGATION
    COMPLETE FIXED VERSION
    ========================================================= */
 
@@ -190,7 +191,7 @@ function saveServers(servers) {
     } catch (error) {
 
         console.error(
-            "Could not save FriendChat servers:",
+            "Could not save server changes:",
             error
         );
 
@@ -516,15 +517,6 @@ function getSavedChannelID() {
             return null;
         }
 
-        /*
-         * Supports the current object format:
-         *
-         * {
-         *   serverID: "...",
-         *   channelID: "..."
-         * }
-         */
-
         try {
 
             const data =
@@ -537,9 +529,11 @@ function getSavedChannelID() {
 
                 if (
                     data.serverID &&
+                    currentServer &&
                     String(data.serverID) !==
                     String(currentServer.serverID)
                 ) {
+
                     return null;
                 }
 
@@ -550,11 +544,6 @@ function getSavedChannelID() {
             }
 
         } catch (error) {
-
-            /*
-             * Also support an older version where
-             * only the channel ID was stored.
-             */
 
             return saved;
         }
@@ -1101,16 +1090,8 @@ function selectChannel(channel) {
         "text"
     ) {
 
-        /*
-         * IMPORTANT:
-         * Open the real channel chat page.
-         *
-         * Example:
-         * channel-chat.html?server=FC123&channel=CH456
-         */
-
         const targetURL =
-            "channel-chat.html" +
+            "./channel-chat.html" +
             "?server=" +
             encodeURIComponent(
                 currentServer.serverID
@@ -1126,13 +1107,6 @@ function selectChannel(channel) {
             targetURL
         );
 
-
-        /*
-         * Use location.href instead of
-         * history.replaceState.
-         *
-         * This actually opens the new page.
-         */
 
         window.location.href =
             targetURL;
@@ -1962,6 +1936,62 @@ if (channelsCard) {
 
 
 /* =========================================================
+   PHASE 4 — OPEN SERVER MEMBERS
+   ========================================================= */
+
+function openServerMembers() {
+
+    if (!currentServer) {
+
+        showToast(
+            "No server is currently selected."
+        );
+
+        return;
+    }
+
+
+    /*
+     * Make absolutely sure the current server
+     * is saved before opening Members.
+     */
+
+    try {
+
+        localStorage.setItem(
+            "friendchat_current_server",
+            String(
+                currentServer.serverID
+            )
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Could not save current server:",
+            error
+        );
+    }
+
+
+    const targetURL =
+        "./server-members.html";
+
+
+    console.log(
+        "FriendChat opening Members:",
+        targetURL,
+        "Server:",
+        currentServer.serverID
+    );
+
+
+    window.location.href =
+        targetURL;
+}
+
+
+/* =========================================================
    MEMBERS CARD
    ========================================================= */
 
@@ -1969,11 +1999,12 @@ if (membersCard) {
 
     membersCard.addEventListener(
         "click",
-        function () {
+        function (event) {
 
-            showToast(
-                "Members system coming next."
-            );
+            event.preventDefault();
+            event.stopPropagation();
+
+            openServerMembers();
 
         }
     );
@@ -2108,11 +2139,12 @@ if (membersButton) {
 
     membersButton.addEventListener(
         "click",
-        function () {
+        function (event) {
 
-            showToast(
-                "Members system coming next."
-            );
+            event.preventDefault();
+            event.stopPropagation();
+
+            openServerMembers();
 
         }
     );
