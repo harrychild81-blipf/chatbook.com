@@ -1257,14 +1257,915 @@
      CREATE / REUSE NAVIGATION
      ========================================================= */
 
+   /* =========================================================
+     CREATE / REUSE NAVIGATION + MY SERVERS
+     ========================================================= */
+
   function ensureNavigation() {
 
     let toggle =
       $("fcNavToggle");
 
-
     let sidebar =
       $("fcCustomSidebar");
+
+
+    /* =======================================================
+       SERVER NAVIGATION CSS
+       ======================================================= */
+
+    let serverStyle =
+      $("friendchat-server-nav-style");
+
+    if (!serverStyle) {
+
+      serverStyle =
+        document.createElement("style");
+
+      serverStyle.id =
+        "friendchat-server-nav-style";
+
+      document.head.appendChild(
+        serverStyle
+      );
+
+    }
+
+    serverStyle.textContent = `
+
+      #fcServerSection {
+
+        width: 100%;
+        box-sizing: border-box;
+
+        margin: 2px 0 4px 0;
+
+        padding: 0 5px;
+      }
+
+
+      .fc-server-head {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 6px;
+
+        width: 100%;
+
+        min-height: 30px;
+
+        box-sizing: border-box;
+
+        padding: 2px 4px 6px 4px;
+      }
+
+
+      .fc-server-title {
+
+        color:
+          var(--fc-muted) !important;
+
+        font-size: 10px;
+
+        font-weight: 800;
+
+        letter-spacing: .8px;
+
+        text-transform: uppercase;
+
+        white-space: nowrap;
+      }
+
+
+      .fc-server-create {
+
+        width: 27px;
+
+        height: 27px;
+
+        flex: 0 0 27px;
+
+        border: 0;
+
+        border-radius: 8px;
+
+        background:
+          var(--fc-panel-2) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        font-size: 19px;
+
+        line-height: 27px;
+
+        padding: 0;
+
+        cursor: pointer;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+      }
+
+
+      .fc-server-create:hover {
+
+        background:
+          var(--fc-accent) !important;
+
+        color:
+          #fff !important;
+      }
+
+
+      .fc-server-list {
+
+        width: 100%;
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 5px;
+      }
+
+
+      .fc-server-item {
+
+        width: 100%;
+
+        min-height: 38px;
+
+        box-sizing: border-box;
+
+        border: 0;
+
+        border-radius: 10px;
+
+        background:
+          transparent;
+
+        color:
+          var(--fc-text);
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 9px;
+
+        padding: 5px 7px;
+
+        cursor: pointer;
+
+        text-align: left;
+      }
+
+
+      .fc-server-item:hover {
+
+        background:
+          rgba(255,255,255,.06);
+      }
+
+
+      .fc-server-item.current {
+
+        background:
+          rgba(108,124,255,.15);
+      }
+
+
+      .fc-server-icon {
+
+        width: 29px;
+
+        height: 29px;
+
+        min-width: 29px;
+
+        border-radius: 8px;
+
+        object-fit: cover;
+
+        background:
+          linear-gradient(
+            135deg,
+            var(--fc-accent),
+            var(--fc-accent-2)
+          );
+
+        color: #fff;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 11px;
+
+        font-weight: 800;
+
+        overflow: hidden;
+      }
+
+
+      .fc-server-icon img {
+
+        width: 100%;
+
+        height: 100%;
+
+        object-fit: cover;
+
+        display: block;
+      }
+
+
+      .fc-server-name {
+
+        min-width: 0;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+
+        color:
+          var(--fc-text) !important;
+
+        font-size: 12px;
+
+        font-weight: 600;
+      }
+
+
+      .fc-server-empty {
+
+        color:
+          var(--fc-muted) !important;
+
+        font-size: 10px;
+
+        line-height: 1.3;
+
+        padding:
+          3px 7px 6px 7px;
+      }
+
+
+      .fc-server-create-row {
+
+        width: 100%;
+
+        min-height: 34px;
+
+        border:
+          1px dashed
+          rgba(255,255,255,.12);
+
+        border-radius: 9px;
+
+        background:
+          transparent;
+
+        color:
+          var(--fc-muted);
+
+        cursor: pointer;
+
+        font-size: 11px;
+
+        text-align: left;
+
+        padding: 6px 8px;
+
+        box-sizing: border-box;
+      }
+
+
+      .fc-server-create-row:hover {
+
+        color:
+          var(--fc-text);
+
+        border-color:
+          var(--fc-accent);
+
+        background:
+          rgba(255,255,255,.04);
+      }
+
+
+      @media(max-width:600px) {
+
+        #fcServerSection {
+
+          padding-left: 3px;
+
+          padding-right: 3px;
+        }
+
+      }
+
+    `;
+
+
+    /* =======================================================
+       CREATE SERVER SECTION
+       ======================================================= */
+
+    function installServerNavigation() {
+
+      if (!sidebar) {
+
+        return;
+
+      }
+
+
+      let section =
+        $("fcServerSection");
+
+
+      /* =====================================================
+         CREATE SERVER SECTION
+         ===================================================== */
+
+      if (!section) {
+
+        section =
+          document.createElement("div");
+
+        section.id =
+          "fcServerSection";
+
+
+        section.innerHTML = `
+
+          <div class="fc-server-head">
+
+            <span class="fc-server-title">
+              My Servers
+            </span>
+
+            <button
+              type="button"
+              class="fc-server-create"
+              id="fcCreateServerButton"
+              title="Create Server"
+              aria-label="Create Server"
+            >
+              +
+            </button>
+
+          </div>
+
+
+          <div
+            class="fc-server-list"
+            id="fcServerList"
+          ></div>
+
+
+          <button
+            type="button"
+            class="fc-server-create-row"
+            id="fcCreateServerRow"
+          >
+            + Create Server
+          </button>
+
+        `;
+
+
+        const divider =
+          sidebar.querySelector(
+            ".fc-nav-divider"
+          );
+
+
+        if (divider) {
+
+          sidebar.insertBefore(
+            section,
+            divider
+          );
+
+        }
+        else {
+
+          sidebar.appendChild(
+            section
+          );
+
+        }
+
+      }
+
+
+      /* =====================================================
+         CREATE SERVER
+         ===================================================== */
+
+      function openCreateServer() {
+
+        window.location.href =
+          "create-server.html";
+
+      }
+
+
+      const createButton =
+        $("fcCreateServerButton");
+
+
+      if (
+        createButton &&
+        createButton.dataset.fcBound !== "1"
+      ) {
+
+        createButton.dataset.fcBound =
+          "1";
+
+
+        createButton.addEventListener(
+          "click",
+          event => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            openCreateServer();
+
+          }
+        );
+
+      }
+
+
+      const createRow =
+        $("fcCreateServerRow");
+
+
+      if (
+        createRow &&
+        createRow.dataset.fcBound !== "1"
+      ) {
+
+        createRow.dataset.fcBound =
+          "1";
+
+
+        createRow.addEventListener(
+          "click",
+          event => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            openCreateServer();
+
+          }
+        );
+
+      }
+
+
+      /* =====================================================
+         GET SERVERS
+         ===================================================== */
+
+      function getServers() {
+
+        try {
+
+          const raw =
+            localStorage.getItem(
+              "friendchat_servers"
+            );
+
+
+          const parsed =
+            raw
+              ? JSON.parse(raw)
+              : [];
+
+
+          return Array.isArray(parsed)
+            ? parsed
+            : [];
+
+        }
+        catch (error) {
+
+          console.warn(
+            "FriendChat: Could not read servers:",
+            error
+          );
+
+
+          return [];
+
+        }
+
+      }
+
+
+      /* =====================================================
+         CURRENT SERVER
+         ===================================================== */
+
+      function getCurrentServer() {
+
+        try {
+
+          return (
+            localStorage.getItem(
+              "friendchat_current_server"
+            ) || ""
+          );
+
+        }
+        catch (_) {
+
+          return "";
+
+        }
+
+      }
+
+
+      /* =====================================================
+         SERVER INITIALS
+         ===================================================== */
+
+      function getInitials(name) {
+
+        const value =
+          String(
+            name || "Server"
+          ).trim();
+
+
+        if (!value) {
+
+          return "S";
+
+        }
+
+
+        const parts =
+          value
+            .split(/\s+/)
+            .filter(Boolean);
+
+
+        if (
+          parts.length >= 2
+        ) {
+
+          return (
+            parts[0].charAt(0) +
+            parts[1].charAt(0)
+          ).toUpperCase();
+
+        }
+
+
+        return value
+          .slice(0, 2)
+          .toUpperCase();
+
+      }
+
+
+      /* =====================================================
+         RENDER SERVERS
+         ===================================================== */
+
+      function renderServers() {
+
+        const list =
+          $("fcServerList");
+
+
+        if (!list) {
+
+          return;
+
+        }
+
+
+        const servers =
+          getServers();
+
+
+        const current =
+          getCurrentServer();
+
+
+        list.innerHTML =
+          "";
+
+
+        /* ===================================================
+           NO SERVERS
+           =================================================== */
+
+        if (!servers.length) {
+
+          const empty =
+            document.createElement(
+              "div"
+            );
+
+
+          empty.className =
+            "fc-server-empty";
+
+
+          empty.textContent =
+            "No servers yet.";
+
+
+          list.appendChild(
+            empty
+          );
+
+
+          return;
+
+        }
+
+
+        /* ===================================================
+           SERVER LIST
+           =================================================== */
+
+        servers.forEach(
+          server => {
+
+            if (
+              !server ||
+              !server.serverID
+            ) {
+
+              return;
+
+            }
+
+
+            const item =
+              document.createElement(
+                "button"
+              );
+
+
+            item.type =
+              "button";
+
+
+            item.className =
+              "fc-server-item";
+
+
+            if (
+              String(
+                server.serverID
+              ) ===
+              String(current)
+            ) {
+
+              item.classList.add(
+                "current"
+              );
+
+            }
+
+
+            item.title =
+              server.name ||
+              "Server";
+
+
+            /* =============================================
+               ICON
+               ============================================= */
+
+            const icon =
+              document.createElement(
+                "div"
+              );
+
+
+            icon.className =
+              "fc-server-icon";
+
+
+            if (server.icon) {
+
+              const image =
+                document.createElement(
+                  "img"
+                );
+
+
+              image.src =
+                server.icon;
+
+
+              image.alt =
+                "";
+
+
+              image.onerror =
+                () => {
+
+                  image.remove();
+
+                  icon.textContent =
+                    getInitials(
+                      server.name
+                    );
+
+                };
+
+
+              icon.appendChild(
+                image
+              );
+
+            }
+            else {
+
+              icon.textContent =
+                getInitials(
+                  server.name
+                );
+
+            }
+
+
+            /* =============================================
+               NAME
+               ============================================= */
+
+            const name =
+              document.createElement(
+                "span"
+              );
+
+
+            name.className =
+              "fc-server-name";
+
+
+            name.textContent =
+              server.name ||
+              "Unnamed Server";
+
+
+            item.appendChild(
+              icon
+            );
+
+
+            item.appendChild(
+              name
+            );
+
+
+            /* =============================================
+               OPEN SERVER
+               ============================================= */
+
+            item.addEventListener(
+              "click",
+              event => {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                try {
+
+                  localStorage.setItem(
+                    "friendchat_current_server",
+                    server.serverID
+                  );
+
+                }
+                catch (_) {}
+
+
+                window.location.href =
+                  "server-home.html";
+
+              }
+            );
+
+
+            list.appendChild(
+              item
+            );
+
+          }
+        );
+
+      }
+
+
+      /* =====================================================
+         FIRST RENDER
+         ===================================================== */
+
+      renderServers();
+
+
+      /* =====================================================
+         STORAGE UPDATE
+         ===================================================== */
+
+      if (
+        !window.__friendChatServerStorageBound
+      ) {
+
+        window.__friendChatServerStorageBound =
+          true;
+
+
+        window.addEventListener(
+          "storage",
+          event => {
+
+            if (
+              event.key ===
+                "friendchat_servers" ||
+
+              event.key ===
+                "friendchat_current_server"
+            ) {
+
+              renderServers();
+
+            }
+
+          }
+        );
+
+      }
+
+
+      /* =====================================================
+         REFRESH WHEN RETURNING TO PAGE
+         ===================================================== */
+
+      if (
+        !window.__friendChatServerFocusBound
+      ) {
+
+        window.__friendChatServerFocusBound =
+          true;
+
+
+        window.addEventListener(
+          "focus",
+          renderServers
+        );
+
+
+        document.addEventListener(
+          "visibilitychange",
+          () => {
+
+            if (
+              document.visibilityState ===
+              "visible"
+            ) {
+
+              renderServers();
+
+            }
+
+          }
+        );
+
+      }
+
+    }
 
 
     /* =======================================================
@@ -1351,8 +2252,13 @@
           data-nav="chats"
           type="button"
         >
-          <span class="fc-nav-icon">💬</span>
+
+          <span class="fc-nav-icon">
+            💬
+          </span>
+
           Chats
+
         </button>
 
 
@@ -1361,8 +2267,13 @@
           data-nav="friends"
           type="button"
         >
-          <span class="fc-nav-icon">👥</span>
+
+          <span class="fc-nav-icon">
+            👥
+          </span>
+
           Friends
+
         </button>
 
 
@@ -1371,8 +2282,13 @@
           data-nav="music"
           type="button"
         >
-          <span class="fc-nav-icon">🎵</span>
+
+          <span class="fc-nav-icon">
+            🎵
+          </span>
+
           Music
+
         </button>
 
 
@@ -1384,8 +2300,13 @@
           data-nav="theme"
           type="button"
         >
-          <span class="fc-nav-icon">🎨</span>
+
+          <span class="fc-nav-icon">
+            🎨
+          </span>
+
           Change theme
+
         </button>
 
 
@@ -1394,8 +2315,13 @@
           data-nav="settings"
           type="button"
         >
-          <span class="fc-nav-icon">⚙️</span>
+
+          <span class="fc-nav-icon">
+            ⚙️
+          </span>
+
           Settings
+
         </button>
 
 
@@ -1404,13 +2330,25 @@
           data-nav="profile"
           type="button"
         >
-          <span class="fc-nav-icon">👤</span>
+
+          <span class="fc-nav-icon">
+            👤
+          </span>
+
           Profile
+
         </button>
 
       `;
 
     }
+
+
+    /* =======================================================
+       ADD MY SERVERS
+       ======================================================= */
+
+    installServerNavigation();
 
 
     /* =======================================================
@@ -1430,6 +2368,7 @@
         event => {
 
           event.preventDefault();
+
           event.stopPropagation();
 
 
@@ -1464,168 +2403,172 @@
       .querySelectorAll(
         ".fc-nav-item"
       )
-      .forEach(button => {
+      .forEach(
+        button => {
 
-        if (
-          button.dataset.fcBound === "1"
-        ) {
+          if (
+            button.dataset.fcBound ===
+            "1"
+          ) {
 
-          return;
-
-        }
-
-
-        button.dataset.fcBound =
-          "1";
-
-
-        button.addEventListener(
-          "click",
-          event => {
-
-            event.preventDefault();
-            event.stopPropagation();
-
-
-            const action =
-              button.dataset.nav;
-
-
-            /* ---------------------------------------------
-               THEME
-               --------------------------------------------- */
-
-            if (
-              action === "theme"
-            ) {
-
-              closeSidebar();
-
-              openThemePanel();
-
-              return;
-
-            }
-
-
-            /* ---------------------------------------------
-               SETTINGS
-               --------------------------------------------- */
-
-            if (
-              action === "settings"
-            ) {
-
-              closeSidebar();
-
-              openThemePanel();
-
-              return;
-
-            }
-
-
-            /* ---------------------------------------------
-               CHATS
-               --------------------------------------------- */
-
-            if (
-              action === "chats"
-            ) {
-
-              goHome();
-
-              closeSidebar();
-
-              return;
-
-            }
-
-
-            /* ---------------------------------------------
-               FRIENDS
-               --------------------------------------------- */
-
-            if (
-              action === "friends"
-            ) {
-
-              if (
-                typeof window.showAdd ===
-                "function"
-              ) {
-
-                window.showAdd();
-
-              }
-
-
-              closeSidebar();
-
-              return;
-
-            }
-
-
-            /* ---------------------------------------------
-               MUSIC
-               --------------------------------------------- */
-
-            if (
-              action === "music"
-            ) {
-
-              if (
-                typeof window.openSpotifyPanel ===
-                "function"
-              ) {
-
-                window.openSpotifyPanel();
-
-              }
-              else if (
-                typeof window.toggleSpotifyPanel ===
-                "function"
-              ) {
-
-                window.toggleSpotifyPanel();
-
-              }
-
-
-              closeSidebar();
-
-              return;
-
-            }
-
-
-            /* ---------------------------------------------
-               PROFILE
-               --------------------------------------------- */
-
-            if (
-              action === "profile"
-            ) {
-
-              if (
-                typeof window.showProfile ===
-                "function"
-              ) {
-
-                window.showProfile();
-
-              }
-
-
-              closeSidebar();
-
-            }
+            return;
 
           }
-        );
 
-      });
+
+          button.dataset.fcBound =
+            "1";
+
+
+          button.addEventListener(
+            "click",
+            event => {
+
+              event.preventDefault();
+
+              event.stopPropagation();
+
+
+              const action =
+                button.dataset.nav;
+
+
+              /* =============================================
+                 THEME
+                 ============================================= */
+
+              if (
+                action === "theme"
+              ) {
+
+                closeSidebar();
+
+                openThemePanel();
+
+                return;
+
+              }
+
+
+              /* =============================================
+                 SETTINGS
+                 ============================================= */
+
+              if (
+                action === "settings"
+              ) {
+
+                closeSidebar();
+
+                openThemePanel();
+
+                return;
+
+              }
+
+
+              /* =============================================
+                 CHATS
+                 ============================================= */
+
+              if (
+                action === "chats"
+              ) {
+
+                goHome();
+
+                closeSidebar();
+
+                return;
+
+              }
+
+
+              /* =============================================
+                 FRIENDS
+                 ============================================= */
+
+              if (
+                action === "friends"
+              ) {
+
+                if (
+                  typeof window.showAdd ===
+                  "function"
+                ) {
+
+                  window.showAdd();
+
+                }
+
+
+                closeSidebar();
+
+                return;
+
+              }
+
+
+              /* =============================================
+                 MUSIC
+                 ============================================= */
+
+              if (
+                action === "music"
+              ) {
+
+                if (
+                  typeof window.openSpotifyPanel ===
+                  "function"
+                ) {
+
+                  window.openSpotifyPanel();
+
+                }
+                else if (
+                  typeof window.toggleSpotifyPanel ===
+                  "function"
+                ) {
+
+                  window.toggleSpotifyPanel();
+
+                }
+
+
+                closeSidebar();
+
+                return;
+
+              }
+
+
+              /* =============================================
+                 PROFILE
+                 ============================================= */
+
+              if (
+                action === "profile"
+              ) {
+
+                if (
+                  typeof window.showProfile ===
+                  "function"
+                ) {
+
+                  window.showProfile();
+
+                }
+
+
+                closeSidebar();
+
+              }
+
+            }
+          );
+
+        }
+      );
 
 
     return {
