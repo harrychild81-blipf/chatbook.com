@@ -2,6 +2,7 @@
    FRIENDCHAT
    SERVER HOME
    PHASE 3 — CHANNELS
+   COMPLETE FIXED VERSION
    ========================================================= */
 
 
@@ -10,74 +11,46 @@
    ========================================================= */
 
 const topServerName =
-    document.getElementById(
-        "topServerName"
-    );
+    document.getElementById("topServerName");
 
 const topServerIcon =
-    document.getElementById(
-        "topServerIcon"
-    );
+    document.getElementById("topServerIcon");
 
 const topServerIconText =
-    document.getElementById(
-        "topServerIconText"
-    );
+    document.getElementById("topServerIconText");
 
 const serverName =
-    document.getElementById(
-        "serverName"
-    );
+    document.getElementById("serverName");
 
 const serverDescription =
-    document.getElementById(
-        "serverDescription"
-    );
+    document.getElementById("serverDescription");
 
 const serverIcon =
-    document.getElementById(
-        "serverIcon"
-    );
+    document.getElementById("serverIcon");
 
 const serverIconText =
-    document.getElementById(
-        "serverIconText"
-    );
+    document.getElementById("serverIconText");
 
 const serverID =
-    document.getElementById(
-        "serverID"
-    );
+    document.getElementById("serverID");
 
 const previewIcon =
-    document.getElementById(
-        "previewIcon"
-    );
+    document.getElementById("previewIcon");
 
 const previewIconText =
-    document.getElementById(
-        "previewIconText"
-    );
+    document.getElementById("previewIconText");
 
 const previewName =
-    document.getElementById(
-        "previewName"
-    );
+    document.getElementById("previewName");
 
 const previewChannelList =
-    document.getElementById(
-        "previewChannelList"
-    );
+    document.getElementById("previewChannelList");
 
 const toast =
-    document.getElementById(
-        "toast"
-    );
+    document.getElementById("toast");
 
 const toastMessage =
-    document.getElementById(
-        "toastMessage"
-    );
+    document.getElementById("toastMessage");
 
 
 /* =========================================================
@@ -85,64 +58,40 @@ const toastMessage =
    ========================================================= */
 
 const createChannelButton =
-    document.getElementById(
-        "createChannelButton"
-    );
+    document.getElementById("createChannelButton");
 
 const channelModal =
-    document.getElementById(
-        "channelModal"
-    );
+    document.getElementById("channelModal");
 
 const channelModalBackdrop =
-    document.getElementById(
-        "channelModalBackdrop"
-    );
+    document.getElementById("channelModalBackdrop");
 
 const closeChannelModal =
-    document.getElementById(
-        "closeChannelModal"
-    );
+    document.getElementById("closeChannelModal");
 
 const cancelChannelButton =
-    document.getElementById(
-        "cancelChannelButton"
-    );
+    document.getElementById("cancelChannelButton");
 
 const saveChannelButton =
-    document.getElementById(
-        "saveChannelButton"
-    );
+    document.getElementById("saveChannelButton");
 
 const channelNameInput =
-    document.getElementById(
-        "channelNameInput"
-    );
+    document.getElementById("channelNameInput");
 
 const channelFormError =
-    document.getElementById(
-        "channelFormError"
-    );
+    document.getElementById("channelFormError");
 
 const textChannelOption =
-    document.getElementById(
-        "textChannelOption"
-    );
+    document.getElementById("textChannelOption");
 
 const voiceChannelOption =
-    document.getElementById(
-        "voiceChannelOption"
-    );
+    document.getElementById("voiceChannelOption");
 
 const textChannelList =
-    document.getElementById(
-        "textChannelList"
-    );
+    document.getElementById("textChannelList");
 
 const voiceChannelList =
-    document.getElementById(
-        "voiceChannelList"
-    );
+    document.getElementById("voiceChannelList");
 
 
 /* =========================================================
@@ -160,44 +109,33 @@ let selectedChannelID = null;
 
 
 /* =========================================================
-   TOAST
+   TOAST TIMER
    ========================================================= */
 
 let toastTimer = null;
 
 
+/* =========================================================
+   TOAST
+   ========================================================= */
+
 function showToast(message) {
 
-    if (!toast) {
+    if (!toast || !toastMessage) {
         return;
     }
 
+    toastMessage.textContent = message;
 
-    toastMessage.textContent =
-        message;
+    toast.classList.add("show");
 
+    clearTimeout(toastTimer);
 
-    toast.classList.add(
-        "show"
-    );
+    toastTimer = setTimeout(function () {
 
+        toast.classList.remove("show");
 
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-            function () {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2200
-        );
+    }, 2200);
 }
 
 
@@ -216,12 +154,9 @@ function getSavedServers() {
                 )
             ) || [];
 
-
         if (!Array.isArray(saved)) {
-
             return [];
         }
-
 
         return saved;
 
@@ -281,21 +216,17 @@ function getCurrentServer() {
                 "friendchat_current_server"
             );
 
-
         const savedServers =
             getSavedServers();
-
 
         if (
             !currentServerID ||
             !savedServers.length
         ) {
-
             return null;
         }
 
-
-        const server =
+        return (
             savedServers.find(
                 function (item) {
 
@@ -303,11 +234,10 @@ function getCurrentServer() {
                         item.serverID ===
                         currentServerID
                     );
+
                 }
-            );
-
-
-        return server || null;
+            ) || null
+        );
 
     } catch (error) {
 
@@ -328,10 +258,8 @@ function getCurrentServer() {
 function getServerInitials(name) {
 
     if (!name) {
-
         return "FC";
     }
-
 
     const words =
         name
@@ -339,14 +267,12 @@ function getServerInitials(name) {
             .split(/\s+/)
             .filter(Boolean);
 
-
     if (words.length === 1) {
 
         return words[0]
             .substring(0, 2)
             .toUpperCase();
     }
-
 
     return (
         words[0][0] +
@@ -373,8 +299,7 @@ function setServerImage(
         typeof icon === "string"
     ) {
 
-        imageElement.src =
-            icon;
+        imageElement.src = icon;
 
         imageElement.style.display =
             "block";
@@ -385,7 +310,6 @@ function setServerImage(
         return;
     }
 
-
     if (imageElement) {
 
         imageElement.removeAttribute(
@@ -395,7 +319,6 @@ function setServerImage(
         imageElement.style.display =
             "none";
     }
-
 
     if (textElement) {
 
@@ -416,7 +339,9 @@ function generateChannelID() {
 
     return (
         "CH-" +
-        Date.now().toString(36).toUpperCase() +
+        Date.now()
+            .toString(36)
+            .toUpperCase() +
         "-" +
         Math.random()
             .toString(36)
@@ -469,7 +394,6 @@ function normalizeChannels(server) {
         return [];
     }
 
-
     if (
         !Array.isArray(
             server.channels
@@ -478,10 +402,7 @@ function normalizeChannels(server) {
 
         server.channels =
             createDefaultChannels();
-
-        return server.channels;
     }
-
 
     return server.channels;
 }
@@ -494,10 +415,8 @@ function normalizeChannels(server) {
 function getChannels() {
 
     if (!currentServer) {
-
         return [];
     }
-
 
     return normalizeChannels(
         currentServer
@@ -512,18 +431,14 @@ function getChannels() {
 function updateCurrentServer() {
 
     if (!currentServer) {
-
         return false;
     }
-
 
     const currentServerID =
         currentServer.serverID;
 
-
     const servers =
         getSavedServers();
-
 
     const serverIndex =
         servers.findIndex(
@@ -533,37 +448,128 @@ function updateCurrentServer() {
                     server.serverID ===
                     currentServerID
                 );
+
             }
         );
 
-
     if (serverIndex === -1) {
-
         return false;
     }
-
 
     servers[serverIndex] =
         currentServer;
 
-
-    const saved =
-        saveServers(
+    if (
+        !saveServers(
             servers
-        );
-
-
-    if (!saved) {
-
+        )
+    ) {
         return false;
     }
-
 
     currentServer =
         servers[serverIndex];
 
-
     return true;
+}
+
+
+/* =========================================================
+   GET CHANNEL FROM URL
+   ========================================================= */
+
+function getChannelFromURL() {
+
+    try {
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        return (
+            params.get("channel") ||
+            null
+        );
+
+    } catch (error) {
+
+        return null;
+    }
+}
+
+
+/* =========================================================
+   GET SAVED CHANNEL
+   ========================================================= */
+
+function getSavedChannelID() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "friendchat_current_channel"
+            );
+
+        if (!saved) {
+            return null;
+        }
+
+        const data =
+            JSON.parse(saved);
+
+        if (
+            !data ||
+            data.serverID !==
+            currentServer.serverID
+        ) {
+            return null;
+        }
+
+        return data.channelID || null;
+
+    } catch (error) {
+
+        return null;
+    }
+}
+
+
+/* =========================================================
+   SAVE SELECTED CHANNEL
+   ========================================================= */
+
+function saveSelectedChannel(
+    channel
+) {
+
+    if (!currentServer || !channel) {
+        return;
+    }
+
+    try {
+
+        localStorage.setItem(
+            "friendchat_current_channel",
+            JSON.stringify({
+
+                serverID:
+                    currentServer.serverID,
+
+                channelID:
+                    channel.channelID
+
+            })
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Could not save selected channel:",
+            error
+        );
+    }
 }
 
 
@@ -576,17 +582,11 @@ function loadServer() {
     const server =
         getCurrentServer();
 
-
-    /* =====================================================
-       NO SERVER
-       ===================================================== */
-
     if (!server) {
 
         console.warn(
             "No current FriendChat server found."
         );
-
 
         window.location.href =
             "create-server.html";
@@ -594,32 +594,26 @@ function loadServer() {
         return;
     }
 
-
     currentServer =
         server;
 
 
     /* =====================================================
-       MAKE SURE CHANNELS EXIST
+       CHANNELS
        ===================================================== */
 
-    const channels =
-        normalizeChannels(
-            currentServer
-        );
+    const beforeChannels =
+        Array.isArray(
+            currentServer.channels
+        )
+            ? currentServer.channels.length
+            : 0;
 
+    normalizeChannels(
+        currentServer
+    );
 
-    /*
-     * If this is an older server created
-     * before the channel system existed,
-     * save the new default channels.
-     */
-
-    if (
-        channels.length === 1 &&
-        channels[0].name === "General"
-    ) {
-
+    if (beforeChannels === 0) {
         updateCurrentServer();
     }
 
@@ -632,11 +626,9 @@ function loadServer() {
         currentServer.name ||
         "Unnamed Server";
 
-
     const description =
         currentServer.description ||
         "Welcome to your FriendChat server.";
-
 
     const initials =
         getServerInitials(
@@ -653,7 +645,6 @@ function loadServer() {
         topServerName.textContent =
             name;
     }
-
 
     setServerImage(
         topServerIcon,
@@ -673,13 +664,11 @@ function loadServer() {
             name;
     }
 
-
     if (serverDescription) {
 
         serverDescription.textContent =
             description;
     }
-
 
     if (serverID) {
 
@@ -687,7 +676,6 @@ function loadServer() {
             currentServer.serverID ||
             "—";
     }
-
 
     setServerImage(
         serverIcon,
@@ -707,7 +695,6 @@ function loadServer() {
             name;
     }
 
-
     setServerImage(
         previewIcon,
         previewIconText,
@@ -717,11 +704,47 @@ function loadServer() {
 
 
     /* =====================================================
-       RENDER CHANNELS
+       SELECTED CHANNEL
+       ===================================================== */
+
+    const urlChannel =
+        getChannelFromURL();
+
+    const savedChannel =
+        getSavedChannelID();
+
+    const possibleChannel =
+        urlChannel ||
+        savedChannel;
+
+    if (possibleChannel) {
+
+        const exists =
+            currentServer.channels.some(
+                function (channel) {
+
+                    return (
+                        channel.channelID ===
+                        possibleChannel
+                    );
+
+                }
+            );
+
+        if (exists) {
+
+            selectedChannelID =
+                possibleChannel;
+
+        }
+    }
+
+
+    /* =====================================================
+       RENDER
        ===================================================== */
 
     renderChannels();
-
 
     console.log(
         "FriendChat server loaded:",
@@ -737,17 +760,15 @@ function loadServer() {
 function renderChannels() {
 
     if (!currentServer) {
-
         return;
     }
-
 
     const channels =
         getChannels();
 
 
     /* =====================================================
-       SEPARATE CHANNEL TYPES
+       TEXT CHANNELS
        ===================================================== */
 
     const textChannels =
@@ -758,9 +779,14 @@ function renderChannels() {
                     channel.type ===
                     "text"
                 );
+
             }
         );
 
+
+    /* =====================================================
+       VOICE CHANNELS
+       ===================================================== */
 
     const voiceChannels =
         channels.filter(
@@ -770,19 +796,19 @@ function renderChannels() {
                     channel.type ===
                     "voice"
                 );
+
             }
         );
 
 
     /* =====================================================
-       TEXT CHANNELS
+       TEXT LIST
        ===================================================== */
 
     if (textChannelList) {
 
         textChannelList.innerHTML =
             "";
-
 
         if (
             textChannels.length === 0
@@ -804,6 +830,7 @@ function renderChannels() {
                             channel
                         )
                     );
+
                 }
             );
         }
@@ -811,14 +838,13 @@ function renderChannels() {
 
 
     /* =====================================================
-       VOICE CHANNELS
+       VOICE LIST
        ===================================================== */
 
     if (voiceChannelList) {
 
         voiceChannelList.innerHTML =
             "";
-
 
         if (
             voiceChannels.length === 0
@@ -840,6 +866,7 @@ function renderChannels() {
                             channel
                         )
                     );
+
                 }
             );
         }
@@ -867,14 +894,19 @@ function createChannelElement(
             "button"
         );
 
-
     button.type =
         "button";
-
 
     button.className =
         "channel-item";
 
+    button.dataset.channelId =
+        channel.channelID;
+
+
+    /* =====================================================
+       ACTIVE CHANNEL
+       ===================================================== */
 
     if (
         channel.channelID ===
@@ -887,11 +919,19 @@ function createChannelElement(
     }
 
 
+    /* =====================================================
+       ICON
+       ===================================================== */
+
     const icon =
         channel.type === "voice"
             ? "🔊"
             : "#";
 
+
+    /* =====================================================
+       DESCRIPTION
+       ===================================================== */
 
     const description =
         channel.description ||
@@ -902,6 +942,10 @@ function createChannelElement(
         );
 
 
+    /* =====================================================
+       HTML
+       ===================================================== */
+
     button.innerHTML = `
 
         <div class="channel-icon">
@@ -911,11 +955,15 @@ function createChannelElement(
         <div class="channel-info">
 
             <div class="channel-name">
-                ${escapeHTML(channel.name)}
+                ${escapeHTML(
+                    channel.name
+                )}
             </div>
 
             <div class="channel-description">
-                ${escapeHTML(description)}
+                ${escapeHTML(
+                    description
+                )}
             </div>
 
         </div>
@@ -927,9 +975,17 @@ function createChannelElement(
     `;
 
 
+    /* =====================================================
+       CLICK
+       ===================================================== */
+
     button.addEventListener(
         "click",
-        function () {
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
 
             selectChannel(
                 channel
@@ -955,7 +1011,6 @@ function escapeHTML(value) {
 
         return "";
     }
-
 
     return String(value)
         .replace(
@@ -989,18 +1044,89 @@ function selectChannel(
     channel
 ) {
 
-    if (!channel) {
+    if (
+        !currentServer ||
+        !channel
+    ) {
 
         return;
     }
 
 
+    /* =====================================================
+       SAVE SELECTION
+       ===================================================== */
+
     selectedChannelID =
         channel.channelID;
 
+    saveSelectedChannel(
+        channel
+    );
+
+
+    /* =====================================================
+       UPDATE UI FIRST
+       ===================================================== */
 
     renderChannels();
 
+
+    /* =====================================================
+       TEXT CHANNEL
+       ===================================================== */
+
+    if (
+        channel.type ===
+        "text"
+    ) {
+
+        showToast(
+            "#" +
+            channel.name +
+            " opened"
+        );
+
+
+        /*
+         * For now we keep the user on
+         * Server Home.
+         *
+         * The actual channel chat UI
+         * will be connected in the next
+         * channel-chat phase.
+         */
+
+        const url =
+            new URL(
+                window.location.href
+            );
+
+        url.searchParams.set(
+            "channel",
+            channel.channelID
+        );
+
+        window.history.replaceState(
+            {},
+            "",
+            url
+        );
+
+
+        console.log(
+            "Text channel opened:",
+            channel
+        );
+
+
+        return;
+    }
+
+
+    /* =====================================================
+       VOICE CHANNEL
+       ===================================================== */
 
     if (
         channel.type ===
@@ -1008,29 +1134,36 @@ function selectChannel(
     ) {
 
         showToast(
-            "Voice channel selected: " +
-            channel.name
-        );
-
-    } else {
-
-        showToast(
-            "#" +
+            "🔊 " +
             channel.name +
             " selected"
         );
+
+
+        const url =
+            new URL(
+                window.location.href
+            );
+
+        url.searchParams.set(
+            "channel",
+            channel.channelID
+        );
+
+        window.history.replaceState(
+            {},
+            "",
+            url
+        );
+
+
+        console.log(
+            "Voice channel selected:",
+            channel
+        );
+
+        return;
     }
-
-
-    /*
-     * Real channel chat will be connected
-     * in the next stage.
-     */
-
-    console.log(
-        "Selected FriendChat channel:",
-        channel
-    );
 }
 
 
@@ -1041,18 +1174,14 @@ function selectChannel(
 function renderPreviewChannels() {
 
     if (!previewChannelList) {
-
         return;
     }
-
 
     previewChannelList.innerHTML =
         "";
 
-
     const channels =
         getChannels();
-
 
     if (
         channels.length === 0
@@ -1077,34 +1206,54 @@ function renderPreviewChannels() {
 
                 const item =
                     document.createElement(
-                        "div"
+                        "button"
                     );
 
+                item.type =
+                    "button";
 
                 item.className =
                     "preview-channel";
 
+                item.dataset.channelId =
+                    channel.channelID;
+
 
                 if (
-                    channel.type ===
-                    "voice"
+                    channel.channelID ===
+                    selectedChannelID
                 ) {
 
-                    item.textContent =
-                        "🔊 " +
-                        channel.name;
-
-                } else {
-
-                    item.textContent =
-                        "# " +
-                        channel.name;
+                    item.classList.add(
+                        "active"
+                    );
                 }
+
+
+                item.textContent =
+                    channel.type === "voice"
+                        ? "🔊 " +
+                          channel.name
+                        : "# " +
+                          channel.name;
+
+
+                item.addEventListener(
+                    "click",
+                    function () {
+
+                        selectChannel(
+                            channel
+                        );
+
+                    }
+                );
 
 
                 previewChannelList.appendChild(
                     item
                 );
+
             }
         );
 }
@@ -1117,24 +1266,19 @@ function renderPreviewChannels() {
 function openChannelModal() {
 
     if (!channelModal) {
-
         return;
     }
 
-
     clearChannelForm();
-
 
     channelModal.classList.add(
         "open"
     );
 
-
     channelModal.setAttribute(
         "aria-hidden",
         "false"
     );
-
 
     setTimeout(
         function () {
@@ -1157,21 +1301,17 @@ function openChannelModal() {
 function closeChannelModalWindow() {
 
     if (!channelModal) {
-
         return;
     }
-
 
     channelModal.classList.remove(
         "open"
     );
 
-
     channelModal.setAttribute(
         "aria-hidden",
         "true"
     );
-
 
     clearChannelForm();
 }
@@ -1189,26 +1329,22 @@ function clearChannelForm() {
             "";
     }
 
-
     if (channelFormError) {
 
         channelFormError.textContent =
             "";
     }
 
-
     const textRadio =
         document.querySelector(
             'input[name="channelType"][value="text"]'
         );
-
 
     if (textRadio) {
 
         textRadio.checked =
             true;
     }
-
 
     updateChannelTypeUI();
 }
@@ -1225,12 +1361,10 @@ function getSelectedChannelType() {
             'input[name="channelType"]:checked'
         );
 
-
     if (!selected) {
 
         return "text";
     }
-
 
     return selected.value;
 }
@@ -1245,7 +1379,6 @@ function updateChannelTypeUI() {
     const type =
         getSelectedChannelType();
 
-
     if (textChannelOption) {
 
         textChannelOption.classList.toggle(
@@ -1253,7 +1386,6 @@ function updateChannelTypeUI() {
             type === "text"
         );
     }
-
 
     if (voiceChannelOption) {
 
@@ -1266,7 +1398,7 @@ function updateChannelTypeUI() {
 
 
 /* =========================================================
-   SHOW CHANNEL FORM ERROR
+   SHOW CHANNEL ERROR
    ========================================================= */
 
 function showChannelError(
@@ -1274,10 +1406,8 @@ function showChannelError(
 ) {
 
     if (!channelFormError) {
-
         return;
     }
-
 
     channelFormError.textContent =
         message;
@@ -1299,12 +1429,10 @@ function createChannel() {
         return;
     }
 
-
     const rawName =
         channelNameInput
             ? channelNameInput.value
             : "";
-
 
     const name =
         rawName
@@ -1313,7 +1441,7 @@ function createChannel() {
 
 
     /* =====================================================
-       VALIDATE NAME
+       VALIDATION
        ===================================================== */
 
     if (!name) {
@@ -1323,13 +1451,11 @@ function createChannel() {
         );
 
         if (channelNameInput) {
-
             channelNameInput.focus();
         }
 
         return;
     }
-
 
     if (name.length < 2) {
 
@@ -1339,7 +1465,6 @@ function createChannel() {
 
         return;
     }
-
 
     if (name.length > 40) {
 
@@ -1362,17 +1487,19 @@ function createChannel() {
     const channels =
         getChannels();
 
-
     const duplicate =
         channels.some(
             function (channel) {
 
                 return (
-                    channel.name
+                    String(
+                        channel.name
+                    )
                         .trim()
                         .toLowerCase() ===
                     name.toLowerCase()
                 );
+
             }
         );
 
@@ -1388,7 +1515,7 @@ function createChannel() {
 
 
     /* =====================================================
-       CREATE CHANNEL OBJECT
+       CREATE
        ===================================================== */
 
     const newChannel = {
@@ -1413,7 +1540,7 @@ function createChannel() {
 
 
     /* =====================================================
-       ADD CHANNEL
+       ADD
        ===================================================== */
 
     currentServer.channels.push(
@@ -1431,10 +1558,6 @@ function createChannel() {
 
     if (!saved) {
 
-        /*
-         * Remove it again if saving failed.
-         */
-
         currentServer.channels =
             currentServer.channels.filter(
                 function (channel) {
@@ -1443,6 +1566,7 @@ function createChannel() {
                         channel.channelID !==
                         newChannel.channelID
                     );
+
                 }
             );
 
@@ -1451,18 +1575,29 @@ function createChannel() {
 
 
     /* =====================================================
-       UPDATE UI
+       SELECT NEW CHANNEL
        ===================================================== */
 
     selectedChannelID =
         newChannel.channelID;
 
+    saveSelectedChannel(
+        newChannel
+    );
+
+
+    /* =====================================================
+       UPDATE UI
+       ===================================================== */
 
     renderChannels();
 
-
     closeChannelModalWindow();
 
+
+    /* =====================================================
+       TOAST
+       ===================================================== */
 
     showToast(
         type === "voice"
@@ -1489,6 +1624,7 @@ if (createChannelButton) {
         function () {
 
             openChannelModal();
+
         }
     );
 }
@@ -1505,6 +1641,7 @@ if (closeChannelModal) {
         function () {
 
             closeChannelModalWindow();
+
         }
     );
 }
@@ -1521,13 +1658,14 @@ if (cancelChannelButton) {
         function () {
 
             closeChannelModalWindow();
+
         }
     );
 }
 
 
 /* =========================================================
-   BACKDROP CLICK
+   BACKDROP
    ========================================================= */
 
 if (channelModalBackdrop) {
@@ -1537,6 +1675,7 @@ if (channelModalBackdrop) {
         function () {
 
             closeChannelModalWindow();
+
         }
     );
 }
@@ -1553,13 +1692,14 @@ if (saveChannelButton) {
         function () {
 
             createChannel();
+
         }
     );
 }
 
 
 /* =========================================================
-   CHANNEL NAME ENTER KEY
+   CHANNEL NAME ENTER
    ========================================================= */
 
 if (channelNameInput) {
@@ -1577,6 +1717,7 @@ if (channelNameInput) {
 
                 createChannel();
             }
+
         }
     );
 }
@@ -1600,8 +1741,10 @@ channelTypeRadios.forEach(
             function () {
 
                 updateChannelTypeUI();
+
             }
         );
+
     }
 );
 
@@ -1628,7 +1771,9 @@ document.addEventListener(
 
                 closeChannelModalWindow();
             }
+
         }
+
     }
 );
 
@@ -1649,18 +1794,19 @@ if (copyServerID) {
         "click",
         async function () {
 
+            if (!serverID) {
+                return;
+            }
+
             const id =
                 serverID.textContent.trim();
-
 
             if (
                 !id ||
                 id === "—"
             ) {
-
                 return;
             }
-
 
             try {
 
@@ -1679,31 +1825,26 @@ if (copyServerID) {
                         "textarea"
                     );
 
-
                 temporary.value =
                     id;
-
 
                 document.body.appendChild(
                     temporary
                 );
 
-
                 temporary.select();
-
 
                 document.execCommand(
                     "copy"
                 );
 
-
                 temporary.remove();
-
 
                 showToast(
                     "Server ID copied"
                 );
             }
+
         }
     );
 }
@@ -1736,6 +1877,7 @@ if (backButton) {
                 window.location.href =
                     "index.html";
             }
+
         }
     );
 }
@@ -1801,7 +1943,6 @@ if (channelsCard) {
                     "channelsSection"
                 );
 
-
             if (channelsSection) {
 
                 channelsSection.scrollIntoView({
@@ -1829,6 +1970,7 @@ if (membersCard) {
             showToast(
                 "Members system coming next."
             );
+
         }
     );
 }
@@ -1847,6 +1989,7 @@ if (rulesCard) {
             showToast(
                 "Rules system coming soon."
             );
+
         }
     );
 }
@@ -1865,6 +2008,7 @@ if (rolesCard) {
             showToast(
                 "Roles will be added later."
             );
+
         }
     );
 }
@@ -1883,6 +2027,7 @@ if (aiCard) {
             showToast(
                 "FriendChat AI will be added later."
             );
+
         }
     );
 }
@@ -1901,6 +2046,7 @@ if (musicCard) {
             showToast(
                 "Music system will be added later."
             );
+
         }
     );
 }
@@ -1919,6 +2065,7 @@ if (activityCard) {
             showToast(
                 "Activity will be added later."
             );
+
         }
     );
 }
@@ -1937,6 +2084,7 @@ if (serverSettingsCard) {
             showToast(
                 "Server customization will be added later."
             );
+
         }
     );
 }
@@ -1961,6 +2109,7 @@ if (membersButton) {
             showToast(
                 "Members system coming next."
             );
+
         }
     );
 }
@@ -1985,6 +2134,7 @@ if (settingsButton) {
             showToast(
                 "Server settings coming soon."
             );
+
         }
     );
 }
