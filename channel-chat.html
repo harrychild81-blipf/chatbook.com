@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>FriendChat - Channel</title>
+
+    <link rel="stylesheet" href="channel-chat.css">
+</head>
+
+<body>
+
+    <!-- =====================================================
+         CHANNEL CHAT
+         ===================================================== -->
+
+    <div class="channel-app">
+
+        <!-- TOP BAR -->
+        <header class="channel-topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    id="backButton"
+                    class="back-button"
+                    type="button"
+                    aria-label="Back"
+                    title="Back to server"
+                >
+                    <span>‹</span>
+                </button>
+
+                <div class="channel-title-area">
+
+                    <div
+                        id="channelIcon"
+                        class="channel-icon"
+                    >
+                        #
+                    </div>
+
+                    <div class="channel-title-text">
+
+                        <div class="channel-name-row">
+
+                            <h1 id="channelName">
+                                General
+                            </h1>
+
+                            <span
+                                id="channelType"
+                                class="channel-type"
+                            >
+                                TEXT
+                            </span>
+
+                        </div>
+
+                        <p id="channelDescription">
+                            Welcome to this channel.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div class="server-info">
+
+                    <span class="server-label">
+                        SERVER
+                    </span>
+
+                    <span id="serverName">
+                        FriendChat
+                    </span>
+
+                </div>
+
+                <button
+                    id="serverButton"
+                    class="server-button"
+                    type="button"
+                    title="Open server"
+                >
+                    Server
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             MAIN CHAT AREA
+             ================================================= -->
+
+        <main class="channel-main">
+
+            <!-- MESSAGES -->
+            <section
+                id="messages"
+                class="messages"
+            >
+
+                <!-- EMPTY STATE -->
+                <div
+                    id="emptyState"
+                    class="empty-state"
+                >
+
+                    <div class="empty-icon">
+                        #
+                    </div>
+
+                    <h2 id="emptyChannelName">
+                        Welcome to #General
+                    </h2>
+
+                    <p>
+                        This is the beginning of this channel.
+                        Send a message to start the conversation.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 MESSAGE COMPOSER
+                 ================================================= -->
+
+            <div class="composer-area">
+
+                <div class="composer">
+
+                    <button
+                        id="attachButton"
+                        class="composer-button"
+                        type="button"
+                        title="Attachments"
+                    >
+                        +
+                    </button>
+
+                    <textarea
+                        id="messageInput"
+                        rows="1"
+                        maxlength="2000"
+                        placeholder="Message this channel..."
+                        autocomplete="off"
+                    ></textarea>
+
+                    <button
+                        id="emojiButton"
+                        class="composer-button"
+                        type="button"
+                        title="Emoji"
+                    >
+                        ☺
+                    </button>
+
+                    <button
+                        id="sendButton"
+                        class="send-button"
+                        type="button"
+                        title="Send message"
+                    >
+                        <span>➤</span>
+                    </button>
+
+                </div>
+
+                <div class="composer-hint">
+                    <span>
+                        Enter to send
+                    </span>
+
+                    <span>
+                        Shift + Enter for a new line
+                    </span>
+
+                    <span id="characterCount">
+                        0 / 2000
+                    </span>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- =====================================================
+         TOAST
+         ===================================================== -->
+
+    <div
+        id="toast"
+        class="toast"
+        aria-live="polite"
+    ></div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
+
+    <script src="channel-chat.js"></script>
+
+</body>
+</html>
