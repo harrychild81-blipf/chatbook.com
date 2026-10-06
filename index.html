@@ -3,1523 +3,1547 @@
 
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>FriendChat</title>
+<title>FriendChat</title>
 
 
-  <!-- =====================================================
-       MAIN FRIENDCHAT CSS
-       ===================================================== -->
+<!-- =====================================================
+     MAIN FRIENDCHAT CSS
+     ===================================================== -->
 
-  <link
-    rel="stylesheet"
-    href="style.css?v=6"
-  >
+<link rel="stylesheet" href="style.css?v=6">
 
 
-  <!-- =====================================================
-       CUSTOM FRIENDCHAT UI
-       ===================================================== -->
+<!-- =====================================================
+     CUSTOM FRIENDCHAT UI
+     ===================================================== -->
 
-  <link
-    rel="stylesheet"
-    href="friendchat-ui-v3-FINAL.css?v=8"
-  >
+<link rel="stylesheet" href="friendchat-ui-v3-FINAL.css?v=8">
 
 
-  <!-- =====================================================
-       SUGGESTIONS / DISCOVER CSS
-       ===================================================== -->
+<!-- =====================================================
+     SUGGESTIONS / DISCOVER CSS
+     ===================================================== -->
 
-  <link
-    rel="stylesheet"
-    href="suggestions.css?v=2"
-  >
+<link rel="stylesheet" href="suggestions.css?v=2">
 
 
-  <!-- =====================================================
-       SPOTIFY CSS
-       ===================================================== -->
+<!-- =====================================================
+     SPOTIFY CSS
+     ===================================================== -->
 
-  <link
-    rel="stylesheet"
-    href="spotify.css?v=6"
-  >
+<link rel="stylesheet" href="spotify.css?v=6">
 
 
-  <!-- =====================================================
-       FULL SCREEN + NAVIGATION + THEMES + MEDIA
-       ===================================================== -->
+<style>
 
-  <style>
+/* =====================================================
+   GLOBAL
+   ===================================================== */
 
-    /* =====================================================
-       GLOBAL
-       ===================================================== */
+*,
+*::before,
+*::after {
+  box-sizing:border-box;
+}
 
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
+html,
+body {
+  width:100%;
+  min-width:100%;
+  height:100%;
+  min-height:100%;
+  margin:0;
+  padding:0;
+}
 
+html {
+  overflow:hidden;
+  background:#080b12;
+}
 
-    html,
-    body {
-      width: 100%;
-      min-width: 100%;
-      height: 100%;
-      min-height: 100%;
+body {
+  overflow:hidden;
+  width:100vw;
+  min-width:100vw;
+  height:100vh;
+  min-height:100vh;
+  height:100dvh;
+  min-height:100dvh;
+  background:var(--fc-bg,#080b12);
+  color:var(--fc-text,#f5f7ff);
+}
+
 
-      margin: 0;
-      padding: 0;
-    }
-
-
-    html {
-      overflow: hidden;
-      background: #080b12;
-    }
-
-
-    body {
-      overflow: hidden;
-
-      width: 100vw;
-      min-width: 100vw;
-
-      height: 100vh;
-      min-height: 100vh;
-
-      height: 100dvh;
-      min-height: 100dvh;
-
-      background: var(--fc-bg, #080b12);
-    }
-
-
-    /* =====================================================
-       FRIENDCHAT THEME VARIABLES
-       ===================================================== */
-
-    :root {
-
-      --fc-bg: #070a10;
-      --fc-panel: #0d121b;
-      --fc-panel-2: #111824;
-      --fc-panel-3: #151d2a;
-
-      --fc-text: #f5f7ff;
-      --fc-muted: #8d97aa;
-
-      --fc-accent: #6c7cff;
-      --fc-accent-2: #8b5cf6;
-
-      --fc-border: rgba(255,255,255,.08);
-    }
-
-
-    /* =====================================================
-       ORIGINAL THEMES
-       ===================================================== */
-
-    body.fc-theme-midnight {
-
-      --fc-bg: #070a10;
-      --fc-panel: #0d121b;
-      --fc-panel-2: #111824;
-      --fc-panel-3: #151d2a;
-
-      --fc-accent: #6c7cff;
-      --fc-accent-2: #8b5cf6;
-    }
-
-
-    body.fc-theme-emerald {
-
-      --fc-bg: #07120f;
-      --fc-panel: #0d1b17;
-      --fc-panel-2: #12251f;
-      --fc-panel-3: #193028;
-
-      --fc-accent: #10b981;
-      --fc-accent-2: #059669;
-    }
-
-
-    body.fc-theme-ocean {
-
-      --fc-bg: #071118;
-      --fc-panel: #0d1922;
-      --fc-panel-2: #122431;
-      --fc-panel-3: #19313f;
-
-      --fc-accent: #0ea5e9;
-      --fc-accent-2: #2563eb;
-    }
-
-
-    body.fc-theme-sunset {
-
-      --fc-bg: #160c08;
-      --fc-panel: #21120d;
-      --fc-panel-2: #2b1811;
-      --fc-panel-3: #392018;
-
-      --fc-accent: #f97316;
-      --fc-accent-2: #ef4444;
-    }
-
-
-    body.fc-theme-rose {
-
-      --fc-bg: #150a11;
-      --fc-panel: #21101a;
-      --fc-panel-2: #2c1522;
-      --fc-panel-3: #391a2c;
-
-      --fc-accent: #ec4899;
-      --fc-accent-2: #8b5cf6;
-    }
-
-
-    body.fc-theme-graphite {
-
-      --fc-bg: #0c0d0f;
-      --fc-panel: #15171a;
-      --fc-panel-2: #1d2024;
-      --fc-panel-3: #272b30;
-
-      --fc-accent: #94a3b8;
-      --fc-accent-2: #64748b;
-    }
-
-
-    /* =====================================================
-       NEW THEME 7 — CYBER
-       ===================================================== */
-
-    body.fc-theme-cyber {
-
-      --fc-bg: #05050a;
-      --fc-panel: #0b0b15;
-      --fc-panel-2: #111122;
-      --fc-panel-3: #17172b;
-
-      --fc-accent: #00f5ff;
-      --fc-accent-2: #8b5cf6;
-
-      --fc-border: rgba(0,245,255,.12);
-    }
-
-
-    /* =====================================================
-       NEW THEME 8 — CRIMSON
-       ===================================================== */
-
-    body.fc-theme-crimson {
-
-      --fc-bg: #100608;
-      --fc-panel: #1a0a0d;
-      --fc-panel-2: #241014;
-      --fc-panel-3: #30151b;
-
-      --fc-accent: #ef4444;
-      --fc-accent-2: #b91c1c;
-
-      --fc-border: rgba(239,68,68,.12);
-    }
-
-
-    /* =====================================================
-       NEW THEME 9 — LIME
-       ===================================================== */
-
-    body.fc-theme-lime {
-
-      --fc-bg: #071007;
-      --fc-panel: #0d180d;
-      --fc-panel-2: #142214;
-      --fc-panel-3: #1b2d1b;
-
-      --fc-accent: #84cc16;
-      --fc-accent-2: #22c55e;
-
-      --fc-border: rgba(132,204,22,.12);
-    }
-
-
-    /* =====================================================
-       NEW THEME 10 — GOLD
-       ===================================================== */
-
-    body.fc-theme-gold {
-
-      --fc-bg: #100d05;
-      --fc-panel: #1a1508;
-      --fc-panel-2: #241d0c;
-      --fc-panel-3: #30270f;
-
-      --fc-accent: #f59e0b;
-      --fc-accent-2: #eab308;
-
-      --fc-border: rgba(245,158,11,.14);
-    }
-
-
-    /* =====================================================
-       NEW THEME 11 — ICE
-       ===================================================== */
-
-    body.fc-theme-ice {
-
-      --fc-bg: #071016;
-      --fc-panel: #0d1921;
-      --fc-panel-2: #12232d;
-      --fc-panel-3: #18303c;
-
-      --fc-accent: #67e8f9;
-      --fc-accent-2: #3b82f6;
-
-      --fc-border: rgba(103,232,249,.12);
-    }
-
-
-    /* =====================================================
-       NEW THEME 12 — VIOLET
-       ===================================================== */
-
-    body.fc-theme-violet {
-
-      --fc-bg: #0c0713;
-      --fc-panel: #160d20;
-      --fc-panel-2: #21132e;
-      --fc-panel-3: #2b193b;
-
-      --fc-accent: #a855f7;
-      --fc-accent-2: #6366f1;
-
-      --fc-border: rgba(168,85,247,.14);
-    }
-
-
-    /* =====================================================
-       NEW THEME 13 — NEON
-       ===================================================== */
-
-    body.fc-theme-neon {
-
-      --fc-bg: #10050d;
-      --fc-panel: #1b0917;
-      --fc-panel-2: #271025;
-      --fc-panel-3: #341532;
-
-      --fc-accent: #f43f5e;
-      --fc-accent-2: #ec4899;
-
-      --fc-border: rgba(244,63,94,.14);
-    }
-
-
-    /* =====================================================
-       NEW THEME 14 — MATRIX
-       ===================================================== */
-
-    body.fc-theme-matrix {
-
-      --fc-bg: #030806;
-      --fc-panel: #07100b;
-      --fc-panel-2: #0b1710;
-      --fc-panel-3: #102117;
-
-      --fc-accent: #22c55e;
-      --fc-accent-2: #16a34a;
-
-      --fc-border: rgba(34,197,94,.14);
-    }
-
-
-    /* =====================================================
-       NEW THEME 15 — ROYAL BLUE
-       ===================================================== */
-
-    body.fc-theme-royal {
-
-      --fc-bg: #050914;
-      --fc-panel: #0a1224;
-      --fc-panel-2: #101d36;
-      --fc-panel-3: #172747;
-
-      --fc-accent: #3b82f6;
-      --fc-accent-2: #1d4ed8;
-
-      --fc-border: rgba(59,130,246,.14);
-    }
-
-
-    /* =====================================================
-       NEW THEME 16 — LAVENDER
-       ===================================================== */
-
-    body.fc-theme-lavender {
-
-      --fc-bg: #0d0a14;
-      --fc-panel: #171321;
-      --fc-panel-2: #211c2e;
-      --fc-panel-3: #2b253b;
-
-      --fc-accent: #c084fc;
-      --fc-accent-2: #a78bfa;
-
-      --fc-border: rgba(192,132,252,.14);
-    }
-
-
-    /* =====================================================
-       NEW THEME 17 — COFFEE
-       ===================================================== */
-
-    body.fc-theme-coffee {
-
-      --fc-bg: #100a07;
-      --fc-panel: #1b100b;
-      --fc-panel-2: #26170f;
-      --fc-panel-3: #332016;
-
-      --fc-accent: #d97706;
-      --fc-accent-2: #92400e;
-
-      --fc-border: rgba(217,119,6,.14);
-    }
-
-
-    /* =====================================================
-       NEW THEME 18 — MONO
-       ===================================================== */
-
-    body.fc-theme-mono {
-
-      --fc-bg: #080808;
-      --fc-panel: #111111;
-      --fc-panel-2: #191919;
-      --fc-panel-3: #222222;
-
-      --fc-accent: #f5f5f5;
-      --fc-accent-2: #a3a3a3;
-
-      --fc-border: rgba(255,255,255,.12);
-    }
-
-
-    /* =====================================================
-       APP
-       ===================================================== */
-
-    .app {
-
-      position: relative;
-
-      width: 100vw !important;
-      min-width: 100vw !important;
-      max-width: none !important;
-
-      height: 100dvh !important;
-      min-height: 100dvh !important;
-      max-height: 100dvh !important;
-
-      margin: 0 !important;
-      padding: 0 !important;
-
-      overflow: hidden !important;
-
-      box-sizing: border-box !important;
-    }
-
-
-    /* =====================================================
-       ALL SCREENS
-       ===================================================== */
-
-    .screen {
-
-      position: relative;
-
-      width: 100% !important;
-      min-width: 100% !important;
-      max-width: none !important;
-
-      height: 100dvh !important;
-      min-height: 100dvh !important;
-      max-height: 100dvh !important;
-
-      margin: 0 !important;
-
-      box-sizing: border-box !important;
-    }
-
-
-    .screen.hidden {
-      display: none !important;
-    }
-
-
-    /* =====================================================
-       LOGIN / SIGNUP
-       ===================================================== */
-
-    .screen.auth {
-
-      width: 100vw !important;
-      min-width: 100vw !important;
-
-      height: 100dvh !important;
-      min-height: 100dvh !important;
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-
-
-    /* =====================================================
-       HOME
-       ===================================================== */
-
-    #homeScreen {
-
-      width: 100vw !important;
-      min-width: 100vw !important;
-      max-width: none !important;
-
-      height: 100dvh !important;
-      min-height: 100dvh !important;
-      max-height: 100dvh !important;
-
-      margin: 0 !important;
-
-      overflow-x: hidden;
-      overflow-y: auto;
-
-      box-sizing: border-box !important;
-    }
-
-
-    /* =====================================================
-       ADD SCREEN
-       ===================================================== */
-
-    #addScreen {
-
-      width: 100vw !important;
-      min-width: 100vw !important;
-      max-width: none !important;
-
-      height: 100dvh !important;
-      min-height: 100dvh !important;
-      max-height: 100dvh !important;
-
-      margin: 0 !important;
-
-      overflow-x: hidden;
-      overflow-y: auto;
-
-      box-sizing: border-box !important;
-    }
-
-
-    #addScreen .card.wide {
-
-      width: min(
-        calc(100vw - 32px),
-        900px
-      );
-
-      max-width: calc(100vw - 32px);
-
-      box-sizing: border-box !important;
-    }
-
-
-    /* =====================================================
-       CHAT SCREEN
-       ===================================================== */
-
-    #chatScreen {
-
-      position: relative !important;
-
-      display: flex !important;
-
-      flex-direction: column !important;
-
-      width: 100vw !important;
-      min-width: 100vw !important;
-      max-width: none !important;
-
-      height: 100dvh !important;
-      min-height: 100dvh !important;
-      max-height: 100dvh !important;
-
-      margin: 0 !important;
-      padding: 0 !important;
-
-      overflow: hidden !important;
-
-      box-sizing: border-box !important;
-    }
-
-
-    #chatScreen.hidden {
-      display: none !important;
-    }
-
-
-    /* =====================================================
-       CHAT HEADER
-       ===================================================== */
-
-    #chatScreen > header {
-
-      flex: 0 0 auto;
-
-      width: 100% !important;
-      max-width: none !important;
-
-      box-sizing: border-box !important;
-
-      z-index: 20;
-    }
-
-
-    /* =====================================================
-       MESSAGE AREA
-       ===================================================== */
-
-    #chatScreen .messages {
-
-      flex: 1 1 auto !important;
-
-      min-height: 0 !important;
-
-      width: 100% !important;
-      max-width: none !important;
-
-      margin: 0 !important;
-
-      box-sizing: border-box !important;
-
-      overflow-y: auto;
-      overflow-x: hidden;
-
-      padding-bottom: 12px;
-    }
-
-
-    /* =====================================================
-       COMPOSER
-       ===================================================== */
-
-    #chatScreen .composer {
-
-      position: relative !important;
-
-      flex: 0 0 auto !important;
-
-      width: 100% !important;
-      max-width: none !important;
-
-      margin: 0 !important;
-
-      box-sizing: border-box !important;
-
-      z-index: 50;
-
-      display: flex !important;
-      align-items: center !important;
-      gap: 8px !important;
-    }
-
-
-    /* =====================================================
-       MEDIA BUTTON
-       ===================================================== */
-
-    #chatScreen .mediaButton {
-
-      width: 44px !important;
-      height: 44px !important;
-
-      min-width: 44px !important;
-      min-height: 44px !important;
-
-      display: flex !important;
-
-      align-items: center !important;
-      justify-content: center !important;
-
-      padding: 0 !important;
-      margin: 0 !important;
-
-      border-radius: 13px !important;
-
-      background: rgba(255,255,255,.055) !important;
-
-      border: 0 !important;
-
-      color: var(--fc-text) !important;
-
-      font-size: 20px !important;
-
-      cursor: pointer !important;
-
-      flex-shrink: 0 !important;
-
-      transition:
-        background .2s ease,
-        transform .2s ease,
-        color .2s ease !important;
-    }
-
-
-    #chatScreen .mediaButton:hover {
-
-      background:
-        color-mix(
-          in srgb,
-          var(--fc-accent) 18%,
-          transparent
-        ) !important;
-
-      color:
-        var(--fc-text) !important;
-
-      transform:
-        translateY(-2px) !important;
-    }
-
-
-    #chatScreen .mediaButton:active {
-
-      transform:
-        scale(.94) !important;
-    }
-
-
-    /* =====================================================
-       FRIEND LIST
-       ===================================================== */
-
-    #friendList {
-
-      width: 100% !important;
-      max-width: none !important;
-
-      box-sizing: border-box !important;
-    }
-
-
-    /* =====================================================
-       PROFILE
-       ===================================================== */
-
-    #profileScreen {
-
-      width: 100vw !important;
-      min-width: 100vw !important;
-      max-width: none !important;
-
-      height: 100dvh !important;
-      min-height: 100dvh !important;
-      max-height: 100dvh !important;
-
-      margin: 0 !important;
-
-      overflow-x: hidden;
-      overflow-y: auto;
-
-      box-sizing: border-box !important;
-    }
-
-
-    .profilePage {
-
-      width: 100% !important;
-      max-width: none !important;
-
-      box-sizing: border-box !important;
-    }
-
-
-    /* =====================================================
-       OLD BOTTOM NAVIGATION
-       ===================================================== */
-
-    #bottomNav,
-    .bottomNav {
-
-      display: none !important;
-    }
-
-
-    /* =====================================================
-       IMAGES
-       ===================================================== */
-
-    img,
-    video,
-    canvas,
-    iframe {
-
-      max-width: 100%;
-    }
-
-
-    /* =====================================================
-       FORM ELEMENTS
-       ===================================================== */
-
-    input,
-    button,
-    textarea,
-    select {
-
-      max-width: 100%;
-    }
-
-
-    /* =====================================================
-       LEFT NAVIGATION ARROW
-       ===================================================== */
-
-    #fcNavToggle {
-
-      position: fixed !important;
-
-      left: 12px !important;
-      top: 50% !important;
-
-      transform:
-        translateY(-50%) !important;
-
-      width: 42px !important;
-      height: 42px !important;
-
-      min-width: 42px !important;
-      min-height: 42px !important;
-
-      padding: 0 !important;
-      margin: 0 !important;
-
-      border: 0 !important;
-
-      border-radius: 50% !important;
-
-      z-index: 2147483000 !important;
-
-      display: flex !important;
-
-      align-items: center !important;
-      justify-content: center !important;
-
-      cursor: pointer !important;
-    }
-
-
-    #fcNavToggle:hover {
-
-      width: 48px !important;
-      height: 48px !important;
-    }
-
-
-    #fcNavToggle.is-open {
-
-      left: 205px !important;
-
-      top: 50% !important;
-
-      transform:
-        translateY(-50%) !important;
-    }
-
-
-    /* =====================================================
-       CUSTOM SIDEBAR
-       ===================================================== */
-
-    #fcCustomSidebar {
-
-      position: fixed !important;
-
-      left: 12px !important;
-      top: 50% !important;
-
-      width: 185px !important;
-      max-width: 185px !important;
-
-      max-height:
-        calc(100vh - 40px) !important;
-
-      transform:
-        translate(-110%, -50%) !important;
-
-      z-index: 2147482999 !important;
-
-      pointer-events: none !important;
-
-      opacity: 1 !important;
-      visibility: visible !important;
-
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
-
-      transition:
-        transform .35s cubic-bezier(.22,1,.36,1) !important;
-    }
-
-
-    #fcCustomSidebar.open {
-
-      transform:
-        translate(0, -50%) !important;
-
-      pointer-events: auto !important;
-    }
-
-
-    /* =====================================================
-       BOTTOM DOCK
-       ===================================================== */
-
-    .fc-bottom-dock {
-
-      position: fixed !important;
-
-      left: 50% !important;
-      bottom: 14px !important;
-
-      transform:
-        translateX(-50%) !important;
-
-      z-index: 2147482998 !important;
-
-      display: flex !important;
-
-      align-items: center !important;
-      justify-content: center !important;
-
-      gap: 6px !important;
-
-      width:
-        min(560px, calc(100vw - 28px)) !important;
-
-      min-height: 62px !important;
-
-      padding: 7px !important;
-
-      border-radius: 20px !important;
-
-      box-sizing: border-box !important;
-
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
-
-
-    .fc-bottom-dock button {
-
-      flex: 1 !important;
-
-      min-width: 86px !important;
-      min-height: 54px !important;
-
-      padding: 5px !important;
-      margin: 0 !important;
-
-      border-radius: 14px !important;
-
-      border: 0 !important;
-
-      display: flex !important;
-
-      align-items: center !important;
-      justify-content: center !important;
-
-      flex-direction: column !important;
-
-      gap: 3px !important;
-
-      cursor: pointer !important;
-
-      box-sizing: border-box !important;
-    }
-
-
-    .fc-dock-label {
-
-      font-size: 11px !important;
-      line-height: 1 !important;
-    }
-
-
-    /* =====================================================
-       HIDE DOCK ON CHAT
-       ===================================================== */
-
-    body:has(#chatScreen:not(.hidden))
-      .fc-bottom-dock {
-
-      display: none !important;
-    }
-
-
-    body:has(#chatScreen:not(.hidden))
-      #fcCustomSidebar {
-
-      display: none !important;
-    }
-
-
-    body:has(#chatScreen:not(.hidden))
-      #fcNavToggle {
-
-      display: flex !important;
-    }
-
-
-    /* =====================================================
-       AUTH SCREENS
-       ===================================================== */
-
-    body:has(#loginScreen:not(.hidden))
-      #fcNavToggle,
-
-    body:has(#loginScreen:not(.hidden))
-      #fcCustomSidebar,
-
-    body:has(#loginScreen:not(.hidden))
-      .fc-bottom-dock,
-
-    body:has(#signupScreen:not(.hidden))
-      #fcNavToggle,
-
-    body:has(#signupScreen:not(.hidden))
-      #fcCustomSidebar,
-
-    body:has(#signupScreen:not(.hidden))
-      .fc-bottom-dock {
-
-      display: none !important;
-    }
-
-
-    /* =====================================================
-       THEME CHOICE COLORS
-       ===================================================== */
-
-    .fc-theme-choice[data-theme="cyber"] {
-      background:
-        linear-gradient(135deg,#07151a,#10102a) !important;
-    }
-
-    .fc-theme-choice[data-theme="crimson"] {
-      background:
-        linear-gradient(135deg,#1c080b,#2b1117) !important;
-    }
-
-    .fc-theme-choice[data-theme="lime"] {
-      background:
-        linear-gradient(135deg,#091509,#15240f) !important;
-    }
-
-    .fc-theme-choice[data-theme="gold"] {
-      background:
-        linear-gradient(135deg,#171006,#29200b) !important;
-    }
-
-    .fc-theme-choice[data-theme="ice"] {
-      background:
-        linear-gradient(135deg,#07161d,#102638) !important;
-    }
-
-    .fc-theme-choice[data-theme="violet"] {
-      background:
-        linear-gradient(135deg,#11091a,#211137) !important;
-    }
-
-    .fc-theme-choice[data-theme="neon"] {
-      background:
-        linear-gradient(135deg,#180711,#301027) !important;
-    }
-
-    .fc-theme-choice[data-theme="matrix"] {
-      background:
-        linear-gradient(135deg,#031008,#0b2113) !important;
-    }
-
-    .fc-theme-choice[data-theme="royal"] {
-      background:
-        linear-gradient(135deg,#061025,#102a57) !important;
-    }
-
-    .fc-theme-choice[data-theme="lavender"] {
-      background:
-        linear-gradient(135deg,#120b1b,#292040) !important;
-    }
-
-    .fc-theme-choice[data-theme="coffee"] {
-      background:
-        linear-gradient(135deg,#140b06,#332015) !important;
-    }
-
-    .fc-theme-choice[data-theme="mono"] {
-      background:
-        linear-gradient(135deg,#090909,#242424) !important;
-    }
-
-
-    /* =====================================================
-       MOBILE
-       ===================================================== */
-
-    @media (max-width:600px) {
-
-      html,
-      body {
-
-        width: 100vw !important;
-        min-width: 100vw !important;
-
-        height: 100dvh !important;
-        min-height: 100dvh !important;
-      }
-
-
-      .app,
-      .screen {
-
-        width: 100vw !important;
-        min-width: 100vw !important;
-
-        height: 100dvh !important;
-        min-height: 100dvh !important;
-      }
-
-
-      #fcNavToggle {
-
-        left: 8px !important;
-
-        width: 40px !important;
-        height: 40px !important;
-      }
-
-
-      #fcNavToggle:hover {
-
-        width: 44px !important;
-        height: 44px !important;
-      }
-
-
-      #fcNavToggle.is-open {
-
-        left: 196px !important;
-      }
-
-
-      #fcCustomSidebar {
-
-        left: 8px !important;
-
-        width: 180px !important;
-        max-width: 180px !important;
-      }
-
-
-      .fc-bottom-dock {
-
-        bottom: 10px !important;
-
-        width:
-          calc(100vw - 20px) !important;
-
-        min-height: 58px !important;
-
-        padding: 5px !important;
-      }
-
-
-      .fc-bottom-dock button {
-
-        min-width: 0 !important;
-
-        min-height: 48px !important;
-
-        flex: 1 1 0 !important;
-      }
-
-
-      .fc-dock-label {
-
-        font-size: 10px !important;
-      }
-
-
-      #chatScreen .mediaButton {
-
-        width: 42px !important;
-        height: 42px !important;
-
-        min-width: 42px !important;
-        min-height: 42px !important;
-
-        font-size: 19px !important;
-      }
-
-    }
-
-
-    /* =====================================================
-       SMALL PHONES
-       ===================================================== */
-
-    @media (max-width:420px) {
-
-      #fcCustomSidebar {
-
-        width: 175px !important;
-        max-width: 175px !important;
-      }
-
-
-      #fcNavToggle.is-open {
-
-        left: 189px !important;
-      }
-
-
-      .fc-dock-label {
-
-        font-size: 9px !important;
-      }
-
-    }
-
-
-    /* =====================================================
-       REDUCED MOTION
-       ===================================================== */
-
-    @media (prefers-reduced-motion: reduce) {
-
-      *,
-      *::before,
-      *::after {
-
-        animation-duration:
-          .01ms !important;
-
-        animation-iteration-count:
-          1 !important;
-
-        transition-duration:
-          .01ms !important;
-
-        scroll-behavior:
-          auto !important;
-      }
-
-    }
-
-  </style>
+/* =====================================================
+   FRIENDCHAT THEME VARIABLES
+   ===================================================== */
+
+:root {
+
+  --fc-bg:#070a10;
+  --fc-panel:#0d121b;
+  --fc-panel-2:#111824;
+  --fc-panel-3:#151d2a;
+
+  --fc-text:#f5f7ff;
+  --fc-muted:#8d97aa;
+
+  --fc-accent:#6c7cff;
+  --fc-accent-2:#8b5cf6;
+
+  --fc-border:rgba(255,255,255,.08);
+
+  --fc-glow:rgba(108,124,255,.25);
+}
+
+
+/* =====================================================
+   1 — MIDNIGHT BLUE
+   ===================================================== */
+
+body.fc-theme-midnight {
+  --fc-bg:#070a18;
+  --fc-panel:#0d1328;
+  --fc-panel-2:#111b38;
+  --fc-panel-3:#172348;
+  --fc-text:#f4f7ff;
+  --fc-muted:#9aa8c7;
+  --fc-accent:#668cff;
+  --fc-accent-2:#4169e1;
+  --fc-border:rgba(102,140,255,.15);
+  --fc-glow:rgba(65,105,225,.35);
+}
+
+
+/* =====================================================
+   2 — PURPLE NEON
+   ===================================================== */
+
+body.fc-theme-purple-neon {
+  --fc-bg:#0c0614;
+  --fc-panel:#160b22;
+  --fc-panel-2:#211033;
+  --fc-panel-3:#2c1545;
+  --fc-text:#faf5ff;
+  --fc-muted:#b69acb;
+  --fc-accent:#b84dff;
+  --fc-accent-2:#7c3aed;
+  --fc-border:rgba(184,77,255,.2);
+  --fc-glow:rgba(184,77,255,.4);
+}
+
+
+/* =====================================================
+   3 — OCEAN
+   ===================================================== */
+
+body.fc-theme-ocean {
+  --fc-bg:#041018;
+  --fc-panel:#091b27;
+  --fc-panel-2:#0e2938;
+  --fc-panel-3:#14394b;
+  --fc-text:#effcff;
+  --fc-muted:#91b6c4;
+  --fc-accent:#00bfff;
+  --fc-accent-2:#1677ff;
+  --fc-border:rgba(0,191,255,.17);
+  --fc-glow:rgba(0,191,255,.35);
+}
+
+
+/* =====================================================
+   4 — FOREST
+   ===================================================== */
+
+body.fc-theme-forest {
+  --fc-bg:#06100a;
+  --fc-panel:#0b1b11;
+  --fc-panel-2:#10281a;
+  --fc-panel-3:#173a24;
+  --fc-text:#f2fff5;
+  --fc-muted:#91ae99;
+  --fc-accent:#22c55e;
+  --fc-accent-2:#15803d;
+  --fc-border:rgba(34,197,94,.16);
+  --fc-glow:rgba(34,197,94,.3);
+}
+
+
+/* =====================================================
+   5 — CHERRY BLOSSOM
+   ===================================================== */
+
+body.fc-theme-cherry {
+  --fc-bg:#160a11;
+  --fc-panel:#25101b;
+  --fc-panel-2:#351525;
+  --fc-panel-3:#461d30;
+  --fc-text:#fff5fa;
+  --fc-muted:#c99dad;
+  --fc-accent:#ff75a8;
+  --fc-accent-2:#ec4899;
+  --fc-border:rgba(255,117,168,.18);
+  --fc-glow:rgba(255,117,168,.3);
+}
+
+
+/* =====================================================
+   6 — CRIMSON
+   ===================================================== */
+
+body.fc-theme-crimson {
+  --fc-bg:#110507;
+  --fc-panel:#1d080c;
+  --fc-panel-2:#2c0d13;
+  --fc-panel-3:#3c121a;
+  --fc-text:#fff4f5;
+  --fc-muted:#c49a9f;
+  --fc-accent:#ff334d;
+  --fc-accent-2:#b91c1c;
+  --fc-border:rgba(255,51,77,.18);
+  --fc-glow:rgba(255,51,77,.32);
+}
+
+
+/* =====================================================
+   7 — SUNSET
+   ===================================================== */
+
+body.fc-theme-sunset {
+  --fc-bg:#180907;
+  --fc-panel:#26100a;
+  --fc-panel-2:#35160c;
+  --fc-panel-3:#481d0e;
+  --fc-text:#fff8f1;
+  --fc-muted:#c7a18d;
+  --fc-accent:#ff7a18;
+  --fc-accent-2:#ef4444;
+  --fc-border:rgba(255,122,24,.18);
+  --fc-glow:rgba(255,122,24,.32);
+}
+
+
+/* =====================================================
+   8 — ARCTIC
+   ===================================================== */
+
+body.fc-theme-arctic {
+  --fc-bg:#edf8ff;
+  --fc-panel:#ffffff;
+  --fc-panel-2:#e5f3fb;
+  --fc-panel-3:#d6eaf5;
+  --fc-text:#102433;
+  --fc-muted:#607989;
+  --fc-accent:#0284c7;
+  --fc-accent-2:#38bdf8;
+  --fc-border:rgba(15,70,100,.12);
+  --fc-glow:rgba(2,132,199,.2);
+}
+
+
+/* =====================================================
+   9 — CYBER GREEN
+   ===================================================== */
+
+body.fc-theme-cyber-green {
+  --fc-bg:#020806;
+  --fc-panel:#06120b;
+  --fc-panel-2:#091d10;
+  --fc-panel-3:#0d2917;
+  --fc-text:#edfff2;
+  --fc-muted:#78a786;
+  --fc-accent:#00ff66;
+  --fc-accent-2:#16a34a;
+  --fc-border:rgba(0,255,102,.18);
+  --fc-glow:rgba(0,255,102,.38);
+}
+
+
+/* =====================================================
+   10 — GOLDEN
+   ===================================================== */
+
+body.fc-theme-golden {
+  --fc-bg:#100c03;
+  --fc-panel:#1b1506;
+  --fc-panel-2:#281f08;
+  --fc-panel-3:#382b0b;
+  --fc-text:#fffbed;
+  --fc-muted:#bba96e;
+  --fc-accent:#fbbf24;
+  --fc-accent-2:#d97706;
+  --fc-border:rgba(251,191,36,.2);
+  --fc-glow:rgba(251,191,36,.32);
+}
+
+
+/* =====================================================
+   11 — CYBER PINK
+   ===================================================== */
+
+body.fc-theme-cyber-pink {
+  --fc-bg:#10030d;
+  --fc-panel:#1d0718;
+  --fc-panel-2:#2c0b26;
+  --fc-panel-3:#3b1035;
+  --fc-text:#fff4fc;
+  --fc-muted:#c18caf;
+  --fc-accent:#ff2bd6;
+  --fc-accent-2:#ec4899;
+  --fc-border:rgba(255,43,214,.2);
+  --fc-glow:rgba(255,43,214,.4);
+}
+
+
+/* =====================================================
+   12 — PURE BLACK
+   ===================================================== */
+
+body.fc-theme-black {
+  --fc-bg:#000000;
+  --fc-panel:#050505;
+  --fc-panel-2:#0b0b0b;
+  --fc-panel-3:#111111;
+  --fc-text:#ffffff;
+  --fc-muted:#999999;
+  --fc-accent:#ffffff;
+  --fc-accent-2:#888888;
+  --fc-border:rgba(255,255,255,.1);
+  --fc-glow:rgba(255,255,255,.15);
+}
+
+
+/* =====================================================
+   13 — CLEAN WHITE
+   ===================================================== */
+
+body.fc-theme-white {
+  --fc-bg:#f7f8fa;
+  --fc-panel:#ffffff;
+  --fc-panel-2:#f0f2f5;
+  --fc-panel-3:#e7e9ed;
+  --fc-text:#101418;
+  --fc-muted:#66707a;
+  --fc-accent:#2563eb;
+  --fc-accent-2:#4f46e5;
+  --fc-border:rgba(0,0,0,.1);
+  --fc-glow:rgba(37,99,235,.16);
+}
+
+
+/* =====================================================
+   14 — GALAXY
+   ===================================================== */
+
+body.fc-theme-galaxy {
+  --fc-bg:#050414;
+  --fc-panel:#0c0820;
+  --fc-panel-2:#151034;
+  --fc-panel-3:#21174c;
+  --fc-text:#f9f5ff;
+  --fc-muted:#a99bc4;
+  --fc-accent:#8b5cf6;
+  --fc-accent-2:#ec4899;
+  --fc-border:rgba(139,92,246,.2);
+  --fc-glow:rgba(139,92,246,.4);
+}
+
+
+/* =====================================================
+   15 — AURORA
+   ===================================================== */
+
+body.fc-theme-aurora {
+  --fc-bg:#04100f;
+  --fc-panel:#071b19;
+  --fc-panel-2:#0b2928;
+  --fc-panel-3:#103938;
+  --fc-text:#effffd;
+  --fc-muted:#8ebbb4;
+  --fc-accent:#2dd4bf;
+  --fc-accent-2:#8b5cf6;
+  --fc-border:rgba(45,212,191,.18);
+  --fc-glow:rgba(45,212,191,.35);
+}
+
+
+/* =====================================================
+   16 — DISCORD-STYLE BLUE
+   ===================================================== */
+
+body.fc-theme-discord {
+  --fc-bg:#313338;
+  --fc-panel:#2b2d31;
+  --fc-panel-2:#232428;
+  --fc-panel-3:#1e1f22;
+  --fc-text:#f2f3f5;
+  --fc-muted:#b5bac1;
+  --fc-accent:#5865f2;
+  --fc-accent-2:#7289da;
+  --fc-border:rgba(255,255,255,.08);
+  --fc-glow:rgba(88,101,242,.3);
+}
+
+
+/* =====================================================
+   17 — CYBER ORANGE
+   ===================================================== */
+
+body.fc-theme-cyber-orange {
+  --fc-bg:#100703;
+  --fc-panel:#1c0b05;
+  --fc-panel-2:#2b1107;
+  --fc-panel-3:#3b1709;
+  --fc-text:#fff8f1;
+  --fc-muted:#c39a7d;
+  --fc-accent:#ff6a00;
+  --fc-accent-2:#ffb000;
+  --fc-border:rgba(255,106,0,.2);
+  --fc-glow:rgba(255,106,0,.38);
+}
+
+
+/* =====================================================
+   18 — GRAPHITE
+   ===================================================== */
+
+body.fc-theme-graphite {
+  --fc-bg:#101214;
+  --fc-panel:#181a1d;
+  --fc-panel-2:#202328;
+  --fc-panel-3:#292d32;
+  --fc-text:#f5f5f5;
+  --fc-muted:#9da3aa;
+  --fc-accent:#9ca3af;
+  --fc-accent-2:#6b7280;
+  --fc-border:rgba(255,255,255,.1);
+  --fc-glow:rgba(156,163,175,.2);
+}
+
+
+/* =====================================================
+   19 — DARK GOTHIC
+   ===================================================== */
+
+body.fc-theme-gothic {
+  --fc-bg:#080609;
+  --fc-panel:#110b12;
+  --fc-panel-2:#1b0e19;
+  --fc-panel-3:#261221;
+  --fc-text:#f5edf5;
+  --fc-muted:#a996a8;
+  --fc-accent:#8b1e3f;
+  --fc-accent-2:#5b1630;
+  --fc-border:rgba(139,30,63,.25);
+  --fc-glow:rgba(139,30,63,.35);
+}
+
+
+/* =====================================================
+   20 — GLASS CRYSTAL
+   ===================================================== */
+
+body.fc-theme-glass {
+  --fc-bg:#09111f;
+  --fc-panel:rgba(255,255,255,.09);
+  --fc-panel-2:rgba(255,255,255,.13);
+  --fc-panel-3:rgba(255,255,255,.17);
+  --fc-text:#f8fbff;
+  --fc-muted:#b5c4d8;
+  --fc-accent:#8bdcff;
+  --fc-accent-2:#a78bfa;
+  --fc-border:rgba(255,255,255,.2);
+  --fc-glow:rgba(139,220,255,.3);
+}
+
+
+/* =====================================================
+   APP
+   ===================================================== */
+
+.app {
+  position:relative;
+  width:100vw !important;
+  min-width:100vw !important;
+  max-width:none !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  max-height:100dvh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+
+
+/* =====================================================
+   SCREENS
+   ===================================================== */
+
+.screen {
+  position:relative;
+  width:100% !important;
+  min-width:100% !important;
+  max-width:none !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  max-height:100dvh !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+
+.screen.hidden {
+  display:none !important;
+}
+
+
+/* =====================================================
+   AUTH
+   ===================================================== */
+
+.screen.auth {
+  width:100vw !important;
+  min-width:100vw !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+
+/* =====================================================
+   HOME
+   ===================================================== */
+
+#homeScreen {
+  width:100vw !important;
+  min-width:100vw !important;
+  max-width:none !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  max-height:100dvh !important;
+  margin:0 !important;
+  overflow-x:hidden;
+  overflow-y:auto;
+  box-sizing:border-box !important;
+}
+
+
+/* =====================================================
+   ADD
+   ===================================================== */
+
+#addScreen {
+  width:100vw !important;
+  min-width:100vw !important;
+  max-width:none !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  max-height:100dvh !important;
+  margin:0 !important;
+  overflow-x:hidden;
+  overflow-y:auto;
+  box-sizing:border-box !important;
+}
+
+#addScreen .card.wide {
+  width:min(calc(100vw - 32px),900px);
+  max-width:calc(100vw - 32px);
+  box-sizing:border-box !important;
+}
+
+
+/* =====================================================
+   CHAT
+   ===================================================== */
+
+#chatScreen {
+  position:relative !important;
+  display:flex !important;
+  flex-direction:column !important;
+  width:100vw !important;
+  min-width:100vw !important;
+  max-width:none !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  max-height:100dvh !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+
+#chatScreen.hidden {
+  display:none !important;
+}
+
+#chatScreen > header {
+  flex:0 0 auto;
+  width:100% !important;
+  max-width:none !important;
+  box-sizing:border-box !important;
+  z-index:20;
+}
+
+#chatScreen .messages {
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-bottom:12px;
+}
+
+
+/* =====================================================
+   COMPOSER
+   ===================================================== */
+
+#chatScreen .composer {
+  position:relative !important;
+  flex:0 0 auto !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  z-index:50;
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+}
+
+
+/* =====================================================
+   MEDIA BUTTON
+   ===================================================== */
+
+#chatScreen .mediaButton {
+  width:44px !important;
+  height:44px !important;
+  min-width:44px !important;
+  min-height:44px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+  margin:0 !important;
+  border-radius:13px !important;
+  background:rgba(255,255,255,.055) !important;
+  border:0 !important;
+  color:var(--fc-text) !important;
+  font-size:20px !important;
+  cursor:pointer !important;
+  flex-shrink:0 !important;
+  transition:background .2s ease,transform .2s ease,color .2s ease !important;
+}
+
+#chatScreen .mediaButton:hover {
+  background:color-mix(in srgb,var(--fc-accent) 18%,transparent) !important;
+  color:var(--fc-text) !important;
+  transform:translateY(-2px) !important;
+}
+
+#chatScreen .mediaButton:active {
+  transform:scale(.94) !important;
+}
+
+
+/* =====================================================
+   FRIEND LIST
+   ===================================================== */
+
+#friendList {
+  width:100% !important;
+  max-width:none !important;
+  box-sizing:border-box !important;
+}
+
+
+/* =====================================================
+   PROFILE
+   ===================================================== */
+
+#profileScreen {
+  width:100vw !important;
+  min-width:100vw !important;
+  max-width:none !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  max-height:100dvh !important;
+  margin:0 !important;
+  overflow-x:hidden;
+  overflow-y:auto;
+  box-sizing:border-box !important;
+}
+
+.profilePage {
+  width:100% !important;
+  max-width:none !important;
+  box-sizing:border-box !important;
+}
+
+
+/* =====================================================
+   OLD BOTTOM NAVIGATION
+   ===================================================== */
+
+#bottomNav,
+.bottomNav {
+  display:none !important;
+}
+
+
+/* =====================================================
+   MEDIA
+   ===================================================== */
+
+img,
+video,
+canvas,
+iframe {
+  max-width:100%;
+}
+
+input,
+button,
+textarea,
+select {
+  max-width:100%;
+}
+
+
+/* =====================================================
+   LEFT NAVIGATION ARROW
+   ===================================================== */
+
+#fcNavToggle {
+  position:fixed !important;
+  left:12px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:42px !important;
+  height:42px !important;
+  min-width:42px !important;
+  min-height:42px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:50% !important;
+  z-index:2147483000 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+}
+
+#fcNavToggle:hover {
+  width:48px !important;
+  height:48px !important;
+}
+
+#fcNavToggle.is-open {
+  left:205px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+}
+
+
+/* =====================================================
+   SIDEBAR
+   ===================================================== */
+
+#fcCustomSidebar {
+  position:fixed !important;
+  left:12px !important;
+  top:50% !important;
+  width:185px !important;
+  max-width:185px !important;
+  max-height:calc(100vh - 40px) !important;
+  transform:translate(-110%,-50%) !important;
+  z-index:2147482999 !important;
+  pointer-events:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  transition:transform .35s cubic-bezier(.22,1,.36,1) !important;
+}
+
+#fcCustomSidebar.open {
+  transform:translate(0,-50%) !important;
+  pointer-events:auto !important;
+}
+
+
+/* =====================================================
+   BOTTOM DOCK
+   ===================================================== */
+
+.fc-bottom-dock {
+  position:fixed !important;
+  left:50% !important;
+  bottom:14px !important;
+  transform:translateX(-50%) !important;
+  z-index:2147482998 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  min-height:62px !important;
+  padding:7px !important;
+  border-radius:20px !important;
+  box-sizing:border-box !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+.fc-bottom-dock button {
+  min-width:86px !important;
+  min-height:54px !important;
+  padding:5px !important;
+  margin:0 !important;
+  border-radius:14px !important;
+  border:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex-direction:column !important;
+  gap:3px !important;
+  cursor:pointer !important;
+  box-sizing:border-box !important;
+}
+
+.fc-dock-label {
+  font-size:11px !important;
+  line-height:1 !important;
+}
+
+
+/* =====================================================
+   HIDE DOCK ON CHAT
+   ===================================================== */
+
+body:has(#chatScreen:not(.hidden)) .fc-bottom-dock {
+  display:none !important;
+}
+
+body:has(#chatScreen:not(.hidden)) #fcCustomSidebar {
+  display:none !important;
+}
+
+body:has(#chatScreen:not(.hidden)) #fcNavToggle {
+  display:flex !important;
+}
+
+
+/* =====================================================
+   AUTH NAV HIDE
+   ===================================================== */
+
+body:has(#loginScreen:not(.hidden)) #fcNavToggle,
+body:has(#loginScreen:not(.hidden)) #fcCustomSidebar,
+body:has(#loginScreen:not(.hidden)) .fc-bottom-dock,
+body:has(#signupScreen:not(.hidden)) #fcNavToggle,
+body:has(#signupScreen:not(.hidden)) #fcCustomSidebar,
+body:has(#signupScreen:not(.hidden)) .fc-bottom-dock {
+  display:none !important;
+}
+
+
+/* =====================================================
+   THEME PANEL
+   ===================================================== */
+
+#fcThemeOverlay {
+  position:fixed;
+  inset:0;
+  z-index:2147483640;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+
+#fcThemeOverlay.fc-theme-visible {
+  display:flex;
+}
+
+
+#fcThemePanel {
+  width:min(720px,calc(100vw - 30px));
+  max-height:min(780px,calc(100dvh - 30px));
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid var(--fc-border);
+  border-radius:24px;
+  background:var(--fc-panel);
+  color:var(--fc-text);
+  box-shadow:0 25px 80px rgba(0,0,0,.5);
+}
+
+
+/* =====================================================
+   THEME HEADER
+   ===================================================== */
+
+.fc-theme-header {
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 20px;
+  border-bottom:1px solid var(--fc-border);
+}
+
+.fc-theme-header h2 {
+  margin:0;
+  font-size:20px;
+}
+
+.fc-theme-header p {
+  margin:4px 0 0;
+  color:var(--fc-muted);
+  font-size:12px;
+}
+
+#fcThemeClose {
+  width:38px;
+  height:38px;
+  border:0;
+  border-radius:50%;
+  background:var(--fc-panel-2);
+  color:var(--fc-text);
+  font-size:22px;
+  cursor:pointer;
+}
+
+
+/* =====================================================
+   SCROLLABLE THEME AREA
+   ===================================================== */
+
+#fcThemeList {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:18px;
+
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+
+#fcThemeList::-webkit-scrollbar {
+  width:8px;
+}
+
+#fcThemeList::-webkit-scrollbar-track {
+  background:transparent;
+}
+
+#fcThemeList::-webkit-scrollbar-thumb {
+  background:rgba(255,255,255,.18);
+  border-radius:20px;
+}
+
+#fcThemeList {
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.25) transparent;
+}
+
+
+/* =====================================================
+   THEME CARD
+   ===================================================== */
+
+.fc-theme-choice {
+  position:relative;
+  min-height:108px;
+  padding:14px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  text-align:left;
+  color:white;
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease;
+}
+
+.fc-theme-choice:hover {
+  transform:translateY(-2px);
+  border-color:rgba(255,255,255,.4);
+}
+
+.fc-theme-choice.fc-theme-selected {
+  border:2px solid var(--fc-accent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--fc-accent) 20%,transparent);
+}
+
+.fc-theme-number {
+  position:absolute;
+  top:9px;
+  right:11px;
+  font-size:11px;
+  opacity:.65;
+}
+
+.fc-theme-icon {
+  font-size:27px;
+  margin-bottom:8px;
+}
+
+.fc-theme-name {
+  font-size:14px;
+  font-weight:700;
+}
+
+.fc-theme-description {
+  margin-top:4px;
+  font-size:10px;
+  opacity:.7;
+}
+
+
+/* =====================================================
+   THEME CARD COLORS
+   ===================================================== */
+
+.fc-theme-choice[data-theme="midnight"] {
+  background:linear-gradient(135deg,#070a18,#172348);
+}
+
+.fc-theme-choice[data-theme="purple-neon"] {
+  background:linear-gradient(135deg,#0c0614,#7c3aed,#b84dff);
+}
+
+.fc-theme-choice[data-theme="ocean"] {
+  background:linear-gradient(135deg,#041018,#0e2938,#00bfff);
+}
+
+.fc-theme-choice[data-theme="forest"] {
+  background:linear-gradient(135deg,#06100a,#10281a,#22c55e);
+}
+
+.fc-theme-choice[data-theme="cherry"] {
+  background:linear-gradient(135deg,#160a11,#351525,#ff75a8);
+}
+
+.fc-theme-choice[data-theme="crimson"] {
+  background:linear-gradient(135deg,#110507,#2c0d13,#ff334d);
+}
+
+.fc-theme-choice[data-theme="sunset"] {
+  background:linear-gradient(135deg,#180907,#35160c,#ff7a18);
+}
+
+.fc-theme-choice[data-theme="arctic"] {
+  color:#102433;
+  background:linear-gradient(135deg,#edf8ff,#d6eaf5,#67d9ff);
+}
+
+.fc-theme-choice[data-theme="cyber-green"] {
+  background:linear-gradient(135deg,#020806,#09200f,#00ff66);
+}
+
+.fc-theme-choice[data-theme="golden"] {
+  background:linear-gradient(135deg,#100c03,#281f08,#fbbf24);
+}
+
+.fc-theme-choice[data-theme="cyber-pink"] {
+  background:linear-gradient(135deg,#10030d,#2c0b26,#ff2bd6);
+}
+
+.fc-theme-choice[data-theme="black"] {
+  background:linear-gradient(135deg,#000,#050505,#222);
+}
+
+.fc-theme-choice[data-theme="white"] {
+  color:#101418;
+  background:linear-gradient(135deg,#fff,#f0f2f5,#d9dde3);
+}
+
+.fc-theme-choice[data-theme="galaxy"] {
+  background:linear-gradient(135deg,#050414,#151034,#8b5cf6,#ec4899);
+}
+
+.fc-theme-choice[data-theme="aurora"] {
+  background:linear-gradient(135deg,#04100f,#0b2928,#2dd4bf,#8b5cf6);
+}
+
+.fc-theme-choice[data-theme="discord"] {
+  background:linear-gradient(135deg,#313338,#232428,#5865f2);
+}
+
+.fc-theme-choice[data-theme="cyber-orange"] {
+  background:linear-gradient(135deg,#100703,#2b1107,#ff6a00);
+}
+
+.fc-theme-choice[data-theme="graphite"] {
+  background:linear-gradient(135deg,#101214,#202328,#9ca3af);
+}
+
+.fc-theme-choice[data-theme="gothic"] {
+  background:linear-gradient(135deg,#080609,#1b0e19,#8b1e3f);
+}
+
+.fc-theme-choice[data-theme="glass"] {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(100,180,255,.35),
+      rgba(160,100,255,.35)
+    );
+  backdrop-filter:blur(14px);
+}
+
+
+/* =====================================================
+   GLASS CRYSTAL EFFECT
+   ===================================================== */
+
+body.fc-theme-glass::before {
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background:
+    radial-gradient(circle at 15% 20%,rgba(0,200,255,.25),transparent 30%),
+    radial-gradient(circle at 85% 20%,rgba(140,80,255,.25),transparent 30%),
+    radial-gradient(circle at 50% 90%,rgba(0,150,255,.18),transparent 35%);
+}
+
+body.fc-theme-glass .card,
+body.fc-theme-glass header,
+body.fc-theme-glass .composer,
+body.fc-theme-glass .profileRow,
+body.fc-theme-glass .friendList,
+body.fc-theme-glass .fc-bottom-dock,
+body.fc-theme-glass #fcCustomSidebar {
+  background:rgba(255,255,255,.08) !important;
+  border-color:rgba(255,255,255,.18) !important;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+
+/* =====================================================
+   GENERAL THEME COLORS
+   ===================================================== */
+
+body.fc-theme-midnight,
+body.fc-theme-purple-neon,
+body.fc-theme-ocean,
+body.fc-theme-forest,
+body.fc-theme-cherry,
+body.fc-theme-crimson,
+body.fc-theme-sunset,
+body.fc-theme-cyber-green,
+body.fc-theme-golden,
+body.fc-theme-cyber-pink,
+body.fc-theme-black,
+body.fc-theme-galaxy,
+body.fc-theme-aurora,
+body.fc-theme-discord,
+body.fc-theme-cyber-orange,
+body.fc-theme-graphite,
+body.fc-theme-gothic,
+body.fc-theme-glass {
+  color:var(--fc-text);
+}
+
+
+/* =====================================================
+   COMMON THEME SURFACES
+   ===================================================== */
+
+body[class*="fc-theme-"] input,
+body[class*="fc-theme-"] textarea,
+body[class*="fc-theme-"] select {
+  color:var(--fc-text);
+  border-color:var(--fc-border);
+}
+
+body[class*="fc-theme-"] input::placeholder,
+body[class*="fc-theme-"] textarea::placeholder {
+  color:var(--fc-muted);
+}
+
+body[class*="fc-theme-"] .muted {
+  color:var(--fc-muted);
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width:600px) {
+
+  html,
+  body {
+    width:100vw !important;
+    min-width:100vw !important;
+    height:100dvh !important;
+    min-height:100dvh !important;
+  }
+
+  .app,
+  .screen {
+    width:100vw !important;
+    min-width:100vw !important;
+    height:100dvh !important;
+    min-height:100dvh !important;
+  }
+
+  #fcNavToggle {
+    left:8px !important;
+    width:40px !important;
+    height:40px !important;
+  }
+
+  #fcNavToggle:hover {
+    width:44px !important;
+    height:44px !important;
+  }
+
+  #fcNavToggle.is-open {
+    left:196px !important;
+  }
+
+  #fcCustomSidebar {
+    left:8px !important;
+    width:180px !important;
+    max-width:180px !important;
+  }
+
+  .fc-bottom-dock {
+    bottom:10px !important;
+    width:calc(100vw - 20px) !important;
+    min-height:58px !important;
+    padding:5px !important;
+  }
+
+  .fc-bottom-dock button {
+    min-width:0 !important;
+    min-height:48px !important;
+    flex:1 1 0 !important;
+  }
+
+  .fc-dock-label {
+    font-size:10px !important;
+  }
+
+  #chatScreen .mediaButton {
+    width:42px !important;
+    height:42px !important;
+    min-width:42px !important;
+    min-height:42px !important;
+    font-size:19px !important;
+  }
+
+  #fcThemeOverlay {
+    padding:10px;
+  }
+
+  #fcThemePanel {
+    width:calc(100vw - 20px);
+    max-height:calc(100dvh - 20px);
+    border-radius:20px;
+  }
+
+  #fcThemeList {
+    grid-template-columns:1fr;
+    padding:12px;
+    gap:10px;
+  }
+
+  .fc-theme-choice {
+    min-height:92px;
+  }
+}
+
+
+/* =====================================================
+   SMALL PHONES
+   ===================================================== */
+
+@media (max-width:420px) {
+
+  #fcCustomSidebar {
+    width:175px !important;
+    max-width:175px !important;
+  }
+
+  #fcNavToggle.is-open {
+    left:189px !important;
+  }
+
+  .fc-dock-label {
+    font-size:9px !important;
+  }
+}
+
+
+/* =====================================================
+   REDUCED MOTION
+   ===================================================== */
+
+@media (prefers-reduced-motion:reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+
+</style>
 
 </head>
 
 
 <body>
 
-
 <div class="app">
 
 
-  <!-- =====================================================
-       LOGIN SCREEN
-       ===================================================== -->
+<!-- =====================================================
+     LOGIN SCREEN
+     ===================================================== -->
 
-  <section
-    id="loginScreen"
-    class="screen auth"
-  >
+<section id="loginScreen" class="screen auth">
 
-    <div class="card">
+  <div class="card">
 
-      <div class="logo">
-        FC
-      </div>
+    <div class="logo">FC</div>
 
-      <h1>
-        FriendChat
-      </h1>
+    <h1>FriendChat</h1>
 
-      <p class="muted">
-        Private chat for your friends
-      </p>
+    <p class="muted">
+      Private chat for your friends
+    </p>
 
-
-      <input
-        id="loginEmail"
-        type="email"
-        placeholder="Email"
-        autocomplete="email"
-      >
-
-
-      <input
-        id="loginPassword"
-        type="password"
-        placeholder="Password"
-        autocomplete="current-password"
-      >
-
-
-      <button
-        type="button"
-        onclick="login()"
-      >
-        Log in
-      </button>
-
-
-      <button
-        type="button"
-        class="secondary"
-        onclick="showSignup()"
-      >
-        Create account
-      </button>
-
-
-      <p
-        id="loginStatus"
-        class="status"
-      ></p>
-
-    </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       SIGNUP SCREEN
-       ===================================================== -->
-
-  <section
-    id="signupScreen"
-    class="screen auth hidden"
-  >
-
-    <div class="card">
-
-      <div class="logo">
-        FC
-      </div>
-
-      <h1>
-        Create account
-      </h1>
-
-
-      <input
-        id="signupName"
-        type="text"
-        placeholder="Your name"
-        autocomplete="name"
-      >
-
-
-      <input
-        id="signupEmail"
-        type="email"
-        placeholder="Email"
-        autocomplete="email"
-      >
-
-
-      <input
-        id="signupPassword"
-        type="password"
-        placeholder="Password (6+ characters)"
-        autocomplete="new-password"
-      >
-
-
-      <button
-        type="button"
-        onclick="signup()"
-      >
-        Create account
-      </button>
-
-
-      <button
-        type="button"
-        class="secondary"
-        onclick="showLogin()"
-      >
-        Back to login
-      </button>
-
-
-      <p
-        id="signupStatus"
-        class="status"
-      ></p>
-
-    </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       HOME SCREEN
-       ===================================================== -->
-
-  <section
-    id="homeScreen"
-    class="screen hidden"
-  >
-
-    <header>
-
-      <div>
-
-        <h2>
-          FriendChat
-        </h2>
-
-        <small id="myIdLabel"></small>
-
-      </div>
-
-
-      <button
-        type="button"
-        class="statusInfoButton"
-        onclick="toggleStatusInfo()"
-        title="Status information"
-      >
-        ⓘ
-      </button>
-
-
-      <button
-        type="button"
-        class="icon"
-        onclick="showAdd()"
-        title="Add friend"
-      >
-        ＋
-      </button>
-
-    </header>
-
-
-    <!-- STATUS INFO -->
-
-    <div
-      id="statusInfo"
-      class="statusInfo hidden"
+    <input
+      id="loginEmail"
+      type="email"
+      placeholder="Email"
+      autocomplete="email"
     >
 
-      <div class="statusInfoHeader">
+    <input
+      id="loginPassword"
+      type="password"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
 
-        <strong>
-          Status
-        </strong>
+    <button type="button" onclick="login()">
+      Log in
+    </button>
 
-        <button
-          type="button"
-          class="statusInfoClose"
-          onclick="toggleStatusInfo()"
-        >
-          ×
-        </button>
+    <button
+      type="button"
+      class="secondary"
+      onclick="showSignup()"
+    >
+      Create account
+    </button>
+
+    <p id="loginStatus" class="status"></p>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     SIGNUP SCREEN
+     ===================================================== -->
+
+<section
+  id="signupScreen"
+  class="screen auth hidden"
+>
+
+  <div class="card">
+
+    <div class="logo">FC</div>
+
+    <h1>Create account</h1>
+
+    <input
+      id="signupName"
+      type="text"
+      placeholder="Your name"
+      autocomplete="name"
+    >
+
+    <input
+      id="signupEmail"
+      type="email"
+      placeholder="Email"
+      autocomplete="email"
+    >
+
+    <input
+      id="signupPassword"
+      type="password"
+      placeholder="Password (6+ characters)"
+      autocomplete="new-password"
+    >
+
+    <button type="button" onclick="signup()">
+      Create account
+    </button>
+
+    <button
+      type="button"
+      class="secondary"
+      onclick="showLogin()"
+    >
+      Back to login
+    </button>
+
+    <p id="signupStatus" class="status"></p>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     HOME SCREEN
+     ===================================================== -->
+
+<section
+  id="homeScreen"
+  class="screen hidden"
+>
+
+  <header>
+
+    <div>
+
+      <h2>FriendChat</h2>
+
+      <small id="myIdLabel"></small>
+
+    </div>
+
+    <button
+      type="button"
+      class="statusInfoButton"
+      onclick="toggleStatusInfo()"
+      title="Status information"
+    >
+      ⓘ
+    </button>
+
+    <button
+      type="button"
+      class="icon"
+      onclick="showAdd()"
+      title="Add friend"
+    >
+      ＋
+    </button>
+
+  </header>
+
+
+  <!-- STATUS INFO -->
+
+  <div
+    id="statusInfo"
+    class="statusInfo hidden"
+  >
+
+    <div class="statusInfoHeader">
+
+      <strong>Status</strong>
+
+      <button
+        type="button"
+        class="statusInfoClose"
+        onclick="toggleStatusInfo()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="statusExplanation">
+
+      <div class="statusExplanationItem">
+
+        <span class="statusLegendDot active"></span>
+
+        <div>
+
+          <strong>Active</strong>
+
+          <p>
+            The person is online and available.
+          </p>
+
+        </div>
 
       </div>
 
 
-      <div class="statusExplanation">
+      <div class="statusExplanationItem">
 
-        <div class="statusExplanationItem">
+        <span class="statusLegendDot busy"></span>
 
-          <span
-            class="statusLegendDot active"
-          ></span>
+        <div>
 
-          <div>
+          <strong>Busy</strong>
 
-            <strong>
-              Active
-            </strong>
-
-            <p>
-              The person is online and available.
-            </p>
-
-          </div>
+          <p>
+            The person is online and currently chatting with someone else.
+          </p>
 
         </div>
 
-
-        <div class="statusExplanationItem">
-
-          <span
-            class="statusLegendDot busy"
-          ></span>
-
-          <div>
-
-            <strong>
-              Busy
-            </strong>
-
-            <p>
-              The person is online and currently chatting with someone else.
-            </p>
-
-          </div>
-
-        </div>
+      </div>
 
 
-        <div class="statusExplanationItem">
+      <div class="statusExplanationItem">
 
-          <span
-            class="statusLegendDot offline"
-          ></span>
+        <span class="statusLegendDot offline"></span>
 
-          <div>
+        <div>
 
-            <strong>
-              Offline
-            </strong>
+          <strong>Offline</strong>
 
-            <p>
-              The person is not currently connected to FriendChat.
-            </p>
-
-          </div>
+          <p>
+            The person is not currently connected to FriendChat.
+          </p>
 
         </div>
 
@@ -1527,359 +1551,339 @@
 
     </div>
 
+  </div>
 
-    <!-- PROFILE PREVIEW -->
 
-    <div class="profileRow">
+  <!-- PROFILE PREVIEW -->
+
+  <div class="profileRow">
+
+    <div
+      id="profileCircle"
+      class="profile"
+    >
+      ?
+    </div>
+
+    <div class="profileInfo">
+
+      <strong id="myName"></strong>
+
+      <div class="muted">
+
+        Your ID:
+
+        <span id="myId"></span>
+
+      </div>
+
+    </div>
+
+    <button
+      type="button"
+      class="small secondary"
+      onclick="logout()"
+    >
+      Log out
+    </button>
+
+  </div>
+
+
+  <!-- SEARCH -->
+
+  <input
+    id="search"
+    class="search"
+    placeholder="Search friends..."
+    autocomplete="off"
+    oninput="renderFriends()"
+  >
+
+
+  <!-- FRIEND LIST -->
+
+  <div
+    id="friendList"
+    class="friendList"
+  ></div>
+
+</section>
+
+
+<!-- =====================================================
+     ADD FRIEND
+     ===================================================== -->
+
+<section
+  id="addScreen"
+  class="screen hidden"
+>
+
+  <header>
+
+    <button
+      type="button"
+      class="back"
+      onclick="showHome()"
+    >
+      ←
+    </button>
+
+    <h2>Add Friend</h2>
+
+  </header>
+
+
+  <div class="card wide">
+
+    <input
+      id="addId"
+      type="text"
+      placeholder="Enter Friend ID"
+      autocomplete="off"
+    >
+
+    <button
+      type="button"
+      onclick="addById()"
+    >
+      Add Friend
+    </button>
+
+    <p id="addStatus" class="status"></p>
+
+    <p class="muted smallText">
+      Example: FC-ABC123
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     CHAT
+     ===================================================== -->
+
+<section
+  id="chatScreen"
+  class="screen hidden"
+>
+
+  <header>
+
+    <button
+      type="button"
+      class="back"
+      onclick="showHome()"
+    >
+      ←
+    </button>
+
+    <div>
+
+      <h2 id="chatName">
+        Chat
+      </h2>
+
+      <small id="chatId"></small>
+
+    </div>
+
+  </header>
+
+
+  <!-- MESSAGES -->
+
+  <div
+    id="messages"
+    class="messages"
+  ></div>
+
+
+  <!-- COMPOSER -->
+
+  <div class="composer">
+
+
+    <!-- EMOJI -->
+
+    <button
+      type="button"
+      class="emojiButton"
+      onclick="toggleEmojiPicker()"
+      title="Emoji"
+    >
+      😊
+    </button>
+
+
+    <!-- INPUT -->
+
+    <input
+      id="messageInput"
+      type="text"
+      placeholder="Type a message..."
+      autocomplete="off"
+      onkeydown="if(event.key === 'Enter') sendMessage()"
+    >
+
+
+    <!-- MEDIA -->
+
+    <label
+      class="mediaButton"
+      title="Send photo/video"
+    >
+
+      📎
+
+      <input
+        id="mediaInput"
+        type="file"
+        accept="image/*,video/*"
+        hidden
+        onchange="sendMedia()"
+      >
+
+    </label>
+
+
+    <!-- SEND -->
+
+    <button
+      type="button"
+      onclick="sendMessage()"
+    >
+      Send
+    </button>
+
+  </div>
+
+
+  <!-- EMOJI PICKER -->
+
+  <div
+    id="emojiPicker"
+    class="emojiPicker hidden"
+  ></div>
+
+</section>
+
+
+<!-- =====================================================
+     PROFILE
+     ===================================================== -->
+
+<section
+  id="profileScreen"
+  class="screen hidden"
+>
+
+  <header>
+
+    <button
+      type="button"
+      class="back"
+      onclick="showHome()"
+    >
+      ←
+    </button>
+
+    <h2>Profile</h2>
+
+  </header>
+
+
+  <div class="profilePage">
+
+
+    <!-- PROFILE PHOTO -->
+
+    <div class="bigProfile">
 
       <div
-        id="profileCircle"
-        class="profile"
+        id="profilePhotoLarge"
+        class="profileLarge"
       >
         ?
       </div>
 
+      <label class="changePhotoButton">
 
-      <div class="profileInfo">
-
-        <strong id="myName"></strong>
-
-        <div class="muted">
-
-          Your ID:
-
-          <span id="myId"></span>
-
-        </div>
-
-      </div>
-
-
-      <button
-        type="button"
-        class="small secondary"
-        onclick="logout()"
-      >
-        Log out
-      </button>
-
-    </div>
-
-
-    <!-- SEARCH -->
-
-    <input
-      id="search"
-      class="search"
-      placeholder="Search friends..."
-      autocomplete="off"
-      oninput="renderFriends()"
-    >
-
-
-    <!-- FRIEND LIST -->
-
-    <div
-      id="friendList"
-      class="friendList"
-    ></div>
-
-  </section>
-
-
-  <!-- =====================================================
-       ADD FRIEND SCREEN
-       ===================================================== -->
-
-  <section
-    id="addScreen"
-    class="screen hidden"
-  >
-
-    <header>
-
-      <button
-        type="button"
-        class="back"
-        onclick="showHome()"
-      >
-        ←
-      </button>
-
-      <h2>
-        Add Friend
-      </h2>
-
-    </header>
-
-
-    <div class="card wide">
-
-      <input
-        id="addId"
-        type="text"
-        placeholder="Enter Friend ID"
-        autocomplete="off"
-      >
-
-
-      <button
-        type="button"
-        onclick="addById()"
-      >
-        Add Friend
-      </button>
-
-
-      <p
-        id="addStatus"
-        class="status"
-      ></p>
-
-
-      <p class="muted smallText">
-        Example: FC-ABC123
-      </p>
-
-    </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       CHAT SCREEN
-       ===================================================== -->
-
-  <section
-    id="chatScreen"
-    class="screen hidden"
-  >
-
-    <header>
-
-      <button
-        type="button"
-        class="back"
-        onclick="showHome()"
-      >
-        ←
-      </button>
-
-
-      <div>
-
-        <h2 id="chatName">
-          Chat
-        </h2>
-
-        <small id="chatId"></small>
-
-      </div>
-
-    </header>
-
-
-    <!-- MESSAGES -->
-
-    <div
-      id="messages"
-      class="messages"
-    ></div>
-
-
-    <!-- MESSAGE COMPOSER -->
-
-    <div class="composer">
-
-
-      <!-- EMOJI -->
-
-      <button
-        type="button"
-        class="emojiButton"
-        onclick="toggleEmojiPicker()"
-        title="Emoji"
-      >
-        😊
-      </button>
-
-
-      <!-- MESSAGE INPUT -->
-
-      <input
-        id="messageInput"
-        type="text"
-        placeholder="Type a message..."
-        autocomplete="off"
-        onkeydown="if(event.key === 'Enter') sendMessage()"
-      >
-
-
-      <!-- MEDIA -->
-
-      <label
-        class="mediaButton"
-        title="Send photo/video"
-      >
-
-        📎
+        Change photo
 
         <input
-          id="mediaInput"
+          id="profilePhotoInput"
           type="file"
-          accept="image/*,video/*"
+          accept="image/*"
           hidden
-          onchange="sendMedia()"
+          onchange="changeProfilePhoto()"
         >
 
       </label>
 
-
-      <!-- SEND -->
-
-      <button
-        type="button"
-        onclick="sendMessage()"
-      >
-        Send
-      </button>
-
     </div>
 
 
-    <!-- EMOJI PICKER -->
+    <!-- PROFILE NAME -->
+
+    <h2 id="profilePageName"></h2>
+
+
+    <!-- ID -->
+
+    <p class="muted">
+
+      FriendChat ID:
+
+      <span id="profilePageId"></span>
+
+    </p>
+
+
+    <!-- EDIT -->
+
+    <button
+      type="button"
+      onclick="editProfileName()"
+    >
+      Edit profile
+    </button>
+
+
+    <!-- MEDIA -->
+
+    <div class="profileMediaHeader">
+
+      <h3>My Media</h3>
+
+      <label class="uploadMediaButton">
+
+        + Upload media
+
+        <input
+          id="profileMediaInput"
+          type="file"
+          accept="image/*,video/*"
+          hidden
+          onchange="uploadProfileMedia()"
+        >
+
+      </label>
+
+    </div>
+
 
     <div
-      id="emojiPicker"
-      class="emojiPicker hidden"
+      id="profileMediaGrid"
+      class="profileMediaGrid"
     ></div>
 
-  </section>
+  </div>
 
-
-  <!-- =====================================================
-       PROFILE SCREEN
-       ===================================================== -->
-
-  <section
-    id="profileScreen"
-    class="screen hidden"
-  >
-
-    <header>
-
-      <button
-        type="button"
-        class="back"
-        onclick="showHome()"
-      >
-        ←
-      </button>
-
-      <h2>
-        Profile
-      </h2>
-
-    </header>
-
-
-    <div class="profilePage">
-
-
-      <!-- PROFILE PHOTO -->
-
-      <div class="bigProfile">
-
-        <div
-          id="profilePhotoLarge"
-          class="profileLarge"
-        >
-          ?
-        </div>
-
-
-        <label class="changePhotoButton">
-
-          Change photo
-
-          <input
-            id="profilePhotoInput"
-            type="file"
-            accept="image/*"
-            hidden
-            onchange="changeProfilePhoto()"
-          >
-
-        </label>
-
-      </div>
-
-
-      <!-- PROFILE NAME -->
-
-      <h2 id="profilePageName"></h2>
-
-
-      <!-- FRIENDCHAT ID -->
-
-      <p class="muted">
-
-        FriendChat ID:
-
-        <span
-          id="profilePageId"
-        ></span>
-
-      </p>
-
-
-      <!-- EDIT PROFILE -->
-
-      <button
-        type="button"
-        onclick="editProfileName()"
-      >
-        Edit profile
-      </button>
-
-
-      <!-- MY MEDIA -->
-
-      <div class="profileMediaHeader">
-
-        <h3>
-          My Media
-        </h3>
-
-
-        <label class="uploadMediaButton">
-
-          + Upload media
-
-          <input
-            id="profileMediaInput"
-            type="file"
-            accept="image/*,video/*"
-            hidden
-            onchange="uploadProfileMedia()"
-          >
-
-        </label>
-
-      </div>
-
-
-      <!-- MEDIA GRID -->
-
-      <div
-        id="profileMediaGrid"
-        class="profileMediaGrid"
-      ></div>
-
-
-    </div>
-
-  </section>
+</section>
 
 </div>
 
@@ -1895,16 +1899,12 @@
 
   <div class="messageSheet">
 
-    <strong>
-      React to message
-    </strong>
-
+    <strong>React to message</strong>
 
     <input
       id="selectedMessageId"
       type="hidden"
     >
-
 
     <div class="reactionRow">
 
@@ -1927,7 +1927,6 @@
 
     </div>
 
-
     <button
       type="button"
       class="menuAction"
@@ -1935,7 +1934,6 @@
     >
       Unsend
     </button>
-
 
     <button
       type="button"
@@ -1945,7 +1943,6 @@
       Delete
     </button>
 
-
     <button
       type="button"
       class="menuAction secondary"
@@ -1953,6 +1950,398 @@
     >
       Cancel
     </button>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     THEME SELECTOR
+     ===================================================== -->
+
+<div
+  id="fcThemeOverlay"
+  aria-hidden="true"
+>
+
+  <div
+    id="fcThemePanel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Choose FriendChat theme"
+  >
+
+    <div class="fc-theme-header">
+
+      <div>
+
+        <h2>🎨 FriendChat Themes</h2>
+
+        <p>
+          Choose your FriendChat look
+        </p>
+
+      </div>
+
+      <button
+        id="fcThemeClose"
+        type="button"
+        onclick="closeFCThemePicker()"
+        title="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <!-- THIS AREA IS SCROLLABLE -->
+
+    <div id="fcThemeList">
+
+
+      <button class="fc-theme-choice" data-theme="midnight">
+
+        <span class="fc-theme-number">01</span>
+
+        <div class="fc-theme-icon">🌌</div>
+
+        <div class="fc-theme-name">
+          Midnight Blue
+        </div>
+
+        <div class="fc-theme-description">
+          Deep blue night
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="purple-neon">
+
+        <span class="fc-theme-number">02</span>
+
+        <div class="fc-theme-icon">🟣</div>
+
+        <div class="fc-theme-name">
+          Purple Neon
+        </div>
+
+        <div class="fc-theme-description">
+          Neon purple glow
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="ocean">
+
+        <span class="fc-theme-number">03</span>
+
+        <div class="fc-theme-icon">🔵</div>
+
+        <div class="fc-theme-name">
+          Ocean
+        </div>
+
+        <div class="fc-theme-description">
+          Deep ocean blue
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="forest">
+
+        <span class="fc-theme-number">04</span>
+
+        <div class="fc-theme-icon">🌲</div>
+
+        <div class="fc-theme-name">
+          Forest
+        </div>
+
+        <div class="fc-theme-description">
+          Natural green
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="cherry">
+
+        <span class="fc-theme-number">05</span>
+
+        <div class="fc-theme-icon">🌸</div>
+
+        <div class="fc-theme-name">
+          Cherry Blossom
+        </div>
+
+        <div class="fc-theme-description">
+          Soft pink
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="crimson">
+
+        <span class="fc-theme-number">06</span>
+
+        <div class="fc-theme-icon">🔥</div>
+
+        <div class="fc-theme-name">
+          Crimson
+        </div>
+
+        <div class="fc-theme-description">
+          Powerful red
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="sunset">
+
+        <span class="fc-theme-number">07</span>
+
+        <div class="fc-theme-icon">🌅</div>
+
+        <div class="fc-theme-name">
+          Sunset
+        </div>
+
+        <div class="fc-theme-description">
+          Orange sunset
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="arctic">
+
+        <span class="fc-theme-number">08</span>
+
+        <div class="fc-theme-icon">🧊</div>
+
+        <div class="fc-theme-name">
+          Arctic
+        </div>
+
+        <div class="fc-theme-description">
+          Clean icy white
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="cyber-green">
+
+        <span class="fc-theme-number">09</span>
+
+        <div class="fc-theme-icon">🟢</div>
+
+        <div class="fc-theme-name">
+          Cyber Green
+        </div>
+
+        <div class="fc-theme-description">
+          Neon hacker green
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="golden">
+
+        <span class="fc-theme-number">10</span>
+
+        <div class="fc-theme-icon">🟡</div>
+
+        <div class="fc-theme-name">
+          Golden
+        </div>
+
+        <div class="fc-theme-description">
+          Gold luxury
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="cyber-pink">
+
+        <span class="fc-theme-number">11</span>
+
+        <div class="fc-theme-icon">🩷</div>
+
+        <div class="fc-theme-name">
+          Cyber Pink
+        </div>
+
+        <div class="fc-theme-description">
+          Neon pink
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="black">
+
+        <span class="fc-theme-number">12</span>
+
+        <div class="fc-theme-icon">🖤</div>
+
+        <div class="fc-theme-name">
+          Pure Black
+        </div>
+
+        <div class="fc-theme-description">
+          True AMOLED black
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="white">
+
+        <span class="fc-theme-number">13</span>
+
+        <div class="fc-theme-icon">🤍</div>
+
+        <div class="fc-theme-name">
+          Clean White
+        </div>
+
+        <div class="fc-theme-description">
+          Bright and clean
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="galaxy">
+
+        <span class="fc-theme-number">14</span>
+
+        <div class="fc-theme-icon">🌌</div>
+
+        <div class="fc-theme-name">
+          Galaxy
+        </div>
+
+        <div class="fc-theme-description">
+          Purple cosmic space
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="aurora">
+
+        <span class="fc-theme-number">15</span>
+
+        <div class="fc-theme-icon">💜</div>
+
+        <div class="fc-theme-name">
+          Aurora
+        </div>
+
+        <div class="fc-theme-description">
+          Aurora glow
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="discord">
+
+        <span class="fc-theme-number">16</span>
+
+        <div class="fc-theme-icon">🩵</div>
+
+        <div class="fc-theme-name">
+          Discord-style Blue
+        </div>
+
+        <div class="fc-theme-description">
+          Dark blue interface
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="cyber-orange">
+
+        <span class="fc-theme-number">17</span>
+
+        <div class="fc-theme-icon">🟠</div>
+
+        <div class="fc-theme-name">
+          Cyber Orange
+        </div>
+
+        <div class="fc-theme-description">
+          Neon orange
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="graphite">
+
+        <span class="fc-theme-number">18</span>
+
+        <div class="fc-theme-icon">🩶</div>
+
+        <div class="fc-theme-name">
+          Graphite
+        </div>
+
+        <div class="fc-theme-description">
+          Modern grey
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="gothic">
+
+        <span class="fc-theme-number">19</span>
+
+        <div class="fc-theme-icon">🧛</div>
+
+        <div class="fc-theme-name">
+          Dark Gothic
+        </div>
+
+        <div class="fc-theme-description">
+          Dark red gothic
+        </div>
+
+      </button>
+
+
+      <button class="fc-theme-choice" data-theme="glass">
+
+        <span class="fc-theme-number">20</span>
+
+        <div class="fc-theme-icon">💎</div>
+
+        <div class="fc-theme-name">
+          Glass Crystal
+        </div>
+
+        <div class="fc-theme-description">
+          Glass + crystal blur
+        </div>
+
+      </button>
+
+
+    </div>
 
   </div>
 
@@ -1970,13 +2359,402 @@ function toggleStatusInfo() {
   const box =
     document.getElementById("statusInfo");
 
-  if (!box) {
-    return;
-  }
+  if (!box) return;
 
   box.classList.toggle("hidden");
 
 }
+
+</script>
+
+
+<!-- =====================================================
+     THEME SYSTEM
+     ===================================================== -->
+
+<script>
+
+(function () {
+
+  const STORAGE_KEY =
+    "friendchat-theme-v20";
+
+
+  const THEMES = [
+    "midnight",
+    "purple-neon",
+    "ocean",
+    "forest",
+    "cherry",
+    "crimson",
+    "sunset",
+    "arctic",
+    "cyber-green",
+    "golden",
+    "cyber-pink",
+    "black",
+    "white",
+    "galaxy",
+    "aurora",
+    "discord",
+    "cyber-orange",
+    "graphite",
+    "gothic",
+    "glass"
+  ];
+
+
+  function applyTheme(theme, save) {
+
+    if (!THEMES.includes(theme)) {
+      theme = "midnight";
+    }
+
+
+    /* Remove only FriendChat theme classes */
+
+    document.body.classList.forEach(function (className) {
+
+      if (className.indexOf("fc-theme-") === 0) {
+
+        document.body.classList.remove(className);
+
+      }
+
+    });
+
+
+    document.body.classList.add(
+      "fc-theme-" + theme
+    );
+
+
+    document.documentElement.setAttribute(
+      "data-fc-theme",
+      theme
+    );
+
+
+    if (save !== false) {
+
+      try {
+
+        localStorage.setItem(
+          STORAGE_KEY,
+          theme
+        );
+
+      } catch (error) {}
+
+    }
+
+
+    /* Update selected card */
+
+    document
+      .querySelectorAll(".fc-theme-choice")
+      .forEach(function (button) {
+
+        button.classList.toggle(
+          "fc-theme-selected",
+          button.dataset.theme === theme
+        );
+
+      });
+
+  }
+
+
+  function getSavedTheme() {
+
+    try {
+
+      const saved =
+        localStorage.getItem(STORAGE_KEY);
+
+      if (
+        saved &&
+        THEMES.includes(saved)
+      ) {
+
+        return saved;
+
+      }
+
+    } catch (error) {}
+
+    return "midnight";
+
+  }
+
+
+  window.applyFriendChatTheme =
+    function (theme) {
+
+      applyTheme(theme,true);
+
+    };
+
+
+  window.openFCThemePicker =
+    function () {
+
+      const overlay =
+        document.getElementById("fcThemeOverlay");
+
+      if (!overlay) return;
+
+      overlay.classList.add(
+        "fc-theme-visible"
+      );
+
+      overlay.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+      document.body.style.overflow =
+        "hidden";
+
+    };
+
+
+  window.closeFCThemePicker =
+    function () {
+
+      const overlay =
+        document.getElementById("fcThemeOverlay");
+
+      if (!overlay) return;
+
+      overlay.classList.remove(
+        "fc-theme-visible"
+      );
+
+      overlay.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+      document.body.style.overflow =
+        "hidden";
+
+    };
+
+
+  /* Compatibility aliases */
+
+  window.changeTheme =
+    window.openFCThemePicker;
+
+  window.openThemePicker =
+    window.openFCThemePicker;
+
+  window.toggleTheme =
+    window.openFCThemePicker;
+
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+      applyTheme(
+        getSavedTheme(),
+        false
+      );
+
+
+      /* Theme cards */
+
+      document
+        .querySelectorAll(".fc-theme-choice")
+        .forEach(function (button) {
+
+          button.addEventListener(
+            "click",
+            function () {
+
+              applyTheme(
+                button.dataset.theme,
+                true
+              );
+
+            }
+          );
+
+        });
+
+
+      /* Close when clicking outside panel */
+
+      const overlay =
+        document.getElementById(
+          "fcThemeOverlay"
+        );
+
+      if (overlay) {
+
+        overlay.addEventListener(
+          "click",
+          function (event) {
+
+            if (
+              event.target === overlay
+            ) {
+
+              window.closeFCThemePicker();
+
+            }
+
+          }
+        );
+
+      }
+
+
+      /* ESC closes theme panel */
+
+      document.addEventListener(
+        "keydown",
+        function (event) {
+
+          if (
+            event.key === "Escape"
+          ) {
+
+            const overlay =
+              document.getElementById(
+                "fcThemeOverlay"
+              );
+
+            if (
+              overlay &&
+              overlay.classList.contains(
+                "fc-theme-visible"
+              )
+            ) {
+
+              window.closeFCThemePicker();
+
+            }
+
+          }
+
+        }
+      );
+
+
+      /*
+       * Find the existing sidebar
+       * "Change theme" button.
+       *
+       * This does NOT change the sidebar.
+       * It only makes that existing button
+       * open our theme window.
+       */
+
+      function connectThemeButton() {
+
+        const elements =
+          document.querySelectorAll(
+            "button,a,[role='button']"
+          );
+
+
+        elements.forEach(function (element) {
+
+          if (
+            element.dataset.fcThemeConnected
+          ) {
+
+            return;
+
+          }
+
+
+          const text =
+            (element.textContent || "")
+              .trim()
+              .toLowerCase();
+
+
+          if (
+            text === "change theme" ||
+            text === "🎨 change theme" ||
+            text.includes("change theme")
+          ) {
+
+            element.dataset.fcThemeConnected =
+              "true";
+
+
+            element.addEventListener(
+              "click",
+              function (event) {
+
+                event.preventDefault();
+                event.stopImmediatePropagation();
+
+                window.openFCThemePicker();
+
+              },
+              true
+            );
+
+          }
+
+        });
+
+      }
+
+
+      connectThemeButton();
+
+
+      /*
+       * The sidebar is created by
+       * friendchat-ui-v3-fixed.js,
+       * so watch for it appearing.
+       */
+
+      const observer =
+        new MutationObserver(
+          function () {
+
+            connectThemeButton();
+
+          }
+        );
+
+
+      observer.observe(
+        document.body,
+        {
+          childList:true,
+          subtree:true
+        }
+      );
+
+
+      setTimeout(
+        connectThemeButton,
+        500
+      );
+
+      setTimeout(
+        connectThemeButton,
+        1500
+      );
+
+      setTimeout(
+        connectThemeButton,
+        3000
+      );
+
+    }
+  );
+
+})();
 
 </script>
 
