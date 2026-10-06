@@ -1583,590 +1583,633 @@
     /* =======================================================
        CREATE SERVER SECTION
        ======================================================= */
+function installServerNavigation() {
 
-    function installServerNavigation() {
+  if (!sidebar) {
+    return;
+  }
 
-      if (!sidebar) {
+  let section = $("fcServerSection");
 
-        return;
+  /* =====================================================
+     CREATE SERVER SECTION
+     ===================================================== */
 
+  if (!section) {
+
+    section = document.createElement("div");
+    section.id = "fcServerSection";
+
+    section.innerHTML = `
+
+      <div class="fc-server-head">
+        <span class="fc-server-title">My Servers</span>
+
+        <button
+          type="button"
+          class="fc-server-create"
+          id="fcCreateServerButton"
+          title="Create Server"
+          aria-label="Create Server"
+        >+</button>
+      </div>
+
+      <div
+        class="fc-server-list"
+        id="fcServerList"
+      ></div>
+
+      <button
+        type="button"
+        class="fc-server-create-row"
+        id="fcCreateServerRow"
+      >+ Create Server</button>
+
+    `;
+
+    const divider =
+      sidebar.querySelector(".fc-nav-divider");
+
+    if (divider) {
+      sidebar.insertBefore(section, divider);
+    } else {
+      sidebar.appendChild(section);
+    }
+  }
+
+
+  /* =====================================================
+     CREATE SERVER
+     ===================================================== */
+
+  function openCreateServer() {
+
+    window.location.href =
+      "create-server.html";
+  }
+
+
+  const createButton =
+    $("fcCreateServerButton");
+
+  if (
+    createButton &&
+    createButton.dataset.fcBound !== "1"
+  ) {
+
+    createButton.dataset.fcBound = "1";
+
+    createButton.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        openCreateServer();
       }
+    );
+  }
 
 
-      let section =
-        $("fcServerSection");
+  const createRow =
+    $("fcCreateServerRow");
 
+  if (
+    createRow &&
+    createRow.dataset.fcBound !== "1"
+  ) {
 
-      /* =====================================================
-         CREATE SERVER SECTION
-         ===================================================== */
+    createRow.dataset.fcBound = "1";
 
-      if (!section) {
+    createRow.addEventListener(
+      "click",
+      event => {
 
-        section =
-          document.createElement("div");
+        event.preventDefault();
+        event.stopPropagation();
 
-        section.id =
-          "fcServerSection";
-
-
-        section.innerHTML = `
-
-          <div class="fc-server-head">
-
-            <span class="fc-server-title">
-              My Servers
-            </span>
-
-            <button
-              type="button"
-              class="fc-server-create"
-              id="fcCreateServerButton"
-              title="Create Server"
-              aria-label="Create Server"
-            >
-              +
-            </button>
-
-          </div>
-
-
-          <div
-            class="fc-server-list"
-            id="fcServerList"
-          ></div>
-
-
-          <button
-            type="button"
-            class="fc-server-create-row"
-            id="fcCreateServerRow"
-          >
-            + Create Server
-          </button>
-
-        `;
-
-
-        const divider =
-          sidebar.querySelector(
-            ".fc-nav-divider"
-          );
-
-
-        if (divider) {
-
-          sidebar.insertBefore(
-            section,
-            divider
-          );
-
-        }
-        else {
-
-          sidebar.appendChild(
-            section
-          );
-
-        }
-
+        openCreateServer();
       }
+    );
+  }
 
 
-      /* =====================================================
-         CREATE SERVER
-         ===================================================== */
+  /* =====================================================
+     CURRENT USER
+     ===================================================== */
 
-      function openCreateServer() {
+  function getCurrentUserID() {
 
-        window.location.href =
-          "create-server.html";
+    const id =
+      localStorage.getItem(
+        "friendchat_user_id"
+      );
 
-      }
+    if (!id) {
+      return "";
+    }
 
-
-      const createButton =
-        $("fcCreateServerButton");
-
-
-      if (
-        createButton &&
-        createButton.dataset.fcBound !== "1"
-      ) {
-
-        createButton.dataset.fcBound =
-          "1";
+    return String(id)
+      .trim()
+      .toUpperCase();
+  }
 
 
-        createButton.addEventListener(
-          "click",
-          event => {
+  /* =====================================================
+     CURRENT SERVER
+     ===================================================== */
 
-            event.preventDefault();
+  function getCurrentServer() {
 
-            event.stopPropagation();
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
 
-            openCreateServer();
+    const urlServer =
+      params.get("server");
 
+    if (urlServer) {
+      return urlServer;
+    }
+
+    try {
+
+      return (
+        localStorage.getItem(
+          "friendchat_current_server"
+        ) || ""
+      );
+
+    } catch (_) {
+
+      return "";
+    }
+  }
+
+
+  /* =====================================================
+     SERVER INITIALS
+     ===================================================== */
+
+  function getInitials(name) {
+
+    const value =
+      String(
+        name || "Server"
+      ).trim();
+
+    if (!value) {
+      return "S";
+    }
+
+    const parts =
+      value
+        .split(/\s+/)
+        .filter(Boolean);
+
+    if (parts.length >= 2) {
+
+      return (
+        parts[0].charAt(0) +
+        parts[1].charAt(0)
+      ).toUpperCase();
+    }
+
+    return value
+      .slice(0, 2)
+      .toUpperCase();
+  }
+
+
+  /* =====================================================
+     LOADING STATE
+     ===================================================== */
+
+  function renderLoading() {
+
+    const list =
+      $("fcServerList");
+
+    if (!list) {
+      return;
+    }
+
+    list.innerHTML = "";
+
+    const loading =
+      document.createElement("div");
+
+    loading.className =
+      "fc-server-empty";
+
+    loading.textContent =
+      "Loading servers...";
+
+    list.appendChild(
+      loading
+    );
+  }
+
+
+  /* =====================================================
+     LOAD SERVERS FROM SHARED BACKEND
+     ===================================================== */
+
+  async function getServers() {
+
+    const userID =
+      getCurrentUserID();
+
+    if (!userID) {
+      return [];
+    }
+
+    try {
+
+      const response =
+        await fetch(
+          "/api/servers?user=" +
+          encodeURIComponent(userID),
+          {
+            method: "GET",
+            cache: "no-store",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              "x-friendchat-user-id":
+                userID
+            }
           }
         );
 
+
+      let data = null;
+
+      try {
+
+        data =
+          await response.json();
+
+      } catch (_) {
+
+        data = null;
       }
 
 
-      const createRow =
-        $("fcCreateServerRow");
+      if (!response.ok) {
+
+        throw new Error(
+          data && data.error
+            ? data.error
+            : "Could not load servers."
+        );
+      }
+
+
+      if (Array.isArray(data)) {
+        return data;
+      }
 
 
       if (
-        createRow &&
-        createRow.dataset.fcBound !== "1"
+        data &&
+        Array.isArray(data.servers)
       ) {
 
-        createRow.dataset.fcBound =
-          "1";
+        return data.servers;
+      }
 
 
-        createRow.addEventListener(
-          "click",
-          event => {
+      return [];
 
-            event.preventDefault();
+    } catch (error) {
 
-            event.stopPropagation();
+      console.warn(
+        "FriendChat: Could not load servers:",
+        error
+      );
 
-            openCreateServer();
+      return [];
+    }
+  }
 
-          }
+
+  /* =====================================================
+     RENDER SERVERS
+     ===================================================== */
+
+  async function renderServers() {
+
+    const list =
+      $("fcServerList");
+
+    if (!list) {
+      return;
+    }
+
+
+    renderLoading();
+
+
+    const servers =
+      await getServers();
+
+
+    const current =
+      getCurrentServer();
+
+
+    list.innerHTML = "";
+
+
+    /* ===================================================
+       NO SERVERS
+       =================================================== */
+
+    if (!servers.length) {
+
+      const empty =
+        document.createElement(
+          "div"
         );
 
-      }
+      empty.className =
+        "fc-server-empty";
+
+      empty.textContent =
+        "No servers yet.";
+
+      list.appendChild(
+        empty
+      );
+
+      return;
+    }
 
 
-      /* =====================================================
-         GET SERVERS
-         ===================================================== */
+    /* ===================================================
+       SERVER LIST
+       =================================================== */
 
-      function getServers() {
+    servers.forEach(
+      server => {
 
-        try {
-
-          const raw =
-            localStorage.getItem(
-              "friendchat_servers"
-            );
-
-
-          const parsed =
-            raw
-              ? JSON.parse(raw)
-              : [];
-
-
-          return Array.isArray(parsed)
-            ? parsed
-            : [];
-
+        if (!server) {
+          return;
         }
-        catch (error) {
 
-          console.warn(
-            "FriendChat: Could not read servers:",
-            error
+
+        const serverID =
+          server.serverID ||
+          server.id;
+
+
+        if (!serverID) {
+          return;
+        }
+
+
+        const item =
+          document.createElement(
+            "button"
           );
 
 
-          return [];
-
-        }
-
-      }
+        item.type =
+          "button";
 
 
-      /* =====================================================
-         CURRENT SERVER
-         ===================================================== */
-
-      function getCurrentServer() {
-
-        try {
-
-          return (
-            localStorage.getItem(
-              "friendchat_current_server"
-            ) || ""
-          );
-
-        }
-        catch (_) {
-
-          return "";
-
-        }
-
-      }
-
-
-      /* =====================================================
-         SERVER INITIALS
-         ===================================================== */
-
-      function getInitials(name) {
-
-        const value =
-          String(
-            name || "Server"
-          ).trim();
-
-
-        if (!value) {
-
-          return "S";
-
-        }
-
-
-        const parts =
-          value
-            .split(/\s+/)
-            .filter(Boolean);
+        item.className =
+          "fc-server-item";
 
 
         if (
-          parts.length >= 2
+          String(serverID) ===
+          String(current)
         ) {
 
-          return (
-            parts[0].charAt(0) +
-            parts[1].charAt(0)
-          ).toUpperCase();
-
+          item.classList.add(
+            "current"
+          );
         }
 
 
-        return value
-          .slice(0, 2)
-          .toUpperCase();
-
-      }
+        item.title =
+          server.name ||
+          "Server";
 
 
-      /* =====================================================
-         RENDER SERVERS
-         ===================================================== */
+        /* =============================================
+           ICON
+           ============================================= */
 
-      function renderServers() {
-
-        const list =
-          $("fcServerList");
-
-
-        if (!list) {
-
-          return;
-
-        }
-
-
-        const servers =
-          getServers();
-
-
-        const current =
-          getCurrentServer();
-
-
-        list.innerHTML =
-          "";
-
-
-        /* ===================================================
-           NO SERVERS
-           =================================================== */
-
-        if (!servers.length) {
-
-          const empty =
-            document.createElement(
-              "div"
-            );
-
-
-          empty.className =
-            "fc-server-empty";
-
-
-          empty.textContent =
-            "No servers yet.";
-
-
-          list.appendChild(
-            empty
+        const icon =
+          document.createElement(
+            "div"
           );
 
 
-          return;
-
-        }
-
-
-        /* ===================================================
-           SERVER LIST
-           =================================================== */
-
-        servers.forEach(
-          server => {
-
-            if (
-              !server ||
-              !server.serverID
-            ) {
-
-              return;
-
-            }
+        icon.className =
+          "fc-server-icon";
 
 
-            const item =
-              document.createElement(
-                "button"
-              );
+        if (server.icon) {
+
+          const image =
+            document.createElement(
+              "img"
+            );
 
 
-            item.type =
-              "button";
+          image.src =
+            server.icon;
 
 
-            item.className =
-              "fc-server-item";
+          image.alt =
+            "";
 
 
-            if (
-              String(
-                server.serverID
-              ) ===
-              String(current)
-            ) {
+          image.onerror =
+            () => {
 
-              item.classList.add(
-                "current"
-              );
-
-            }
-
-
-            item.title =
-              server.name ||
-              "Server";
-
-
-            /* =============================================
-               ICON
-               ============================================= */
-
-            const icon =
-              document.createElement(
-                "div"
-              );
-
-
-            icon.className =
-              "fc-server-icon";
-
-
-            if (server.icon) {
-
-              const image =
-                document.createElement(
-                  "img"
-                );
-
-
-              image.src =
-                server.icon;
-
-
-              image.alt =
-                "";
-
-
-              image.onerror =
-                () => {
-
-                  image.remove();
-
-                  icon.textContent =
-                    getInitials(
-                      server.name
-                    );
-
-                };
-
-
-              icon.appendChild(
-                image
-              );
-
-            }
-            else {
+              image.remove();
 
               icon.textContent =
                 getInitials(
                   server.name
                 );
-
-            }
-
-
-            /* =============================================
-               NAME
-               ============================================= */
-
-            const name =
-              document.createElement(
-                "span"
-              );
+            };
 
 
-            name.className =
-              "fc-server-name";
+          icon.appendChild(
+            image
+          );
 
+        } else {
 
-            name.textContent =
-              server.name ||
-              "Unnamed Server";
-
-
-            item.appendChild(
-              icon
+          icon.textContent =
+            getInitials(
+              server.name
             );
+        }
 
 
-            item.appendChild(
-              name
-            );
+        /* =============================================
+           NAME
+           ============================================= */
+
+        const name =
+          document.createElement(
+            "span"
+          );
 
 
-            /* =============================================
-               OPEN SERVER
-               ============================================= */
-
-            item.addEventListener(
-              "click",
-              event => {
-
-                event.preventDefault();
-
-                event.stopPropagation();
+        name.className =
+          "fc-server-name";
 
 
-                try {
-
-                  localStorage.setItem(
-                    "friendchat_current_server",
-                    server.serverID
-                  );
-
-                }
-                catch (_) {}
+        name.textContent =
+          server.name ||
+          "Unnamed Server";
 
 
-                window.location.href =
-                  "server-home.html";
-
-              }
-            );
-
-
-            list.appendChild(
-              item
-            );
-
-          }
+        item.appendChild(
+          icon
         );
 
-      }
+
+        item.appendChild(
+          name
+        );
 
 
-      /* =====================================================
-         FIRST RENDER
-         ===================================================== */
+        /* =============================================
+           OPEN SERVER
+           ============================================= */
 
-      renderServers();
-
-
-      /* =====================================================
-         STORAGE UPDATE
-         ===================================================== */
-
-      if (
-        !window.__friendChatServerStorageBound
-      ) {
-
-        window.__friendChatServerStorageBound =
-          true;
-
-
-        window.addEventListener(
-          "storage",
+        item.addEventListener(
+          "click",
           event => {
 
-            if (
-              event.key ===
-                "friendchat_servers" ||
+            event.preventDefault();
+            event.stopPropagation();
 
-              event.key ===
-                "friendchat_current_server"
-            ) {
 
-              renderServers();
+            try {
 
-            }
+              localStorage.setItem(
+                "friendchat_current_server",
+                serverID
+              );
 
+            } catch (_) {}
+
+
+            window.location.href =
+              "server-home.html?server=" +
+              encodeURIComponent(
+                serverID
+              );
           }
         );
 
-      }
 
-
-      /* =====================================================
-         REFRESH WHEN RETURNING TO PAGE
-         ===================================================== */
-
-      if (
-        !window.__friendChatServerFocusBound
-      ) {
-
-        window.__friendChatServerFocusBound =
-          true;
-
-
-        window.addEventListener(
-          "focus",
-          renderServers
-        );
-
-
-        document.addEventListener(
-          "visibilitychange",
-          () => {
-
-            if (
-              document.visibilityState ===
-              "visible"
-            ) {
-
-              renderServers();
-
-            }
-
-          }
+        list.appendChild(
+          item
         );
 
       }
+    );
+  }
 
-    }
 
+  /* =====================================================
+     FIRST RENDER
+     ===================================================== */
+
+  renderServers();
+
+
+  /* =====================================================
+     REFRESH WHEN RETURNING TO PAGE
+     ===================================================== */
+
+  if (
+    !window.__friendChatServerFocusBound
+  ) {
+
+    window.__friendChatServerFocusBound =
+      true;
+
+
+    window.addEventListener(
+      "focus",
+      () => {
+
+        renderServers();
+
+      }
+    );
+
+
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+
+        if (
+          document.visibilityState ===
+          "visible"
+        ) {
+
+          renderServers();
+        }
+      }
+    );
+  }
+
+
+  /* =====================================================
+     REAL-TIME SERVER EVENTS
+     ===================================================== */
+
+  if (
+    !window.__friendChatServerSocketBound
+  ) {
+
+    window.__friendChatServerSocketBound =
+      true;
+
+
+    const refreshFromServerEvent =
+      () => {
+
+        renderServers();
+      };
+
+
+    window.addEventListener(
+      "friendchat:server-added",
+      refreshFromServerEvent
+    );
+
+
+    window.addEventListener(
+      "friendchat:server-removed",
+      refreshFromServerEvent
+    );
+
+
+    window.addEventListener(
+      "friendchat:server-updated",
+      refreshFromServerEvent
+    );
+  }
+
+}
 
     /* =======================================================
        CREATE ARROW
