@@ -1,18 +1,22 @@
 /* =========================================================
-   FRIENDCHAT CUSTOM UI v4
-   FIXED COMPLETE VERSION
+   FRIENDCHAT CUSTOM UI v5
+   COMPLETE FIXED VERSION
 
+   FIXES:
    - Left navigation arrow
    - Sliding sidebar
    - Bottom dock
    - Discovery
    - Theme system
    - Theme persistence
-   - Theme window FIXED
-   - Theme window scrolling FIXED
+   - Theme button always works
+   - Theme window always created
+   - Theme window scroll FIXED
    - 20 themes
-   - Spotify button cleanup
-   - Navigation visibility control
+   - Theme above sidebar/dock
+   - Spotify cleanup
+   - Navigation visibility
+   - Existing sidebar does not break initialization
    ========================================================= */
 
 (() => {
@@ -25,7 +29,7 @@
   const themes = {
 
     midnight: {
-      name: "Midnight Blue",
+      name: "🌌 Midnight Blue",
       desc: "Deep blue night",
       bg: "#070a10",
       panel: "#0d121b",
@@ -37,7 +41,7 @@
     },
 
     purple: {
-      name: "Purple Neon",
+      name: "🟣 Purple Neon",
       desc: "Neon purple glow",
       bg: "#090511",
       panel: "#14091f",
@@ -49,7 +53,7 @@
     },
 
     ocean: {
-      name: "Ocean",
+      name: "🔵 Ocean",
       desc: "Deep ocean blue",
       bg: "#041018",
       panel: "#091a27",
@@ -61,7 +65,7 @@
     },
 
     forest: {
-      name: "Forest",
+      name: "🌲 Forest",
       desc: "Deep natural green",
       bg: "#061008",
       panel: "#0c1b11",
@@ -73,7 +77,7 @@
     },
 
     cherry: {
-      name: "Cherry Blossom",
+      name: "🌸 Cherry Blossom",
       desc: "Pink cherry glow",
       bg: "#12070d",
       panel: "#1d0c15",
@@ -85,7 +89,7 @@
     },
 
     crimson: {
-      name: "Crimson",
+      name: "🔥 Crimson",
       desc: "Dark red power",
       bg: "#100405",
       panel: "#1c080a",
@@ -97,7 +101,7 @@
     },
 
     sunset: {
-      name: "Sunset",
+      name: "🌅 Sunset",
       desc: "Orange sunset glow",
       bg: "#120805",
       panel: "#1d0e09",
@@ -109,7 +113,7 @@
     },
 
     arctic: {
-      name: "Arctic",
+      name: "🧊 Arctic",
       desc: "Cold icy blue",
       bg: "#071017",
       panel: "#0d1b24",
@@ -121,7 +125,7 @@
     },
 
     cybergreen: {
-      name: "Cyber Green",
+      name: "🟢 Cyber Green",
       desc: "Futuristic green",
       bg: "#020805",
       panel: "#06130a",
@@ -133,7 +137,7 @@
     },
 
     golden: {
-      name: "Golden",
+      name: "🟡 Golden",
       desc: "Dark gold luxury",
       bg: "#0d0a03",
       panel: "#191205",
@@ -145,7 +149,7 @@
     },
 
     cyberpink: {
-      name: "Cyber Pink",
+      name: "🩷 Cyber Pink",
       desc: "Hot pink neon",
       bg: "#0c0209",
       panel: "#180612",
@@ -157,7 +161,7 @@
     },
 
     black: {
-      name: "Pure Black",
+      name: "🖤 Pure Black",
       desc: "Maximum black",
       bg: "#000000",
       panel: "#000000",
@@ -169,7 +173,7 @@
     },
 
     white: {
-      name: "Clean White",
+      name: "🤍 Clean White",
       desc: "Bright clean interface",
       bg: "#f5f7fa",
       panel: "#ffffff",
@@ -181,7 +185,7 @@
     },
 
     galaxy: {
-      name: "Galaxy",
+      name: "🌌 Galaxy",
       desc: "Deep space colors",
       bg: "#050414",
       panel: "#0c0822",
@@ -193,7 +197,7 @@
     },
 
     aurora: {
-      name: "Aurora",
+      name: "💜 Aurora",
       desc: "Northern lights",
       bg: "#03100f",
       panel: "#071b18",
@@ -205,7 +209,7 @@
     },
 
     discord: {
-      name: "Discord Blue",
+      name: "🩵 Discord-style Blue",
       desc: "Blue community style",
       bg: "#202225",
       panel: "#2f3136",
@@ -217,7 +221,7 @@
     },
 
     cyberorange: {
-      name: "Cyber Orange",
+      name: "🟠 Cyber Orange",
       desc: "Orange neon",
       bg: "#0d0602",
       panel: "#1a0c04",
@@ -229,7 +233,7 @@
     },
 
     graphite: {
-      name: "Graphite",
+      name: "🩶 Graphite",
       desc: "Clean monochrome",
       bg: "#090909",
       panel: "#121212",
@@ -241,7 +245,7 @@
     },
 
     gothic: {
-      name: "Dark Gothic",
+      name: "🧛 Dark Gothic",
       desc: "Dark red gothic",
       bg: "#050303",
       panel: "#100707",
@@ -253,7 +257,7 @@
     },
 
     crystal: {
-      name: "Glass Crystal",
+      name: "💎 Glass Crystal",
       desc: "Blue glass effect",
       bg: "#061018",
       panel: "rgba(18,35,50,.82)",
@@ -273,30 +277,32 @@
 
   const $ = id => document.getElementById(id);
 
-  const esc = s =>
-    String(s ?? "").replace(
+  const esc = value =>
+    String(value ?? "").replace(
       /[&<>"']/g,
-      m => ({
+      char => ({
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
         "'": "&#39;"
-      }[m])
+      }[char])
     );
 
-  function create(tag, cls, parent) {
-    const e = document.createElement(tag);
+  function create(tag, className, parent) {
 
-    if (cls) {
-      e.className = cls;
+    const element =
+      document.createElement(tag);
+
+    if (className) {
+      element.className = className;
     }
 
     if (parent) {
-      parent.appendChild(e);
+      parent.appendChild(element);
     }
 
-    return e;
+    return element;
   }
 
 
@@ -306,13 +312,19 @@
 
   function installThemeStyles() {
 
-    if ($("friendchat-theme-guaranteed-style")) {
-      return;
+    let style =
+      $("friendchat-theme-guaranteed-style");
+
+    if (!style) {
+
+      style =
+        document.createElement("style");
+
+      style.id =
+        "friendchat-theme-guaranteed-style";
+
+      document.head.appendChild(style);
     }
-
-    const style = document.createElement("style");
-
-    style.id = "friendchat-theme-guaranteed-style";
 
     style.textContent = `
 
@@ -328,20 +340,29 @@
 
 
       body {
-        background: var(--fc-bg) !important;
-        color: var(--fc-text) !important;
+        background:
+          var(--fc-bg) !important;
+
+        color:
+          var(--fc-text) !important;
       }
 
 
       .app {
-        background: var(--fc-bg) !important;
-        color: var(--fc-text) !important;
+        background:
+          var(--fc-bg) !important;
+
+        color:
+          var(--fc-text) !important;
       }
 
 
       .screen {
-        background: var(--fc-bg);
-        color: var(--fc-text);
+        background:
+          var(--fc-bg) !important;
+
+        color:
+          var(--fc-text) !important;
       }
 
 
@@ -352,32 +373,51 @@
       .friend-card,
       .chat-card,
       .settings-card {
-        background: var(--fc-panel) !important;
-        color: var(--fc-text) !important;
-        border-color: rgba(255,255,255,.10) !important;
+
+        background:
+          var(--fc-panel) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border-color:
+          rgba(255,255,255,.10) !important;
       }
 
 
       input,
       textarea,
       select {
-        background: var(--fc-panel-2) !important;
-        color: var(--fc-text) !important;
-        border-color: rgba(255,255,255,.12) !important;
+
+        background:
+          var(--fc-panel-2) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border-color:
+          rgba(255,255,255,.12) !important;
       }
 
 
       input::placeholder,
       textarea::placeholder {
-        color: var(--fc-muted) !important;
+
+        color:
+          var(--fc-muted) !important;
       }
 
 
       input:focus,
       textarea:focus,
       select:focus {
-        border-color: var(--fc-accent) !important;
-        box-shadow: 0 0 0 2px rgba(100,120,255,.15) !important;
+
+        border-color:
+          var(--fc-accent) !important;
+
+        box-shadow:
+          0 0 0 2px
+          rgba(100,120,255,.15) !important;
       }
 
 
@@ -387,6 +427,7 @@
       .sendButton,
       .loginButton,
       .signupButton {
+
         background:
           linear-gradient(
             135deg,
@@ -394,18 +435,30 @@
             var(--fc-accent-2)
           ) !important;
 
-        color: #fff !important;
+        color:
+          #fff !important;
       }
 
 
+      /* =====================================================
+         SIDEBAR
+         ===================================================== */
+
       #fcCustomSidebar {
-        background: var(--fc-panel) !important;
-        color: var(--fc-text) !important;
-        border-color: rgba(255,255,255,.10) !important;
+
+        background:
+          var(--fc-panel) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border-color:
+          rgba(255,255,255,.10) !important;
       }
 
 
       .fc-sidebar-logo {
+
         background:
           linear-gradient(
             135deg,
@@ -413,63 +466,93 @@
             var(--fc-accent-2)
           ) !important;
 
-        color: #fff !important;
+        color:
+          #fff !important;
       }
 
 
       .fc-sidebar-title {
-        color: var(--fc-text) !important;
+        color:
+          var(--fc-text) !important;
       }
 
 
       .fc-sidebar-sub {
-        color: var(--fc-muted) !important;
+        color:
+          var(--fc-muted) !important;
       }
 
 
       .fc-nav-item {
-        color: var(--fc-text) !important;
+        color:
+          var(--fc-text) !important;
       }
 
 
       .fc-nav-item:hover {
-        background: rgba(255,255,255,.06) !important;
+        background:
+          rgba(255,255,255,.06) !important;
       }
 
 
       .fc-nav-item.active {
-        background: rgba(100,120,255,.15) !important;
-        color: var(--fc-accent) !important;
+
+        background:
+          rgba(100,120,255,.15) !important;
+
+        color:
+          var(--fc-accent) !important;
       }
 
 
       #fcNavToggle {
-        background: var(--fc-panel) !important;
-        color: var(--fc-text) !important;
+
+        background:
+          var(--fc-panel) !important;
+
+        color:
+          var(--fc-text) !important;
       }
 
 
-      /* Do not change bottom dock layout.
-         Only allow its existing theme colors. */
+      /* =====================================================
+         BOTTOM DOCK
+         Keep its behavior/layout.
+         ===================================================== */
 
       .fc-bottom-dock {
-        background: var(--fc-panel) !important;
+
+        background:
+          var(--fc-panel) !important;
       }
 
 
+      /* =====================================================
+         DISCOVERY
+         ===================================================== */
+
       .fc-discovery {
-        background: var(--fc-panel) !important;
-        color: var(--fc-text) !important;
+
+        background:
+          var(--fc-panel) !important;
+
+        color:
+          var(--fc-text) !important;
       }
 
 
       .fc-user-suggestion {
-        background: var(--fc-panel-2) !important;
-        color: var(--fc-text) !important;
+
+        background:
+          var(--fc-panel-2) !important;
+
+        color:
+          var(--fc-text) !important;
       }
 
 
       .fc-user-avatar {
+
         background:
           linear-gradient(
             135deg,
@@ -480,16 +563,21 @@
 
 
       .fc-user-name {
-        color: var(--fc-text) !important;
+
+        color:
+          var(--fc-text) !important;
       }
 
 
       .fc-user-id {
-        color: var(--fc-muted) !important;
+
+        color:
+          var(--fc-muted) !important;
       }
 
 
       .fc-user-add {
+
         background:
           linear-gradient(
             135deg,
@@ -497,137 +585,211 @@
             var(--fc-accent-2)
           ) !important;
 
-        color: white !important;
+        color:
+          white !important;
       }
 
 
       /* =====================================================
          THEME OVERLAY
+
+         IMPORTANT:
+         The overlay itself is the scroll container.
          ===================================================== */
 
-      #fcThemeOverlay {
-        position: fixed !important;
-        inset: 0 !important;
+      html body #fcThemeOverlay {
 
-        width: 100vw !important;
-        height: 100vh !important;
+        position:
+          fixed !important;
 
-        display: none !important;
+        inset:
+          0 !important;
 
-        background: rgba(0,0,0,.72) !important;
+        width:
+          100vw !important;
 
-        z-index: 2147483000 !important;
+        height:
+          100vh !important;
 
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
+        display:
+          none !important;
 
-        padding: 20px !important;
+        padding:
+          20px !important;
 
-        box-sizing: border-box !important;
+        box-sizing:
+          border-box !important;
 
-        -webkit-overflow-scrolling: touch !important;
+        background:
+          rgba(0,0,0,.78) !important;
+
+        overflow-x:
+          hidden !important;
+
+        overflow-y:
+          auto !important;
+
+        -webkit-overflow-scrolling:
+          touch !important;
+
+        overscroll-behavior:
+          contain !important;
+
+        touch-action:
+          pan-y !important;
+
+        z-index:
+          2147483647 !important;
       }
 
 
-      #fcThemeOverlay.open {
-        display: block !important;
+      html body #fcThemeOverlay.open {
+
+        display:
+          block !important;
+
+        visibility:
+          visible !important;
+
+        opacity:
+          1 !important;
+
+        pointer-events:
+          auto !important;
       }
 
 
       /* =====================================================
          THEME PANEL
+
+         Panel is INSIDE overlay.
+         Therefore overlay controls scrolling.
          ===================================================== */
 
-      #fcThemePanel {
-        position: relative !important;
+      html body #fcThemeOverlay #fcThemePanel {
 
-        display: none !important;
+        position:
+          relative !important;
 
-        width: min(760px, calc(100vw - 40px)) !important;
+        display:
+          block !important;
 
-        margin: 20px auto 50px auto !important;
+        width:
+          min(760px, calc(100vw - 40px)) !important;
 
-        padding: 20px !important;
+        min-height:
+          auto !important;
 
-        box-sizing: border-box !important;
+        height:
+          auto !important;
 
-        background: var(--fc-panel) !important;
+        max-height:
+          none !important;
 
-        color: var(--fc-text) !important;
+        margin:
+          20px auto 60px auto !important;
 
-        border: 1px solid rgba(255,255,255,.12) !important;
+        padding:
+          22px !important;
 
-        border-radius: 22px !important;
+        box-sizing:
+          border-box !important;
+
+        overflow:
+          visible !important;
+
+        background:
+          var(--fc-panel) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        border:
+          1px solid
+          rgba(255,255,255,.12) !important;
+
+        border-radius:
+          22px !important;
 
         box-shadow:
-          0 25px 80px rgba(0,0,0,.60) !important;
+          0 25px 80px
+          rgba(0,0,0,.65) !important;
 
-        z-index: 2147483001 !important;
-
-        overflow: visible !important;
+        z-index:
+          2147483647 !important;
       }
 
 
+      html body #fcThemeOverlay
       #fcThemePanel.open {
-        display: block !important;
+
+        display:
+          block !important;
+
+        visibility:
+          visible !important;
+
+        opacity:
+          1 !important;
+
+        pointer-events:
+          auto !important;
       }
 
+
+      /* =====================================================
+         THEME HEADER
+         ===================================================== */
 
       .fc-theme-head {
-        display: flex !important;
 
-        align-items: center !important;
+        display:
+          flex !important;
 
-        justify-content: space-between !important;
+        align-items:
+          center !important;
 
-        gap: 15px !important;
+        justify-content:
+          space-between !important;
 
-        margin-bottom: 20px !important;
+        gap:
+          15px !important;
+
+        margin-bottom:
+          20px !important;
       }
 
 
       .fc-theme-head strong {
-        font-size: 21px !important;
-        color: var(--fc-text) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        font-size:
+          22px !important;
+
+        font-weight:
+          800 !important;
       }
 
 
-      .fc-theme-body {
-        width: 100% !important;
-        overflow: visible !important;
-      }
+      .fc-theme-close {
 
+        flex:
+          0 0 auto !important;
 
-      .fc-theme-grid {
-        display: grid !important;
+        width:
+          40px !important;
 
-        grid-template-columns:
-          repeat(2, minmax(0,1fr)) !important;
-
-        gap: 12px !important;
-
-        width: 100% !important;
-
-        max-height: none !important;
-
-        overflow: visible !important;
-      }
-
-
-      .fc-theme-choice {
-        width: 100% !important;
-
-        min-height: 115px !important;
-
-        padding: 14px !important;
-
-        box-sizing: border-box !important;
-
-        border-radius: 16px !important;
+        height:
+          40px !important;
 
         border:
           1px solid
-          rgba(255,255,255,.10) !important;
+          rgba(255,255,255,.12) !important;
+
+        border-radius:
+          12px !important;
 
         background:
           var(--fc-panel-2) !important;
@@ -635,18 +797,113 @@
         color:
           var(--fc-text) !important;
 
-        cursor: pointer !important;
+        cursor:
+          pointer !important;
 
-        text-align: left !important;
+        font-size:
+          20px !important;
+      }
+
+
+      .fc-theme-close:hover {
+
+        background:
+          var(--fc-accent) !important;
+
+        color:
+          #fff !important;
+      }
+
+
+      /* =====================================================
+         THEME GRID
+         ===================================================== */
+
+      .fc-theme-body {
+
+        width:
+          100% !important;
+
+        height:
+          auto !important;
+
+        max-height:
+          none !important;
+
+        overflow:
+          visible !important;
+      }
+
+
+      .fc-theme-grid {
+
+        display:
+          grid !important;
+
+        grid-template-columns:
+          repeat(2, minmax(0,1fr)) !important;
+
+        gap:
+          12px !important;
+
+        width:
+          100% !important;
+
+        height:
+          auto !important;
+
+        max-height:
+          none !important;
+
+        overflow:
+          visible !important;
+      }
+
+
+      .fc-theme-choice {
+
+        width:
+          100% !important;
+
+        min-height:
+          112px !important;
+
+        padding:
+          14px !important;
+
+        box-sizing:
+          border-box !important;
+
+        border:
+          1px solid
+          rgba(255,255,255,.10) !important;
+
+        border-radius:
+          16px !important;
+
+        background:
+          var(--fc-panel-2) !important;
+
+        color:
+          var(--fc-text) !important;
+
+        cursor:
+          pointer !important;
+
+        text-align:
+          left !important;
 
         transition:
-          transform .18s ease,
-          border-color .18s ease !important;
+          transform .15s ease,
+          border-color .15s ease,
+          box-shadow .15s ease !important;
       }
 
 
       .fc-theme-choice:hover {
-        transform: translateY(-2px) !important;
+
+        transform:
+          translateY(-2px) !important;
 
         border-color:
           var(--fc-accent) !important;
@@ -654,59 +911,56 @@
 
 
       .fc-theme-choice.selected {
+
         border:
           2px solid
           var(--fc-accent) !important;
 
         box-shadow:
           0 0 20px
-          rgba(100,120,255,.20) !important;
+          rgba(100,120,255,.22) !important;
       }
 
 
       .fc-theme-swatch {
-        width: 100% !important;
 
-        height: 42px !important;
+        width:
+          100% !important;
 
-        border-radius: 10px !important;
+        height:
+          42px !important;
 
-        margin-bottom: 10px !important;
+        border-radius:
+          10px !important;
+
+        margin-bottom:
+          10px !important;
       }
 
 
       .fc-theme-name {
-        color: var(--fc-text) !important;
 
-        font-size: 15px !important;
+        color:
+          var(--fc-text) !important;
 
-        font-weight: 700 !important;
+        font-size:
+          15px !important;
+
+        font-weight:
+          700 !important;
       }
 
 
       .fc-theme-desc {
-        color: var(--fc-muted) !important;
 
-        font-size: 12px !important;
+        color:
+          var(--fc-muted) !important;
 
-        margin-top: 4px !important;
-      }
+        font-size:
+          12px !important;
 
-
-      /* =====================================================
-         LIGHT THEME
-         ===================================================== */
-
-      html[data-fc-theme="white"],
-      html[data-fc-theme="light"] {
-        color-scheme: light;
-      }
-
-
-      html[data-fc-theme="white"] body,
-      html[data-fc-theme="white"] .app,
-      html[data-fc-theme="white"] .screen {
-        color: #111827 !important;
+        margin-top:
+          4px !important;
       }
 
 
@@ -716,33 +970,47 @@
 
       @media(max-width:600px) {
 
-        #fcThemeOverlay {
-          padding: 10px !important;
+        html body #fcThemeOverlay {
+
+          padding:
+            10px !important;
         }
 
 
+        html body #fcThemeOverlay
         #fcThemePanel {
-          width: calc(100vw - 20px) !important;
+
+          width:
+            calc(100vw - 20px) !important;
 
           margin:
-            10px auto 30px auto !important;
+            10px auto 40px auto !important;
 
-          padding: 15px !important;
+          padding:
+            16px !important;
 
-          border-radius: 18px !important;
+          border-radius:
+            18px !important;
         }
 
 
         .fc-theme-grid {
+
           grid-template-columns:
             1fr !important;
+        }
+
+
+        .fc-theme-choice {
+
+          min-height:
+            76px !important;
         }
 
       }
 
     `;
 
-    document.head.appendChild(style);
   }
 
 
@@ -752,60 +1020,94 @@
 
   function installNavigationStyles() {
 
-    if ($("friendchat-nav-guaranteed-style")) {
-      return;
+    let style =
+      $("friendchat-nav-guaranteed-style");
+
+    if (!style) {
+
+      style =
+        document.createElement("style");
+
+      style.id =
+        "friendchat-nav-guaranteed-style";
+
+      document.head.appendChild(style);
     }
-
-    const style = document.createElement("style");
-
-    style.id = "friendchat-nav-guaranteed-style";
 
     style.textContent = `
 
       #fcNavToggle {
-        position: fixed !important;
 
-        left: 0 !important;
-        top: 50% !important;
+        position:
+          fixed !important;
+
+        left:
+          0 !important;
+
+        top:
+          50% !important;
 
         transform:
           translateY(-50%) !important;
 
-        z-index: 2147483646 !important;
+        z-index:
+          2147483646 !important;
 
-        width: 28px !important;
-        height: 48px !important;
+        width:
+          28px !important;
 
-        display: flex !important;
+        height:
+          48px !important;
 
-        align-items: center !important;
-        justify-content: center !important;
+        display:
+          flex !important;
 
-        padding: 0 !important;
-        margin: 0 !important;
+        align-items:
+          center !important;
 
-        border: 0 !important;
+        justify-content:
+          center !important;
+
+        padding:
+          0 !important;
+
+        margin:
+          0 !important;
+
+        border:
+          0 !important;
 
         border-radius:
           0 14px 14px 0 !important;
 
-        cursor: pointer !important;
+        cursor:
+          pointer !important;
 
-        visibility: visible !important;
+        visibility:
+          visible !important;
+
+        transition:
+          left .22s ease !important;
       }
 
 
       #fcNavToggle.is-open {
-        left: 185px !important;
+
+        left:
+          185px !important;
       }
 
 
       #fcNavToggle .fc-chevron {
-        font-size: 24px !important;
 
-        line-height: 1 !important;
+        font-size:
+          24px !important;
 
-        display: block !important;
+        line-height:
+          1 !important;
+
+        display:
+          block !important;
 
         transition:
           transform .22s ease !important;
@@ -814,26 +1116,35 @@
 
       #fcNavToggle.is-open
       .fc-chevron {
+
         transform:
           rotate(180deg) !important;
       }
 
 
       #fcCustomSidebar {
-        position: fixed !important;
 
-        left: 0 !important;
-        top: 50% !important;
+        position:
+          fixed !important;
+
+        left:
+          0 !important;
+
+        top:
+          50% !important;
 
         transform:
           translateY(-50%)
           translateX(-110%) !important;
 
-        width: 185px !important;
+        width:
+          185px !important;
 
-        z-index: 2147483645 !important;
+        z-index:
+          2147483645 !important;
 
-        box-sizing: border-box !important;
+        box-sizing:
+          border-box !important;
 
         transition:
           transform .22s ease !important;
@@ -841,6 +1152,7 @@
 
 
       #fcCustomSidebar.open {
+
         transform:
           translateY(-50%)
           translateX(0) !important;
@@ -848,216 +1160,257 @@
 
 
       #bottomNav {
-        display: none !important;
+
+        display:
+          none !important;
       }
 
 
       @media(max-width:600px) {
 
         #fcNavToggle {
-          width: 24px !important;
-          height: 44px !important;
+
+          width:
+            24px !important;
+
+          height:
+            44px !important;
         }
 
 
         #fcNavToggle.is-open {
-          left: 178px !important;
+
+          left:
+            178px !important;
         }
 
 
         #fcCustomSidebar {
-          width: 178px !important;
+
+          width:
+            178px !important;
         }
 
       }
 
     `;
 
-    document.head.appendChild(style);
   }
 
 
   /* =========================================================
-     INITIALIZATION
+     CREATE / REUSE NAVIGATION
      ========================================================= */
 
-  function init() {
+  function ensureNavigation() {
 
-    installThemeStyles();
+    let toggle =
+      $("fcNavToggle");
 
-    installNavigationStyles();
+    let sidebar =
+      $("fcCustomSidebar");
 
 
-    if ($("fcCustomSidebar")) {
+    /* =======================================================
+       CREATE ARROW IF MISSING
+       ======================================================= */
 
-      setupVisibility();
+    if (!toggle) {
 
-      return;
+      toggle =
+        create(
+          "button",
+          "fc-nav-toggle",
+          document.body
+        );
+
+      toggle.id =
+        "fcNavToggle";
+
+      toggle.type =
+        "button";
+
+      toggle.title =
+        "Open navigation";
+
+      toggle.setAttribute(
+        "aria-label",
+        "Open navigation"
+      );
+
+      toggle.innerHTML =
+        '<span class="fc-chevron">›</span>';
+
     }
 
 
     /* =======================================================
-       ARROW
+       CREATE SIDEBAR IF MISSING
        ======================================================= */
 
-    const toggle =
-      create(
-        "button",
-        "fc-nav-toggle",
-        document.body
-      );
+    if (!sidebar) {
 
-    toggle.id = "fcNavToggle";
-
-    toggle.type = "button";
-
-    toggle.title = "Open navigation";
-
-    toggle.setAttribute(
-      "aria-label",
-      "Open navigation"
-    );
-
-    toggle.innerHTML =
-      '<span class="fc-chevron">›</span>';
-
-
-    /* =======================================================
-       SIDEBAR
-       ======================================================= */
-
-    const sidebar =
-      create(
-        "aside",
-        "fc-sidebar",
-        document.body
-      );
-
-    sidebar.id =
-      "fcCustomSidebar";
-
-    sidebar.innerHTML = `
-
-      <div class="fc-sidebar-brand">
-
-        <div class="fc-sidebar-logo">
-          FC
-        </div>
-
-        <div>
-
-          <div class="fc-sidebar-title">
-            FriendChat
-          </div>
-
-          <div class="fc-sidebar-sub">
-            Your private space
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <button
-        class="fc-nav-item active"
-        data-nav="chats"
-        type="button"
-      >
-        <span class="fc-nav-icon">💬</span>
-        Chats
-      </button>
-
-
-      <button
-        class="fc-nav-item"
-        data-nav="friends"
-        type="button"
-      >
-        <span class="fc-nav-icon">👥</span>
-        Friends
-      </button>
-
-
-      <button
-        class="fc-nav-item"
-        data-nav="music"
-        type="button"
-      >
-        <span class="fc-nav-icon">🎵</span>
-        Music
-      </button>
-
-
-      <div class="fc-nav-divider"></div>
-
-
-      <button
-        class="fc-nav-item fc-nav-theme"
-        data-nav="theme"
-        type="button"
-      >
-        <span class="fc-nav-icon">🎨</span>
-        Change theme
-      </button>
-
-
-      <button
-        class="fc-nav-item"
-        data-nav="settings"
-        type="button"
-      >
-        <span class="fc-nav-icon">⚙️</span>
-        Settings
-      </button>
-
-
-      <button
-        class="fc-nav-item"
-        data-nav="profile"
-        type="button"
-      >
-        <span class="fc-nav-icon">👤</span>
-        Profile
-      </button>
-
-    `;
-
-
-    /* =======================================================
-       ARROW OPEN/CLOSE
-       ======================================================= */
-
-    toggle.addEventListener(
-      "click",
-      () => {
-
-        const open =
-          sidebar.classList.toggle("open");
-
-        toggle.classList.toggle(
-          "is-open",
-          open
+      sidebar =
+        create(
+          "aside",
+          "fc-sidebar",
+          document.body
         );
 
-        toggle.title =
-          open
-            ? "Close navigation"
-            : "Open navigation";
+      sidebar.id =
+        "fcCustomSidebar";
 
-      }
-    );
+      sidebar.innerHTML = `
+
+        <div class="fc-sidebar-brand">
+
+          <div class="fc-sidebar-logo">
+            FC
+          </div>
+
+          <div>
+
+            <div class="fc-sidebar-title">
+              FriendChat
+            </div>
+
+            <div class="fc-sidebar-sub">
+              Your private space
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <button
+          class="fc-nav-item active"
+          data-nav="chats"
+          type="button"
+        >
+          <span class="fc-nav-icon">💬</span>
+          Chats
+        </button>
+
+
+        <button
+          class="fc-nav-item"
+          data-nav="friends"
+          type="button"
+        >
+          <span class="fc-nav-icon">👥</span>
+          Friends
+        </button>
+
+
+        <button
+          class="fc-nav-item"
+          data-nav="music"
+          type="button"
+        >
+          <span class="fc-nav-icon">🎵</span>
+          Music
+        </button>
+
+
+        <div class="fc-nav-divider"></div>
+
+
+        <button
+          class="fc-nav-item fc-nav-theme"
+          data-nav="theme"
+          type="button"
+        >
+          <span class="fc-nav-icon">🎨</span>
+          Change theme
+        </button>
+
+
+        <button
+          class="fc-nav-item"
+          data-nav="settings"
+          type="button"
+        >
+          <span class="fc-nav-icon">⚙️</span>
+          Settings
+        </button>
+
+
+        <button
+          class="fc-nav-item"
+          data-nav="profile"
+          type="button"
+        >
+          <span class="fc-nav-icon">👤</span>
+          Profile
+        </button>
+
+      `;
+
+    }
 
 
     /* =======================================================
-       SIDEBAR BUTTONS
+       ARROW LISTENER
+       ======================================================= */
+
+    if (
+      toggle.dataset.fcBound !== "1"
+    ) {
+
+      toggle.dataset.fcBound =
+        "1";
+
+      toggle.addEventListener(
+        "click",
+        event => {
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          const isOpen =
+            sidebar.classList.toggle(
+              "open"
+            );
+
+          toggle.classList.toggle(
+            "is-open",
+            isOpen
+          );
+
+          toggle.title =
+            isOpen
+              ? "Close navigation"
+              : "Open navigation";
+
+        }
+      );
+
+    }
+
+
+    /* =======================================================
+       SIDEBAR BUTTON LISTENERS
        ======================================================= */
 
     sidebar
-      .querySelectorAll(".fc-nav-item")
-      .forEach(btn => {
+      .querySelectorAll(
+        ".fc-nav-item"
+      )
+      .forEach(button => {
 
-        btn.addEventListener(
+        if (
+          button.dataset.fcBound === "1"
+        ) {
+          return;
+        }
+
+
+        button.dataset.fcBound =
+          "1";
+
+
+        button.addEventListener(
           "click",
           event => {
 
@@ -1065,20 +1418,91 @@
             event.stopPropagation();
 
             const action =
-              btn.dataset.nav;
+              button.dataset.nav;
 
 
-            if (action === "chats") {
-              goHome();
+            /* ---------------------------------------------
+               THEME
+               --------------------------------------------- */
+
+            if (
+              action === "theme"
+            ) {
+
+              closeSidebar();
+
+              addThemePanel();
+
+              openThemePanel();
+
+              return;
             }
 
 
-            if (action === "friends") {
-              goHome();
+            /* ---------------------------------------------
+               SETTINGS
+               --------------------------------------------- */
+
+            if (
+              action === "settings"
+            ) {
+
+              closeSidebar();
+
+              addThemePanel();
+
+              openThemePanel();
+
+              return;
             }
 
 
-            if (action === "music") {
+            /* ---------------------------------------------
+               CHATS
+               --------------------------------------------- */
+
+            if (
+              action === "chats"
+            ) {
+
+              goHome();
+
+              closeSidebar();
+
+              return;
+            }
+
+
+            /* ---------------------------------------------
+               FRIENDS
+               --------------------------------------------- */
+
+            if (
+              action === "friends"
+            ) {
+
+              if (
+                typeof window.showAdd ===
+                "function"
+              ) {
+
+                window.showAdd();
+
+              }
+
+              closeSidebar();
+
+              return;
+            }
+
+
+            /* ---------------------------------------------
+               MUSIC
+               --------------------------------------------- */
+
+            if (
+              action === "music"
+            ) {
 
               if (
                 typeof window.openSpotifyPanel ===
@@ -1087,7 +1511,8 @@
 
                 window.openSpotifyPanel();
 
-              } else if (
+              }
+              else if (
                 typeof window.toggleSpotifyPanel ===
                 "function"
               ) {
@@ -1096,10 +1521,19 @@
 
               }
 
+              closeSidebar();
+
+              return;
             }
 
 
-            if (action === "profile") {
+            /* ---------------------------------------------
+               PROFILE
+               --------------------------------------------- */
+
+            if (
+              action === "profile"
+            ) {
 
               if (
                 typeof window.showProfile ===
@@ -1110,46 +1544,9 @@
 
               }
 
+              closeSidebar();
+
             }
-
-
-            /* =================================================
-               THEME
-               ================================================= */
-
-            if (action === "theme") {
-
-              /*
-                 IMPORTANT:
-                 Open the theme panel FIRST.
-              */
-
-              addThemePanel();
-
-              openThemePanel();
-
-              return;
-            }
-
-
-            /*
-               Settings currently opens theme panel.
-               Change this later if you add a real settings page.
-            */
-
-            if (action === "settings") {
-
-              addThemePanel();
-
-              openThemePanel();
-
-              return;
-            }
-
-
-            sidebar.classList.remove("open");
-
-            toggle.classList.remove("is-open");
 
           }
         );
@@ -1157,17 +1554,38 @@
       });
 
 
-    addBottomDock();
+    return {
+      toggle,
+      sidebar
+    };
 
-    addDiscovery();
+  }
 
-    addThemePanel();
 
-    hideOldSpotifyButton();
+  function closeSidebar() {
 
-    applySavedTheme();
+    const sidebar =
+      $("fcCustomSidebar");
 
-    setupVisibility();
+    const toggle =
+      $("fcNavToggle");
+
+
+    if (sidebar) {
+      sidebar.classList.remove(
+        "open"
+      );
+    }
+
+
+    if (toggle) {
+      toggle.classList.remove(
+        "is-open"
+      );
+
+      toggle.title =
+        "Open navigation";
+    }
 
   }
 
@@ -1189,77 +1607,86 @@
 
       }
 
-    } catch (e) {
+    }
+    catch (error) {
 
       console.warn(
         "FriendChat showHome failed:",
-        e
+        error
       );
 
     }
 
 
-    document
-      .querySelectorAll(".screen")
-      .forEach(
-        screen =>
-          screen.classList.add("hidden")
+    const screens =
+      document.querySelectorAll(
+        ".screen"
       );
 
 
-    const home = $("homeScreen");
+    screens.forEach(
+      screen =>
+        screen.classList.add(
+          "hidden"
+        )
+    );
+
+
+    const home =
+      $("homeScreen");
+
 
     if (home) {
-      home.classList.remove("hidden");
+
+      home.classList.remove(
+        "hidden"
+      );
+
     }
 
 
-    const chat = $("chatScreen");
+    const chat =
+      $("chatScreen");
+
 
     if (chat) {
-      chat.classList.add("hidden");
+
+      chat.classList.add(
+        "hidden"
+      );
+
     }
 
 
-    const add = $("addScreen");
+    const add =
+      $("addScreen");
+
 
     if (add) {
-      add.classList.add("hidden");
+
+      add.classList.add(
+        "hidden"
+      );
+
     }
 
 
-    const profile = $("profileScreen");
+    const profile =
+      $("profileScreen");
+
 
     if (profile) {
-      profile.classList.add("hidden");
+
+      profile.classList.add(
+        "hidden"
+      );
+
     }
 
 
     closeDiscovery();
 
     closeThemePanel();
-
-
-    document.body.classList.remove(
-      "fc-chat-open"
-    );
-
-
-    const sidebar =
-      $("fcCustomSidebar");
-
-    const toggle =
-      $("fcNavToggle");
-
-
-    if (sidebar) {
-      sidebar.classList.remove("open");
-    }
-
-
-    if (toggle) {
-      toggle.classList.remove("is-open");
-    }
 
   }
 
@@ -1270,12 +1697,20 @@
 
   function addBottomDock() {
 
+    /*
+       IMPORTANT:
+       If your existing bottom dock already exists,
+       DON'T create another one.
+    */
+
     if (
       document.querySelector(
         ".fc-bottom-dock"
       )
     ) {
+
       return;
+
     }
 
 
@@ -1294,16 +1729,23 @@
         dock
       );
 
-    chats.type = "button";
 
-    chats.title = "Chats";
+    chats.type =
+      "button";
+
+    chats.title =
+      "Chats";
 
     chats.innerHTML =
-      '<span>💬</span><span>Chats</span>';
+      "<span>💬</span><span>Chats</span>";
 
-    chats.onclick = () => {
-      goHome();
-    };
+
+    chats.onclick =
+      () => {
+
+        goHome();
+
+      };
 
 
     const center =
@@ -1313,17 +1755,23 @@
         dock
       );
 
-    center.type = "button";
+
+    center.type =
+      "button";
 
     center.title =
       "Discover FriendChat users";
 
     center.innerHTML =
-      '<span>FC</span><span>Suggestions</span>';
+      "<span>FC</span><span>Suggestions</span>";
 
-    center.onclick = () => {
-      toggleDiscovery();
-    };
+
+    center.onclick =
+      () => {
+
+        toggleDiscovery();
+
+      };
 
 
     const profile =
@@ -1333,25 +1781,30 @@
         dock
       );
 
-    profile.type = "button";
 
-    profile.title = "Profile";
+    profile.type =
+      "button";
+
+    profile.title =
+      "Profile";
 
     profile.innerHTML =
-      '<span>👤</span><span>Profile</span>';
+      "<span>👤</span><span>Profile</span>";
 
-    profile.onclick = () => {
 
-      if (
-        typeof window.showProfile ===
-        "function"
-      ) {
+    profile.onclick =
+      () => {
 
-        window.showProfile();
+        if (
+          typeof window.showProfile ===
+          "function"
+        ) {
 
-      }
+          window.showProfile();
 
-    };
+        }
+
+      };
 
   }
 
@@ -1362,9 +1815,19 @@
 
   function addDiscovery() {
 
-    if ($("fcDiscovery")) {
+    if (
+      $("fcDiscovery") &&
+      $("fcDiscoveryOverlay")
+    ) {
+
       return;
+
     }
+
+
+    $("fcDiscovery")?.remove();
+
+    $("fcDiscoveryOverlay")?.remove();
 
 
     const overlay =
@@ -1374,8 +1837,23 @@
         document.body
       );
 
+
     overlay.id =
       "fcDiscoveryOverlay";
+
+
+    overlay.style.cssText = `
+
+      position:fixed;
+      inset:0;
+      display:none;
+      background:rgba(0,0,0,.72);
+      z-index:2147483640;
+      overflow-y:auto;
+      padding:20px;
+      box-sizing:border-box;
+
+    `;
 
 
     overlay.addEventListener(
@@ -1398,34 +1876,88 @@
       create(
         "section",
         "fc-discovery",
-        document.body
+        overlay
       );
+
 
     panel.id =
       "fcDiscovery";
 
 
+    panel.style.cssText = `
+
+      position:relative;
+
+      width:min(
+        760px,
+        calc(100vw - 40px)
+      );
+
+      margin:20px auto 50px;
+
+      padding:22px;
+
+      box-sizing:border-box;
+
+      border-radius:20px;
+
+      background:var(--fc-panel);
+
+      color:var(--fc-text);
+
+      border:1px solid
+        rgba(255,255,255,.12);
+
+    `;
+
+
     panel.innerHTML = `
 
-      <div class="fc-discovery-head">
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:12px;
+          margin-bottom:20px;
+        "
+      >
 
         <div>
 
-          <strong>
-            Discover people
+          <strong
+            style="
+              font-size:21px;
+              color:var(--fc-text);
+            "
+          >
+            ✨ Discover People
           </strong>
 
-          <div class="fc-sidebar-sub">
-            Everyone currently known to FriendChat
+          <div
+            class="fc-sidebar-sub"
+            style="margin-top:5px;"
+          >
+            Find people and friends on FriendChat.
           </div>
 
         </div>
 
 
         <button
-          class="fc-dock-btn"
-          data-close
+          id="fcDiscoveryClose"
           type="button"
+          style="
+            width:40px;
+            height:40px;
+            border-radius:12px;
+            border:1px solid
+              rgba(255,255,255,.12);
+            background:var(--fc-panel-2);
+            color:var(--fc-text);
+            cursor:pointer;
+            font-size:20px;
+          "
         >
           ×
         </button>
@@ -1434,22 +1966,19 @@
 
 
       <div
-        class="fc-discovery-list"
         id="fcDiscoveryList"
       ></div>
 
     `;
 
 
-    const closeButton =
-      panel.querySelector(
-        "[data-close]"
-      );
+    const close =
+      $("fcDiscoveryClose");
 
 
-    if (closeButton) {
+    if (close) {
 
-      closeButton.onclick =
+      close.onclick =
         closeDiscovery;
 
     }
@@ -1459,31 +1988,41 @@
 
   function toggleDiscovery() {
 
-    const panel =
-      $("fcDiscovery");
+    addDiscovery();
+
 
     const overlay =
       $("fcDiscoveryOverlay");
 
 
-    if (!panel || !overlay) {
+    if (
+      !overlay
+    ) {
+
       return;
+
     }
 
 
     if (
-      panel.classList.contains("open")
+      overlay.classList.contains(
+        "open"
+      )
     ) {
 
       closeDiscovery();
 
-    } else {
+    }
+    else {
 
       renderDiscovery();
 
-      panel.classList.add("open");
+      overlay.classList.add(
+        "open"
+      );
 
-      overlay.classList.add("open");
+      overlay.style.display =
+        "block";
 
     }
 
@@ -1492,11 +2031,22 @@
 
   function closeDiscovery() {
 
-    $("fcDiscovery")
-      ?.classList.remove("open");
+    const overlay =
+      $("fcDiscoveryOverlay");
 
-    $("fcDiscoveryOverlay")
-      ?.classList.remove("open");
+
+    if (!overlay) {
+      return;
+    }
+
+
+    overlay.classList.remove(
+      "open"
+    );
+
+
+    overlay.style.display =
+      "none";
 
   }
 
@@ -1513,165 +2063,177 @@
 
 
     const friendSource =
-      Array.isArray(window.friends)
+      Array.isArray(
+        window.friends
+      )
         ? window.friends
         : [];
 
 
-    const presence =
-      window.friendChatPresence || {};
-
-
-    const map =
-      new Map();
-
-
-    friendSource.forEach(user => {
-
-      map.set(
-        String(user.id || "").toUpperCase(),
-        user
-      );
-
-    });
-
-
-    Object.keys(presence).forEach(id => {
-
-      const key =
-        String(id).toUpperCase();
-
-
-      if (!map.has(key)) {
-
-        map.set(
-          key,
-          {
-            id: key,
-            name: key
-          }
-        );
-
-      }
-
-    });
-
-
-    const source =
-      [...map.values()].filter(user => {
-
-        const myId =
-          window.currentUser?.id;
-
-
-        return (
-          !myId ||
-          String(user.id).toUpperCase() !==
-          String(myId).toUpperCase()
-        );
-
-      });
-
-
-    if (!source.length) {
+    if (
+      !friendSource.length
+    ) {
 
       list.innerHTML = `
 
         <div
           style="
-            padding:24px;
+            padding:25px;
             text-align:center;
             color:var(--fc-muted);
           "
         >
-          No users available yet.
+          No suggestions available yet.
         </div>
 
       `;
 
       return;
+
     }
 
 
-    list.innerHTML = "";
+    list.innerHTML =
+      "";
 
 
-    source.forEach(user => {
+    friendSource.forEach(
+      user => {
 
-      const row =
-        create(
-          "div",
-          "fc-user-suggestion",
-          list
-        );
-
-
-      const avatar =
-        create(
-          "div",
-          "fc-user-avatar",
-          row
-        );
+        const row =
+          create(
+            "div",
+            "fc-user-suggestion",
+            list
+          );
 
 
-      avatar.textContent =
-        (
-          user.name || "?"
-        )
-          .charAt(0)
-          .toUpperCase();
+        row.style.cssText = `
+
+          display:flex;
+          align-items:center;
+          gap:12px;
+
+          padding:12px;
+
+          margin-bottom:8px;
+
+          border-radius:14px;
+
+          background:
+            var(--fc-panel-2);
+
+        `;
 
 
-      const info =
-        create(
-          "div",
-          "fc-user-info",
-          row
-        );
+        const avatar =
+          create(
+            "div",
+            "fc-user-avatar",
+            row
+          );
 
 
-      info.innerHTML = `
+        avatar.style.cssText = `
 
-        <div class="fc-user-name">
-          ${esc(user.name || "Unknown")}
-        </div>
+          width:42px;
+          height:42px;
 
-        <div class="fc-user-id">
-          ${esc(user.id || "")}
-        </div>
+          border-radius:50%;
 
-      `;
+          display:flex;
+          align-items:center;
+          justify-content:center;
 
+          flex:0 0 auto;
 
-      const add =
-        create(
-          "button",
-          "fc-user-add",
-          row
-        );
+          font-weight:800;
+          color:white;
+
+        `;
 
 
-      add.type = "button";
+        avatar.textContent =
+          String(
+            user.name ||
+            "?"
+          )
+            .charAt(0)
+            .toUpperCase();
 
-      add.textContent = "Chat";
+
+        const info =
+          create(
+            "div",
+            "fc-user-info",
+            row
+          );
 
 
-      add.onclick = () => {
+        info.style.flex =
+          "1";
 
-        if (
-          typeof window.openChat ===
-          "function"
-        ) {
 
-          window.openChat(user);
+        info.innerHTML = `
 
-        }
+          <div
+            class="fc-user-name"
+            style="font-weight:700;"
+          >
+            ${esc(
+              user.name ||
+              "Unknown"
+            )}
+          </div>
 
-        closeDiscovery();
+          <div
+            class="fc-user-id"
+            style="font-size:12px;"
+          >
+            ${esc(
+              user.id ||
+              ""
+            )}
+          </div>
 
-      };
+        `;
 
-    });
+
+        const chat =
+          create(
+            "button",
+            "fc-user-add",
+            row
+          );
+
+
+        chat.type =
+          "button";
+
+        chat.textContent =
+          "Chat";
+
+
+        chat.onclick =
+          () => {
+
+            if (
+              typeof window.openChat ===
+              "function"
+            ) {
+
+              window.openChat(
+                user
+              );
+
+            }
+
+            closeDiscovery();
+
+          };
+
+      }
+    );
 
   }
 
@@ -1682,151 +2244,163 @@
 
   function addThemePanel() {
 
+    /*
+       If it already exists, keep it.
+    */
+
     if (
-      $("fcThemePanel") &&
-      $("fcThemeOverlay")
+      $("fcThemeOverlay") &&
+      $("fcThemePanel")
     ) {
+
       return;
+
     }
 
 
-    /* -------------------------------------------------------
-       REMOVE BROKEN OLD PANEL IF ONE EXISTS
-       ------------------------------------------------------- */
-
-    $("fcThemePanel")?.remove();
+    /*
+       Remove incomplete/broken old versions.
+    */
 
     $("fcThemeOverlay")?.remove();
 
+    $("fcThemePanel")?.remove();
 
-    /* -------------------------------------------------------
-       OVERLAY
-       ------------------------------------------------------- */
+
+    /* =======================================================
+       CREATE OVERLAY
+       ======================================================= */
 
     const overlay =
       create(
         "div",
-        "fc-overlay",
+        "",
         document.body
       );
+
 
     overlay.id =
       "fcThemeOverlay";
 
 
-    /* IMPORTANT:
-       clicking the dark background closes it,
-       clicking the panel does NOT.
-    */
-
-    overlay.addEventListener(
-      "click",
-      event => {
-
-        if (
-          event.target === overlay
-        ) {
-
-          closeThemePanel();
-
-        }
-
-      }
-    );
-
-
-    /* -------------------------------------------------------
-       PANEL
-       ------------------------------------------------------- */
+    /* =======================================================
+       CREATE PANEL INSIDE OVERLAY
+       THIS IS THE IMPORTANT SCROLL FIX
+       ======================================================= */
 
     const panel =
       create(
         "section",
-        "fc-theme-panel",
-        document.body
+        "",
+        overlay
       );
+
 
     panel.id =
       "fcThemePanel";
 
 
-    panel.innerHTML = `
+    /* =======================================================
+       HEADER
+       ======================================================= */
 
-      <div class="fc-theme-head">
-
-        <div>
-
-          <strong>
-            Customize FriendChat
-          </strong>
-
-          <div class="fc-sidebar-sub">
-            Choose your FriendChat theme
-          </div>
-
-        </div>
+    const header =
+      create(
+        "div",
+        "fc-theme-head",
+        panel
+      );
 
 
-        <button
-          class="fc-dock-btn"
-          data-close
-          type="button"
-          aria-label="Close themes"
-        >
-          ×
-        </button>
-
-      </div>
+    const titleArea =
+      create(
+        "div",
+        "",
+        header
+      );
 
 
-      <div class="fc-theme-body">
+    titleArea.innerHTML = `
 
-        <div
-          class="fc-theme-grid"
-          id="fcThemeGrid"
-        ></div>
+      <strong>
+        🎨 Customize FriendChat
+      </strong>
 
+      <div
+        class="fc-sidebar-sub"
+        style="
+          margin-top:5px;
+        "
+      >
+        Choose your FriendChat theme
       </div>
 
     `;
 
 
-    const closeButton =
-      panel.querySelector(
-        "[data-close]"
+    const close =
+      create(
+        "button",
+        "fc-theme-close",
+        header
       );
 
 
-    if (closeButton) {
+    close.type =
+      "button";
 
-      closeButton.addEventListener(
-        "click",
-        event => {
+    close.textContent =
+      "×";
 
-          event.preventDefault();
+    close.title =
+      "Close themes";
 
-          event.stopPropagation();
 
-          closeThemePanel();
+    close.addEventListener(
+      "click",
+      event => {
 
-        }
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        closeThemePanel();
+
+      }
+    );
+
+
+    /* =======================================================
+       THEME BODY
+       ======================================================= */
+
+    const body =
+      create(
+        "div",
+        "fc-theme-body",
+        panel
       );
-
-    }
 
 
     const grid =
-      panel.querySelector(
-        "#fcThemeGrid"
+      create(
+        "div",
+        "fc-theme-grid",
+        body
       );
 
 
-    if (!grid) {
-      return;
-    }
+    grid.id =
+      "fcThemeGrid";
 
 
-    Object.entries(themes).forEach(
+    /* =======================================================
+       CREATE 20 THEME BUTTONS
+       ======================================================= */
+
+    Object.entries(
+      themes
+    ).forEach(
       ([key, theme]) => {
 
         const button =
@@ -1837,36 +2411,52 @@
           );
 
 
-        button.type = "button";
-
-        button.dataset.theme = key;
-
-
-        button.innerHTML = `
-
-          <div
-            class="fc-theme-swatch"
-            style="
-              background:
-                linear-gradient(
-                  135deg,
-                  ${theme.accent},
-                  ${theme.accent2}
-                );
-            "
-          ></div>
+        button.type =
+          "button";
 
 
-          <div class="fc-theme-name">
-            ${theme.name}
-          </div>
+        button.dataset.theme =
+          key;
 
 
-          <div class="fc-theme-desc">
-            ${theme.desc}
-          </div>
+        const swatch =
+          create(
+            "div",
+            "fc-theme-swatch",
+            button
+          );
 
-        `;
+
+        swatch.style.background =
+          `linear-gradient(
+            135deg,
+            ${theme.accent},
+            ${theme.accent2}
+          )`;
+
+
+        const name =
+          create(
+            "div",
+            "fc-theme-name",
+            button
+          );
+
+
+        name.textContent =
+          theme.name;
+
+
+        const desc =
+          create(
+            "div",
+            "fc-theme-desc",
+            button
+          );
+
+
+        desc.textContent =
+          theme.desc;
 
 
         button.addEventListener(
@@ -1885,6 +2475,26 @@
       }
     );
 
+
+    /* =======================================================
+       CLICK DARK BACKGROUND TO CLOSE
+       ======================================================= */
+
+    overlay.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target === overlay
+        ) {
+
+          closeThemePanel();
+
+        }
+
+      }
+    );
+
   }
 
 
@@ -1895,30 +2505,27 @@
   function openThemePanel() {
 
     /*
-       Make absolutely sure the panel exists.
+       ALWAYS ensure panel exists.
     */
 
-    if (
-      !$("fcThemePanel") ||
-      !$("fcThemeOverlay")
-    ) {
-
-      addThemePanel();
-
-    }
+    addThemePanel();
 
 
     const overlay =
       $("fcThemeOverlay");
 
+
     const panel =
       $("fcThemePanel");
 
 
-    if (!overlay || !panel) {
+    if (
+      !overlay ||
+      !panel
+    ) {
 
       console.error(
-        "FriendChat: Theme panel could not be created."
+        "FriendChat: Could not create theme panel."
       );
 
       return;
@@ -1927,23 +2534,20 @@
 
 
     /*
-       FORCE OPEN.
-       This avoids conflicts with old CSS.
+       Force everything open.
     */
 
-    overlay.classList.add("open");
-
-    panel.classList.add("open");
-
-
-    overlay.style.setProperty(
-      "display",
-      "block",
-      "important"
+    overlay.classList.add(
+      "open"
     );
 
 
-    panel.style.setProperty(
+    panel.classList.add(
+      "open"
+    );
+
+
+    overlay.style.setProperty(
       "display",
       "block",
       "important"
@@ -1957,6 +2561,34 @@
     );
 
 
+    overlay.style.setProperty(
+      "opacity",
+      "1",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "pointer-events",
+      "auto",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "z-index",
+      "2147483647",
+      "important"
+    );
+
+
+    panel.style.setProperty(
+      "display",
+      "block",
+      "important"
+    );
+
+
     panel.style.setProperty(
       "visibility",
       "visible",
@@ -1964,23 +2596,9 @@
     );
 
 
-    overlay.style.setProperty(
-      "opacity",
-      "1",
-      "important"
-    );
-
-
     panel.style.setProperty(
       "opacity",
       "1",
-      "important"
-    );
-
-
-    overlay.style.setProperty(
-      "pointer-events",
-      "auto",
       "important"
     );
 
@@ -1992,40 +2610,50 @@
     );
 
 
-    /*
-       Put theme panel above everything.
-    */
-
-    overlay.style.setProperty(
-      "z-index",
-      "2147483000",
-      "important"
-    );
-
-
     panel.style.setProperty(
       "z-index",
-      "2147483001",
+      "2147483647",
       "important"
     );
 
 
     /*
-       Lock normal page scrolling.
-       The theme overlay itself scrolls.
+       Lock the MAIN page.
+       Overlay remains independently scrollable.
     */
 
-    document.body.dataset.fcThemeWasOverflow =
-      document.body.style.overflow || "";
+    if (
+      !document.body.dataset
+        .fcThemeWasOverflow
+    ) {
 
-    document.body.style.overflow = "hidden";
+      document.body.dataset
+        .fcThemeWasOverflow =
+        document.body.style.overflow ||
+        "";
+
+    }
+
+
+    document.body.style.overflow =
+      "hidden";
 
 
     /*
-       Scroll to top when opened.
+       Start at top.
     */
 
-    overlay.scrollTop = 0;
+    overlay.scrollTop =
+      0;
+
+
+    /*
+       Update selected theme.
+    */
+
+    updateThemeSelection(
+      getSavedTheme()
+    );
 
   }
 
@@ -2039,19 +2667,38 @@
     const overlay =
       $("fcThemeOverlay");
 
+
     const panel =
       $("fcThemePanel");
 
 
     if (overlay) {
 
-      overlay.classList.remove("open");
+      overlay.classList.remove(
+        "open"
+      );
+
 
       overlay.style.setProperty(
         "display",
         "none",
         "important"
       );
+
+
+      overlay.style.setProperty(
+        "visibility",
+        "hidden",
+        "important"
+      );
+
+
+      overlay.style.setProperty(
+        "opacity",
+        "0",
+        "important"
+      );
+
 
       overlay.style.setProperty(
         "pointer-events",
@@ -2064,13 +2711,24 @@
 
     if (panel) {
 
-      panel.classList.remove("open");
+      panel.classList.remove(
+        "open"
+      );
+
 
       panel.style.setProperty(
         "display",
         "none",
         "important"
       );
+
+
+      panel.style.setProperty(
+        "visibility",
+        "hidden",
+        "important"
+      );
+
 
       panel.style.setProperty(
         "pointer-events",
@@ -2082,16 +2740,21 @@
 
 
     if (
-      document.body.dataset.fcThemeWasOverflow !==
+      document.body.dataset
+        .fcThemeWasOverflow !==
       undefined
     ) {
 
       document.body.style.overflow =
-        document.body.dataset.fcThemeWasOverflow;
+        document.body.dataset
+          .fcThemeWasOverflow;
 
-      delete document.body.dataset.fcThemeWasOverflow;
 
-    } else {
+      delete document.body.dataset
+        .fcThemeWasOverflow;
+
+    }
+    else {
 
       document.body.style.removeProperty(
         "overflow"
@@ -2103,7 +2766,49 @@
 
 
   /* =========================================================
-     THEME APPLY
+     THEME STORAGE
+     ========================================================= */
+
+  function getSavedTheme() {
+
+    let saved =
+      null;
+
+
+    try {
+
+      saved =
+        localStorage.getItem(
+          "friendchat_theme"
+        );
+
+    }
+    catch (_) {
+
+      saved =
+        null;
+
+    }
+
+
+    if (
+      !saved ||
+      !themes[saved]
+    ) {
+
+      saved =
+        "midnight";
+
+    }
+
+
+    return saved;
+
+  }
+
+
+  /* =========================================================
+     APPLY THEME
      ========================================================= */
 
   function setTheme(key) {
@@ -2169,66 +2874,134 @@
     );
 
 
-    localStorage.setItem(
-      "friendchat_theme",
-      key
-    );
+    try {
 
-
-    document
-      .querySelectorAll(
-        ".fc-theme-choice"
-      )
-      .forEach(button => {
-
-        button.classList.toggle(
-          "selected",
-          button.dataset.theme === key
-        );
-
-      });
-
-  }
-
-
-  function applySavedTheme() {
-
-    let saved =
-      localStorage.getItem(
-        "friendchat_theme"
+      localStorage.setItem(
+        "friendchat_theme",
+        key
       );
 
-
-    if (!saved || !themes[saved]) {
-      saved = "midnight";
     }
+    catch (_) {}
 
 
-    setTheme(saved);
+    updateThemeSelection(
+      key
+    );
 
   }
 
 
   /* =========================================================
-     ESC KEY
+     UPDATE SELECTED THEME
      ========================================================= */
 
-  document.addEventListener(
-    "keydown",
-    event => {
+  function updateThemeSelection(
+    selectedKey
+  ) {
 
-      if (
-        event.key === "Escape"
-      ) {
+    document
+      .querySelectorAll(
+        ".fc-theme-choice"
+      )
+      .forEach(
+        button => {
 
-        closeThemePanel();
+          button.classList.toggle(
+            "selected",
+            button.dataset.theme ===
+            selectedKey
+          );
 
-        closeDiscovery();
+        }
+      );
 
-      }
+  }
+
+
+  /* =========================================================
+     APPLY SAVED THEME
+     ========================================================= */
+
+  function applySavedTheme() {
+
+    setTheme(
+      getSavedTheme()
+    );
+
+  }
+
+
+  /* =========================================================
+     KEYBOARD
+     ========================================================= */
+
+  function installKeyboard() {
+
+    if (
+      document.body.dataset
+        .fcKeyboardBound ===
+      "1"
+    ) {
+
+      return;
 
     }
-  );
+
+
+    document.body.dataset
+      .fcKeyboardBound =
+      "1";
+
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key ===
+          "Escape"
+        ) {
+
+          const theme =
+            $("fcThemeOverlay");
+
+
+          if (
+            theme &&
+            theme.classList.contains(
+              "open"
+            )
+          ) {
+
+            closeThemePanel();
+
+            return;
+
+          }
+
+
+          const discovery =
+            $("fcDiscoveryOverlay");
+
+
+          if (
+            discovery &&
+            discovery.classList.contains(
+              "open"
+            )
+          ) {
+
+            closeDiscovery();
+
+          }
+
+        }
+
+      }
+    );
+
+  }
 
 
   /* =========================================================
@@ -2237,138 +3010,167 @@
 
   function setupVisibility() {
 
-    const sync = () => {
+    /*
+       Don't return if login screen isn't present.
+       Your app may use a different login implementation.
+    */
 
-      const login =
-        $("loginScreen");
+    const sync =
+      () => {
 
-      const signup =
-        $("signupScreen");
-
-
-      const authenticated =
-        !!(
-          login &&
-          login.classList.contains("hidden") &&
-          (
-            !signup ||
-            signup.classList.contains("hidden")
-          )
-        );
+        const login =
+          $("loginScreen");
 
 
-      [
-        "fcNavToggle",
-        "fcCustomSidebar"
-      ].forEach(id => {
+        const signup =
+          $("signupScreen");
 
-        const el = $(id);
 
-        if (!el) {
-          return;
+        let authenticated =
+          true;
+
+
+        /*
+           If these screens exist,
+           use them to determine authentication.
+        */
+
+        if (login) {
+
+          const loginHidden =
+            login.classList.contains(
+              "hidden"
+            ) ||
+            login.style.display ===
+              "none";
+
+
+          authenticated =
+            loginHidden;
+
         }
 
 
-        el.style.setProperty(
-          "display",
-          authenticated
-            ? (
-                id === "fcNavToggle"
-                  ? "flex"
-                  : "block"
-              )
-            : "none",
-          "important"
-        );
+        if (
+          authenticated &&
+          signup
+        ) {
+
+          const signupHidden =
+            signup.classList.contains(
+              "hidden"
+            ) ||
+            signup.style.display ===
+              "none";
 
 
-        el.style.setProperty(
-          "visibility",
-          authenticated
-            ? "visible"
-            : "hidden",
-          "important"
-        );
+          authenticated =
+            signupHidden;
+
+        }
 
 
-        el.style.setProperty(
-          "opacity",
-          authenticated
-            ? "1"
-            : "0",
-          "important"
-        );
-
-      });
+        const toggle =
+          $("fcNavToggle");
 
 
-      const chatScreen =
-        $("chatScreen");
+        const sidebar =
+          $("fcCustomSidebar");
 
 
-      const chatOpen =
-        !!(
-          chatScreen &&
-          !chatScreen.classList.contains(
-            "hidden"
-          )
-        );
+        if (toggle) {
 
-
-      document.body.classList.toggle(
-        "fc-chat-open",
-        chatOpen
-      );
-
-
-      document
-        .querySelectorAll(
-          ".fc-bottom-dock"
-        )
-        .forEach(el => {
-
-          const showDock =
-            authenticated &&
-            !chatOpen;
-
-
-          el.style.setProperty(
+          toggle.style.setProperty(
             "display",
-            showDock
+            authenticated
               ? "flex"
               : "none",
             "important"
           );
 
-
-          el.style.setProperty(
+          toggle.style.setProperty(
             "visibility",
-            showDock
+            authenticated
               ? "visible"
               : "hidden",
             "important"
           );
 
+        }
 
-          el.style.setProperty(
-            "opacity",
-            showDock
-              ? "1"
-              : "0",
+
+        if (sidebar) {
+
+          sidebar.style.setProperty(
+            "display",
+            authenticated
+              ? "block"
+              : "none",
             "important"
           );
 
-        });
+          sidebar.style.setProperty(
+            "visibility",
+            authenticated
+              ? "visible"
+              : "hidden",
+            "important"
+          );
 
-    };
+        }
+
+
+        if (!authenticated) {
+
+          closeThemePanel();
+
+          closeDiscovery();
+
+        }
+
+      };
 
 
     sync();
 
 
+    if (
+      document.body.dataset
+        .fcVisibilityObserver ===
+      "1"
+    ) {
+
+      return;
+
+    }
+
+
+    document.body.dataset
+      .fcVisibilityObserver =
+      "1";
+
+
     const observer =
       new MutationObserver(
-        sync
+        () => {
+
+          sync();
+
+          /*
+             If some other FriendChat code
+             recreates the sidebar buttons,
+             bind them again.
+          */
+
+          const navigation =
+            ensureNavigation();
+
+
+          if (navigation) {
+            /* intentionally empty */
+          }
+
+        }
       );
 
 
@@ -2378,15 +3180,10 @@
         subtree: true,
         attributes: true,
         attributeFilter: [
-          "class"
+          "class",
+          "style"
         ]
       }
-    );
-
-
-    window.setInterval(
-      sync,
-      500
     );
 
   }
@@ -2398,18 +3195,19 @@
 
   function hideOldSpotifyButton() {
 
-    const hide = () => {
+    const hide =
+      () => {
 
-      document
-        .querySelectorAll(
-          ".spotify-side-button, .spotify-side-bar"
-        )
-        .forEach(
-          element =>
-            element.remove()
-        );
+        document
+          .querySelectorAll(
+            ".spotify-side-button, .spotify-side-bar"
+          )
+          .forEach(
+            element =>
+              element.remove()
+          );
 
-    };
+      };
 
 
     hide();
@@ -2424,10 +3222,134 @@
 
     setTimeout(
       () => {
-        clearInterval(timer);
+
+        clearInterval(
+          timer
+        );
+
       },
       15000
     );
+
+  }
+
+
+  /* =========================================================
+     GLOBAL FUNCTIONS
+     ========================================================= */
+
+  window.openThemePanel =
+    openThemePanel;
+
+
+  window.closeThemePanel =
+    closeThemePanel;
+
+
+  /*
+     Correct behavior:
+     changeTheme("purple")
+     actually changes to purple.
+
+     If called without an argument,
+     it simply opens the theme panel.
+  */
+
+  window.changeTheme =
+    function(key) {
+
+      if (
+        key &&
+        themes[key]
+      ) {
+
+        setTheme(key);
+
+      }
+      else {
+
+        openThemePanel();
+
+      }
+
+    };
+
+
+  window.toggleTheme =
+    function() {
+
+      const overlay =
+        $("fcThemeOverlay");
+
+
+      if (
+        overlay &&
+        overlay.classList.contains(
+          "open"
+        )
+      ) {
+
+        closeThemePanel();
+
+      }
+      else {
+
+        openThemePanel();
+
+      }
+
+    };
+
+
+  window.openDiscovery =
+    toggleDiscovery;
+
+
+  window.closeDiscovery =
+    closeDiscovery;
+
+
+  /* =========================================================
+     INITIALIZATION
+     ========================================================= */
+
+  function init() {
+
+    /*
+       IMPORTANT FIX:
+
+       The old code did:
+
+       if ($("fcCustomSidebar")) {
+         setupVisibility();
+         return;
+       }
+
+       That meant if the sidebar already existed,
+       THEME PANEL WAS NEVER CREATED.
+
+       This version NEVER exits early.
+    */
+
+    installThemeStyles();
+
+    installNavigationStyles();
+
+    ensureNavigation();
+
+    addBottomDock();
+
+    addDiscovery();
+
+    addThemePanel();
+
+    applySavedTheme();
+
+    hideOldSpotifyButton();
+
+    installKeyboard();
+
+    setupVisibility();
 
   }
 
@@ -2443,35 +3365,17 @@
 
     document.addEventListener(
       "DOMContentLoaded",
-      init
+      init,
+      {
+        once: true
+      }
     );
 
-  } else {
+  }
+  else {
 
     init();
 
   }
-
-
-  /* =========================================================
-     GLOBAL FUNCTIONS
-     ========================================================= */
-
-  /*
-     These make the theme system available to your
-     HTML and other FriendChat scripts.
-  */
-
-  window.openThemePanel =
-    openThemePanel;
-
-  window.closeThemePanel =
-    closeThemePanel;
-
-  window.changeTheme =
-    openThemePanel;
-
-  window.toggleTheme =
-    openThemePanel;
 
 })();
