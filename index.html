@@ -2811,3 +2811,103 @@ function toggleStatusInfo() {
 </body>
 
 </html>
+<script>
+(function () {
+  function openFriendChatThemes() {
+    const panel = document.getElementById("fcThemeOverlay");
+
+    if (!panel) {
+      console.error("FriendChat theme panel not found.");
+      return;
+    }
+
+    panel.classList.remove("hidden");
+    panel.style.display = "flex";
+    document.body.classList.add("fc-theme-open");
+  }
+
+  function closeFriendChatThemes() {
+    const panel = document.getElementById("fcThemeOverlay");
+
+    if (!panel) return;
+
+    panel.classList.add("hidden");
+    panel.style.display = "none";
+    document.body.classList.remove("fc-theme-open");
+  }
+
+  // Make these functions available to your existing sidebar
+  window.changeTheme = openFriendChatThemes;
+  window.openThemePicker = openFriendChatThemes;
+  window.toggleTheme = openFriendChatThemes;
+  window.closeThemePanel = closeFriendChatThemes;
+
+  // Detect the existing "Change theme" button
+  function connectThemeButton() {
+    const elements = document.querySelectorAll(
+      "button, a, [role='button'], .sidebar-item, .menu-item"
+    );
+
+    elements.forEach(function (el) {
+      const text = (el.textContent || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase();
+
+      if (
+        text === "change theme" ||
+        text.includes("change theme")
+      ) {
+        if (el.dataset.fcThemeConnected === "1") return;
+
+        el.dataset.fcThemeConnected = "1";
+
+        el.addEventListener(
+          "click",
+          function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+            openFriendChatThemes();
+          },
+          true
+        );
+      }
+    });
+  }
+
+  // Run now
+  connectThemeButton();
+
+  // Your sidebar is created dynamically, so keep checking for it
+  const observer = new MutationObserver(function () {
+    connectThemeButton();
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  // Close when clicking outside the theme panel
+  document.addEventListener("click", function (event) {
+    const overlay = document.getElementById("fcThemeOverlay");
+
+    if (
+      overlay &&
+      event.target === overlay &&
+      !overlay.classList.contains("hidden")
+    ) {
+      closeFriendChatThemes();
+    }
+  });
+
+  // ESC closes themes
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeFriendChatThemes();
+    }
+  });
+})();
+</script>
