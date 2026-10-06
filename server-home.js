@@ -231,8 +231,8 @@ function getCurrentServer() {
                 function (item) {
 
                     return (
-                        item.serverID ===
-                        currentServerID
+                        String(item.serverID) ===
+                        String(currentServerID)
                     );
 
                 }
@@ -332,7 +332,7 @@ function setServerImage(
 
 
 /* =========================================================
-   CHANNEL ID
+   GENERATE CHANNEL ID
    ========================================================= */
 
 function generateChannelID() {
@@ -445,8 +445,8 @@ function updateCurrentServer() {
             function (server) {
 
                 return (
-                    server.serverID ===
-                    currentServerID
+                    String(server.serverID) ===
+                    String(currentServerID)
                 );
 
             }
@@ -516,18 +516,50 @@ function getSavedChannelID() {
             return null;
         }
 
-        const data =
-            JSON.parse(saved);
+        /*
+         * Supports the current object format:
+         *
+         * {
+         *   serverID: "...",
+         *   channelID: "..."
+         * }
+         */
 
-        if (
-            !data ||
-            data.serverID !==
-            currentServer.serverID
-        ) {
-            return null;
+        try {
+
+            const data =
+                JSON.parse(saved);
+
+            if (
+                data &&
+                typeof data === "object"
+            ) {
+
+                if (
+                    data.serverID &&
+                    String(data.serverID) !==
+                    String(currentServer.serverID)
+                ) {
+                    return null;
+                }
+
+                return (
+                    data.channelID ||
+                    null
+                );
+            }
+
+        } catch (error) {
+
+            /*
+             * Also support an older version where
+             * only the channel ID was stored.
+             */
+
+            return saved;
         }
 
-        return data.channelID || null;
+        return null;
 
     } catch (error) {
 
@@ -540,11 +572,12 @@ function getSavedChannelID() {
    SAVE SELECTED CHANNEL
    ========================================================= */
 
-function saveSelectedChannel(
-    channel
-) {
+function saveSelectedChannel(channel) {
 
-    if (!currentServer || !channel) {
+    if (
+        !currentServer ||
+        !channel
+    ) {
         return;
     }
 
@@ -724,8 +757,8 @@ function loadServer() {
                 function (channel) {
 
                     return (
-                        channel.channelID ===
-                        possibleChannel
+                        String(channel.channelID) ===
+                        String(possibleChannel)
                     );
 
                 }
@@ -735,7 +768,6 @@ function loadServer() {
 
             selectedChannelID =
                 possibleChannel;
-
         }
     }
 
@@ -885,9 +917,7 @@ function renderChannels() {
    CREATE CHANNEL ELEMENT
    ========================================================= */
 
-function createChannelElement(
-    channel
-) {
+function createChannelElement(channel) {
 
     const button =
         document.createElement(
@@ -909,8 +939,8 @@ function createChannelElement(
        ===================================================== */
 
     if (
-        channel.channelID ===
-        selectedChannelID
+        String(channel.channelID) ===
+        String(selectedChannelID)
     ) {
 
         button.classList.add(
@@ -984,12 +1014,12 @@ function createChannelElement(
         function (event) {
 
             event.preventDefault();
-
             event.stopPropagation();
 
             selectChannel(
                 channel
             );
+
         }
     );
 
@@ -1040,15 +1070,12 @@ function escapeHTML(value) {
    SELECT CHANNEL
    ========================================================= */
 
-function selectChannel(
-    channel
-) {
+function selectChannel(channel) {
 
     if (
         !currentServer ||
         !channel
     ) {
-
         return;
     }
 
@@ -1066,13 +1093,6 @@ function selectChannel(
 
 
     /* =====================================================
-       UPDATE UI FIRST
-       ===================================================== */
-
-    renderChannels();
-
-
-    /* =====================================================
        TEXT CHANNEL
        ===================================================== */
 
@@ -1081,44 +1101,41 @@ function selectChannel(
         "text"
     ) {
 
-        showToast(
-            "#" +
-            channel.name +
-            " opened"
+        /*
+         * IMPORTANT:
+         * Open the real channel chat page.
+         *
+         * Example:
+         * channel-chat.html?server=FC123&channel=CH456
+         */
+
+        const targetURL =
+            "channel-chat.html" +
+            "?server=" +
+            encodeURIComponent(
+                currentServer.serverID
+            ) +
+            "&channel=" +
+            encodeURIComponent(
+                channel.channelID
+            );
+
+
+        console.log(
+            "FriendChat opening channel:",
+            targetURL
         );
 
 
         /*
-         * For now we keep the user on
-         * Server Home.
+         * Use location.href instead of
+         * history.replaceState.
          *
-         * The actual channel chat UI
-         * will be connected in the next
-         * channel-chat phase.
+         * This actually opens the new page.
          */
 
-        const url =
-            new URL(
-                window.location.href
-            );
-
-        url.searchParams.set(
-            "channel",
-            channel.channelID
-        );
-
-        window.history.replaceState(
-            {},
-            "",
-            url
-        );
-
-
-        console.log(
-            "Text channel opened:",
-            channel
-        );
-
+        window.location.href =
+            targetURL;
 
         return;
     }
@@ -1137,29 +1154,6 @@ function selectChannel(
             "🔊 " +
             channel.name +
             " selected"
-        );
-
-
-        const url =
-            new URL(
-                window.location.href
-            );
-
-        url.searchParams.set(
-            "channel",
-            channel.channelID
-        );
-
-        window.history.replaceState(
-            {},
-            "",
-            url
-        );
-
-
-        console.log(
-            "Voice channel selected:",
-            channel
         );
 
         return;
@@ -1220,8 +1214,8 @@ function renderPreviewChannels() {
 
 
                 if (
-                    channel.channelID ===
-                    selectedChannelID
+                    String(channel.channelID) ===
+                    String(selectedChannelID)
                 ) {
 
                     item.classList.add(
@@ -1240,7 +1234,11 @@ function renderPreviewChannels() {
 
                 item.addEventListener(
                     "click",
-                    function () {
+                    function (event) {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
 
                         selectChannel(
                             channel
@@ -1401,9 +1399,7 @@ function updateChannelTypeUI() {
    SHOW CHANNEL ERROR
    ========================================================= */
 
-function showChannelError(
-    message
-) {
+function showChannelError(message) {
 
     if (!channelFormError) {
         return;
@@ -1782,15 +1778,15 @@ document.addEventListener(
    COPY SERVER ID
    ========================================================= */
 
-const copyServerID =
+const copyServerIDButton =
     document.getElementById(
         "copyServerID"
     );
 
 
-if (copyServerID) {
+if (copyServerIDButton) {
 
-    copyServerID.addEventListener(
+    copyServerIDButton.addEventListener(
         "click",
         async function () {
 
@@ -1810,9 +1806,37 @@ if (copyServerID) {
 
             try {
 
-                await navigator.clipboard.writeText(
-                    id
-                );
+                if (
+                    navigator.clipboard &&
+                    navigator.clipboard.writeText
+                ) {
+
+                    await navigator.clipboard.writeText(
+                        id
+                    );
+
+                } else {
+
+                    const temporary =
+                        document.createElement(
+                            "textarea"
+                        );
+
+                    temporary.value =
+                        id;
+
+                    document.body.appendChild(
+                        temporary
+                    );
+
+                    temporary.select();
+
+                    document.execCommand(
+                        "copy"
+                    );
+
+                    temporary.remove();
+                }
 
                 showToast(
                     "Server ID copied"
@@ -1820,28 +1844,8 @@ if (copyServerID) {
 
             } catch (error) {
 
-                const temporary =
-                    document.createElement(
-                        "textarea"
-                    );
-
-                temporary.value =
-                    id;
-
-                document.body.appendChild(
-                    temporary
-                );
-
-                temporary.select();
-
-                document.execCommand(
-                    "copy"
-                );
-
-                temporary.remove();
-
                 showToast(
-                    "Server ID copied"
+                    "Could not copy server ID"
                 );
             }
 
