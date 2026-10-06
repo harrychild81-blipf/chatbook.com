@@ -1,6 +1,6 @@
 /* =========================================================
-   FRIENDCHAT UI V3 - FINAL FIXED
-   SIDEBAR + ARROW + BOTTOM DOCK + CHAT FIX
+   FRIENDCHAT UI V3 - COMPLETE FIXED CSS
+   SIDEBAR + ARROW + BOTTOM DOCK + CHAT + THEMES
    ========================================================= */
 
 :root {
@@ -63,7 +63,6 @@ textarea {
 #app {
     width: 100% !important;
     max-width: none !important;
-
     min-height: 100vh !important;
 
     margin: 0 !important;
@@ -120,7 +119,6 @@ textarea {
     padding: 20px 28px !important;
 
     border-radius: 0 !important;
-
     border: 0 !important;
     border-bottom: 1px solid var(--fc-border) !important;
 
@@ -273,13 +271,11 @@ body .fc-sidebar .fc-sidebar-brand {
     min-height: 58px !important;
 
     display: flex !important;
-
     align-items: center !important;
 
     gap: 10px !important;
 
     padding: 5px 4px 12px !important;
-
     margin: 0 0 8px !important;
 
     border-bottom:
@@ -293,7 +289,6 @@ body .fc-sidebar-logo {
     min-width: 40px !important;
 
     display: flex !important;
-
     align-items: center !important;
     justify-content: center !important;
 
@@ -346,7 +341,6 @@ body .fc-nav-item {
     padding: 7px 9px !important;
 
     display: flex !important;
-
     align-items: center !important;
     justify-content: flex-start !important;
 
@@ -403,7 +397,6 @@ body .fc-sidebar-icon {
     height: 30px !important;
 
     display: flex !important;
-
     align-items: center !important;
     justify-content: center !important;
 
@@ -438,13 +431,11 @@ body .fc-nav-divider {
 
 /* =========================================================
    ARROW
-   CLOSED = SMALL
    ========================================================= */
 
 html body #fcNavToggle,
 html body .fc-nav-toggle,
 html body #fc-nav-toggle {
-
     position: fixed !important;
 
     left: 1px !important;
@@ -491,7 +482,6 @@ html body #fc-nav-toggle {
     z-index: 2147483647 !important;
 
     opacity: 1 !important;
-
     visibility: visible !important;
 
     pointer-events: auto !important;
@@ -508,24 +498,15 @@ html body #fc-nav-toggle {
         background .18s ease !important;
 }
 
-
-/* =========================================================
-   ARROW ICON
-   ========================================================= */
-
 html body #fcNavToggle .fc-chevron,
 html body .fc-nav-toggle .fc-chevron,
 html body #fc-nav-toggle .fc-chevron {
-
     position: absolute !important;
 
     inset: 0 !important;
 
     width: 100% !important;
     height: 100% !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
 
     display: flex !important;
 
@@ -542,15 +523,9 @@ html body #fc-nav-toggle .fc-chevron {
         transform .42s cubic-bezier(.22,1,.36,1) !important;
 }
 
-
-/* =========================================================
-   ARROW HOVER
-   ========================================================= */
-
 html body #fcNavToggle:hover,
 html body .fc-nav-toggle:hover,
 html body #fc-nav-toggle:hover {
-
     width: 28px !important;
     min-width: 28px !important;
     max-width: 28px !important;
@@ -569,21 +544,13 @@ html body #fc-nav-toggle:hover .fc-chevron {
     font-size: 14px !important;
 }
 
-
-/* =========================================================
-   OPEN ARROW
-   ========================================================= */
-
 html body #fcNavToggle.is-open,
 html body .fc-nav-toggle.is-open,
 html body #fc-nav-toggle.is-open {
-
     left:
         var(--fc-sidebar-width) !important;
 
     top: 50% !important;
-
-    bottom: auto !important;
 
     width: 16px !important;
     min-width: 16px !important;
@@ -600,15 +567,9 @@ html body #fc-nav-toggle.is-open {
         0 8px 8px 0 !important;
 }
 
-
-/* =========================================================
-   OPEN ARROW HOVER
-   ========================================================= */
-
 html body #fcNavToggle.is-open:hover,
 html body .fc-nav-toggle.is-open:hover,
 html body #fc-nav-toggle.is-open:hover {
-
     width: 28px !important;
     min-width: 28px !important;
     max-width: 28px !important;
@@ -618,15 +579,9 @@ html body #fc-nav-toggle.is-open:hover {
     max-height: 38px !important;
 }
 
-
-/* =========================================================
-   OPEN ARROW ROTATION
-   ========================================================= */
-
 html body #fcNavToggle.is-open .fc-chevron,
 html body .fc-nav-toggle.is-open .fc-chevron,
 html body #fc-nav-toggle.is-open .fc-chevron {
-
     transform:
         rotate(180deg) !important;
 
@@ -636,11 +591,11 @@ html body #fc-nav-toggle.is-open .fc-chevron {
 
 /* =========================================================
    BOTTOM DOCK
+   DO NOT CHANGE
    ========================================================= */
 
 body .fc-bottom-dock,
 body #fc-bottom-dock {
-
     position: fixed !important;
 
     left: 50% !important;
@@ -696,13 +651,7 @@ body #fc-bottom-dock {
         2147483645 !important;
 }
 
-
-/* =========================================================
-   BOTTOM BUTTONS
-   ========================================================= */
-
 body .fc-bottom-dock .fc-dock-btn {
-
     flex: 0 0 38px !important;
 
     width: 38px !important;
@@ -735,11 +684,6 @@ body .fc-bottom-dock .fc-dock-btn {
     cursor: pointer !important;
 }
 
-
-/* =========================================================
-   BOTTOM ICONS
-   ========================================================= */
-
 body .fc-bottom-dock .fc-dock-btn span:first-child {
     display: block !important;
 
@@ -752,13 +696,7 @@ body .fc-bottom-dock .fc-dock-btn span:last-child {
     display: none !important;
 }
 
-
-/* =========================================================
-   FC CENTER BUTTON
-   ========================================================= */
-
 body .fc-bottom-dock .fc-dock-center {
-
     flex: 0 0 38px !important;
 
     width: 38px !important;
@@ -786,41 +724,26 @@ body .fc-bottom-dock .fc-dock-center {
 }
 
 body .fc-bottom-dock .fc-dock-center span:first-child {
-
     display: block !important;
 
     font-size: 14px !important;
-
     font-weight: 900 !important;
 }
 
-
-/* =========================================================
-   BOTTOM HOVER
-   ========================================================= */
-
 body .fc-bottom-dock
 .fc-dock-btn:not(.fc-dock-center):hover {
-
     background:
         rgba(255,255,255,.08) !important;
 }
 
 body .fc-bottom-dock
 .fc-dock-center:hover {
-
     transform:
         scale(1.04) !important;
 }
 
-
-/* =========================================================
-   HIDE DOCK IN CHAT
-   ========================================================= */
-
 body.fc-chat-open .fc-bottom-dock,
 body.fc-chat-open #fc-bottom-dock {
-
     display: none !important;
 
     visibility: hidden !important;
@@ -832,55 +755,61 @@ body.fc-chat-open #fc-bottom-dock {
 
 
 /* =========================================================
-   CHAT SCREEN
+   CHAT
    ========================================================= */
 
-#chatScreen {
+html body #chatScreen {
+    position: fixed !important;
 
-    position: relative !important;
+    inset: 0 !important;
 
     width: 100vw !important;
+    height: 100vh !important;
 
     min-width: 0 !important;
+    min-height: 0 !important;
 
-    min-height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
 
     margin: 0 !important;
     padding: 0 !important;
 
+    overflow: hidden !important;
+
+    box-sizing: border-box !important;
+
     background:
         var(--fc-bg) !important;
-
-    overflow: hidden !important;
 }
 
+html body #chatScreen > header {
+    position: absolute !important;
 
-/* =========================================================
-   CHAT HEADER
-   ========================================================= */
-
-#chatScreen > header {
-
-    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
 
     width: 100% !important;
 
     height: 76px !important;
 
     min-height: 76px !important;
+    max-height: 76px !important;
 
     margin: 0 !important;
 
     padding:
         14px 22px !important;
 
-    border-radius: 0 !important;
+    box-sizing: border-box !important;
 
-    border:
-        0 !important;
+    border: 0 !important;
 
     border-bottom:
         1px solid var(--fc-border) !important;
+
+    border-radius: 0 !important;
 
     background:
         rgba(7,10,16,.86) !important;
@@ -891,88 +820,382 @@ body.fc-chat-open #fc-bottom-dock {
     -webkit-backdrop-filter:
         blur(18px);
 
-    z-index: 20 !important;
+    z-index: 2000 !important;
 }
 
 
 /* =========================================================
    CHAT MESSAGES
-   IMPORTANT:
-   NO 7vw LEFT PADDING
    ========================================================= */
 
-#chatScreen #messages,
-#messages {
-
+html body #chatScreen #messages,
+html body #chatScreen .messages,
+html body #messages {
     position: absolute !important;
+
+    top: 76px !important;
 
     left: 0 !important;
     right: 0 !important;
 
-    top: 76px !important;
-
-    bottom: 92px !important;
+    bottom: 126px !important;
 
     width: 100% !important;
 
     height: auto !important;
 
     min-width: 0 !important;
+    max-width: none !important;
 
     margin: 0 !important;
 
     padding:
         24px 22px 30px 22px !important;
 
-    overflow-x: hidden !important;
+    box-sizing: border-box !important;
 
+    overflow-x: hidden !important;
     overflow-y: auto !important;
 
-    box-sizing: border-box !important;
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: stretch !important;
+
+    justify-content: flex-start !important;
+
+    gap: 4px !important;
 }
 
 
 /* =========================================================
-   MESSAGE CONTENT
+   MESSAGE ROW
    ========================================================= */
 
-#messages > * {
+html body #chatScreen #messages .fc-message-row {
+    width: 100% !important;
+
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 2px 0 !important;
+
+    display: flex !important;
+
+    flex: 0 0 auto !important;
+
+    box-sizing: border-box !important;
+}
+
+html body #chatScreen #messages .fc-message-row.other {
+    justify-content:
+        flex-start !important;
+
+    align-items:
+        flex-end !important;
+}
+
+html body #chatScreen #messages .fc-message-row.mine {
+    justify-content:
+        flex-end !important;
+
+    align-items:
+        flex-end !important;
+}
+
+
+/* =========================================================
+   MESSAGE BUBBLE
+   ========================================================= */
+
+html body #chatScreen #messages .fc-message-bubble {
+    position: relative !important;
+
+    display: inline-flex !important;
+
+    flex-direction: column !important;
+
+    align-items: stretch !important;
+
+    width: fit-content !important;
+
+    max-width:
+        min(72%,560px) !important;
+
+    min-width: 0 !important;
+
+    margin: 0 !important;
+
+    padding:
+        8px 11px 5px 11px !important;
+
+    box-sizing: border-box !important;
+
+    border: 0 !important;
+
+    border-radius: 18px !important;
+
+    color: #ffffff !important;
+
+    font-size: 15px !important;
+
+    line-height: 20px !important;
+
+    word-break: break-word !important;
+
+    overflow-wrap: anywhere !important;
+
+    white-space: normal !important;
+
+    box-shadow: none !important;
+}
+
+html body #chatScreen #messages
+.fc-message-row.other .fc-message-bubble {
+    background:
+        #262b35 !important;
+
+    border-bottom-left-radius:
+        5px !important;
+}
+
+html body #chatScreen #messages
+.fc-message-row.mine .fc-message-bubble {
+    background:
+        var(--fc-accent) !important;
+
+    border-bottom-right-radius:
+        5px !important;
+}
+
+html body #chatScreen #messages .fc-message-text {
+    display: block !important;
+
+    width: auto !important;
+
     max-width: 100% !important;
 
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: #ffffff !important;
+
+    font-size: 15px !important;
+
+    line-height: 20px !important;
+
+    font-weight: 400 !important;
+
+    text-align: left !important;
+
+    white-space: pre-wrap !important;
+
+    overflow-wrap: anywhere !important;
+
+    word-break: break-word !important;
+}
+
+html body #chatScreen #messages .fc-message-content {
+    display: block !important;
+
+    width: auto !important;
+
+    max-width: 100% !important;
+
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
     box-sizing: border-box !important;
 }
 
 
 /* =========================================================
-   CHAT COMPOSER
-   THIS IS THE IMPORTANT FIX
+   MESSAGE META / TICKS
    ========================================================= */
 
-#chatScreen .composer {
+html body #chatScreen #messages .fc-message-meta {
+    display: flex !important;
 
+    align-items: center !important;
+
+    justify-content: flex-end !important;
+
+    gap: 4px !important;
+
+    width: 100% !important;
+
+    margin:
+        2px 0 0 !important;
+
+    padding: 0 !important;
+
+    color:
+        rgba(255,255,255,.62) !important;
+
+    font-size: 9px !important;
+
+    line-height: 11px !important;
+
+    white-space: nowrap !important;
+}
+
+html body #chatScreen #messages
+.fc-message-meta > span:first-child {
+    color:
+        rgba(255,255,255,.62) !important;
+
+    font-size: 9px !important;
+
+    line-height: 11px !important;
+}
+
+.messageStatus,
+.readTicks,
+.deliveredTicks,
+.sentTick {
+    color:
+        #000 !important;
+}
+
+html body #chatScreen #messages .fc-ticks {
+    display: inline-block !important;
+
+    color:
+        #000000 !important;
+
+    font-size: 10px !important;
+
+    font-weight: 900 !important;
+
+    line-height: 10px !important;
+
+    letter-spacing: -1px !important;
+
+    vertical-align: middle !important;
+}
+
+html body #chatScreen #messages
+.fc-ticks.read,
+html body #chatScreen #messages
+.fc-ticks.delivered,
+html body #chatScreen #messages
+.fc-ticks.sent,
+html body #chatScreen #messages
+.fc-ticks.error {
+    color:
+        #000000 !important;
+}
+
+
+/* =========================================================
+   REACTIONS
+   ========================================================= */
+
+html body #chatScreen #messages .fc-reaction {
+    position: absolute !important;
+
+    right: 7px !important;
+
+    bottom: -10px !important;
+
+    min-width: 20px !important;
+
+    height: 20px !important;
+
+    padding: 1px 5px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    border:
+        2px solid var(--fc-bg) !important;
+
+    border-radius: 12px !important;
+
+    background:
+        #ffffff !important;
+
+    color:
+        #111111 !important;
+
+    font-size: 12px !important;
+
+    line-height: 16px !important;
+
+    box-sizing: border-box !important;
+
+    z-index: 2 !important;
+}
+
+
+/* =========================================================
+   MEDIA MESSAGES
+   ========================================================= */
+
+html body #chatScreen #messages
+.fc-chat-image,
+html body #chatScreen #messages
+.fc-chat-video {
+    display: block !important;
+
+    width: auto !important;
+
+    max-width: 100% !important;
+
+    max-height: 360px !important;
+
+    border-radius: 13px !important;
+
+    object-fit: cover !important;
+}
+
+
+/* =========================================================
+   COMPOSER
+   ========================================================= */
+
+html body #chatScreen .composer,
+html body #chatScreen > .composer {
     position: fixed !important;
 
     top: auto !important;
 
-    left: 22px !important;
-
-    right: 22px !important;
-
     bottom: 16px !important;
 
-    width:
-        calc(100vw - 44px) !important;
+    left: 22px !important;
+    right: 22px !important;
 
-    max-width:
-        calc(100vw - 44px) !important;
+    inset-block-start: auto !important;
+    inset-block-end: 16px !important;
+
+    inset-inline-start: 22px !important;
+    inset-inline-end: 22px !important;
+
+    width: auto !important;
+
+    max-width: none !important;
 
     min-width: 0 !important;
 
     height: 94px !important;
 
+    min-height: 94px !important;
+    max-height: 94px !important;
+
     margin: 0 !important;
 
     padding: 12px !important;
+
+    box-sizing: border-box !important;
 
     display: flex !important;
 
@@ -982,11 +1205,11 @@ body.fc-chat-open #fc-bottom-dock {
 
     gap: 10px !important;
 
-    box-sizing: border-box !important;
-
     overflow: hidden !important;
 
-    z-index: 1000 !important;
+    transform: none !important;
+
+    z-index: 2147483640 !important;
 
     background:
         rgba(17,24,36,.96) !important;
@@ -1006,59 +1229,74 @@ body.fc-chat-open #fc-bottom-dock {
    EMOJI BUTTON
    ========================================================= */
 
-#chatScreen .composer .emojiButton {
+html body #chatScreen .emojiButton {
+    position: relative !important;
+
+    width: 56px !important;
+    min-width: 56px !important;
+    max-width: 56px !important;
+
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
 
     flex:
-        0 0 48px !important;
-
-    width: 48px !important;
-
-    min-width: 48px !important;
-
-    max-width: 48px !important;
-
-    height: 48px !important;
-
-    min-height: 48px !important;
-
-    max-height: 48px !important;
-
-    margin: 0 !important;
-
-    padding: 0 !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius:
-        14px !important;
-
-    background:
-        #111824 !important;
+        0 0 56px !important;
 
     display: flex !important;
 
     align-items: center !important;
-
     justify-content: center !important;
 
-    flex-shrink: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border:
+        1px solid rgba(255,255,255,.08) !important;
+
+    border-radius:
+        16px !important;
+
+    background:
+        #111824 !important;
+
+    color:
+        white !important;
+
+    font-size: 22px !important;
+
+    line-height: 1 !important;
 
     cursor: pointer !important;
+
+    transition:
+        transform .15s ease,
+        background .15s ease !important;
+}
+
+html body #chatScreen .emojiButton:hover {
+    background:
+        #192231 !important;
+
+    transform:
+        scale(1.04) !important;
+}
+
+html body #chatScreen .emojiButton:active {
+    transform:
+        scale(.96) !important;
 }
 
 
 /* =========================================================
    MESSAGE INPUT
-   CRITICAL: min-width 0
    ========================================================= */
 
-#chatScreen .composer #messageInput {
-
+html body #chatScreen .composer #messageInput {
     flex:
-        1 1 auto !important;
+        1 1 0% !important;
 
-    width: auto !important;
+    width: 0 !important;
 
     min-width: 0 !important;
 
@@ -1088,10 +1326,11 @@ body.fc-chat-open #fc-bottom-dock {
         var(--fc-text) !important;
 
     outline: none !important;
+
+    flex-shrink: 1 !important;
 }
 
-#chatScreen .composer #messageInput::placeholder {
-
+html body #chatScreen .composer #messageInput::placeholder {
     color:
         #7f8ba0 !important;
 
@@ -1100,12 +1339,116 @@ body.fc-chat-open #fc-bottom-dock {
 
 
 /* =========================================================
-   SEND BUTTON
-   NEVER GO OUTSIDE SCREEN
+   MEDIA BUTTON
    ========================================================= */
 
-#chatScreen .composer > button:last-child {
+html body #chatScreen .composer .mediaButton,
+html body #chatScreen .composer label.mediaButton,
+#chatScreen .composer .media-btn,
+#chatScreen .composer #mediaBtn,
+#chatScreen .composer .media-button {
+    display: flex !important;
 
+    visibility: visible !important;
+
+    opacity: 1 !important;
+
+    pointer-events: auto !important;
+
+    position: relative !important;
+
+    flex:
+        0 0 48px !important;
+
+    width: 48px !important;
+
+    min-width: 48px !important;
+
+    max-width: 48px !important;
+
+    height: 48px !important;
+
+    min-height: 48px !important;
+
+    max-height: 48px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    box-sizing: border-box !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    flex-shrink: 0 !important;
+
+    border:
+        1px solid var(--fc-border) !important;
+
+    border-radius:
+        14px !important;
+
+    background:
+        #111824 !important;
+
+    color:
+        var(--fc-text) !important;
+
+    font-size:
+        21px !important;
+
+    line-height:
+        1 !important;
+
+    cursor:
+        pointer !important;
+
+    user-select:
+        none !important;
+
+    transition:
+        background .15s ease,
+        transform .15s ease,
+        border-color .15s ease !important;
+}
+
+html body #chatScreen .composer .mediaButton:hover,
+html body #chatScreen .composer label.mediaButton:hover,
+#chatScreen .composer .media-btn:hover,
+#chatScreen .composer #mediaBtn:hover,
+#chatScreen .composer .media-button:hover {
+    background:
+        #192231 !important;
+
+    border-color:
+        rgba(255,255,255,.14) !important;
+
+    transform:
+        scale(1.04) !important;
+}
+
+html body #chatScreen .composer .mediaButton:active,
+html body #chatScreen .composer label.mediaButton:active,
+#chatScreen .composer .media-btn:active,
+#chatScreen .composer #mediaBtn:active,
+#chatScreen .composer .media-button:active {
+    transform:
+        scale(.96) !important;
+}
+
+html body #chatScreen .composer .mediaButton input[type="file"],
+html body #chatScreen .composer label.mediaButton input[type="file"] {
+    display: none !important;
+}
+
+
+/* =========================================================
+   SEND BUTTON
+   ========================================================= */
+
+html body #chatScreen .composer > button:last-child {
     flex:
         0 0 auto !important;
 
@@ -1151,1726 +1494,58 @@ body.fc-chat-open #fc-bottom-dock {
 
 
 /* =========================================================
-   MEDIA BUTTON
-   VISIBLE BETWEEN MESSAGE INPUT AND SEND
-   Clicking the button opens the existing mediaInput.
+   EMOJI PICKER
    ========================================================= */
 
-html body #chatScreen .composer .mediaButton {
-
-    flex: 0 0 48px !important;
-
-    width: 48px !important;
-    min-width: 48px !important;
-    max-width: 48px !important;
-
-    height: 48px !important;
-    min-height: 48px !important;
-    max-height: 48px !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
-
-    box-sizing: border-box !important;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    flex-shrink: 0 !important;
-
-    border: 1px solid var(--fc-border) !important;
-    border-radius: 14px !important;
-
-    background: #111824 !important;
-    color: var(--fc-text) !important;
-
-    font-size: 21px !important;
-    line-height: 1 !important;
-
-    cursor: pointer !important;
-
-    user-select: none !important;
-
-    transition:
-        background .15s ease,
-        transform .15s ease,
-        border-color .15s ease !important;
-}
-
-html body #chatScreen .composer .mediaButton:hover {
-    background: #192231 !important;
-    border-color: rgba(255,255,255,.14) !important;
-    transform: scale(1.04) !important;
-}
-
-html body #chatScreen .composer .mediaButton:active {
-    transform: scale(.96) !important;
-}
-
-/* The actual file input stays hidden. The label opens it. */
-html body #chatScreen .composer .mediaButton #mediaInput {
-    display: none !important;
-}
-
-/* Keep unrelated legacy floating buttons hidden. */
-#chatScreen .fc-add-button,
-#chatScreen .fc-media-button,
-#chatScreen .fc-quick-add,
-#chatScreen .fc-quick-media {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-}
-
-
-/* =========================================================
-   BLACK MESSAGE TICKS
-   ========================================================= */
-
-.messageStatus,
-.readTicks,
-.deliveredTicks,
-.sentTick {
-
-    color:
-        #000 !important;
-}
-
-
-/* =========================================================
-   OLD BOTTOM NAV
-   ========================================================= */
-
-body #bottomNav {
-
-    display:
-        none !important;
-}
-
-
-/* =========================================================
-   QUICK ACTIONS
-   ========================================================= */
-
-.fc-quick-actions {
-
-    display:
-        none !important;
-
-    visibility:
-        hidden !important;
-
-    pointer-events:
-        none !important;
-}
-
-
-/* =========================================================
-   DISCOVERY
-   ========================================================= */
-
-body #fcDiscovery,
-body .fc-discovery {
-
+html body #emojiPicker {
     position: fixed !important;
 
-    left: 50% !important;
+    left:
+        clamp(20px,7vw,108px) !important;
 
-    bottom: 68px !important;
+    bottom:
+        96px !important;
 
     width:
-        min(430px, calc(100vw - 28px)) !important;
+        330px !important;
 
-    max-height:
-        70vh !important;
+    max-width:
+        calc(100vw - 40px) !important;
 
-    transform:
-        translate(-50%,18px) scale(.96) !important;
-
-    opacity: 0 !important;
-
-    visibility: hidden !important;
-
-    pointer-events: none !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius:
-        22px !important;
-
-    background:
-        rgba(13,18,27,.98) !important;
-
-    backdrop-filter:
-        blur(24px) !important;
-
-    -webkit-backdrop-filter:
-        blur(24px) !important;
-
-    box-shadow:
-        0 25px 80px rgba(0,0,0,.55) !important;
-
-    z-index:
-        10015 !important;
-
-    overflow:
-        hidden !important;
-}
-
-body #fcDiscovery.open,
-body .fc-discovery.open {
-
-    opacity:
-        1 !important;
-
-    visibility:
-        visible !important;
-
-    pointer-events:
+    height:
         auto !important;
 
-    transform:
-        translate(-50%,0) scale(1) !important;
-}
-
-
-/* =========================================================
-   DISCOVERY OVERLAY
-   ========================================================= */
-
-body #fcDiscoveryOverlay {
-
-    position: fixed !important;
-
-    inset: 0 !important;
-
-    background:
-        rgba(0,0,0,.48) !important;
-
-    backdrop-filter:
-        blur(3px);
-
-    opacity: 0;
-
-    visibility: hidden;
-
-    pointer-events: none;
-
-    z-index:
-        10014 !important;
-}
-
-body #fcDiscoveryOverlay.open {
-
-    opacity: 1;
-
-    visibility: visible;
-
-    pointer-events: auto;
-}
-
-
-/* =========================================================
-   DISCOVERY HEADER
-   ========================================================= */
-
-body .fc-discovery-head {
-
-    display: flex !important;
-
-    align-items: center !important;
-
-    justify-content:
-        space-between !important;
-
-    padding:
-        18px !important;
-
-    border-bottom:
-        1px solid var(--fc-border) !important;
-}
-
-
-/* =========================================================
-   DISCOVERY LIST
-   ========================================================= */
-
-body .fc-discovery-list {
-
-    padding:
-        10px !important;
-
     max-height:
-        520px !important;
+        300px !important;
+
+    margin: 0 !important;
+
+    padding:
+        12px !important;
+
+    box-sizing:
+        border-box !important;
+
+    display:
+        grid !important;
+
+    grid-template-columns:
+        repeat(8,1fr) !important;
+
+    gap:
+        5px !important;
 
     overflow-y:
         auto !important;
-}
 
-
-/* =========================================================
-   DISCOVERY USER
-   ========================================================= */
-
-body .fc-user-suggestion {
-
-    width:
-        100% !important;
-
-    min-height:
-        64px !important;
-
-    padding:
-        10px 12px !important;
-
-    display:
-        flex !important;
-
-    align-items:
-        center !important;
-
-    gap:
-        12px !important;
-
-    border-radius:
-        15px !important;
-
-    background:
-        transparent !important;
-
-    color:
-        var(--fc-text) !important;
-}
-
-body .fc-user-suggestion:hover {
-
-    background:
-        rgba(255,255,255,.05) !important;
-}
-
-
-/* =========================================================
-   USER AVATAR
-   ========================================================= */
-
-body .fc-user-avatar {
-
-    width:
-        44px !important;
-
-    height:
-        44px !important;
-
-    flex-shrink:
-        0 !important;
-
-    display:
-        grid !important;
-
-    place-items:
-        center !important;
-
-    border-radius:
-        50% !important;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--fc-accent),
-            var(--fc-accent-2)
-        ) !important;
-
-    color:
-        white !important;
-
-    font-weight:
-        800 !important;
-
-    overflow:
+    overflow-x:
         hidden !important;
-}
-
-
-/* =========================================================
-   USER INFO
-   ========================================================= */
-
-body .fc-user-info {
-
-    min-width:
-        0 !important;
-
-    flex:
-        1 !important;
-}
-
-body .fc-user-name {
-
-    font-weight:
-        700 !important;
-
-    white-space:
-        nowrap !important;
-
-    overflow:
-        hidden !important;
-
-    text-overflow:
-        ellipsis !important;
-}
-
-body .fc-user-id {
-
-    margin-top:
-        3px !important;
-
-    color:
-        var(--fc-muted) !important;
-
-    font-size:
-        12px !important;
-}
-
-
-/* =========================================================
-   USER CHAT BUTTON
-   ========================================================= */
-
-body .fc-user-add {
-
-    padding:
-        8px 12px !important;
 
     border:
-        0 !important;
+        1px solid rgba(255,255,255,.10) !important;
 
     border-radius:
-        10px !important;
-
-    background:
-        var(--fc-accent) !important;
-
-    color:
-        white !important;
-
-    font-size:
-        12px !important;
-
-    cursor:
-        pointer !important;
-}
-
-
-/* =========================================================
-   THEME OVERLAY
-   ========================================================= */
-
-body #fcThemeOverlay {
-
-    position:
-        fixed !important;
-
-    inset:
-        0 !important;
-
-    width:
-        100vw !important;
-
-    height:
-        100vh !important;
-
-    background:
-        rgba(0,0,0,.48) !important;
-
-    backdrop-filter:
-        blur(5px);
-
-    opacity:
-        0;
-
-    visibility:
-        hidden;
-
-    pointer-events:
-        none;
-
-    z-index:
-        10029 !important;
-}
-
-body #fcThemeOverlay.open {
-
-    opacity:
-        1;
-
-    visibility:
-        visible;
-
-    pointer-events:
-        auto;
-}
-
-
-/* =========================================================
-   THEME PANEL
-   ========================================================= */
-
-body #fcThemePanel {
-
-    position:
-        fixed !important;
-
-    left:
-        50% !important;
-
-    top:
-        50% !important;
-
-    width:
-        min(470px, calc(100vw - 28px)) !important;
-
-    max-height:
-        calc(100vh - 40px) !important;
-
-    transform:
-        translate(-50%,-48%) scale(.96) !important;
-
-    opacity:
-        0 !important;
-
-    visibility:
-        hidden !important;
-
-    pointer-events:
-        none !important;
-
-    background:
-        var(--fc-panel) !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius:
-        22px !important;
-
-    box-shadow:
-        0 30px 100px rgba(0,0,0,.65) !important;
-
-    z-index:
-        10030 !important;
-
-    overflow:
-        hidden !important;
-}
-
-body #fcThemePanel.open {
-
-    opacity:
-        1 !important;
-
-    visibility:
-        visible !important;
-
-    pointer-events:
-        auto !important;
-
-    transform:
-        translate(-50%,-50%) scale(1) !important;
-}
-
-
-/* =========================================================
-   THEME HEADER
-   ========================================================= */
-
-body .fc-theme-head {
-
-    display:
-        flex !important;
-
-    align-items:
-        center !important;
-
-    justify-content:
-        space-between !important;
-
-    padding:
         18px !important;
-
-    border-bottom:
-        1px solid var(--fc-border) !important;
-}
-
-body .fc-theme-body {
-
-    padding:
-        18px !important;
-}
-
-body .fc-theme-grid {
-
-    display:
-        grid !important;
-
-    grid-template-columns:
-        repeat(2,1fr);
-
-    gap:
-        10px !important;
-}
-
-
-/* =========================================================
-   THEME OPTIONS
-   ========================================================= */
-
-body .fc-theme-choice {
-
-    padding:
-        14px !important;
-
-    border:
-        1px solid var(--fc-border) !important;
-
-    border-radius:
-        16px !important;
-
-    background:
-        var(--fc-panel-2) !important;
-
-    color:
-        var(--fc-text) !important;
-
-    text-align:
-        left !important;
-
-    cursor:
-        pointer !important;
-}
-
-body .fc-theme-choice:hover {
-
-    border-color:
-        rgba(108,124,255,.55) !important;
-}
-
-body .fc-theme-name {
-
-    font-weight:
-        700 !important;
-}
-
-body .fc-theme-desc {
-
-    margin-top:
-        4px !important;
-
-    color:
-        var(--fc-muted) !important;
-
-    font-size:
-        11px !important;
-}
-
-body .fc-theme-swatch {
-
-    width:
-        100% !important;
-
-    height:
-        38px !important;
-
-    margin-bottom:
-        8px !important;
-
-    border-radius:
-        10px !important;
-}
-
-
-/* =========================================================
-   LOGIN / SIGNUP
-   ========================================================= */
-
-body:has(#loginScreen:not(.hidden))
-#fcNavToggle,
-
-body:has(#loginScreen:not(.hidden))
-#fcCustomSidebar,
-
-body:has(#loginScreen:not(.hidden))
-.fc-quick-actions,
-
-body:has(#loginScreen:not(.hidden))
-.fc-bottom-dock,
-
-body:has(#signupScreen:not(.hidden))
-#fcNavToggle,
-
-body:has(#signupScreen:not(.hidden))
-#fcCustomSidebar,
-
-body:has(#signupScreen:not(.hidden))
-.fc-quick-actions,
-
-body:has(#signupScreen:not(.hidden))
-.fc-bottom-dock {
-
-    display:
-        none !important;
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 600px) {
-
-    :root {
-        --fc-sidebar-width: 180px;
-    }
-
-
-    /* Arrow */
-
-    html body #fcNavToggle,
-    html body .fc-nav-toggle,
-    html body #fc-nav-toggle {
-
-        left: 1px !important;
-
-        width: 15px !important;
-        min-width: 15px !important;
-        max-width: 15px !important;
-
-        height: 28px !important;
-        min-height: 28px !important;
-        max-height: 28px !important;
-
-        top: 50% !important;
-
-        transform:
-            translateY(-50%) !important;
-    }
-
-    html body #fcNavToggle:hover,
-    html body .fc-nav-toggle:hover,
-    html body #fc-nav-toggle:hover {
-
-        width: 26px !important;
-
-        min-width: 26px !important;
-
-        max-width: 26px !important;
-
-        height: 36px !important;
-
-        min-height: 36px !important;
-
-        max-height: 36px !important;
-    }
-
-
-    /* Open arrow */
-
-    html body #fcNavToggle.is-open,
-    html body .fc-nav-toggle.is-open,
-    html body #fc-nav-toggle.is-open {
-
-        left:
-            var(--fc-sidebar-width) !important;
-
-        width: 15px !important;
-
-        min-width: 15px !important;
-
-        max-width: 15px !important;
-
-        height: 28px !important;
-
-        min-height: 28px !important;
-
-        max-height: 28px !important;
-    }
-
-    html body #fcNavToggle.is-open:hover,
-    html body .fc-nav-toggle.is-open:hover,
-    html body #fc-nav-toggle.is-open:hover {
-
-        width: 26px !important;
-
-        min-width: 26px !important;
-
-        max-width: 26px !important;
-
-        height: 36px !important;
-
-        min-height: 36px !important;
-
-        max-height: 36px !important;
-    }
-
-
-    /* Sidebar */
-
-    body #fcCustomSidebar,
-    body .fc-sidebar,
-    body #fc-sidebar {
-
-        left: 0 !important;
-
-        top: 12px !important;
-
-        bottom: 12px !important;
-
-        width: 180px !important;
-
-        max-width: 180px !important;
-
-        border-radius:
-            0 18px 18px 0 !important;
-    }
-
-
-    /* Messages */
-
-    #chatScreen #messages,
-    #messages {
-
-        top:
-            76px !important;
-
-        bottom:
-            76px !important;
-
-        left:
-            0 !important;
-
-        right:
-            0 !important;
-
-        width:
-            100% !important;
-
-        padding:
-            18px 12px 20px 12px !important;
-
-        overflow-x:
-            hidden !important;
-    }
-
-
-    /* Composer */
-
-    #chatScreen .composer {
-
-        top:
-            auto !important;
-
-        left:
-            10px !important;
-
-        right:
-            10px !important;
-
-        bottom:
-            8px !important;
-
-        width:
-            calc(100vw - 20px) !important;
-
-        max-width:
-            calc(100vw - 20px) !important;
-
-        height:
-            60px !important;
-
-        min-height:
-            60px !important;
-
-        max-height:
-            60px !important;
-
-        padding:
-            6px !important;
-
-        gap:
-            6px !important;
-    }
-
-
-    /* Emoji */
-
-    #chatScreen .composer .emojiButton {
-
-        flex:
-            0 0 44px !important;
-
-        width:
-            44px !important;
-
-        min-width:
-            44px !important;
-
-        max-width:
-            44px !important;
-
-        height:
-            44px !important;
-
-        min-height:
-            44px !important;
-
-        max-height:
-            44px !important;
-    }
-
-
-    /* Input */
-
-    #chatScreen .composer #messageInput {
-
-        flex:
-            1 1 auto !important;
-
-        min-width:
-            0 !important;
-
-        width:
-            auto !important;
-
-        height:
-            44px !important;
-
-        min-height:
-            44px !important;
-
-        padding:
-            0 12px !important;
-    }
-
-
-    /* Send */
-
-    #chatScreen .composer > button:last-child {
-
-        min-width:
-            58px !important;
-
-        max-width:
-            78px !important;
-
-        height:
-            44px !important;
-
-        min-height:
-            44px !important;
-
-        padding:
-            0 10px !important;
-
-        font-size:
-            13px !important;
-    }
-
-
-    /* Bottom dock */
-
-    body .fc-bottom-dock,
-    body #fc-bottom-dock {
-
-        width:
-            140px !important;
-
-        min-width:
-            140px !important;
-
-        max-width:
-            140px !important;
-
-        height:
-            42px !important;
-
-        min-height:
-            42px !important;
-
-        max-height:
-            42px !important;
-
-        bottom:
-            8px !important;
-    }
-
-
-    body .fc-bottom-dock .fc-dock-btn,
-    body .fc-bottom-dock .fc-dock-center {
-
-        width:
-            36px !important;
-
-        min-width:
-            36px !important;
-
-        max-width:
-            36px !important;
-
-        height:
-            36px !important;
-
-        min-height:
-            36px !important;
-
-        max-height:
-            36px !important;
-    }
-
-
-    /* Discovery */
-
-    body #fcDiscovery,
-    body .fc-discovery {
-
-        width:
-            calc(100vw - 20px) !important;
-
-        bottom:
-            64px !important;
-    }
-
-
-    /* Theme */
-
-    body #fcThemePanel {
-
-        width:
-            calc(100vw - 20px) !important;
-    }
-}
-
-
-/* =========================================================
-   SMALL PHONES
-   ========================================================= */
-
-@media (max-width: 420px) {
-
-    :root {
-        --fc-sidebar-width: 175px;
-    }
-
-
-    html body #fcNavToggle,
-    html body .fc-nav-toggle,
-    html body #fc-nav-toggle {
-
-        width:
-            14px !important;
-
-        min-width:
-            14px !important;
-
-        max-width:
-            14px !important;
-
-        height:
-            26px !important;
-
-        min-height:
-            26px !important;
-
-        max-height:
-            26px !important;
-    }
-
-
-    html body #fcNavToggle:hover,
-    html body .fc-nav-toggle:hover,
-    html body #fc-nav-toggle:hover {
-
-        width:
-            24px !important;
-
-        min-width:
-            24px !important;
-
-        max-width:
-            24px !important;
-
-        height:
-            34px !important;
-
-        min-height:
-            34px !important;
-
-        max-height:
-            34px !important;
-    }
-
-
-    html body #fcNavToggle.is-open,
-    html body .fc-nav-toggle.is-open,
-    html body #fc-nav-toggle.is-open {
-
-        left:
-            var(--fc-sidebar-width) !important;
-
-        width:
-            14px !important;
-
-        min-width:
-            14px !important;
-
-        max-width:
-            14px !important;
-
-        height:
-            26px !important;
-
-        min-height:
-            26px !important;
-
-        max-height:
-            26px !important;
-    }
-
-
-    html body #fcNavToggle.is-open:hover,
-    html body .fc-nav-toggle.is-open:hover,
-    html body #fc-nav-toggle.is-open:hover {
-
-        width:
-            24px !important;
-
-        min-width:
-            24px !important;
-
-        max-width:
-            24px !important;
-
-        height:
-            34px !important;
-
-        min-height:
-            34px !important;
-
-        max-height:
-            34px !important;
-    }
-
-
-    body #fcCustomSidebar,
-    body .fc-sidebar,
-    body #fc-sidebar {
-
-        width:
-            175px !important;
-
-        max-width:
-            175px !important;
-    }
-
-
-    body .fc-bottom-dock {
-
-        width:
-            136px !important;
-
-        min-width:
-            136px !important;
-
-        max-width:
-            136px !important;
-    }
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-
-        animation-duration:
-            .01ms !important;
-
-        animation-iteration-count:
-            1 !important;
-
-        scroll-behavior:
-            auto !important;
-
-        transition-duration:
-            .01ms !important;
-    }
-}
-/* =========================================================
-   FINAL CHAT POSITION FIX - DO NOT REMOVE
-   ========================================================= */
-
-/* Keep the chat screen locked to the viewport. */
-html body #chatScreen {
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    max-width: none !important;
-    max-height: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-}
-
-/* Header stays at the top and never becomes the composer's container. */
-html body #chatScreen > header {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 76px !important;
-    min-height: 76px !important;
-    max-height: 76px !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-    z-index: 2000 !important;
-}
-
-/* Messages occupy ONLY the area between header and composer. */
-html body #chatScreen #messages,
-html body #chatScreen .messages,
-html body #messages {
-    position: absolute !important;
-    top: 76px !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 126px !important;
-    width: 100% !important;
-    height: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 24px 22px 30px 22px !important;
-    box-sizing: border-box !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-}
-
-/* IMPORTANT: composer can never sit at the top of the chat. */
-html body #chatScreen .composer,
-html body #chatScreen > .composer {
-    position: fixed !important;
-    top: auto !important;
-    bottom: 16px !important;
-    left: 22px !important;
-    right: 22px !important;
-    inset-block-start: auto !important;
-    inset-block-end: 16px !important;
-    inset-inline-start: 22px !important;
-    inset-inline-end: 22px !important;
-    width: auto !important;
-    max-width: none !important;
-    min-width: 0 !important;
-    height: 94px !important;
-    min-height: 94px !important;
-    max-height: 94px !important;
-    margin: 0 !important;
-    padding: 12px !important;
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 10px !important;
-    overflow: hidden !important;
-    transform: none !important;
-    z-index: 2147483640 !important;
-}
-
-/* The input is allowed to shrink instead of pushing Send off-screen. */
-html body #chatScreen .composer #messageInput {
-    flex: 1 1 0% !important;
-    width: 0 !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    box-sizing: border-box !important;
-    flex-shrink: 1 !important;
-}
-
-/* Emoji button never grows. */
-html body #chatScreen .composer .emojiButton {
-    flex: 0 0 48px !important;
-    width: 48px !important;
-    min-width: 48px !important;
-    max-width: 48px !important;
-    flex-shrink: 0 !important;
-    box-sizing: border-box !important;
-}
-
-/* Send button always remains inside the composer. */
-html body #chatScreen .composer > button:last-child {
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: 72px !important;
-    max-width: 120px !important;
-    flex-shrink: 0 !important;
-    box-sizing: border-box !important;
-    white-space: nowrap !important;
-}
-
-/* Media control stays visible between input and Send. */
-html body #chatScreen .composer .mediaButton,
-html body #chatScreen .composer label.mediaButton {
-    display: flex !important;
-    width: 48px !important;
-    min-width: 48px !important;
-    max-width: 48px !important;
-    height: 48px !important;
-    min-height: 48px !important;
-    max-height: 48px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    flex: 0 0 48px !important;
-    flex-shrink: 0 !important;
-}
-
-/* Keep message text flush with the chat content; sidebar must NOT shift it. */
-html body #chatScreen #messages > * {
-    margin-left: 0 !important;
-    box-sizing: border-box !important;
-}
-
-/* =========================================================
-   FINAL MOBILE CHAT FIX
-   ========================================================= */
-@media (max-width: 600px) {
-    html body #chatScreen > header {
-        height: 76px !important;
-        min-height: 76px !important;
-        max-height: 76px !important;
-    }
-
-    html body #chatScreen #messages,
-    html body #chatScreen .messages,
-    html body #messages {
-        top: 76px !important;
-        bottom: 76px !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        padding: 18px 12px 20px 12px !important;
-    }
-
-    html body #chatScreen .composer,
-    html body #chatScreen > .composer {
-        top: auto !important;
-        bottom: 8px !important;
-        left: 10px !important;
-        right: 10px !important;
-        width: auto !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        max-height: 60px !important;
-        padding: 6px !important;
-        gap: 6px !important;
-    }
-
-    html body #chatScreen .composer .emojiButton {
-        flex: 0 0 44px !important;
-        width: 44px !important;
-        min-width: 44px !important;
-        max-width: 44px !important;
-        height: 44px !important;
-    }
-
-    html body #chatScreen .composer #messageInput {
-        flex: 1 1 0% !important;
-        width: 0 !important;
-        min-width: 0 !important;
-        height: 44px !important;
-        min-height: 44px !important;
-    }
-
-    html body #chatScreen .composer > button:last-child {
-        min-width: 58px !important;
-        max-width: 78px !important;
-        height: 44px !important;
-        min-height: 44px !important;
-        padding: 0 10px !important;
-        font-size: 13px !important;
-    }
-
-    /* Media button sits directly before Send on phones. */
-    html body #chatScreen .composer .mediaButton,
-    html body #chatScreen .composer label.mediaButton {
-        flex: 0 0 44px !important;
-        width: 44px !important;
-        min-width: 44px !important;
-        max-width: 44px !important;
-        height: 44px !important;
-        min-height: 44px !important;
-        max-height: 44px !important;
-        font-size: 20px !important;
-    }
-}
-
-/* =========================================================
-   FINAL INSTAGRAM-STYLE MESSAGE FIX
-   IMPORTANT: KEEP THIS SECTION AT THE VERY END
-   ========================================================= */
-
-/* The message list is a full-width chat area. */
-html body #chatScreen #messages {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    justify-content: flex-start !important;
-    gap: 4px !important;
-}
-
-/* Every message gets its own full-width row. */
-html body #chatScreen #messages .fc-message-row {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 2px 0 !important;
-    display: flex !important;
-    flex: 0 0 auto !important;
-    box-sizing: border-box !important;
-}
-
-/* Received messages stay on the left. */
-html body #chatScreen #messages .fc-message-row.other {
-    justify-content: flex-start !important;
-    align-items: flex-end !important;
-}
-
-/* Sent messages move completely to the right. */
-html body #chatScreen #messages .fc-message-row.mine {
-    justify-content: flex-end !important;
-    align-items: flex-end !important;
-}
-
-/* Instagram-like message bubble. */
-html body #chatScreen #messages .fc-message-bubble {
-    position: relative !important;
-    display: inline-flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    width: fit-content !important;
-    max-width: min(72%, 560px) !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 8px 11px 5px 11px !important;
-    box-sizing: border-box !important;
-    border: 0 !important;
-    border-radius: 18px !important;
-    color: #ffffff !important;
-    font-size: 15px !important;
-    line-height: 20px !important;
-    word-break: break-word !important;
-    overflow-wrap: anywhere !important;
-    white-space: normal !important;
-    box-shadow: none !important;
-}
-
-/* Received bubble. */
-html body #chatScreen #messages .fc-message-row.other .fc-message-bubble {
-    background: #262b35 !important;
-    border-bottom-left-radius: 5px !important;
-}
-
-/* Sent bubble. */
-html body #chatScreen #messages .fc-message-row.mine .fc-message-bubble {
-    background: var(--fc-accent) !important;
-    border-bottom-right-radius: 5px !important;
-}
-
-/* Actual text inside the bubble. */
-html body #chatScreen #messages .fc-message-text {
-    display: block !important;
-    width: auto !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    color: #ffffff !important;
-    font-size: 15px !important;
-    line-height: 20px !important;
-    font-weight: 400 !important;
-    text-align: left !important;
-    white-space: pre-wrap !important;
-    overflow-wrap: anywhere !important;
-    word-break: break-word !important;
-}
-
-/* Message content must never become a separate full-width block. */
-html body #chatScreen #messages .fc-message-content {
-    display: block !important;
-    width: auto !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-sizing: border-box !important;
-}
-
-/* Time + seen ticks sit neatly at the bottom-right of the bubble. */
-html body #chatScreen #messages .fc-message-meta {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 4px !important;
-    width: 100% !important;
-    margin: 2px 0 0 !important;
-    padding: 0 !important;
-    color: rgba(255,255,255,.62) !important;
-    font-size: 9px !important;
-    line-height: 11px !important;
-    white-space: nowrap !important;
-}
-
-html body #chatScreen #messages .fc-message-meta > span:first-child {
-    color: rgba(255,255,255,.62) !important;
-    font-size: 9px !important;
-    line-height: 11px !important;
-}
-
-/* Black ticks, as requested. */
-html body #chatScreen #messages .fc-ticks {
-    display: inline-block !important;
-    color: #000000 !important;
-    font-size: 10px !important;
-    font-weight: 900 !important;
-    line-height: 10px !important;
-    letter-spacing: -1px !important;
-    vertical-align: middle !important;
-}
-
-html body #chatScreen #messages .fc-ticks.read,
-html body #chatScreen #messages .fc-ticks.delivered,
-html body #chatScreen #messages .fc-ticks.sent {
-    color: #000000 !important;
-}
-
-html body #chatScreen #messages .fc-ticks.error {
-    color: #000000 !important;
-}
-
-/* Reactions sit slightly below the bubble. */
-html body #chatScreen #messages .fc-reaction {
-    position: absolute !important;
-    right: 7px !important;
-    bottom: -10px !important;
-    min-width: 20px !important;
-    height: 20px !important;
-    padding: 1px 5px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border: 2px solid var(--fc-bg) !important;
-    border-radius: 12px !important;
-    background: #ffffff !important;
-    color: #111111 !important;
-    font-size: 12px !important;
-    line-height: 16px !important;
-    box-sizing: border-box !important;
-    z-index: 2 !important;
-}
-
-/* Images and videos should use the same bubble system. */
-html body #chatScreen #messages .fc-chat-image,
-html body #chatScreen #messages .fc-chat-video {
-    display: block !important;
-    width: auto !important;
-    max-width: 100% !important;
-    max-height: 360px !important;
-    border-radius: 13px !important;
-    object-fit: cover !important;
-}
-
-/* Keep long messages readable but never let them take the whole screen. */
-@media (min-width: 601px) {
-    html body #chatScreen #messages .fc-message-bubble {
-        max-width: min(72%, 560px) !important;
-    }
-}
-
-/* Mobile Instagram-style bubbles. */
-@media (max-width: 600px) {
-    html body #chatScreen #messages {
-        gap: 3px !important;
-        padding: 18px 12px 20px 12px !important;
-    }
-
-    html body #chatScreen #messages .fc-message-row {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 2px 0 !important;
-    }
-
-    html body #chatScreen #messages .fc-message-bubble {
-        max-width: 78% !important;
-        padding: 7px 10px 5px 10px !important;
-        border-radius: 17px !important;
-        font-size: 15px !important;
-        line-height: 20px !important;
-    }
-
-    html body #chatScreen #messages .fc-message-row.other .fc-message-bubble {
-        border-bottom-left-radius: 5px !important;
-    }
-
-    html body #chatScreen #messages .fc-message-row.mine .fc-message-bubble {
-        border-bottom-right-radius: 5px !important;
-    }
-
-    html body #chatScreen #messages .fc-message-text {
-        font-size: 15px !important;
-        line-height: 20px !important;
-    }
-
-    html body #chatScreen #messages .fc-message-meta {
-        font-size: 8px !important;
-        line-height: 10px !important;
-        margin-top: 2px !important;
-    }
-
-    html body #chatScreen #messages .fc-ticks {
-        font-size: 9px !important;
-    }
-}
-
-/* Very small phones. */
-@media (max-width: 420px) {
-    html body #chatScreen #messages .fc-message-bubble {
-        max-width: 82% !important;
-    }
-}
-/* =========================================================
-   FRIENDCHAT - FINAL EMOJI PICKER FIX
-   Opens directly above the 😊 button
-   ========================================================= */
-
-
-/* ---------------------------------------------------------
-   CHAT SCREEN
-   --------------------------------------------------------- */
-
-html body #chatScreen {
-    position: relative !important;
-    overflow: hidden !important;
-}
-
-
-/* ---------------------------------------------------------
-   EMOJI BUTTON
-   --------------------------------------------------------- */
-
-html body #chatScreen .emojiButton {
-    position: relative !important;
-
-    width: 56px !important;
-    min-width: 56px !important;
-    max-width: 56px !important;
-
-    height: 56px !important;
-    min-height: 56px !important;
-    max-height: 56px !important;
-
-    flex: 0 0 56px !important;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
-
-    border: 1px solid rgba(255,255,255,.08) !important;
-    border-radius: 16px !important;
-
-    background: #111824 !important;
-
-    color: white !important;
-
-    font-size: 22px !important;
-    line-height: 1 !important;
-
-    cursor: pointer !important;
-
-    transition:
-        transform .15s ease,
-        background .15s ease !important;
-}
-
-
-html body #chatScreen .emojiButton:hover {
-    background: #192231 !important;
-
-    transform: scale(1.04) !important;
-}
-
-
-html body #chatScreen .emojiButton:active {
-    transform: scale(.96) !important;
-}
-
-
-/* ---------------------------------------------------------
-   EMOJI PICKER
-   --------------------------------------------------------- */
-
-html body #emojiPicker {
-
-    position: fixed !important;
-
-    /*
-       IMPORTANT:
-       Keep this aligned with the left side of
-       the message composer / emoji button.
-    */
-    left: clamp(20px, 7vw, 108px) !important;
-
-    /*
-       Composer is at the bottom.
-       Picker opens ABOVE it.
-    */
-    bottom: 96px !important;
-
-    width: 330px !important;
-    max-width: calc(100vw - 40px) !important;
-
-    height: auto !important;
-    max-height: 300px !important;
-
-    margin: 0 !important;
-    padding: 12px !important;
-
-    box-sizing: border-box !important;
-
-    display: grid !important;
-
-    grid-template-columns:
-        repeat(8, 1fr) !important;
-
-    gap: 5px !important;
-
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-
-    border: 1px solid rgba(255,255,255,.10) !important;
-
-    border-radius: 18px !important;
 
     background:
         rgba(15,21,31,.98) !important;
@@ -2885,7 +1560,8 @@ html body #emojiPicker {
     -webkit-backdrop-filter:
         blur(20px) !important;
 
-    z-index: 2147483640 !important;
+    z-index:
+        2147483640 !important;
 
     transform-origin:
         bottom left !important;
@@ -2894,13 +1570,7 @@ html body #emojiPicker {
         fcEmojiOpen .16s ease-out !important;
 }
 
-
-/* ---------------------------------------------------------
-   HIDDEN STATE
-   --------------------------------------------------------- */
-
 html body #emojiPicker.hidden {
-
     display: none !important;
 
     visibility: hidden !important;
@@ -2910,13 +1580,7 @@ html body #emojiPicker.hidden {
     pointer-events: none !important;
 }
 
-
-/* ---------------------------------------------------------
-   EMOJI BUTTONS INSIDE PICKER
-   --------------------------------------------------------- */
-
 html body #emojiPicker > button {
-
     width: 34px !important;
     min-width: 34px !important;
     max-width: 34px !important;
@@ -2952,9 +1616,7 @@ html body #emojiPicker > button {
         transform .12s ease !important;
 }
 
-
 html body #emojiPicker > button:hover {
-
     background:
         rgba(255,255,255,.10) !important;
 
@@ -2962,54 +1624,34 @@ html body #emojiPicker > button:hover {
         scale(1.12) !important;
 }
 
-
 html body #emojiPicker > button:active {
-
     transform:
         scale(.92) !important;
 }
 
-
-/* ---------------------------------------------------------
-   EMOJI PICKER SCROLLBAR
-   --------------------------------------------------------- */
-
 html body #emojiPicker::-webkit-scrollbar {
-
     width: 6px !important;
 }
 
-
 html body #emojiPicker::-webkit-scrollbar-track {
-
     background: transparent !important;
 }
 
-
 html body #emojiPicker::-webkit-scrollbar-thumb {
-
     background:
         rgba(255,255,255,.16) !important;
 
-    border-radius: 10px !important;
+    border-radius:
+        10px !important;
 }
 
-
 html body #emojiPicker::-webkit-scrollbar-thumb:hover {
-
     background:
         rgba(255,255,255,.25) !important;
 }
 
-
-/* ---------------------------------------------------------
-   OPEN ANIMATION
-   --------------------------------------------------------- */
-
 @keyframes fcEmojiOpen {
-
     from {
-
         opacity: 0;
 
         transform:
@@ -3018,7 +1660,6 @@ html body #emojiPicker::-webkit-scrollbar-thumb:hover {
     }
 
     to {
-
         opacity: 1;
 
         transform:
@@ -3029,65 +1670,1248 @@ html body #emojiPicker::-webkit-scrollbar-thumb:hover {
 
 
 /* =========================================================
+   DISCOVERY
+   ========================================================= */
+
+body #fcDiscovery,
+body .fc-discovery {
+    position: fixed !important;
+
+    left: 50% !important;
+
+    bottom: 68px !important;
+
+    width:
+        min(430px,calc(100vw - 28px)) !important;
+
+    max-height:
+        70vh !important;
+
+    transform:
+        translate(-50%,18px) scale(.96) !important;
+
+    opacity:
+        0 !important;
+
+    visibility:
+        hidden !important;
+
+    pointer-events:
+        none !important;
+
+    border:
+        1px solid var(--fc-border) !important;
+
+    border-radius:
+        22px !important;
+
+    background:
+        rgba(13,18,27,.98) !important;
+
+    backdrop-filter:
+        blur(24px) !important;
+
+    -webkit-backdrop-filter:
+        blur(24px) !important;
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.55) !important;
+
+    z-index:
+        10015 !important;
+
+    overflow:
+        hidden !important;
+}
+
+body #fcDiscovery.open,
+body .fc-discovery.open {
+    opacity:
+        1 !important;
+
+    visibility:
+        visible !important;
+
+    pointer-events:
+        auto !important;
+
+    transform:
+        translate(-50%,0) scale(1) !important;
+}
+
+body #fcDiscoveryOverlay {
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    background:
+        rgba(0,0,0,.48) !important;
+
+    backdrop-filter:
+        blur(3px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    z-index:
+        10014 !important;
+}
+
+body #fcDiscoveryOverlay.open {
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+body .fc-discovery-head {
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content:
+        space-between !important;
+
+    padding:
+        18px !important;
+
+    border-bottom:
+        1px solid var(--fc-border) !important;
+}
+
+body .fc-discovery-list {
+    padding:
+        10px !important;
+
+    max-height:
+        520px !important;
+
+    overflow-y:
+        auto !important;
+}
+
+body .fc-user-suggestion {
+    width:
+        100% !important;
+
+    min-height:
+        64px !important;
+
+    padding:
+        10px 12px !important;
+
+    display:
+        flex !important;
+
+    align-items:
+        center !important;
+
+    gap:
+        12px !important;
+
+    border-radius:
+        15px !important;
+
+    background:
+        transparent !important;
+
+    color:
+        var(--fc-text) !important;
+}
+
+body .fc-user-suggestion:hover {
+    background:
+        rgba(255,255,255,.05) !important;
+}
+
+body .fc-user-avatar {
+    width:
+        44px !important;
+
+    height:
+        44px !important;
+
+    flex-shrink:
+        0 !important;
+
+    display:
+        grid !important;
+
+    place-items:
+        center !important;
+
+    border-radius:
+        50% !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--fc-accent),
+            var(--fc-accent-2)
+        ) !important;
+
+    color:
+        white !important;
+
+    font-weight:
+        800 !important;
+
+    overflow:
+        hidden !important;
+}
+
+body .fc-user-info {
+    min-width:
+        0 !important;
+
+    flex:
+        1 !important;
+}
+
+body .fc-user-name {
+    font-weight:
+        700 !important;
+
+    white-space:
+        nowrap !important;
+
+    overflow:
+        hidden !important;
+
+    text-overflow:
+        ellipsis !important;
+}
+
+body .fc-user-id {
+    margin-top:
+        3px !important;
+
+    color:
+        var(--fc-muted) !important;
+
+    font-size:
+        12px !important;
+}
+
+body .fc-user-add {
+    padding:
+        8px 12px !important;
+
+    border:
+        0 !important;
+
+    border-radius:
+        10px !important;
+
+    background:
+        var(--fc-accent) !important;
+
+    color:
+        white !important;
+
+    font-size:
+        12px !important;
+
+    cursor:
+        pointer !important;
+}
+
+
+/* =========================================================
+   THEME OVERLAY
+   FIXED:
+   Must be ABOVE the bottom dock.
+   ========================================================= */
+
+html body #fcThemeOverlay {
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    background:
+        rgba(0,0,0,.55) !important;
+
+    backdrop-filter:
+        blur(6px) !important;
+
+    -webkit-backdrop-filter:
+        blur(6px) !important;
+
+    opacity:
+        0 !important;
+
+    visibility:
+        hidden !important;
+
+    pointer-events:
+        none !important;
+
+    z-index:
+        2147483646 !important;
+
+    transition:
+        opacity .2s ease,
+        visibility .2s ease !important;
+}
+
+html body #fcThemeOverlay.open {
+    opacity:
+        1 !important;
+
+    visibility:
+        visible !important;
+
+    pointer-events:
+        auto !important;
+}
+
+
+/* =========================================================
+   THEME PANEL
+   FIXED:
+   - ABOVE BOTTOM DOCK
+   - SCROLLABLE BODY
+   - HEADER STAYS FIXED
+   ========================================================= */
+
+html body #fcThemePanel {
+    position: fixed !important;
+
+    left:
+        50% !important;
+
+    top:
+        50% !important;
+
+    width:
+        min(470px,calc(100vw - 28px)) !important;
+
+    height:
+        min(700px,calc(100vh - 40px)) !important;
+
+    max-height:
+        calc(100vh - 40px) !important;
+
+    min-height:
+        0 !important;
+
+    transform:
+        translate(-50%,-48%) scale(.96) !important;
+
+    opacity:
+        0 !important;
+
+    visibility:
+        hidden !important;
+
+    pointer-events:
+        none !important;
+
+    background:
+        var(--fc-panel) !important;
+
+    border:
+        1px solid var(--fc-border) !important;
+
+    border-radius:
+        22px !important;
+
+    box-shadow:
+        0 30px 100px rgba(0,0,0,.65) !important;
+
+    z-index:
+        2147483647 !important;
+
+    overflow:
+        hidden !important;
+
+    display:
+        flex !important;
+
+    flex-direction:
+        column !important;
+
+    transition:
+        opacity .2s ease,
+        visibility .2s ease,
+        transform .2s ease !important;
+}
+
+html body #fcThemePanel.open {
+    opacity:
+        1 !important;
+
+    visibility:
+        visible !important;
+
+    pointer-events:
+        auto !important;
+
+    transform:
+        translate(-50%,-50%) scale(1) !important;
+}
+
+
+/* =========================================================
+   THEME HEADER
+   ========================================================= */
+
+html body #fcThemePanel .fc-theme-head,
+body .fc-theme-head {
+    flex:
+        0 0 auto !important;
+
+    display:
+        flex !important;
+
+    align-items:
+        center !important;
+
+    justify-content:
+        space-between !important;
+
+    gap:
+        12px !important;
+
+    padding:
+        18px !important;
+
+    border-bottom:
+        1px solid var(--fc-border) !important;
+
+    background:
+        var(--fc-panel) !important;
+
+    position:
+        relative !important;
+
+    z-index:
+        2 !important;
+}
+
+
+/* =========================================================
+   THEME BODY
+   THIS IS THE SCROLL AREA
+   ========================================================= */
+
+html body #fcThemePanel .fc-theme-body,
+body .fc-theme-body {
+    flex:
+        1 1 auto !important;
+
+    min-height:
+        0 !important;
+
+    height:
+        auto !important;
+
+    overflow-y:
+        auto !important;
+
+    overflow-x:
+        hidden !important;
+
+    -webkit-overflow-scrolling:
+        touch !important;
+
+    scrollbar-width:
+        thin !important;
+
+    padding:
+        18px !important;
+
+    padding-bottom:
+        30px !important;
+}
+
+
+/* =========================================================
+   THEME SCROLLBAR
+   ========================================================= */
+
+html body #fcThemePanel .fc-theme-body::-webkit-scrollbar {
+    width:
+        7px !important;
+}
+
+html body #fcThemePanel .fc-theme-body::-webkit-scrollbar-track {
+    background:
+        transparent !important;
+}
+
+html body #fcThemePanel .fc-theme-body::-webkit-scrollbar-thumb {
+    background:
+        rgba(255,255,255,.18) !important;
+
+    border-radius:
+        10px !important;
+}
+
+html body #fcThemePanel .fc-theme-body::-webkit-scrollbar-thumb:hover {
+    background:
+        rgba(255,255,255,.28) !important;
+}
+
+
+/* =========================================================
+   THEME GRID
+   ========================================================= */
+
+html body #fcThemePanel .fc-theme-grid,
+body .fc-theme-grid {
+    display:
+        grid !important;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr)) !important;
+
+    gap:
+        10px !important;
+
+    width:
+        100% !important;
+
+    min-height:
+        min-content !important;
+}
+
+
+/* =========================================================
+   THEME OPTIONS
+   ========================================================= */
+
+html body #fcThemePanel .fc-theme-choice,
+body .fc-theme-choice {
+    width:
+        100% !important;
+
+    min-width:
+        0 !important;
+
+    min-height:
+        105px !important;
+
+    padding:
+        14px !important;
+
+    border:
+        1px solid var(--fc-border) !important;
+
+    border-radius:
+        16px !important;
+
+    background:
+        var(--fc-panel-2) !important;
+
+    color:
+        var(--fc-text) !important;
+
+    text-align:
+        left !important;
+
+    cursor:
+        pointer !important;
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease,
+        background .15s ease,
+        box-shadow .15s ease !important;
+}
+
+html body #fcThemePanel .fc-theme-choice:hover,
+body .fc-theme-choice:hover {
+    border-color:
+        rgba(108,124,255,.55) !important;
+
+    transform:
+        translateY(-2px) !important;
+
+    background:
+        var(--fc-panel-3) !important;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.22) !important;
+}
+
+html body #fcThemePanel .fc-theme-choice.active,
+html body #fcThemePanel .fc-theme-choice.selected,
+body .fc-theme-choice.active,
+body .fc-theme-choice.selected {
+    border-color:
+        var(--fc-accent) !important;
+
+    box-shadow:
+        0 0 0 2px rgba(108,124,255,.16) !important;
+}
+
+body .fc-theme-name {
+    font-weight:
+        700 !important;
+}
+
+body .fc-theme-desc {
+    margin-top:
+        4px !important;
+
+    color:
+        var(--fc-muted) !important;
+
+    font-size:
+        11px !important;
+
+    line-height:
+        15px !important;
+}
+
+body .fc-theme-swatch {
+    width:
+        100% !important;
+
+    height:
+        38px !important;
+
+    margin-bottom:
+        8px !important;
+
+    border-radius:
+        10px !important;
+}
+
+
+/* =========================================================
+   THEME CLOSE BUTTON
+   Supports common class/id names
+   ========================================================= */
+
+html body #fcThemePanel .fc-theme-close,
+html body #fcThemePanel .fc-close,
+html body #fcThemePanel button[data-close-theme] {
+    flex:
+        0 0 auto !important;
+
+    width:
+        34px !important;
+
+    height:
+        34px !important;
+
+    min-width:
+        34px !important;
+
+    min-height:
+        34px !important;
+
+    display:
+        flex !important;
+
+    align-items:
+        center !important;
+
+    justify-content:
+        center !important;
+
+    border:
+        1px solid var(--fc-border) !important;
+
+    border-radius:
+        10px !important;
+
+    background:
+        rgba(255,255,255,.05) !important;
+
+    color:
+        var(--fc-text) !important;
+
+    cursor:
+        pointer !important;
+}
+
+
+/* =========================================================
+   LOGIN / SIGNUP
+   ========================================================= */
+
+body:has(#loginScreen:not(.hidden))
+#fcNavToggle,
+
+body:has(#loginScreen:not(.hidden))
+#fcCustomSidebar,
+
+body:has(#loginScreen:not(.hidden))
+.fc-quick-actions,
+
+body:has(#loginScreen:not(.hidden))
+.fc-bottom-dock,
+
+body:has(#signupScreen:not(.hidden))
+#fcNavToggle,
+
+body:has(#signupScreen:not(.hidden))
+#fcCustomSidebar,
+
+body:has(#signupScreen:not(.hidden))
+.fc-quick-actions,
+
+body:has(#signupScreen:not(.hidden))
+.fc-bottom-dock {
+    display:
+        none !important;
+}
+
+
+/* =========================================================
+   OLD BOTTOM NAV / QUICK ACTIONS
+   ========================================================= */
+
+body #bottomNav {
+    display:
+        none !important;
+}
+
+.fc-quick-actions {
+    display:
+        none !important;
+
+    visibility:
+        hidden !important;
+
+    pointer-events:
+        none !important;
+}
+
+#chatScreen .fc-add-button,
+#chatScreen .fc-media-button,
+#chatScreen .fc-quick-add,
+#chatScreen .fc-quick-media {
+    display:
+        none !important;
+
+    visibility:
+        hidden !important;
+
+    pointer-events:
+        none !important;
+}
+
+
+/* =========================================================
    MOBILE
    ========================================================= */
 
 @media (max-width: 600px) {
 
-    html body #chatScreen .emojiButton {
+    :root {
+        --fc-sidebar-width: 180px;
+    }
 
-        width: 52px !important;
-        min-width: 52px !important;
-        max-width: 52px !important;
+    /* Arrow */
 
-        height: 52px !important;
-        min-height: 52px !important;
-        max-height: 52px !important;
+    html body #fcNavToggle,
+    html body .fc-nav-toggle,
+    html body #fc-nav-toggle {
+        left: 1px !important;
 
-        flex-basis: 52px !important;
+        width: 15px !important;
+        min-width: 15px !important;
+        max-width: 15px !important;
 
-        border-radius: 15px !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        max-height: 28px !important;
 
-        font-size: 21px !important;
+        top: 50% !important;
+
+        transform:
+            translateY(-50%) !important;
+    }
+
+    html body #fcNavToggle:hover,
+    html body .fc-nav-toggle:hover,
+    html body #fc-nav-toggle:hover {
+        width: 26px !important;
+
+        min-width: 26px !important;
+
+        max-width: 26px !important;
+
+        height: 36px !important;
+
+        min-height: 36px !important;
+
+        max-height: 36px !important;
+    }
+
+    html body #fcNavToggle.is-open,
+    html body .fc-nav-toggle.is-open,
+    html body #fc-nav-toggle.is-open {
+        left:
+            var(--fc-sidebar-width) !important;
+
+        width: 15px !important;
+
+        min-width: 15px !important;
+
+        max-width: 15px !important;
+
+        height: 28px !important;
+
+        min-height: 28px !important;
+
+        max-height: 28px !important;
+    }
+
+    html body #fcNavToggle.is-open:hover,
+    html body .fc-nav-toggle.is-open:hover,
+    html body #fc-nav-toggle.is-open:hover {
+        width: 26px !important;
+
+        min-width: 26px !important;
+
+        max-width: 26px !important;
+
+        height: 36px !important;
+
+        min-height: 36px !important;
+
+        max-height: 36px !important;
     }
 
 
-    html body #emojiPicker {
+    /* Sidebar */
 
-        left: 12px !important;
+    body #fcCustomSidebar,
+    body .fc-sidebar,
+    body #fc-sidebar {
+        left: 0 !important;
 
-        bottom: 82px !important;
+        top: 12px !important;
+
+        bottom: 12px !important;
+
+        width: 180px !important;
+
+        max-width: 180px !important;
+
+        border-radius:
+            0 18px 18px 0 !important;
+    }
+
+
+    /* Messages */
+
+    html body #chatScreen #messages,
+    html body #chatScreen .messages,
+    html body #messages {
+        top:
+            76px !important;
+
+        bottom:
+            76px !important;
+
+        left:
+            0 !important;
+
+        right:
+            0 !important;
 
         width:
-            min(320px, calc(100vw - 24px)) !important;
+            100% !important;
+
+        padding:
+            18px 12px 20px 12px !important;
+
+        overflow-x:
+            hidden !important;
+    }
+
+
+    /* Composer */
+
+    html body #chatScreen .composer,
+    html body #chatScreen > .composer {
+        top:
+            auto !important;
+
+        bottom:
+            8px !important;
+
+        left:
+            10px !important;
+
+        right:
+            10px !important;
+
+        width:
+            auto !important;
+
+        height:
+            60px !important;
+
+        min-height:
+            60px !important;
+
+        max-height:
+            60px !important;
+
+        padding:
+            6px !important;
+
+        gap:
+            6px !important;
+    }
+
+
+    /* Emoji */
+
+    html body #chatScreen .emojiButton {
+        flex:
+            0 0 44px !important;
+
+        width:
+            44px !important;
+
+        min-width:
+            44px !important;
+
+        max-width:
+            44px !important;
+
+        height:
+            44px !important;
+
+        min-height:
+            44px !important;
+
+        max-height:
+            44px !important;
+
+        border-radius:
+            14px !important;
+
+        font-size:
+            20px !important;
+    }
+
+
+    /* Input */
+
+    html body #chatScreen .composer #messageInput {
+        flex:
+            1 1 0% !important;
+
+        width:
+            0 !important;
+
+        min-width:
+            0 !important;
+
+        height:
+            44px !important;
+
+        min-height:
+            44px !important;
+
+        padding:
+            0 12px !important;
+    }
+
+
+    /* Media */
+
+    html body #chatScreen .composer .mediaButton,
+    html body #chatScreen .composer label.mediaButton,
+    #chatScreen .composer .media-btn,
+    #chatScreen .composer #mediaBtn,
+    #chatScreen .composer .media-button {
+        flex:
+            0 0 44px !important;
+
+        width:
+            44px !important;
+
+        min-width:
+            44px !important;
+
+        max-width:
+            44px !important;
+
+        height:
+            44px !important;
+
+        min-height:
+            44px !important;
+
+        max-height:
+            44px !important;
+
+        font-size:
+            20px !important;
+    }
+
+
+    /* Send */
+
+    html body #chatScreen .composer > button:last-child {
+        min-width:
+            58px !important;
+
+        max-width:
+            78px !important;
+
+        height:
+            44px !important;
+
+        min-height:
+            44px !important;
+
+        padding:
+            0 10px !important;
+
+        font-size:
+            13px !important;
+    }
+
+
+    /* Bottom dock */
+
+    body .fc-bottom-dock,
+    body #fc-bottom-dock {
+        width:
+            140px !important;
+
+        min-width:
+            140px !important;
+
+        max-width:
+            140px !important;
+
+        height:
+            42px !important;
+
+        min-height:
+            42px !important;
+
+        max-height:
+            42px !important;
+
+        bottom:
+            8px !important;
+    }
+
+    body .fc-bottom-dock .fc-dock-btn,
+    body .fc-bottom-dock .fc-dock-center {
+        width:
+            36px !important;
+
+        min-width:
+            36px !important;
+
+        max-width:
+            36px !important;
+
+        height:
+            36px !important;
+
+        min-height:
+            36px !important;
+
+        max-height:
+            36px !important;
+    }
+
+
+    /* Discovery */
+
+    body #fcDiscovery,
+    body .fc-discovery {
+        width:
+            calc(100vw - 20px) !important;
+
+        bottom:
+            64px !important;
+    }
+
+
+    /* THEME PANEL */
+
+    html body #fcThemePanel {
+        width:
+            calc(100vw - 20px) !important;
+
+        max-width:
+            calc(100vw - 20px) !important;
+
+        height:
+            calc(100vh - 20px) !important;
+
+        max-height:
+            calc(100vh - 20px) !important;
+
+        border-radius:
+            18px !important;
+    }
+
+    html body #fcThemePanel .fc-theme-body {
+        padding:
+            14px !important;
+
+        padding-bottom:
+            28px !important;
+    }
+
+    html body #fcThemePanel .fc-theme-grid {
+        grid-template-columns:
+            repeat(2,minmax(0,1fr)) !important;
+
+        gap:
+            8px !important;
+    }
+
+    html body #fcThemePanel .fc-theme-choice {
+        min-height:
+            100px !important;
+
+        padding:
+            11px !important;
+    }
+
+
+    /* Emoji picker */
+
+    html body #emojiPicker {
+        left:
+            12px !important;
+
+        bottom:
+            82px !important;
+
+        width:
+            min(320px,calc(100vw - 24px)) !important;
 
         max-width:
             calc(100vw - 24px) !important;
 
-        max-height: 270px !important;
+        max-height:
+            270px !important;
 
-        padding: 10px !important;
+        padding:
+            10px !important;
 
         grid-template-columns:
-            repeat(7, 1fr) !important;
+            repeat(7,1fr) !important;
 
-        gap: 4px !important;
+        gap:
+            4px !important;
 
-        border-radius: 17px !important;
+        border-radius:
+            17px !important;
+    }
+
+    html body #emojiPicker > button {
+        width:
+            35px !important;
+
+        min-width:
+            35px !important;
+
+        max-width:
+            35px !important;
+
+        height:
+            35px !important;
+
+        min-height:
+            35px !important;
+
+        max-height:
+            35px !important;
+
+        font-size:
+            20px !important;
     }
 
 
-    html body #emojiPicker > button {
+    /* Mobile message bubbles */
 
-        width: 35px !important;
-        min-width: 35px !important;
-        max-width: 35px !important;
+    html body #chatScreen #messages {
+        gap:
+            3px !important;
+    }
 
-        height: 35px !important;
-        min-height: 35px !important;
-        max-height: 35px !important;
+    html body #chatScreen #messages .fc-message-row {
+        width:
+            100% !important;
 
-        font-size: 20px !important;
+        max-width:
+            100% !important;
+
+        padding:
+            2px 0 !important;
+    }
+
+    html body #chatScreen #messages .fc-message-bubble {
+        max-width:
+            78% !important;
+
+        padding:
+            7px 10px 5px 10px !important;
+
+        border-radius:
+            17px !important;
+
+        font-size:
+            15px !important;
+
+        line-height:
+            20px !important;
+    }
+
+    html body #chatScreen #messages
+    .fc-message-row.other .fc-message-bubble {
+        border-bottom-left-radius:
+            5px !important;
+    }
+
+    html body #chatScreen #messages
+    .fc-message-row.mine .fc-message-bubble {
+        border-bottom-right-radius:
+            5px !important;
+    }
+
+    html body #chatScreen #messages
+    .fc-message-text {
+        font-size:
+            15px !important;
+
+        line-height:
+            20px !important;
+    }
+
+    html body #chatScreen #messages
+    .fc-message-meta {
+        font-size:
+            8px !important;
+
+        line-height:
+            10px !important;
+
+        margin-top:
+            2px !important;
+    }
+
+    html body #chatScreen #messages
+    .fc-ticks {
+        font-size:
+            9px !important;
     }
 }
 
@@ -3098,11 +2922,128 @@ html body #emojiPicker::-webkit-scrollbar-thumb:hover {
 
 @media (max-width: 420px) {
 
+    :root {
+        --fc-sidebar-width: 175px;
+    }
+
+    html body #fcNavToggle,
+    html body .fc-nav-toggle,
+    html body #fc-nav-toggle {
+        width:
+            14px !important;
+
+        min-width:
+            14px !important;
+
+        max-width:
+            14px !important;
+
+        height:
+            26px !important;
+
+        min-height:
+            26px !important;
+
+        max-height:
+            26px !important;
+    }
+
+    html body #fcNavToggle:hover,
+    html body .fc-nav-toggle:hover,
+    html body #fc-nav-toggle:hover {
+        width:
+            24px !important;
+
+        min-width:
+            24px !important;
+
+        max-width:
+            24px !important;
+
+        height:
+            34px !important;
+
+        min-height:
+            34px !important;
+
+        max-height:
+            34px !important;
+    }
+
+    html body #fcNavToggle.is-open,
+    html body .fc-nav-toggle.is-open,
+    html body #fc-nav-toggle.is-open {
+        left:
+            var(--fc-sidebar-width) !important;
+
+        width:
+            14px !important;
+
+        min-width:
+            14px !important;
+
+        max-width:
+            14px !important;
+
+        height:
+            26px !important;
+
+        min-height:
+            26px !important;
+
+        max-height:
+            26px !important;
+    }
+
+    html body #fcNavToggle.is-open:hover,
+    html body .fc-nav-toggle.is-open:hover,
+    html body #fc-nav-toggle.is-open:hover {
+        width:
+            24px !important;
+
+        min-width:
+            24px !important;
+
+        max-width:
+            24px !important;
+
+        height:
+            34px !important;
+
+        min-height:
+            34px !important;
+
+        max-height:
+            34px !important;
+    }
+
+    body #fcCustomSidebar,
+    body .fc-sidebar,
+    body #fc-sidebar {
+        width:
+            175px !important;
+
+        max-width:
+            175px !important;
+    }
+
+    body .fc-bottom-dock {
+        width:
+            136px !important;
+
+        min-width:
+            136px !important;
+
+        max-width:
+            136px !important;
+    }
+
     html body #emojiPicker {
+        left:
+            8px !important;
 
-        left: 8px !important;
-
-        bottom: 78px !important;
+        bottom:
+            78px !important;
 
         width:
             calc(100vw - 16px) !important;
@@ -3110,211 +3051,120 @@ html body #emojiPicker::-webkit-scrollbar-thumb:hover {
         max-width:
             calc(100vw - 16px) !important;
 
-        max-height: 250px !important;
+        max-height:
+            250px !important;
 
         grid-template-columns:
-            repeat(7, 1fr) !important;
+            repeat(7,1fr) !important;
 
-        padding: 9px !important;
+        padding:
+            9px !important;
     }
-
 
     html body #emojiPicker > button {
+        width:
+            32px !important;
 
-        width: 32px !important;
-        min-width: 32px !important;
-        max-width: 32px !important;
+        min-width:
+            32px !important;
 
-        height: 32px !important;
-        min-height: 32px !important;
-        max-height: 32px !important;
+        max-width:
+            32px !important;
 
-        font-size: 19px !important;
+        height:
+            32px !important;
+
+        min-height:
+            32px !important;
+
+        max-height:
+            32px !important;
+
+        font-size:
+            19px !important;
+    }
+
+    html body #chatScreen #messages
+    .fc-message-bubble {
+        max-width:
+            82% !important;
     }
 }
+
 
 /* =========================================================
-   FINAL MEDIA BUTTON OVERRIDE - KEEP THIS AT THE VERY END
-   Order inside composer: 😊 | input | 📎 | Send
-   ========================================================= */
-html body #chatScreen .composer .mediaButton,
-html body #chatScreen .composer label.mediaButton {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    position: relative !important;
-    flex: 0 0 48px !important;
-    width: 48px !important;
-    min-width: 48px !important;
-    max-width: 48px !important;
-    height: 48px !important;
-    min-height: 48px !important;
-    max-height: 48px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-sizing: border-box !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border: 1px solid var(--fc-border) !important;
-    border-radius: 14px !important;
-    background: #111824 !important;
-    color: var(--fc-text) !important;
-    font-size: 21px !important;
-    line-height: 1 !important;
-    cursor: pointer !important;
-    flex-shrink: 0 !important;
-}
-
-html body #chatScreen .composer .mediaButton:hover,
-html body #chatScreen .composer label.mediaButton:hover {
-    background: #192231 !important;
-    transform: scale(1.04) !important;
-}
-
-html body #chatScreen .composer .mediaButton input[type="file"],
-html body #chatScreen .composer label.mediaButton input[type="file"] {
-    display: none !important;
-}
-
-@media (max-width: 600px) {
-    html body #chatScreen .composer .mediaButton,
-    html body #chatScreen .composer label.mediaButton {
-        flex-basis: 44px !important;
-        width: 44px !important;
-        min-width: 44px !important;
-        max-width: 44px !important;
-        height: 44px !important;
-        min-height: 44px !important;
-        max-height: 44px !important;
-        font-size: 20px !important;
-    }
-}/* =========================================================
-   FRIENDCHAT MEDIA BUTTON
-   Photo / Video attachment button
+   REDUCED MOTION
    ========================================================= */
 
-#chatScreen .composer {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-}
+@media (prefers-reduced-motion: reduce) {
 
-/* Media button */
-#chatScreen .composer .media-btn,
-#chatScreen .composer #mediaBtn,
-#chatScreen .composer .media-button {
+    *,
+    *::before,
+    *::after {
+        animation-duration:
+            .01ms !important;
 
-    width: 44px !important;
-    height: 44px !important;
+        animation-iteration-count:
+            1 !important;
 
-    min-width: 44px !important;
-    min-height: 44px !important;
+        scroll-behavior:
+            auto !important;
 
-    padding: 0 !important;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    border: 0 !important;
-    border-radius: 13px !important;
-
-    background: rgba(255,255,255,.055) !important;
-
-    color: var(--fc-text) !important;
-
-    font-size: 20px !important;
-
-    cursor: pointer !important;
-
-    flex-shrink: 0 !important;
-
-    transition:
-        background .2s ease,
-        transform .2s ease,
-        color .2s ease !important;
-}
-
-/* Hover */
-#chatScreen .composer .media-btn:hover,
-#chatScreen .composer #mediaBtn:hover,
-#chatScreen .composer .media-button:hover {
-
-    background:
-        rgba(108,124,255,.18) !important;
-
-    color:
-        var(--fc-text) !important;
-
-    transform:
-        translateY(-2px) !important;
-}
-
-/* Click */
-#chatScreen .composer .media-btn:active,
-#chatScreen .composer #mediaBtn:active,
-#chatScreen .composer .media-button:active {
-
-    transform:
-        scale(.94) !important;
-}
-
-/* Mobile */
-@media (max-width:600px) {
-
-    #chatScreen .composer .media-btn,
-    #chatScreen .composer #mediaBtn,
-    #chatScreen .composer .media-button {
-
-        width: 42px !important;
-        height: 42px !important;
-
-        min-width: 42px !important;
-        min-height: 42px !important;
-
-        font-size: 19px !important;
+        transition-duration:
+            .01ms !important;
     }
 }
+
+
 /* =========================================================
-   FRIENDCHAT THEME PAGE SCROLL FIX ONLY
-   Does NOT change the bottom bar.
+   FINAL SAFETY RULES
    ========================================================= */
+
+/* Keep theme page above absolutely everything except nothing. */
+html body #fcThemeOverlay {
+    z-index:
+        2147483646 !important;
+}
 
 html body #fcThemePanel {
-    display: flex !important;
-    flex-direction: column !important;
-    overflow: hidden !important;
+    z-index:
+        2147483647 !important;
 }
 
-html body #fcThemePanel .fc-theme-head {
-    flex: 0 0 auto !important;
+/* Theme panel itself does not scroll. */
+html body #fcThemePanel {
+    overflow:
+        hidden !important;
 }
 
+/* Only the theme list scrolls. */
 html body #fcThemePanel .fc-theme-body {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: thin !important;
-    padding-bottom: 24px !important;
+    overflow-y:
+        auto !important;
+
+    overflow-x:
+        hidden !important;
+
+    min-height:
+        0 !important;
+
+    flex:
+        1 1 auto !important;
 }
 
+/* Keep the theme header visible. */
+html body #fcThemePanel .fc-theme-head {
+    flex:
+        0 0 auto !important;
+}
+
+/* Prevent the theme grid from being clipped. */
 html body #fcThemePanel .fc-theme-grid {
-    min-height: min-content !important;
+    min-height:
+        min-content !important;
 }
 
-@media (max-width: 600px) {
-    html body #fcThemePanel {
-        width: calc(100vw - 20px) !important;
-        max-width: calc(100vw - 20px) !important;
-        max-height: calc(100vh - 20px) !important;
-    }
 
-    html body #fcThemePanel .fc-theme-body {
-        max-height: none !important;
-        padding: 14px !important;
-        padding-bottom: 24px !important;
-    }
-}
+/* =========================================================
+   END
+   ========================================================= */
