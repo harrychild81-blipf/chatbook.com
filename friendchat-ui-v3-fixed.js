@@ -1644,8 +1644,9 @@ function installServerNavigation() {
 
   function openCreateServer() {
 
-    window.location.href =
-      "create-server.html";
+  window.location.href =
+    "server-home.html?server=" +
+    encodeURIComponent(serverID);
   }
 
 
