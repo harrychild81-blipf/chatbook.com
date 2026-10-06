@@ -2,11 +2,19 @@
    FRIENDCHAT
    SERVER MEMBERS
    PHASE 4
+   SHARED BACKEND VERSION
    ========================================================= */
 
 (function () {
 
     "use strict";
+
+
+    /* =====================================================
+       CONFIG
+       ===================================================== */
+
+    const API_BASE = "";
 
 
     /* =====================================================
@@ -76,51 +84,18 @@
     let currentProfileMember = null;
 
     let toastTimer = null;
+    let loadingServer = false;
+    let addingMember = false;
+    let removingMember = false;
 
 
     /* =====================================================
-       STORAGE
+       LOCAL STORAGE KEYS
        ===================================================== */
 
-    const SERVERS_KEY = "friendchat_servers";
     const CURRENT_SERVER_KEY = "friendchat_current_server";
     const USER_ID_KEY = "friendchat_user_id";
     const USER_NAME_KEY = "friendchat_user_name";
-
-
-    function getSavedServers() {
-
-        try {
-
-            const raw = localStorage.getItem(SERVERS_KEY);
-
-            if (!raw) {
-                return [];
-            }
-
-            const parsed = JSON.parse(raw);
-
-            return Array.isArray(parsed) ? parsed : [];
-
-        } catch (error) {
-
-            console.error(
-                "FriendChat: could not read servers",
-                error
-            );
-
-            return [];
-        }
-    }
-
-
-    function saveServers(servers) {
-
-        localStorage.setItem(
-            SERVERS_KEY,
-            JSON.stringify(servers)
-        );
-    }
 
 
     /* =====================================================
@@ -129,25 +104,15 @@
 
     function getCurrentUserID() {
 
-        let id =
-            localStorage.getItem(USER_ID_KEY);
+        const id = localStorage.getItem(USER_ID_KEY);
 
         if (!id) {
-
-            id =
-                "FC-" +
-                Math.random()
-                    .toString(36)
-                    .substring(2, 8)
-                    .toUpperCase();
-
-            localStorage.setItem(
-                USER_ID_KEY,
-                id
-            );
+            return null;
         }
 
-        return id;
+        return String(id)
+            .trim()
+            .toUpperCase();
     }
 
 
@@ -155,13 +120,13 @@
 
         return (
             localStorage.getItem(USER_NAME_KEY) ||
-            "You"
+            "FriendChat User"
         );
     }
 
 
     /* =====================================================
-       SERVER ID
+       CURRENT SERVER ID
        ===================================================== */
 
     function getCurrentServerID() {
@@ -192,206 +157,338 @@
 
 
     /* =====================================================
-       LOAD SERVER
+       API HELPER
        ===================================================== */
 
-    function loadServer() {
+    async function apiRequest(
+        url,
+        options
+    ) {
+
+        const userID =
+            getCurrentUserID();
+
+        const requestOptions =
+            options || {};
+
+        requestOptions.headers =
+            requestOptions.headers || {};
+
+        requestOptions.headers[
+            "Content-Type"
+        ] = "application/json";
+
+
+        if (userID) {
+
+            requestOptions.headers[
+                "x-friendchat-user-id"
+            ] = userID;
+        }
+
+
+        const response =
+            await fetch(
+                API_BASE + url,
+                requestOptions
+            );
+
+
+        let data = null;
+
+        try {
+
+            data =
+                await response.json();
+
+        } catch (error) {
+
+            data = null;
+        }
+
+
+        if (!response.ok) {
+
+            const message =
+                data &&
+                data.error
+                    ? data.error
+                    : "Something went wrong.";
+
+            throw new Error(message);
+        }
+
+
+        return data;
+    }
+
+
+    /* =====================================================
+       LOAD SERVER FROM BACKEND
+       ===================================================== */
+
+    async function loadServer() {
+
+        if (loadingServer) {
+            return;
+        }
+
+        loadingServer = true;
+
 
         const serverID =
             getCurrentServerID();
 
-        const servers =
-            getSavedServers();
 
         if (!serverID) {
+
+            loadingServer = false;
 
             showToast(
                 "No server selected."
             );
 
-            setTimeout(function () {
+            setTimeout(
+                function () {
 
-                window.location.href =
-                    "create-server.html";
+                    window.location.href =
+                        "create-server.html";
 
-            }, 700);
+                },
+                700
+            );
 
             return;
         }
 
 
-        currentServer =
-            servers.find(function (server) {
+        try {
 
-                return (
-                    server.serverID === serverID ||
-                    server.id === serverID
+            const data =
+                await apiRequest(
+                    "/api/servers/" +
+                    encodeURIComponent(serverID),
+                    {
+                        method: "GET"
+                    }
                 );
 
-            });
+
+            if (
+                !data ||
+                !data.server
+            ) {
+
+                throw new Error(
+                    "Server could not be found."
+                );
+            }
 
 
-        if (!currentServer) {
+            currentServer =
+                normalizeServer(
+                    data.server
+                );
 
-            showToast(
-                "Server could not be found."
-            );
-
-            setTimeout(function () {
-
-                window.location.href =
-                    "create-server.html";
-
-            }, 900);
-
-            return;
-        }
-
-
-        /*
-         * Make sure required arrays exist.
-         */
-
-        if (!Array.isArray(currentServer.members)) {
-
-            currentServer.members = [];
-        }
-
-
-        /*
-         * Make sure owner exists as a member.
-         */
-
-        ensureOwnerMember();
-
-
-        /*
-         * Save updated server.
-         */
-
-        saveCurrentServer();
-
-
-        renderServer();
-        renderMembers();
-    }
-
-
-    /* =====================================================
-       OWNER
-       ===================================================== */
-
-    function ensureOwnerMember() {
-
-        const ownerID =
-            currentServer.ownerID ||
-            getCurrentUserID();
-
-
-        currentServer.ownerID =
-            ownerID;
-
-
-        const existingOwner =
-            currentServer.members.find(
-                function (member) {
-
-                    return (
-                        getMemberID(member) ===
-                        ownerID
-                    );
-
-                }
-            );
-
-
-        if (!existingOwner) {
-
-            currentServer.members.unshift({
-
-                memberID: ownerID,
-
-                userID: ownerID,
-
-                name:
-                    currentServer.ownerName ||
-                    getCurrentUserName(),
-
-                username:
-                    currentServer.ownerName ||
-                    getCurrentUserName(),
-
-                role: "Owner",
-
-                status: "online",
-
-                joinedAt:
-                    currentServer.createdAt ||
-                    new Date().toISOString(),
-
-                avatar: null
-
-            });
-
-        } else {
-
-            /*
-             * Make sure owner has Owner role.
-             */
-
-            existingOwner.role =
-                "Owner";
-        }
-    }
-
-
-    /* =====================================================
-       SAVE CURRENT SERVER
-       ===================================================== */
-
-    function saveCurrentServer() {
-
-        const servers =
-            getSavedServers();
-
-        const index =
-            servers.findIndex(
-                function (server) {
-
-                    return (
-                        server.serverID ===
-                            currentServer.serverID ||
-                        server.id ===
-                            currentServer.id
-                    );
-
-                }
-            );
-
-
-        if (index >= 0) {
-
-            servers[index] =
-                currentServer;
-
-        } else {
-
-            servers.push(
-                currentServer
-            );
-        }
-
-
-        saveServers(servers);
-
-
-        if (currentServer.serverID) {
 
             localStorage.setItem(
                 CURRENT_SERVER_KEY,
                 currentServer.serverID
             );
+
+
+            renderServer();
+            renderMembers();
+
+
+        } catch (error) {
+
+            console.error(
+                "FriendChat: failed to load server",
+                error
+            );
+
+
+            showToast(
+                error.message ||
+                "Could not load server."
+            );
+
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "server-home.html?server=" +
+                        encodeURIComponent(serverID);
+
+                },
+                1200
+            );
+
+
+        } finally {
+
+            loadingServer = false;
         }
+    }
+
+
+    /* =====================================================
+       NORMALIZE SERVER
+       ===================================================== */
+
+    function normalizeServer(server) {
+
+        const normalized =
+            server || {};
+
+
+        if (
+            !normalized.serverID &&
+            normalized.id
+        ) {
+
+            normalized.serverID =
+                normalized.id;
+        }
+
+
+        if (
+            !Array.isArray(
+                normalized.members
+            )
+        ) {
+
+            normalized.members = [];
+        }
+
+
+        if (
+            !normalized.ownerID
+        ) {
+
+            console.warn(
+                "FriendChat: server has no ownerID."
+            );
+        }
+
+
+        normalized.members =
+            normalized.members.map(
+                function (member) {
+
+                    return normalizeMember(
+                        member,
+                        normalized
+                    );
+
+                }
+            );
+
+
+        return normalized;
+    }
+
+
+    /* =====================================================
+       NORMALIZE MEMBER
+       ===================================================== */
+
+    function normalizeMember(
+        member,
+        server
+    ) {
+
+        if (
+            typeof member === "string"
+        ) {
+
+            return {
+
+                memberID: member,
+                userID: member,
+
+                name: member,
+                username: member,
+
+                role:
+                    member === server.ownerID
+                        ? "Owner"
+                        : "Member",
+
+                status: "offline",
+
+                joinedAt:
+                    server.createdAt ||
+                    new Date().toISOString(),
+
+                avatar: null
+
+            };
+        }
+
+
+        const normalized =
+            member || {};
+
+
+        const memberID =
+            normalized.memberID ||
+            normalized.userID ||
+            normalized.id ||
+            "";
+
+
+        normalized.memberID =
+            memberID;
+
+
+        normalized.userID =
+            normalized.userID ||
+            memberID;
+
+
+        normalized.name =
+            normalized.name ||
+            normalized.username ||
+            normalized.displayName ||
+            memberID ||
+            "Member";
+
+
+        normalized.username =
+            normalized.username ||
+            normalized.name;
+
+
+        normalized.role =
+            normalized.role ||
+            (
+                memberID === server.ownerID
+                    ? "Owner"
+                    : "Member"
+            );
+
+
+        normalized.status =
+            normalized.status ||
+            "offline";
+
+
+        normalized.joinedAt =
+            normalized.joinedAt ||
+            server.createdAt ||
+            new Date().toISOString();
+
+
+        normalized.avatar =
+            normalized.avatar ||
+            normalized.profilePhoto ||
+            null;
+
+
+        return normalized;
     }
 
 
@@ -400,6 +497,11 @@
        ===================================================== */
 
     function renderServer() {
+
+        if (!currentServer) {
+            return;
+        }
+
 
         const name =
             currentServer.name ||
@@ -411,14 +513,25 @@
             "Manage the people in your server.";
 
 
-        serverName.textContent =
-            name;
+        if (serverName) {
 
-        heroServerName.textContent =
-            name;
+            serverName.textContent =
+                name;
+        }
 
-        heroDescription.textContent =
-            description;
+
+        if (heroServerName) {
+
+            heroServerName.textContent =
+                name;
+        }
+
+
+        if (heroDescription) {
+
+            heroDescription.textContent =
+                description;
+        }
 
 
         setImageOrInitial(
@@ -454,7 +567,9 @@
                 .filter(Boolean);
 
 
-        if (words.length === 1) {
+        if (
+            words.length === 1
+        ) {
 
             return words[0]
                 .substring(0, 2)
@@ -492,9 +607,14 @@
             const img =
                 document.createElement("img");
 
-            img.src = image;
 
-            img.alt = "";
+            img.src =
+                image;
+
+
+            img.alt =
+                "";
+
 
             img.onerror =
                 function () {
@@ -523,16 +643,26 @@
 
     function getMemberID(member) {
 
-        return (
+        if (!member) {
+            return "";
+        }
+
+
+        return String(
             member.memberID ||
             member.userID ||
             member.id ||
             ""
-        );
+        ).trim();
     }
 
 
     function getMemberName(member) {
+
+        if (!member) {
+            return "Member";
+        }
+
 
         return (
             member.name ||
@@ -546,14 +676,51 @@
 
     function isOwner(member) {
 
+        if (
+            !currentServer ||
+            !member
+        ) {
+
+            return false;
+        }
+
+
         return (
-            getMemberID(member) ===
-            currentServer.ownerID
+            getMemberID(member)
+                .toUpperCase() ===
+            String(
+                currentServer.ownerID ||
+                ""
+            ).toUpperCase()
+        );
+    }
+
+
+    function isCurrentUser(member) {
+
+        const currentUserID =
+            getCurrentUserID();
+
+
+        if (!currentUserID) {
+            return false;
+        }
+
+
+        return (
+            getMemberID(member)
+                .toUpperCase() ===
+            currentUserID
         );
     }
 
 
     function isOnline(member) {
+
+        if (!member) {
+            return false;
+        }
+
 
         return (
             member.status === "online" ||
@@ -563,10 +730,82 @@
 
 
     /* =====================================================
+       CURRENT USER PERMISSION
+       ===================================================== */
+
+    function canManageMembers() {
+
+        if (!currentServer) {
+            return false;
+        }
+
+
+        const currentUserID =
+            getCurrentUserID();
+
+
+        if (!currentUserID) {
+            return false;
+        }
+
+
+        if (
+            String(
+                currentServer.ownerID ||
+                ""
+            ).toUpperCase() ===
+            currentUserID.toUpperCase()
+        ) {
+
+            return true;
+        }
+
+
+        const currentMember =
+            currentServer.members.find(
+                function (member) {
+
+                    return (
+                        getMemberID(member)
+                            .toUpperCase() ===
+                        currentUserID
+                            .toUpperCase()
+                    );
+
+                }
+            );
+
+
+        if (!currentMember) {
+            return false;
+        }
+
+
+        const role =
+            String(
+                currentMember.role ||
+                ""
+            ).toLowerCase();
+
+
+        return (
+            role === "admin" ||
+            role === "administrator" ||
+            role === "owner"
+        );
+    }
+
+
+    /* =====================================================
        RENDER MEMBERS
        ===================================================== */
 
     function renderMembers() {
+
+        if (!currentServer) {
+            return;
+        }
+
 
         allMembers =
             Array.isArray(
@@ -578,7 +817,10 @@
 
         const query =
             String(
-                memberSearch.value || ""
+                memberSearch &&
+                memberSearch.value
+                    ? memberSearch.value
+                    : ""
             )
                 .trim()
                 .toLowerCase();
@@ -607,7 +849,6 @@
                         name.includes(query) ||
                         id.includes(query)
                     );
-
                 }
             );
 
@@ -632,17 +873,29 @@
             );
 
 
-        ownerList.innerHTML = "";
-        memberList.innerHTML = "";
+        if (ownerList) {
+
+            ownerList.innerHTML =
+                "";
+        }
+
+
+        if (memberList) {
+
+            memberList.innerHTML =
+                "";
+        }
 
 
         owners.forEach(
             function (member) {
 
-                ownerList.appendChild(
-                    createMemberCard(member)
-                );
+                if (ownerList) {
 
+                    ownerList.appendChild(
+                        createMemberCard(member)
+                    );
+                }
             }
         );
 
@@ -650,62 +903,113 @@
         regularMembers.forEach(
             function (member) {
 
-                memberList.appendChild(
-                    createMemberCard(member)
-                );
+                if (memberList) {
 
+                    memberList.appendChild(
+                        createMemberCard(member)
+                    );
+                }
             }
         );
 
 
-        memberCount.textContent =
-            allMembers.length;
+        if (memberCount) {
+
+            memberCount.textContent =
+                allMembers.length;
+        }
 
 
-        ownerCount.textContent =
-            owners.length;
+        if (ownerCount) {
+
+            ownerCount.textContent =
+                owners.length;
+        }
 
 
-        regularCount.textContent =
-            regularMembers.length;
+        if (regularCount) {
+
+            regularCount.textContent =
+                regularMembers.length;
+        }
 
 
         const hasResults =
             filtered.length > 0;
 
 
-        noResults.classList.toggle(
-            "hidden",
-            hasResults
-        );
+        if (noResults) {
 
-
-        if (hasResults) {
-
-            ownerList.parentElement.classList.remove(
-                "hidden"
-            );
-
-            memberList.parentElement.classList.remove(
-                "hidden"
-            );
-
-        } else {
-
-            ownerList.parentElement.classList.add(
-                "hidden"
-            );
-
-            memberList.parentElement.classList.add(
-                "hidden"
+            noResults.classList.toggle(
+                "hidden",
+                hasResults
             );
         }
 
 
-        clearSearch.style.display =
-            query
-                ? "block"
-                : "none";
+        if (
+            ownerList &&
+            ownerList.parentElement
+        ) {
+
+            ownerList.parentElement.classList.toggle(
+                "hidden",
+                !hasResults
+            );
+        }
+
+
+        if (
+            memberList &&
+            memberList.parentElement
+        ) {
+
+            memberList.parentElement.classList.toggle(
+                "hidden",
+                !hasResults
+            );
+        }
+
+
+        if (clearSearch) {
+
+            clearSearch.style.display =
+                query
+                    ? "block"
+                    : "none";
+        }
+
+
+        updateInviteButtons();
+    }
+
+
+    /* =====================================================
+       INVITE BUTTON PERMISSION
+       ===================================================== */
+
+    function updateInviteButtons() {
+
+        const allowed =
+            canManageMembers();
+
+
+        if (inviteButton) {
+
+            inviteButton.style.display =
+                allowed
+                    ? ""
+                    : "none";
+        }
+
+
+        if (inviteTopButton) {
+
+            inviteTopButton.style.display =
+                allowed
+                    ? ""
+                    : "none";
+        }
     }
 
 
@@ -718,12 +1022,14 @@
         const card =
             document.createElement("div");
 
+
         card.className =
             "member-card";
 
 
         const avatar =
             document.createElement("div");
+
 
         avatar.className =
             "member-avatar";
@@ -740,6 +1046,7 @@
 
         const dot =
             document.createElement("span");
+
 
         dot.className =
             "online-dot";
@@ -759,12 +1066,14 @@
         const info =
             document.createElement("div");
 
+
         info.className =
             "member-info";
 
 
         const nameRow =
             document.createElement("div");
+
 
         nameRow.className =
             "member-name-row";
@@ -773,14 +1082,18 @@
         const name =
             document.createElement("div");
 
+
         name.className =
             "member-name";
+
 
         name.textContent =
             getMemberName(member);
 
 
-        nameRow.appendChild(name);
+        nameRow.appendChild(
+            name
+        );
 
 
         if (isOwner(member)) {
@@ -788,23 +1101,59 @@
             const badge =
                 document.createElement("span");
 
+
             badge.className =
                 "owner-badge";
+
 
             badge.textContent =
                 "OWNER";
 
+
             nameRow.appendChild(
                 badge
             );
+
+        } else {
+
+            const role =
+                String(
+                    member.role ||
+                    ""
+                ).toLowerCase();
+
+
+            if (
+                role === "admin" ||
+                role === "administrator"
+            ) {
+
+                const badge =
+                    document.createElement("span");
+
+
+                badge.className =
+                    "owner-badge";
+
+
+                badge.textContent =
+                    "ADMIN";
+
+
+                nameRow.appendChild(
+                    badge
+                );
+            }
         }
 
 
         const id =
             document.createElement("div");
 
+
         id.className =
             "member-id";
+
 
         id.textContent =
             getMemberID(member);
@@ -814,6 +1163,7 @@
             nameRow
         );
 
+
         info.appendChild(
             id
         );
@@ -822,6 +1172,7 @@
         const right =
             document.createElement("div");
 
+
         right.className =
             "member-right";
 
@@ -829,8 +1180,10 @@
         const status =
             document.createElement("span");
 
+
         status.className =
             "status-text";
+
 
         status.textContent =
             isOnline(member)
@@ -841,8 +1194,10 @@
         const arrow =
             document.createElement("span");
 
+
         arrow.className =
             "member-arrow";
+
 
         arrow.textContent =
             "›";
@@ -851,6 +1206,7 @@
         right.appendChild(
             status
         );
+
 
         right.appendChild(
             arrow
@@ -861,9 +1217,11 @@
             avatar
         );
 
+
         card.appendChild(
             info
         );
+
 
         card.appendChild(
             right
@@ -905,60 +1263,92 @@
         );
 
 
-        profileName.textContent =
-            getMemberName(member);
+        if (profileName) {
 
-
-        profileId.textContent =
-            getMemberID(member);
-
-
-        profileRole.textContent =
-            isOwner(member)
-                ? "Owner"
-                : (
-                    member.role ||
-                    "Member"
-                );
-
-
-        profileStatus.textContent =
-            isOnline(member)
-                ? "● Online"
-                : "● Offline";
-
-
-        profileStatus.classList.toggle(
-            "online",
-            isOnline(member)
-        );
-
-
-        profileJoined.textContent =
-            formatDate(
-                member.joinedAt
-            );
-
-
-        /*
-         * Never allow the owner to be removed.
-         */
-
-        if (isOwner(member)) {
-
-            removeMemberButton.style.display =
-                "none";
-
-        } else {
-
-            removeMemberButton.style.display =
-                "block";
+            profileName.textContent =
+                getMemberName(member);
         }
 
 
-        memberModal.classList.remove(
-            "hidden"
-        );
+        if (profileId) {
+
+            profileId.textContent =
+                getMemberID(member);
+        }
+
+
+        if (profileRole) {
+
+            profileRole.textContent =
+                isOwner(member)
+                    ? "Owner"
+                    : (
+                        member.role ||
+                        "Member"
+                    );
+        }
+
+
+        if (profileStatus) {
+
+            profileStatus.textContent =
+                isOnline(member)
+                    ? "● Online"
+                    : "● Offline";
+
+
+            profileStatus.classList.toggle(
+                "online",
+                isOnline(member)
+            );
+        }
+
+
+        if (profileJoined) {
+
+            profileJoined.textContent =
+                formatDate(
+                    member.joinedAt
+                );
+        }
+
+
+        /*
+         * Owner can never be removed.
+         *
+         * Also don't show the remove button
+         * if the current user doesn't have
+         * permission to manage members.
+         */
+
+        if (
+            isOwner(member) ||
+            !canManageMembers() ||
+            isCurrentUser(member)
+        ) {
+
+            if (removeMemberButton) {
+
+                removeMemberButton.style.display =
+                    "none";
+            }
+
+        } else {
+
+            if (removeMemberButton) {
+
+                removeMemberButton.style.display =
+                    "block";
+            }
+        }
+
+
+        if (memberModal) {
+
+            memberModal.classList.remove(
+                "hidden"
+            );
+        }
     }
 
 
@@ -1004,21 +1394,45 @@
 
     function openInviteModal() {
 
-        inviteError.textContent =
-            "";
+        if (!canManageMembers()) {
 
-        memberIdInput.value =
-            "";
+            showToast(
+                "You don't have permission to add members."
+            );
 
-        inviteModal.classList.remove(
-            "hidden"
-        );
+            return;
+        }
+
+
+        if (inviteError) {
+
+            inviteError.textContent =
+                "";
+        }
+
+
+        if (memberIdInput) {
+
+            memberIdInput.value =
+                "";
+        }
+
+
+        if (inviteModal) {
+
+            inviteModal.classList.remove(
+                "hidden"
+            );
+        }
 
 
         setTimeout(
             function () {
 
-                memberIdInput.focus();
+                if (memberIdInput) {
+
+                    memberIdInput.focus();
+                }
 
             },
             50
@@ -1028,12 +1442,19 @@
 
     function closeInvite() {
 
-        inviteModal.classList.add(
-            "hidden"
-        );
+        if (inviteModal) {
 
-        inviteError.textContent =
-            "";
+            inviteModal.classList.add(
+                "hidden"
+            );
+        }
+
+
+        if (inviteError) {
+
+            inviteError.textContent =
+                "";
+        }
     }
 
 
@@ -1041,26 +1462,85 @@
        ADD MEMBER
        ===================================================== */
 
-    function addMember() {
+    async function addMember() {
 
-        const id =
-            memberIdInput.value
-                .trim();
+        if (addingMember) {
+            return;
+        }
 
 
-        if (!id) {
+        if (!currentServer) {
 
-            inviteError.textContent =
-                "Enter a FriendChat ID.";
+            showInviteError(
+                "Server is not loaded."
+            );
 
             return;
         }
 
 
+        if (!canManageMembers()) {
+
+            showInviteError(
+                "You don't have permission to add members."
+            );
+
+            return;
+        }
+
+
+        const currentUserID =
+            getCurrentUserID();
+
+
+        if (!currentUserID) {
+
+            showInviteError(
+                "You are not logged in."
+            );
+
+            return;
+        }
+
+
+        const rawID =
+            memberIdInput
+                ? memberIdInput.value.trim()
+                : "";
+
+
+        if (!rawID) {
+
+            showInviteError(
+                "Enter a FriendChat ID."
+            );
+
+            return;
+        }
+
+
+        const id =
+            rawID.toUpperCase();
+
+
         if (id.length < 3) {
 
-            inviteError.textContent =
-                "Enter a valid FriendChat ID.";
+            showInviteError(
+                "Enter a valid FriendChat ID."
+            );
+
+            return;
+        }
+
+
+        if (
+            id ===
+            currentUserID.toUpperCase()
+        ) {
+
+            showInviteError(
+                "You are already in this server."
+            );
 
             return;
         }
@@ -1072,8 +1552,8 @@
 
                     return (
                         getMemberID(member)
-                            .toLowerCase() ===
-                        id.toLowerCase()
+                            .toUpperCase() ===
+                        id
                     );
 
                 }
@@ -1082,59 +1562,166 @@
 
         if (exists) {
 
-            inviteError.textContent =
-                "This member is already in the server.";
+            showInviteError(
+                "This member is already in the server."
+            );
 
             return;
         }
 
 
-        /*
-         * Prototype member creation.
-         *
-         * Later this will be replaced with
-         * a real user lookup + invitation system.
-         */
-
-        const newMember = {
-
-            memberID: id,
-
-            userID: id,
-
-            name: id,
-
-            username: id,
-
-            role: "Member",
-
-            status: "offline",
-
-            joinedAt:
-                new Date().toISOString(),
-
-            avatar: null
-
-        };
+        addingMember = true;
 
 
-        currentServer.members.push(
-            newMember
-        );
+        if (confirmInvite) {
+
+            confirmInvite.disabled =
+                true;
+
+            confirmInvite.textContent =
+                "Adding...";
+        }
 
 
-        saveCurrentServer();
+        try {
+
+            const data =
+                await apiRequest(
+                    "/api/servers/" +
+                    encodeURIComponent(
+                        currentServer.serverID
+                    ) +
+                    "/members",
+                    {
+                        method: "POST",
+
+                        body:
+                            JSON.stringify({
+                                userID: id
+                            })
+                    }
+                );
 
 
+            if (
+                data &&
+                data.server
+            ) {
+
+                currentServer =
+                    normalizeServer(
+                        data.server
+                    );
+
+            } else {
+
+                /*
+                 * If backend returns only the
+                 * member, reload the server.
+                 */
+
+                await refreshServer();
+            }
+
+
+            renderServer();
+            renderMembers();
+
+            closeInvite();
+
+
+            showToast(
+                "Member added successfully."
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "FriendChat: failed to add member",
+                error
+            );
+
+
+            showInviteError(
+                error.message ||
+                "Could not add member."
+            );
+
+
+        } finally {
+
+            addingMember = false;
+
+
+            if (confirmInvite) {
+
+                confirmInvite.disabled =
+                    false;
+
+                confirmInvite.textContent =
+                    "Add Member";
+            }
+        }
+    }
+
+
+    /* =====================================================
+       INVITE ERROR
+       ===================================================== */
+
+    function showInviteError(message) {
+
+        if (inviteError) {
+
+            inviteError.textContent =
+                message;
+        }
+    }
+
+
+    /* =====================================================
+       REFRESH SERVER
+       ===================================================== */
+
+    async function refreshServer() {
+
+        if (!currentServer) {
+            return;
+        }
+
+
+        const data =
+            await apiRequest(
+                "/api/servers/" +
+                encodeURIComponent(
+                    currentServer.serverID
+                ),
+                {
+                    method: "GET"
+                }
+            );
+
+
+        if (
+            !data ||
+            !data.server
+        ) {
+
+            throw new Error(
+                "Server could not be loaded."
+            );
+        }
+
+
+        currentServer =
+            normalizeServer(
+                data.server
+            );
+
+
+        renderServer();
         renderMembers();
-
-
-        closeInvite();
-
-
-        showToast(
-            "Member added successfully."
-        );
     }
 
 
@@ -1142,9 +1729,19 @@
        REMOVE MEMBER
        ===================================================== */
 
-    function removeCurrentMember() {
+    async function removeCurrentMember() {
+
+        if (removingMember) {
+            return;
+        }
+
 
         if (!currentProfileMember) {
+            return;
+        }
+
+
+        if (!currentServer) {
             return;
         }
 
@@ -1163,8 +1760,34 @@
         }
 
 
-        const id =
+        if (!canManageMembers()) {
+
+            showToast(
+                "You don't have permission to remove members."
+            );
+
+            return;
+        }
+
+
+        const targetID =
             getMemberID(
+                currentProfileMember
+            );
+
+
+        if (!targetID) {
+
+            showToast(
+                "Invalid member ID."
+            );
+
+            return;
+        }
+
+
+        const targetName =
+            getMemberName(
                 currentProfileMember
             );
 
@@ -1172,9 +1795,7 @@
         const confirmed =
             window.confirm(
                 "Remove " +
-                getMemberName(
-                    currentProfileMember
-                ) +
+                targetName +
                 " from this server?"
             );
 
@@ -1184,37 +1805,89 @@
         }
 
 
-        currentServer.members =
-            currentServer.members.filter(
-                function (member) {
+        removingMember = true;
 
-                    return (
-                        getMemberID(member) !==
-                        id
-                    );
 
+        if (removeMemberButton) {
+
+            removeMemberButton.disabled =
+                true;
+
+            removeMemberButton.textContent =
+                "Removing...";
+        }
+
+
+        try {
+
+            await apiRequest(
+                "/api/servers/" +
+                encodeURIComponent(
+                    currentServer.serverID
+                ) +
+                "/members/" +
+                encodeURIComponent(
+                    targetID
+                ),
+                {
+                    method: "DELETE"
                 }
             );
 
 
-        saveCurrentServer();
+            /*
+             * Reload from backend so every
+             * member shown is authoritative.
+             */
+
+            await refreshServer();
 
 
-        memberModal.classList.add(
-            "hidden"
-        );
+            if (memberModal) {
+
+                memberModal.classList.add(
+                    "hidden"
+                );
+            }
 
 
-        currentProfileMember =
-            null;
+            currentProfileMember =
+                null;
 
 
-        renderMembers();
+            showToast(
+                "Member removed."
+            );
 
 
-        showToast(
-            "Member removed."
-        );
+        } catch (error) {
+
+            console.error(
+                "FriendChat: failed to remove member",
+                error
+            );
+
+
+            showToast(
+                error.message ||
+                "Could not remove member."
+            );
+
+
+        } finally {
+
+            removingMember = false;
+
+
+            if (removeMemberButton) {
+
+                removeMemberButton.disabled =
+                    false;
+
+                removeMemberButton.textContent =
+                    "Remove Member";
+            }
+        }
     }
 
 
@@ -1263,29 +1936,42 @@
 
     function setupSearch() {
 
-        memberSearch.addEventListener(
-            "input",
-            function () {
+        if (memberSearch) {
 
-                renderMembers();
+            memberSearch.addEventListener(
+                "input",
+                function () {
 
-            }
-        );
+                    renderMembers();
+
+                }
+            );
+        }
 
 
-        clearSearch.addEventListener(
-            "click",
-            function () {
+        if (clearSearch) {
 
-                memberSearch.value =
-                    "";
+            clearSearch.addEventListener(
+                "click",
+                function () {
 
-                renderMembers();
+                    if (memberSearch) {
 
-                memberSearch.focus();
+                        memberSearch.value =
+                            "";
+                    }
 
-            }
-        );
+
+                    renderMembers();
+
+
+                    if (memberSearch) {
+
+                        memberSearch.focus();
+                    }
+                }
+            );
+        }
     }
 
 
@@ -1295,15 +1981,32 @@
 
     function setupNavigation() {
 
-        backButton.addEventListener(
-            "click",
-            function () {
+        if (backButton) {
 
-                window.location.href =
-                    "server-home.html";
+            backButton.addEventListener(
+                "click",
+                function () {
 
-            }
-        );
+                    const serverID =
+                        getCurrentServerID();
+
+
+                    if (serverID) {
+
+                        window.location.href =
+                            "server-home.html?server=" +
+                            encodeURIComponent(
+                                serverID
+                            );
+
+                    } else {
+
+                        window.location.href =
+                            "server-home.html";
+                    }
+                }
+            );
+        }
     }
 
 
@@ -1313,141 +2016,108 @@
 
     function setupModals() {
 
-        inviteButton.addEventListener(
-            "click",
-            openInviteModal
-        );
+        if (inviteButton) {
+
+            inviteButton.addEventListener(
+                "click",
+                openInviteModal
+            );
+        }
 
 
-        inviteTopButton.addEventListener(
-            "click",
-            openInviteModal
-        );
+        if (inviteTopButton) {
+
+            inviteTopButton.addEventListener(
+                "click",
+                openInviteModal
+            );
+        }
 
 
-        closeInviteModal.addEventListener(
-            "click",
-            closeInvite
-        );
+        if (closeInviteModal) {
+
+            closeInviteModal.addEventListener(
+                "click",
+                closeInvite
+            );
+        }
 
 
-        cancelInvite.addEventListener(
-            "click",
-            closeInvite
-        );
+        if (cancelInvite) {
+
+            cancelInvite.addEventListener(
+                "click",
+                closeInvite
+            );
+        }
 
 
-        confirmInvite.addEventListener(
-            "click",
-            addMember
-        );
+        if (confirmInvite) {
+
+            confirmInvite.addEventListener(
+                "click",
+                addMember
+            );
+        }
 
 
-        closeMemberModal.addEventListener(
-            "click",
-            function () {
+        if (closeMemberModal) {
 
-                memberModal.classList.add(
-                    "hidden"
-                );
+            closeMemberModal.addEventListener(
+                "click",
+                function () {
 
-                currentProfileMember =
-                    null;
-            }
-        );
+                    if (memberModal) {
 
+                        memberModal.classList.add(
+                            "hidden"
+                        );
+                    }
 
-        removeMemberButton.addEventListener(
-            "click",
-            removeCurrentMember
-        );
-
-
-        inviteModal.addEventListener(
-            "click",
-            function (event) {
-
-                if (
-                    event.target ===
-                    inviteModal
-                ) {
-
-                    closeInvite();
-                }
-
-            }
-        );
-
-
-        memberModal.addEventListener(
-            "click",
-            function (event) {
-
-                if (
-                    event.target ===
-                    memberModal
-                ) {
-
-                    memberModal.classList.add(
-                        "hidden"
-                    );
 
                     currentProfileMember =
                         null;
                 }
-
-            }
-        );
-
-
-        memberIdInput.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (
-                    event.key ===
-                    "Enter"
-                ) {
-
-                    event.preventDefault();
-
-                    addMember();
-                }
+            );
+        }
 
 
-                if (
-                    event.key ===
-                    "Escape"
-                ) {
+        if (removeMemberButton) {
 
-                    closeInvite();
-                }
-
-            }
-        );
+            removeMemberButton.addEventListener(
+                "click",
+                removeCurrentMember
+            );
+        }
 
 
-        document.addEventListener(
-            "keydown",
-            function (event) {
+        if (inviteModal) {
 
-                if (
-                    event.key ===
-                    "Escape"
-                ) {
+            inviteModal.addEventListener(
+                "click",
+                function (event) {
 
                     if (
-                        !inviteModal.classList.contains(
-                            "hidden"
-                        )
+                        event.target ===
+                        inviteModal
                     ) {
 
                         closeInvite();
+                    }
+                }
+            );
+        }
 
-                    } else if (
-                        !memberModal.classList.contains(
-                            "hidden"
-                        )
+
+        if (memberModal) {
+
+            memberModal.addEventListener(
+                "click",
+                function (event) {
+
+                    if (
+                        event.target ===
+                        memberModal
                     ) {
 
                         memberModal.classList.add(
@@ -1458,7 +2128,78 @@
                             null;
                     }
                 }
+            );
+        }
 
+
+        if (memberIdInput) {
+
+            memberIdInput.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        event.preventDefault();
+
+                        addMember();
+                    }
+
+
+                    if (
+                        event.key ===
+                        "Escape"
+                    ) {
+
+                        closeInvite();
+                    }
+                }
+            );
+        }
+
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key !==
+                    "Escape"
+                ) {
+                    return;
+                }
+
+
+                if (
+                    inviteModal &&
+                    !inviteModal.classList.contains(
+                        "hidden"
+                    )
+                ) {
+
+                    closeInvite();
+
+                    return;
+                }
+
+
+                if (
+                    memberModal &&
+                    !memberModal.classList.contains(
+                        "hidden"
+                    )
+                ) {
+
+                    memberModal.classList.add(
+                        "hidden"
+                    );
+
+                    currentProfileMember =
+                        null;
+                }
             }
         );
     }
@@ -1479,6 +2220,10 @@
         loadServer();
     }
 
+
+    /* =====================================================
+       START
+       ===================================================== */
 
     if (
         document.readyState ===
