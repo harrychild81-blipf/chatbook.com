@@ -3,28 +3,44 @@
    CREATE SERVER - PHASE 1
    ========================================================= */
 
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
 :root {
-    --bg: #070a10;
-    --card: #0e141e;
-    --card-border: rgba(255,255,255,0.08);
 
-    --input: #111925;
-    --input-border: rgba(255,255,255,0.09);
+    --fc-bg: #070a10;
 
-    --text: #ffffff;
-    --muted: #8993a4;
+    --fc-card: #0e141e;
 
-    --accent: #6c63ff;
-    --accent-hover: #7b73ff;
+    --fc-input: #111925;
 
-    --danger: #ff5c70;
+    --fc-border: rgba(255, 255, 255, 0.08);
+
+    --fc-input-border: rgba(255, 255, 255, 0.09);
+
+    --fc-text: #ffffff;
+
+    --fc-muted: #8993a4;
+
+    --fc-muted-dark: #596477;
+
+    --fc-accent: #6c63ff;
+
+    --fc-accent-light: #8179ff;
+
+    --fc-danger: #ff5c70;
 }
 
 
-/* RESET */
+/* =========================================================
+   RESET
+   ========================================================= */
 
 * {
     box-sizing: border-box;
+
     margin: 0;
     padding: 0;
 }
@@ -38,6 +54,7 @@ body {
 
 
 body {
+
     font-family:
         Inter,
         system-ui,
@@ -46,29 +63,37 @@ body {
         "Segoe UI",
         sans-serif;
 
+    color: var(--fc-text);
+
     background:
+
         radial-gradient(
-            circle at top left,
-            rgba(108, 99, 255, 0.12),
+            circle at 0% 0%,
+            rgba(108, 99, 255, 0.14),
             transparent 35%
         ),
+
         radial-gradient(
-            circle at bottom right,
+            circle at 100% 100%,
             rgba(0, 190, 255, 0.06),
             transparent 35%
         ),
-        var(--bg);
 
-    color: var(--text);
+        var(--fc-bg);
 }
 
 
-/* PAGE */
+/* =========================================================
+   PAGE
+   ========================================================= */
 
 .page {
+
+    width: 100%;
     min-height: 100vh;
 
     display: flex;
+
     justify-content: center;
     align-items: center;
 
@@ -76,70 +101,91 @@ body {
 }
 
 
-/* CARD */
+/* =========================================================
+   CREATE CARD
+   ========================================================= */
 
 .create-card {
+
     width: 100%;
     max-width: 520px;
 
     padding: 38px;
 
-    background: rgba(14, 20, 30, 0.96);
+    background:
+        rgba(14, 20, 30, 0.96);
 
-    border: 1px solid var(--card-border);
+    border:
+        1px solid var(--fc-border);
 
     border-radius: 24px;
 
     box-shadow:
-        0 30px 80px rgba(0,0,0,0.45);
+        0 30px 80px rgba(0, 0, 0, 0.45);
 
-    backdrop-filter: blur(20px);
+    backdrop-filter:
+        blur(20px);
 }
 
 
-/* BRAND */
+/* =========================================================
+   BRAND
+   ========================================================= */
 
 .brand {
+
     display: flex;
+
     align-items: center;
+
     gap: 10px;
 
-    font-size: 18px;
-    font-weight: 700;
-
     margin-bottom: 32px;
+
+    font-size: 18px;
+
+    font-weight: 700;
 }
 
 
 .brand-icon {
+
     width: 36px;
     height: 36px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     border-radius: 11px;
 
-    background: var(--accent);
+    background:
+        var(--fc-accent);
 
     font-size: 12px;
+
     font-weight: 800;
 
     box-shadow:
-        0 8px 25px rgba(108,99,255,0.35);
+        0 8px 25px rgba(108, 99, 255, 0.35);
 }
 
 
-/* HEADER */
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .header {
+
     margin-bottom: 30px;
 }
 
 
 .header h1 {
+
     font-size: 30px;
+
     line-height: 1.2;
 
     letter-spacing: -0.5px;
@@ -149,27 +195,44 @@ body {
 
 
 .header p {
-    color: var(--muted);
+
+    color: var(--fc-muted);
 
     font-size: 14px;
+
     line-height: 1.6;
 }
 
 
-/* ICON SECTION */
+/* =========================================================
+   SERVER ICON SECTION
+   ========================================================= */
 
 .icon-section {
+
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
 
     margin-bottom: 30px;
 }
 
 
+/* SERVER ICON */
+
 .server-icon {
+
     width: 112px;
     height: 112px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
 
     border-radius: 30px;
 
@@ -180,15 +243,10 @@ body {
             #0c111a
         );
 
-    border: 2px dashed rgba(255,255,255,0.16);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border:
+        2px dashed rgba(255, 255, 255, 0.16);
 
     cursor: pointer;
-
-    overflow: hidden;
 
     transition:
         transform 0.2s ease,
@@ -197,21 +255,31 @@ body {
 
 
 .server-icon:hover {
-    transform: translateY(-2px);
 
-    border-color: var(--accent);
+    transform:
+        translateY(-2px);
+
+    border-color:
+        var(--fc-accent);
 }
 
 
+/* PLUS */
+
 .server-icon span {
+
     font-size: 38px;
+
     font-weight: 300;
 
     color: #8c96a8;
 }
 
 
+/* IMAGE */
+
 .server-icon img {
+
     width: 100%;
     height: 100%;
 
@@ -221,16 +289,24 @@ body {
 }
 
 
+/* UPLOAD BUTTON */
+
 .upload-button {
+
     margin-top: 14px;
 
-    background: transparent;
+    padding: 0;
 
     border: 0;
 
+    background: transparent;
+
     color: #aeb7ff;
 
+    font-family: inherit;
+
     font-size: 14px;
+
     font-weight: 600;
 
     cursor: pointer;
@@ -238,11 +314,15 @@ body {
 
 
 .upload-button:hover {
+
     color: white;
 }
 
 
+/* HELP TEXT */
+
 .icon-section small {
+
     margin-top: 6px;
 
     color: #667082;
@@ -251,16 +331,22 @@ body {
 }
 
 
-/* FORM */
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
 
 .form-group {
+
     position: relative;
 
     margin-bottom: 22px;
 }
 
 
+/* LABEL */
+
 .form-group label {
+
     display: block;
 
     margin-bottom: 9px;
@@ -268,30 +354,39 @@ body {
     color: #dce1ea;
 
     font-size: 13px;
+
     font-weight: 650;
 }
 
 
+/* OPTIONAL */
+
 .optional {
+
+    margin-left: 5px;
+
     color: #667082;
 
     font-weight: 400;
-
-    margin-left: 5px;
 }
 
 
-/* INPUTS */
+/* =========================================================
+   INPUT
+   ========================================================= */
 
 .form-group input,
 .form-group textarea {
+
     width: 100%;
 
-    border: 1px solid var(--input-border);
+    border:
+        1px solid var(--fc-input-border);
 
     border-radius: 12px;
 
-    background: var(--input);
+    background:
+        var(--fc-input);
 
     color: white;
 
@@ -305,21 +400,29 @@ body {
 }
 
 
+/* TEXT INPUT */
+
 .form-group input {
+
     height: 50px;
 
-    padding: 0 15px;
+    padding:
+        0 15px;
 
     font-size: 14px;
 }
 
 
+/* TEXTAREA */
+
 .form-group textarea {
+
     min-height: 105px;
 
-    resize: vertical;
+    padding:
+        14px 15px;
 
-    padding: 14px 15px;
+    resize: vertical;
 
     font-size: 14px;
 
@@ -327,43 +430,60 @@ body {
 }
 
 
+/* PLACEHOLDER */
+
 .form-group input::placeholder,
 .form-group textarea::placeholder {
-    color: #596477;
+
+    color:
+        var(--fc-muted-dark);
 }
 
+
+/* FOCUS */
 
 .form-group input:focus,
 .form-group textarea:focus {
-    border-color: var(--accent);
+
+    border-color:
+        var(--fc-accent);
 
     box-shadow:
-        0 0 0 3px rgba(108,99,255,0.12);
+        0 0 0 3px
+        rgba(108, 99, 255, 0.12);
 }
 
 
-/* COUNTER */
+/* =========================================================
+   CHARACTER COUNTERS
+   ========================================================= */
 
 .counter {
+
     position: absolute;
 
     right: 12px;
     bottom: 8px;
 
-    color: #596477;
+    color:
+        var(--fc-muted-dark);
 
     font-size: 10px;
 }
 
 
-/* ERROR */
+/* =========================================================
+   ERROR
+   ========================================================= */
 
 .error-message {
+
     min-height: 20px;
 
     margin-bottom: 5px;
 
-    color: var(--danger);
+    color:
+        var(--fc-danger);
 
     font-size: 13px;
 
@@ -371,26 +491,31 @@ body {
 }
 
 
-/* CREATE */
+/* =========================================================
+   CREATE BUTTON
+   ========================================================= */
 
 .create-button {
+
     width: 100%;
     height: 52px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     gap: 10px;
 
     border: 0;
+
     border-radius: 13px;
 
     background:
         linear-gradient(
             135deg,
-            var(--accent),
-            #8179ff
+            var(--fc-accent),
+            var(--fc-accent-light)
         );
 
     color: white;
@@ -398,12 +523,14 @@ body {
     font-family: inherit;
 
     font-size: 14px;
+
     font-weight: 700;
 
     cursor: pointer;
 
     box-shadow:
-        0 10px 30px rgba(108,99,255,0.22);
+        0 10px 30px
+        rgba(108, 99, 255, 0.22);
 
     transition:
         transform 0.2s ease,
@@ -412,19 +539,27 @@ body {
 
 
 .create-button:hover {
-    transform: translateY(-1px);
+
+    transform:
+        translateY(-1px);
 
     box-shadow:
-        0 14px 35px rgba(108,99,255,0.30);
+        0 14px 35px
+        rgba(108, 99, 255, 0.30);
 }
 
 
 .create-button:active {
-    transform: translateY(0);
+
+    transform:
+        translateY(0);
 }
 
 
+/* ARROW */
+
 .arrow {
+
     font-size: 18px;
 
     transition:
@@ -433,13 +568,18 @@ body {
 
 
 .create-button:hover .arrow {
-    transform: translateX(4px);
+
+    transform:
+        translateX(4px);
 }
 
 
-/* CANCEL */
+/* =========================================================
+   CANCEL BUTTON
+   ========================================================= */
 
 .cancel-button {
+
     width: 100%;
 
     margin-top: 12px;
@@ -461,30 +601,47 @@ body {
 
 
 .cancel-button:hover {
+
     color: white;
 }
 
 
-/* MOBILE */
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 600px) {
 
     .page {
-        padding: 18px;
+
+        padding:
+            18px;
     }
+
 
     .create-card {
-        padding: 26px 20px;
 
-        border-radius: 20px;
+        padding:
+            26px 20px;
+
+        border-radius:
+            20px;
     }
+
 
     .header h1 {
-        font-size: 26px;
+
+        font-size:
+            26px;
     }
 
+
     .server-icon {
-        width: 100px;
-        height: 100px;
+
+        width:
+            100px;
+
+        height:
+            100px;
     }
 }
