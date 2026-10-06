@@ -2266,49 +2266,135 @@ function addBottomDock() {
   }
 
 
-  function toggleDiscovery() {
+ function toggleDiscovery() {
 
-    addDiscovery();
-
-
-    const overlay =
-      $("fcDiscoveryOverlay");
-
-
-    if (!overlay) {
-
-      return;
-
-    }
+  /*
+     Make sure the discovery window exists
+  */
+  addDiscovery();
 
 
-    if (
-      overlay.classList.contains(
-        "open"
-      )
-    ) {
-
-      closeDiscovery();
-
-    }
-    else {
-
-      renderDiscovery();
+  const overlay =
+    document.getElementById(
+      "fcDiscoveryOverlay"
+    );
 
 
-      overlay.classList.add(
-        "open"
-      );
+  const panel =
+    document.getElementById(
+      "fcDiscovery"
+    );
 
 
-      overlay.style.display =
-        "block";
+  if (!overlay || !panel) {
+    return;
+  }
 
-    }
+
+  /*
+     If already open -> close it
+  */
+  if (
+    overlay.classList.contains("open")
+  ) {
+
+    closeDiscovery();
+
+    return;
 
   }
 
 
+  /*
+     Render the people list first
+  */
+  if (
+    typeof renderDiscovery ===
+    "function"
+  ) {
+
+    renderDiscovery();
+
+  }
+
+
+  /*
+     FORCE the overlay to be visible
+  */
+  overlay.style.setProperty(
+    "display",
+    "block",
+    "important"
+  );
+
+  overlay.style.setProperty(
+    "visibility",
+    "visible",
+    "important"
+  );
+
+  overlay.style.setProperty(
+    "opacity",
+    "1",
+    "important"
+  );
+
+  overlay.style.setProperty(
+    "pointer-events",
+    "auto",
+    "important"
+  );
+
+  overlay.style.setProperty(
+    "z-index",
+    "2147483646",
+    "important"
+  );
+
+
+  /*
+     FORCE the actual discovery panel
+     to appear above the blur
+  */
+  panel.style.setProperty(
+    "display",
+    "block",
+    "important"
+  );
+
+  panel.style.setProperty(
+    "visibility",
+    "visible",
+    "important"
+  );
+
+  panel.style.setProperty(
+    "opacity",
+    "1",
+    "important"
+  );
+
+  panel.style.setProperty(
+    "position",
+    "relative",
+    "important"
+  );
+
+  panel.style.setProperty(
+    "z-index",
+    "2147483647",
+    "important"
+  );
+
+
+  /*
+     Open state
+  */
+  overlay.classList.add(
+    "open"
+  );
+
+}
   function closeDiscovery() {
 
     const overlay =
