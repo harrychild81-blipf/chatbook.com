@@ -1,30 +1,32 @@
 /* =========================================================
-   FRIENDCHAT CUSTOM UI v3
-   COMPLETE VERSION
+   FRIENDCHAT CUSTOM UI v4
+   FIXED COMPLETE VERSION
+
    - Left navigation arrow
    - Sliding sidebar
    - Bottom dock
    - Discovery
-   - 12 themes
+   - Theme system
    - Theme persistence
+   - Theme window FIXED
+   - Theme window scrolling FIXED
+   - 20 themes
    - Spotify button cleanup
    - Navigation visibility control
    ========================================================= */
 
 (() => {
-
   "use strict";
 
-
   /* =========================================================
-     THEMES
+     20 THEMES
      ========================================================= */
 
   const themes = {
 
     midnight: {
-      name: "Midnight",
-      desc: "Dark blue and purple",
+      name: "Midnight Blue",
+      desc: "Deep blue night",
       bg: "#070a10",
       panel: "#0d121b",
       panel2: "#111827",
@@ -34,136 +36,232 @@
       muted: "#9ca3af"
     },
 
-    emerald: {
-      name: "Emerald",
-      desc: "Dark green glass",
-      bg: "#06100d",
-      panel: "#0c1713",
-      panel2: "#10221a",
-      accent: "#22c55e",
-      accent2: "#14b8a6",
+    purple: {
+      name: "Purple Neon",
+      desc: "Neon purple glow",
+      bg: "#090511",
+      panel: "#14091f",
+      panel2: "#21102f",
+      accent: "#a855f7",
+      accent2: "#ec4899",
       text: "#ffffff",
-      muted: "#9ca3af"
+      muted: "#b8a4c9"
     },
 
     ocean: {
       name: "Ocean",
-      desc: "Deep blue",
-      bg: "#061019",
-      panel: "#0b1722",
-      panel2: "#102435",
-      accent: "#22a6f2",
-      accent2: "#6366f1",
+      desc: "Deep ocean blue",
+      bg: "#041018",
+      panel: "#091a27",
+      panel2: "#102a3d",
+      accent: "#0ea5e9",
+      accent2: "#2563eb",
       text: "#ffffff",
-      muted: "#9ca3af"
+      muted: "#94a9b8"
+    },
+
+    forest: {
+      name: "Forest",
+      desc: "Deep natural green",
+      bg: "#061008",
+      panel: "#0c1b11",
+      panel2: "#14291b",
+      accent: "#22c55e",
+      accent2: "#84cc16",
+      text: "#ffffff",
+      muted: "#9caf9f"
+    },
+
+    cherry: {
+      name: "Cherry Blossom",
+      desc: "Pink cherry glow",
+      bg: "#12070d",
+      panel: "#1d0c15",
+      panel2: "#2b1220",
+      accent: "#f472b6",
+      accent2: "#ec4899",
+      text: "#ffffff",
+      muted: "#c8a5b7"
+    },
+
+    crimson: {
+      name: "Crimson",
+      desc: "Dark red power",
+      bg: "#100405",
+      panel: "#1c080a",
+      panel2: "#2b0d10",
+      accent: "#ef4444",
+      accent2: "#b91c1c",
+      text: "#ffffff",
+      muted: "#c59b9e"
     },
 
     sunset: {
       name: "Sunset",
-      desc: "Warm orange glow",
-      bg: "#120a08",
-      panel: "#1b100d",
-      panel2: "#291611",
-      accent: "#ff7a45",
+      desc: "Orange sunset glow",
+      bg: "#120805",
+      panel: "#1d0e09",
+      panel2: "#2b1610",
+      accent: "#fb923c",
       accent2: "#ef4444",
       text: "#ffffff",
-      muted: "#c0a8a2"
+      muted: "#c9aaa0"
     },
 
-    rose: {
-      name: "Rose",
-      desc: "Pink and violet",
-      bg: "#100810",
-      panel: "#190e19",
-      panel2: "#281329",
-      accent: "#ec4899",
-      accent2: "#8b5cf6",
+    arctic: {
+      name: "Arctic",
+      desc: "Cold icy blue",
+      bg: "#071017",
+      panel: "#0d1b24",
+      panel2: "#142b38",
+      accent: "#67e8f9",
+      accent2: "#38bdf8",
       text: "#ffffff",
-      muted: "#c0a5bb"
+      muted: "#9bb8c3"
     },
 
-    graphite: {
-      name: "Graphite",
-      desc: "Minimal monochrome",
-      bg: "#090909",
-      panel: "#121212",
-      panel2: "#1b1b1b",
-      accent: "#d1d5db",
-      accent2: "#6b7280",
+    cybergreen: {
+      name: "Cyber Green",
+      desc: "Futuristic green",
+      bg: "#020805",
+      panel: "#06130a",
+      panel2: "#0b2111",
+      accent: "#00ff88",
+      accent2: "#00c853",
       text: "#ffffff",
-      muted: "#a1a1aa"
+      muted: "#91b7a0"
     },
 
-    light: {
-      name: "Light",
-      desc: "Clean bright interface",
-      bg: "#f4f6f8",
+    golden: {
+      name: "Golden",
+      desc: "Dark gold luxury",
+      bg: "#0d0a03",
+      panel: "#191205",
+      panel2: "#281d08",
+      accent: "#facc15",
+      accent2: "#f59e0b",
+      text: "#ffffff",
+      muted: "#c7b989"
+    },
+
+    cyberpink: {
+      name: "Cyber Pink",
+      desc: "Hot pink neon",
+      bg: "#0c0209",
+      panel: "#180612",
+      panel2: "#28091c",
+      accent: "#ff1493",
+      accent2: "#d946ef",
+      text: "#ffffff",
+      muted: "#c59bb8"
+    },
+
+    black: {
+      name: "Pure Black",
+      desc: "Maximum black",
+      bg: "#000000",
+      panel: "#000000",
+      panel2: "#080808",
+      accent: "#ffffff",
+      accent2: "#a3a3a3",
+      text: "#ffffff",
+      muted: "#888888"
+    },
+
+    white: {
+      name: "Clean White",
+      desc: "Bright clean interface",
+      bg: "#f5f7fa",
       panel: "#ffffff",
-      panel2: "#eef1f5",
+      panel2: "#edf0f4",
       accent: "#4f46e5",
       accent2: "#7c3aed",
       text: "#111827",
       muted: "#6b7280"
     },
 
-    lavender: {
-      name: "Lavender",
-      desc: "Soft purple",
-      bg: "#110d1c",
-      panel: "#1b1429",
-      panel2: "#251b38",
-      accent: "#a78bfa",
-      accent2: "#c084fc",
+    galaxy: {
+      name: "Galaxy",
+      desc: "Deep space colors",
+      bg: "#050414",
+      panel: "#0c0822",
+      panel2: "#151035",
+      accent: "#7c3aed",
+      accent2: "#06b6d4",
       text: "#ffffff",
-      muted: "#b8abc9"
+      muted: "#aaa6c5"
     },
 
-    cyber: {
-      name: "Cyber",
-      desc: "Futuristic neon",
-      bg: "#050509",
-      panel: "#0b0b14",
-      panel2: "#111122",
-      accent: "#00f5ff",
-      accent2: "#ff00c8",
+    aurora: {
+      name: "Aurora",
+      desc: "Northern lights",
+      bg: "#03100f",
+      panel: "#071b18",
+      panel2: "#0d2b28",
+      accent: "#2dd4bf",
+      accent2: "#8b5cf6",
       text: "#ffffff",
-      muted: "#9292aa"
+      muted: "#9db8b4"
     },
 
-    forest: {
-      name: "Forest",
-      desc: "Deep natural green",
-      bg: "#07110a",
-      panel: "#0d1c11",
-      panel2: "#142719",
-      accent: "#84cc16",
-      accent2: "#22c55e",
+    discord: {
+      name: "Discord Blue",
+      desc: "Blue community style",
+      bg: "#202225",
+      panel: "#2f3136",
+      panel2: "#36393f",
+      accent: "#5865f2",
+      accent2: "#7289da",
       text: "#ffffff",
-      muted: "#9eb09f"
+      muted: "#b9bbbe"
     },
 
-    cherry: {
-      name: "Cherry",
-      desc: "Deep red and pink",
-      bg: "#110609",
-      panel: "#1c0b10",
-      panel2: "#2a1017",
-      accent: "#f43f5e",
-      accent2: "#fb7185",
+    cyberorange: {
+      name: "Cyber Orange",
+      desc: "Orange neon",
+      bg: "#0d0602",
+      panel: "#1a0c04",
+      panel2: "#291307",
+      accent: "#ff7a00",
+      accent2: "#ff3d00",
       text: "#ffffff",
-      muted: "#c49da5"
+      muted: "#c9a18b"
     },
 
-    amoled: {
-      name: "AMOLED",
-      desc: "Pure black",
-      bg: "#000000",
-      panel: "#000000",
-      panel2: "#0a0a0a",
-      accent: "#ffffff",
-      accent2: "#737373",
+    graphite: {
+      name: "Graphite",
+      desc: "Clean monochrome",
+      bg: "#090909",
+      panel: "#121212",
+      panel2: "#1c1c1c",
+      accent: "#d1d5db",
+      accent2: "#6b7280",
       text: "#ffffff",
-      muted: "#8b8b8b"
+      muted: "#a1a1aa"
+    },
+
+    gothic: {
+      name: "Dark Gothic",
+      desc: "Dark red gothic",
+      bg: "#050303",
+      panel: "#100707",
+      panel2: "#1b0b0b",
+      accent: "#991b1b",
+      accent2: "#7f1d1d",
+      text: "#f5f5f5",
+      muted: "#a99a9a"
+    },
+
+    crystal: {
+      name: "Glass Crystal",
+      desc: "Blue glass effect",
+      bg: "#061018",
+      panel: "rgba(18,35,50,.82)",
+      panel2: "rgba(30,55,75,.82)",
+      accent: "#67e8f9",
+      accent2: "#818cf8",
+      text: "#ffffff",
+      muted: "#a8c2ce"
     }
 
   };
@@ -173,28 +271,22 @@
      HELPERS
      ========================================================= */
 
-  const $ = id =>
-    document.getElementById(id);
-
+  const $ = id => document.getElementById(id);
 
   const esc = s =>
     String(s ?? "").replace(
       /[&<>"']/g,
-      m =>
-        ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;"
-        }[m])
+      m => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[m])
     );
 
-
   function create(tag, cls, parent) {
-
-    const e =
-      document.createElement(tag);
+    const e = document.createElement(tag);
 
     if (cls) {
       e.className = cls;
@@ -205,7 +297,6 @@
     }
 
     return e;
-
   }
 
 
@@ -219,22 +310,13 @@
       return;
     }
 
+    const style = document.createElement("style");
 
-    const style =
-      document.createElement("style");
-
-    style.id =
-      "friendchat-theme-guaranteed-style";
-
+    style.id = "friendchat-theme-guaranteed-style";
 
     style.textContent = `
 
-      /* =====================================================
-         FRIENDCHAT THEME VARIABLES
-         ===================================================== */
-
       :root {
-
         --fc-bg: #070a10;
         --fc-panel: #0d121b;
         --fc-panel-2: #111827;
@@ -242,50 +324,26 @@
         --fc-accent-2: #8b5cf6;
         --fc-text: #ffffff;
         --fc-muted: #9ca3af;
-
       }
 
 
-      /* =====================================================
-         MAIN BACKGROUND
-         ===================================================== */
-
       body {
-
-        background:
-          var(--fc-bg) !important;
-
-        color:
-          var(--fc-text);
-
+        background: var(--fc-bg) !important;
+        color: var(--fc-text) !important;
       }
 
 
       .app {
-
-        background:
-          var(--fc-bg) !important;
-
-        color:
-          var(--fc-text);
-
+        background: var(--fc-bg) !important;
+        color: var(--fc-text) !important;
       }
 
 
       .screen {
-
-        background:
-          var(--fc-bg);
-
-        color:
-          var(--fc-text);
-
+        background: var(--fc-bg);
+        color: var(--fc-text);
       }
 
-
-      /* =====================================================
-         COMMON PANELS
-         ===================================================== */
 
       .card,
       .panel,
@@ -294,79 +352,32 @@
       .friend-card,
       .chat-card,
       .settings-card {
-
-        background:
-          var(--fc-panel) !important;
-
-        color:
-          var(--fc-text) !important;
-
-        border-color:
-          color-mix(
-            in srgb,
-            var(--fc-accent) 20%,
-            transparent
-          ) !important;
-
+        background: var(--fc-panel) !important;
+        color: var(--fc-text) !important;
+        border-color: rgba(255,255,255,.10) !important;
       }
 
-
-      /* =====================================================
-         INPUTS
-         ===================================================== */
 
       input,
       textarea,
       select {
-
-        background:
-          var(--fc-panel-2) !important;
-
-        color:
-          var(--fc-text) !important;
-
-        border-color:
-          rgba(255,255,255,.12) !important;
-
+        background: var(--fc-panel-2) !important;
+        color: var(--fc-text) !important;
+        border-color: rgba(255,255,255,.12) !important;
       }
 
 
       input::placeholder,
       textarea::placeholder {
-
-        color:
-          var(--fc-muted) !important;
-
+        color: var(--fc-muted) !important;
       }
 
 
       input:focus,
       textarea:focus,
       select:focus {
-
-        border-color:
-          var(--fc-accent) !important;
-
-        box-shadow:
-          0 0 0 2px
-          color-mix(
-            in srgb,
-            var(--fc-accent) 15%,
-            transparent
-          ) !important;
-
-      }
-
-
-      /* =====================================================
-         COMMON BUTTONS
-         ===================================================== */
-
-      button {
-
-        --button-accent:
-          var(--fc-accent);
-
+        border-color: var(--fc-accent) !important;
+        box-shadow: 0 0 0 2px rgba(100,120,255,.15) !important;
       }
 
 
@@ -376,7 +387,6 @@
       .sendButton,
       .loginButton,
       .signupButton {
-
         background:
           linear-gradient(
             135deg,
@@ -384,37 +394,18 @@
             var(--fc-accent-2)
           ) !important;
 
-        color:
-          #fff !important;
-
+        color: #fff !important;
       }
 
 
-      /* =====================================================
-         LEFT SIDEBAR
-         ===================================================== */
-
       #fcCustomSidebar {
-
-        background:
-          var(--fc-panel) !important;
-
-        color:
-          var(--fc-text) !important;
-
-        border:
-          1px solid
-          rgba(255,255,255,.10) !important;
-
-        box-shadow:
-          8px 0 35px
-          rgba(0,0,0,.45) !important;
-
+        background: var(--fc-panel) !important;
+        color: var(--fc-text) !important;
+        border-color: rgba(255,255,255,.10) !important;
       }
 
 
       .fc-sidebar-logo {
-
         background:
           linear-gradient(
             135deg,
@@ -422,215 +413,83 @@
             var(--fc-accent-2)
           ) !important;
 
-        color:
-          #fff !important;
-
+        color: #fff !important;
       }
 
 
       .fc-sidebar-title {
-
-        color:
-          var(--fc-text) !important;
-
+        color: var(--fc-text) !important;
       }
 
 
       .fc-sidebar-sub {
-
-        color:
-          var(--fc-muted) !important;
-
+        color: var(--fc-muted) !important;
       }
 
 
       .fc-nav-item {
-
-        color:
-          var(--fc-text) !important;
-
+        color: var(--fc-text) !important;
       }
 
 
       .fc-nav-item:hover {
-
-        background:
-          color-mix(
-            in srgb,
-            var(--fc-accent) 12%,
-            transparent
-          ) !important;
-
+        background: rgba(255,255,255,.06) !important;
       }
 
 
       .fc-nav-item.active {
-
-        background:
-          color-mix(
-            in srgb,
-            var(--fc-accent) 18%,
-            transparent
-          ) !important;
-
-        color:
-          var(--fc-accent) !important;
-
+        background: rgba(100,120,255,.15) !important;
+        color: var(--fc-accent) !important;
       }
 
-
-      /* =====================================================
-         ARROW
-         ===================================================== */
 
       #fcNavToggle {
-
-        background:
-          var(--fc-panel) !important;
-
-        color:
-          var(--fc-text) !important;
-
-        border:
-          1px solid
-          rgba(255,255,255,.10) !important;
-
+        background: var(--fc-panel) !important;
+        color: var(--fc-text) !important;
       }
 
 
-      #fcNavToggle:hover {
-
-        background:
-          color-mix(
-            in srgb,
-            var(--fc-accent) 18%,
-            var(--fc-panel)
-          ) !important;
-
-      }
-
-
-      /* =====================================================
-         BOTTOM DOCK
-         ===================================================== */
+      /* Do not change bottom dock layout.
+         Only allow its existing theme colors. */
 
       .fc-bottom-dock {
-
-        background:
-          var(--fc-panel) !important;
-
-        border-color:
-          rgba(255,255,255,.12) !important;
-
+        background: var(--fc-panel) !important;
       }
 
-
-      .fc-bottom-dock
-      .fc-dock-btn {
-
-        color:
-          var(--fc-text) !important;
-
-      }
-
-
-      .fc-bottom-dock
-      .fc-dock-btn:hover {
-
-        background:
-          color-mix(
-            in srgb,
-            var(--fc-accent) 12%,
-            transparent
-          ) !important;
-
-      }
-
-
-      .fc-bottom-dock
-      .fc-dock-center {
-
-        background:
-          linear-gradient(
-            135deg,
-            var(--fc-accent),
-            var(--fc-accent-2)
-          ) !important;
-
-      }
-
-
-      /* =====================================================
-         DISCOVERY
-         ===================================================== */
 
       .fc-discovery {
-
-        background:
-          var(--fc-panel) !important;
-
-        color:
-          var(--fc-text) !important;
-
-        border-color:
-          rgba(255,255,255,.10) !important;
-
+        background: var(--fc-panel) !important;
+        color: var(--fc-text) !important;
       }
 
 
       .fc-user-suggestion {
-
-        background:
-          var(--fc-panel-2) !important;
-
-        color:
-          var(--fc-text) !important;
-
-      }
-
-
-      .fc-user-suggestion:hover {
-
-        border-color:
-          color-mix(
-            in srgb,
-            var(--fc-accent) 45%,
-            transparent
-          ) !important;
-
+        background: var(--fc-panel-2) !important;
+        color: var(--fc-text) !important;
       }
 
 
       .fc-user-avatar {
-
         background:
           linear-gradient(
             135deg,
             var(--fc-accent),
             var(--fc-accent-2)
           ) !important;
-
       }
 
 
       .fc-user-name {
-
-        color:
-          var(--fc-text) !important;
-
+        color: var(--fc-text) !important;
       }
 
 
       .fc-user-id {
-
-        color:
-          var(--fc-muted) !important;
-
+        color: var(--fc-muted) !important;
       }
 
 
       .fc-user-add {
-
         background:
           linear-gradient(
             135deg,
@@ -638,9 +497,40 @@
             var(--fc-accent-2)
           ) !important;
 
-        color:
-          #fff !important;
+        color: white !important;
+      }
 
+
+      /* =====================================================
+         THEME OVERLAY
+         ===================================================== */
+
+      #fcThemeOverlay {
+        position: fixed !important;
+        inset: 0 !important;
+
+        width: 100vw !important;
+        height: 100vh !important;
+
+        display: none !important;
+
+        background: rgba(0,0,0,.72) !important;
+
+        z-index: 2147483000 !important;
+
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+
+        padding: 20px !important;
+
+        box-sizing: border-box !important;
+
+        -webkit-overflow-scrolling: touch !important;
+      }
+
+
+      #fcThemeOverlay.open {
+        display: block !important;
       }
 
 
@@ -648,21 +538,96 @@
          THEME PANEL
          ===================================================== */
 
-      .fc-theme-panel {
+      #fcThemePanel {
+        position: relative !important;
 
-        background:
-          var(--fc-panel) !important;
+        display: none !important;
 
-        color:
-          var(--fc-text) !important;
+        width: min(760px, calc(100vw - 40px)) !important;
 
-        border-color:
-          rgba(255,255,255,.12) !important;
+        margin: 20px auto 50px auto !important;
 
+        padding: 20px !important;
+
+        box-sizing: border-box !important;
+
+        background: var(--fc-panel) !important;
+
+        color: var(--fc-text) !important;
+
+        border: 1px solid rgba(255,255,255,.12) !important;
+
+        border-radius: 22px !important;
+
+        box-shadow:
+          0 25px 80px rgba(0,0,0,.60) !important;
+
+        z-index: 2147483001 !important;
+
+        overflow: visible !important;
+      }
+
+
+      #fcThemePanel.open {
+        display: block !important;
+      }
+
+
+      .fc-theme-head {
+        display: flex !important;
+
+        align-items: center !important;
+
+        justify-content: space-between !important;
+
+        gap: 15px !important;
+
+        margin-bottom: 20px !important;
+      }
+
+
+      .fc-theme-head strong {
+        font-size: 21px !important;
+        color: var(--fc-text) !important;
+      }
+
+
+      .fc-theme-body {
+        width: 100% !important;
+        overflow: visible !important;
+      }
+
+
+      .fc-theme-grid {
+        display: grid !important;
+
+        grid-template-columns:
+          repeat(2, minmax(0,1fr)) !important;
+
+        gap: 12px !important;
+
+        width: 100% !important;
+
+        max-height: none !important;
+
+        overflow: visible !important;
       }
 
 
       .fc-theme-choice {
+        width: 100% !important;
+
+        min-height: 115px !important;
+
+        padding: 14px !important;
+
+        box-sizing: border-box !important;
+
+        border-radius: 16px !important;
+
+        border:
+          1px solid
+          rgba(255,255,255,.10) !important;
 
         background:
           var(--fc-panel-2) !important;
@@ -670,147 +635,114 @@
         color:
           var(--fc-text) !important;
 
-        border:
-          1px solid
-          rgba(255,255,255,.08) !important;
+        cursor: pointer !important;
 
+        text-align: left !important;
+
+        transition:
+          transform .18s ease,
+          border-color .18s ease !important;
       }
 
 
       .fc-theme-choice:hover {
+        transform: translateY(-2px) !important;
 
         border-color:
           var(--fc-accent) !important;
+      }
 
-        transform:
-          translateY(-2px);
 
+      .fc-theme-choice.selected {
+        border:
+          2px solid
+          var(--fc-accent) !important;
+
+        box-shadow:
+          0 0 20px
+          rgba(100,120,255,.20) !important;
+      }
+
+
+      .fc-theme-swatch {
+        width: 100% !important;
+
+        height: 42px !important;
+
+        border-radius: 10px !important;
+
+        margin-bottom: 10px !important;
       }
 
 
       .fc-theme-name {
+        color: var(--fc-text) !important;
 
-        color:
-          var(--fc-text) !important;
+        font-size: 15px !important;
 
+        font-weight: 700 !important;
       }
 
 
       .fc-theme-desc {
+        color: var(--fc-muted) !important;
 
-        color:
-          var(--fc-muted) !important;
+        font-size: 12px !important;
 
+        margin-top: 4px !important;
       }
 
 
       /* =====================================================
-         THEME PANEL ANIMATION
+         LIGHT THEME
          ===================================================== */
 
-      .fc-theme-choice {
-
-        transition:
-          transform .18s ease,
-          border-color .18s ease,
-          background .18s ease;
-
-      }
-
-
-      /* =====================================================
-         LIGHT THEME SPECIAL TEXT
-         ===================================================== */
-
+      html[data-fc-theme="white"],
       html[data-fc-theme="light"] {
-
-        color-scheme:
-          light;
-
+        color-scheme: light;
       }
 
 
-      html[data-fc-theme="light"] body,
-      html[data-fc-theme="light"] .app,
-      html[data-fc-theme="light"] .screen {
-
-        color:
-          #111827 !important;
-
-      }
-
-
-      html[data-fc-theme="light"]
-      .fc-bottom-dock {
-
-        box-shadow:
-          0 8px 30px
-          rgba(0,0,0,.16) !important;
-
+      html[data-fc-theme="white"] body,
+      html[data-fc-theme="white"] .app,
+      html[data-fc-theme="white"] .screen {
+        color: #111827 !important;
       }
 
 
       /* =====================================================
-         AMOLED
-         ===================================================== */
-
-      html[data-fc-theme="amoled"]
-      body,
-      html[data-fc-theme="amoled"]
-      .app,
-      html[data-fc-theme="amoled"]
-      .screen {
-
-        background:
-          #000 !important;
-
-      }
-
-
-      html[data-fc-theme="amoled"]
-      #fcCustomSidebar,
-      html[data-fc-theme="amoled"]
-      .fc-bottom-dock {
-
-        background:
-          #000 !important;
-
-        border-color:
-          #222 !important;
-
-      }
-
-
-      /* =====================================================
-         MOBILE THEME PANEL
+         MOBILE
          ===================================================== */
 
       @media(max-width:600px) {
 
-        .fc-theme-panel {
-
-          width:
-            calc(100vw - 24px) !important;
-
-          max-width:
-            420px !important;
-
+        #fcThemeOverlay {
+          padding: 10px !important;
         }
 
+
+        #fcThemePanel {
+          width: calc(100vw - 20px) !important;
+
+          margin:
+            10px auto 30px auto !important;
+
+          padding: 15px !important;
+
+          border-radius: 18px !important;
+        }
+
+
         .fc-theme-grid {
-
           grid-template-columns:
-            repeat(2, minmax(0,1fr)) !important;
-
+            1fr !important;
         }
 
       }
 
     `;
 
-
     document.head.appendChild(style);
-
   }
 
 
@@ -824,556 +756,124 @@
       return;
     }
 
+    const style = document.createElement("style");
 
-    const style =
-      document.createElement("style");
-
-    style.id =
-      "friendchat-nav-guaranteed-style";
-
+    style.id = "friendchat-nav-guaranteed-style";
 
     style.textContent = `
 
-      /* =====================================================
-         LEFT ARROW
-         ===================================================== */
-
       #fcNavToggle {
-
         position: fixed !important;
 
         left: 0 !important;
-
         top: 50% !important;
 
         transform:
           translateY(-50%) !important;
 
-        z-index:
-          2147483646 !important;
+        z-index: 2147483646 !important;
 
-        width:
-          28px !important;
+        width: 28px !important;
+        height: 48px !important;
 
-        height:
-          48px !important;
+        display: flex !important;
 
-        display:
-          flex !important;
+        align-items: center !important;
+        justify-content: center !important;
 
-        align-items:
-          center !important;
+        padding: 0 !important;
+        margin: 0 !important;
 
-        justify-content:
-          center !important;
-
-        padding:
-          0 !important;
-
-        margin:
-          0 !important;
-
-        border:
-          0 !important;
+        border: 0 !important;
 
         border-radius:
           0 14px 14px 0 !important;
 
-        background:
-          rgba(20,25,38,.97) !important;
+        cursor: pointer !important;
 
-        color:
-          #fff !important;
-
-        cursor:
-          pointer !important;
-
-        visibility:
-          visible !important;
-
-        box-shadow:
-          3px 0 12px
-          rgba(0,0,0,.25) !important;
-
-        transition:
-          left .22s ease,
-          background .18s ease !important;
-
-      }
-
-
-      #fcNavToggle:hover {
-
-        background:
-          rgba(35,42,60,.99) !important;
-
+        visibility: visible !important;
       }
 
 
       #fcNavToggle.is-open {
-
-        left:
-          185px !important;
-
-        border-radius:
-          0 14px 14px 0 !important;
-
+        left: 185px !important;
       }
 
 
       #fcNavToggle .fc-chevron {
+        font-size: 24px !important;
 
-        font-size:
-          24px !important;
+        line-height: 1 !important;
 
-        line-height:
-          1 !important;
-
-        display:
-          block !important;
+        display: block !important;
 
         transition:
           transform .22s ease !important;
-
       }
 
 
       #fcNavToggle.is-open
       .fc-chevron {
-
         transform:
           rotate(180deg) !important;
-
       }
 
 
-      /* =====================================================
-         SIDEBAR
-         ===================================================== */
-
       #fcCustomSidebar {
-
         position: fixed !important;
 
         left: 0 !important;
-
         top: 50% !important;
 
         transform:
           translateY(-50%)
           translateX(-110%) !important;
 
-        width:
-          185px !important;
+        width: 185px !important;
 
-        z-index:
-          2147483645 !important;
+        z-index: 2147483645 !important;
 
-        box-sizing:
-          border-box !important;
+        box-sizing: border-box !important;
 
         transition:
           transform .22s ease !important;
-
       }
 
 
       #fcCustomSidebar.open {
-
         transform:
           translateY(-50%)
           translateX(0) !important;
-
       }
 
-
-      /* =====================================================
-         BOTTOM DOCK
-         ===================================================== */
-
-      .fc-bottom-dock {
-
-        position: fixed !important;
-
-        left: 50% !important;
-
-        right: auto !important;
-
-        top: auto !important;
-
-        bottom: 10px !important;
-
-        transform:
-          translateX(-50%) !important;
-
-        width:
-          150px !important;
-
-        min-width:
-          150px !important;
-
-        max-width:
-          150px !important;
-
-        height:
-          44px !important;
-
-        min-height:
-          44px !important;
-
-        max-height:
-          44px !important;
-
-        padding:
-          3px 5px !important;
-
-        margin:
-          0 !important;
-
-        box-sizing:
-          border-box !important;
-
-        display:
-          flex !important;
-
-        align-items:
-          center !important;
-
-        justify-content:
-          space-between !important;
-
-        gap:
-          2px !important;
-
-        border-radius:
-          14px !important;
-
-        background:
-          rgba(10,14,22,.98) !important;
-
-        border:
-          1px solid
-          rgba(255,255,255,.14) !important;
-
-        box-shadow:
-          0 8px 25px
-          rgba(0,0,0,.45) !important;
-
-        z-index:
-          2147483647 !important;
-
-      }
-
-
-      .fc-bottom-dock
-      .fc-dock-btn {
-
-        flex:
-          0 0 38px !important;
-
-        width:
-          38px !important;
-
-        min-width:
-          38px !important;
-
-        max-width:
-          38px !important;
-
-        height:
-          38px !important;
-
-        min-height:
-          38px !important;
-
-        max-height:
-          38px !important;
-
-        padding:
-          0 !important;
-
-        margin:
-          0 !important;
-
-        border:
-          0 !important;
-
-        border-radius:
-          10px !important;
-
-        background:
-          transparent !important;
-
-        color:
-          #fff !important;
-
-        display:
-          flex !important;
-
-        align-items:
-          center !important;
-
-        justify-content:
-          center !important;
-
-        cursor:
-          pointer !important;
-
-        box-sizing:
-          border-box !important;
-
-      }
-
-
-      /* =====================================================
-         DOCK ICONS
-         ===================================================== */
-
-      .fc-bottom-dock
-      .fc-dock-btn span:first-child {
-
-        display:
-          block !important;
-
-        font-size:
-          18px !important;
-
-        line-height:
-          1 !important;
-
-      }
-
-
-      .fc-bottom-dock
-      .fc-dock-btn
-      span:last-child {
-
-        display:
-          none !important;
-
-      }
-
-
-      /* =====================================================
-         FC CENTER
-         ===================================================== */
-
-      .fc-bottom-dock
-      .fc-dock-center {
-
-        flex:
-          0 0 38px !important;
-
-        width:
-          38px !important;
-
-        min-width:
-          38px !important;
-
-        max-width:
-          38px !important;
-
-        height:
-          38px !important;
-
-        min-height:
-          38px !important;
-
-        max-height:
-          38px !important;
-
-        border-radius:
-          10px !important;
-
-        background:
-          linear-gradient(
-            135deg,
-            var(--fc-accent),
-            var(--fc-accent-2)
-          ) !important;
-
-        color:
-          #fff !important;
-
-        box-shadow:
-          0 4px 14px
-          rgba(110,80,240,.35) !important;
-
-      }
-
-
-      .fc-bottom-dock
-      .fc-dock-center
-      span:first-child {
-
-        display:
-          block !important;
-
-        font-size:
-          14px !important;
-
-        font-weight:
-          900 !important;
-
-      }
-
-
-      .fc-bottom-dock
-      .fc-dock-btn:not(.fc-dock-center):hover {
-
-        background:
-          rgba(255,255,255,.08) !important;
-
-      }
-
-
-      .fc-bottom-dock
-      .fc-dock-center:hover {
-
-        transform:
-          scale(1.04) !important;
-
-      }
-
-
-      /* =====================================================
-         CHAT OPEN
-         ===================================================== */
-
-      body.fc-chat-open
-      .fc-bottom-dock {
-
-        display:
-          none !important;
-
-        visibility:
-          hidden !important;
-
-        opacity:
-          0 !important;
-
-        pointer-events:
-          none !important;
-
-      }
-
-
-      /* =====================================================
-         OLD NAVIGATION
-         ===================================================== */
 
       #bottomNav {
-
-        display:
-          none !important;
-
+        display: none !important;
       }
 
-
-      /* =====================================================
-         MOBILE
-         ===================================================== */
 
       @media(max-width:600px) {
 
         #fcNavToggle {
-
-          left:
-            0 !important;
-
-          width:
-            24px !important;
-
-          height:
-            44px !important;
-
-          border-radius:
-            0 12px 12px 0 !important;
-
+          width: 24px !important;
+          height: 44px !important;
         }
 
 
         #fcNavToggle.is-open {
-
-          left:
-            178px !important;
-
+          left: 178px !important;
         }
 
 
         #fcCustomSidebar {
-
-          width:
-            178px !important;
-
-          left:
-            0 !important;
-
-        }
-
-
-        .fc-bottom-dock {
-
-          width:
-            140px !important;
-
-          min-width:
-            140px !important;
-
-          max-width:
-            140px !important;
-
-          height:
-            42px !important;
-
-          min-height:
-            42px !important;
-
-          max-height:
-            42px !important;
-
-          bottom:
-            8px !important;
-
-        }
-
-
-        .fc-bottom-dock
-        .fc-dock-btn,
-
-        .fc-bottom-dock
-        .fc-dock-center {
-
-          flex-basis:
-            36px !important;
-
-          width:
-            36px !important;
-
-          min-width:
-            36px !important;
-
-          max-width:
-            36px !important;
-
-          height:
-            36px !important;
-
-          min-height:
-            36px !important;
-
-          max-height:
-            36px !important;
-
+          width: 178px !important;
         }
 
       }
 
     `;
 
-
     document.head.appendChild(style);
-
   }
 
 
@@ -1388,19 +888,16 @@
     installNavigationStyles();
 
 
-    /* Prevent duplicate navigation */
-
     if ($("fcCustomSidebar")) {
 
       setupVisibility();
 
       return;
-
     }
 
 
     /* =======================================================
-       LEFT NAVIGATION ARROW
+       ARROW
        ======================================================= */
 
     const toggle =
@@ -1410,20 +907,16 @@
         document.body
       );
 
+    toggle.id = "fcNavToggle";
 
-    toggle.id =
-      "fcNavToggle";
+    toggle.type = "button";
 
-
-    toggle.title =
-      "Open navigation";
-
+    toggle.title = "Open navigation";
 
     toggle.setAttribute(
       "aria-label",
       "Open navigation"
     );
-
 
     toggle.innerHTML =
       '<span class="fc-chevron">›</span>';
@@ -1440,10 +933,8 @@
         document.body
       );
 
-
     sidebar.id =
       "fcCustomSidebar";
-
 
     sidebar.innerHTML = `
 
@@ -1473,13 +964,8 @@
         data-nav="chats"
         type="button"
       >
-
-        <span class="fc-nav-icon">
-          💬
-        </span>
-
+        <span class="fc-nav-icon">💬</span>
         Chats
-
       </button>
 
 
@@ -1488,13 +974,8 @@
         data-nav="friends"
         type="button"
       >
-
-        <span class="fc-nav-icon">
-          👥
-        </span>
-
+        <span class="fc-nav-icon">👥</span>
         Friends
-
       </button>
 
 
@@ -1503,13 +984,8 @@
         data-nav="music"
         type="button"
       >
-
-        <span class="fc-nav-icon">
-          🎵
-        </span>
-
+        <span class="fc-nav-icon">🎵</span>
         Music
-
       </button>
 
 
@@ -1521,13 +997,8 @@
         data-nav="theme"
         type="button"
       >
-
-        <span class="fc-nav-icon">
-          🎨
-        </span>
-
+        <span class="fc-nav-icon">🎨</span>
         Change theme
-
       </button>
 
 
@@ -1536,13 +1007,8 @@
         data-nav="settings"
         type="button"
       >
-
-        <span class="fc-nav-icon">
-          ⚙️
-        </span>
-
+        <span class="fc-nav-icon">⚙️</span>
         Settings
-
       </button>
 
 
@@ -1551,20 +1017,15 @@
         data-nav="profile"
         type="button"
       >
-
-        <span class="fc-nav-icon">
-          👤
-        </span>
-
+        <span class="fc-nav-icon">👤</span>
         Profile
-
       </button>
 
     `;
 
 
     /* =======================================================
-       OPEN / CLOSE SIDEBAR
+       ARROW OPEN/CLOSE
        ======================================================= */
 
     toggle.addEventListener(
@@ -1572,29 +1033,17 @@
       () => {
 
         const open =
-          sidebar.classList.toggle(
-            "open"
-          );
-
+          sidebar.classList.toggle("open");
 
         toggle.classList.toggle(
           "is-open",
           open
         );
 
-
         toggle.title =
           open
             ? "Close navigation"
             : "Open navigation";
-
-
-        toggle.setAttribute(
-          "aria-label",
-          open
-            ? "Close navigation"
-            : "Open navigation"
-        );
 
       }
     );
@@ -1605,46 +1054,31 @@
        ======================================================= */
 
     sidebar
-      .querySelectorAll(
-        ".fc-nav-item"
-      )
+      .querySelectorAll(".fc-nav-item")
       .forEach(btn => {
 
         btn.addEventListener(
           "click",
-          () => {
+          event => {
+
+            event.preventDefault();
+            event.stopPropagation();
 
             const action =
               btn.dataset.nav;
 
 
-            /* CHATS */
-
-            if (
-              action === "chats"
-            ) {
-
+            if (action === "chats") {
               goHome();
-
             }
 
 
-            /* FRIENDS */
-
-            if (
-              action === "friends"
-            ) {
-
+            if (action === "friends") {
               goHome();
-
             }
 
 
-            /* MUSIC */
-
-            if (
-              action === "music"
-            ) {
+            if (action === "music") {
 
               if (
                 typeof window.openSpotifyPanel ===
@@ -1665,64 +1099,57 @@
             }
 
 
-            /* PROFILE */
-
-            if (
-              action === "profile"
-            ) {
+            if (action === "profile") {
 
               if (
-                typeof showProfile ===
+                typeof window.showProfile ===
                 "function"
               ) {
 
-                showProfile();
+                window.showProfile();
 
               }
 
             }
 
 
-            /* THEME */
+            /* =================================================
+               THEME
+               ================================================= */
 
-            if (
-              action === "theme"
-            ) {
+            if (action === "theme") {
 
-              openThemePanel();
+              /*
+                 IMPORTANT:
+                 Open the theme panel FIRST.
+              */
 
-            }
-
-
-            /* SETTINGS */
-
-            if (
-              action === "settings"
-            ) {
+              addThemePanel();
 
               openThemePanel();
 
+              return;
             }
 
 
-            sidebar.classList.remove(
-              "open"
-            );
+            /*
+               Settings currently opens theme panel.
+               Change this later if you add a real settings page.
+            */
+
+            if (action === "settings") {
+
+              addThemePanel();
+
+              openThemePanel();
+
+              return;
+            }
 
 
-            toggle.classList.remove(
-              "is-open"
-            );
+            sidebar.classList.remove("open");
 
-
-            toggle.title =
-              "Open navigation";
-
-
-            toggle.setAttribute(
-              "aria-label",
-              "Open navigation"
-            );
+            toggle.classList.remove("is-open");
 
           }
         );
@@ -1746,7 +1173,7 @@
 
 
   /* =========================================================
-     SAFE HOME NAVIGATION
+     HOME
      ========================================================= */
 
   function goHome() {
@@ -1772,69 +1199,39 @@
     }
 
 
-    const screens =
-      document.querySelectorAll(
-        ".screen"
+    document
+      .querySelectorAll(".screen")
+      .forEach(
+        screen =>
+          screen.classList.add("hidden")
       );
 
 
-    screens.forEach(
-      screen =>
-        screen.classList.add(
-          "hidden"
-        )
-    );
-
-
-    const home =
-      $("homeScreen");
-
+    const home = $("homeScreen");
 
     if (home) {
-
-      home.classList.remove(
-        "hidden"
-      );
-
+      home.classList.remove("hidden");
     }
 
 
-    const chat =
-      $("chatScreen");
-
+    const chat = $("chatScreen");
 
     if (chat) {
-
-      chat.classList.add(
-        "hidden"
-      );
-
+      chat.classList.add("hidden");
     }
 
 
-    const add =
-      $("addScreen");
-
+    const add = $("addScreen");
 
     if (add) {
-
-      add.classList.add(
-        "hidden"
-      );
-
+      add.classList.add("hidden");
     }
 
 
-    const profile =
-      $("profileScreen");
-
+    const profile = $("profileScreen");
 
     if (profile) {
-
-      profile.classList.add(
-        "hidden"
-      );
-
+      profile.classList.add("hidden");
     }
 
 
@@ -1843,60 +1240,25 @@
     closeThemePanel();
 
 
-    const dock =
-      document.querySelector(
-        ".fc-bottom-dock"
-      );
-
-
-    if (dock) {
-
-      dock.style.setProperty(
-        "display",
-        "flex",
-        "important"
-      );
-
-
-      dock.style.setProperty(
-        "visibility",
-        "visible",
-        "important"
-      );
-
-
-      dock.style.setProperty(
-        "opacity",
-        "1",
-        "important"
-      );
-
-    }
+    document.body.classList.remove(
+      "fc-chat-open"
+    );
 
 
     const sidebar =
       $("fcCustomSidebar");
-
 
     const toggle =
       $("fcNavToggle");
 
 
     if (sidebar) {
-
-      sidebar.classList.remove(
-        "open"
-      );
-
+      sidebar.classList.remove("open");
     }
 
 
     if (toggle) {
-
-      toggle.classList.remove(
-        "is-open"
-      );
-
+      toggle.classList.remove("is-open");
     }
 
   }
@@ -1913,9 +1275,7 @@
         ".fc-bottom-dock"
       )
     ) {
-
       return;
-
     }
 
 
@@ -1927,8 +1287,6 @@
       );
 
 
-    /* CHATS */
-
     const chats =
       create(
         "button",
@@ -1936,28 +1294,17 @@
         dock
       );
 
+    chats.type = "button";
 
-    chats.type =
-      "button";
-
-
-    chats.title =
-      "Chats";
-
+    chats.title = "Chats";
 
     chats.innerHTML =
       '<span>💬</span><span>Chats</span>';
 
+    chats.onclick = () => {
+      goHome();
+    };
 
-    chats.onclick =
-      () => {
-
-        goHome();
-
-      };
-
-
-    /* FC DISCOVER */
 
     const center =
       create(
@@ -1966,28 +1313,18 @@
         dock
       );
 
-
-    center.type =
-      "button";
-
+    center.type = "button";
 
     center.title =
       "Discover FriendChat users";
 
-
     center.innerHTML =
       '<span>FC</span><span>Suggestions</span>';
 
+    center.onclick = () => {
+      toggleDiscovery();
+    };
 
-    center.onclick =
-      () => {
-
-        toggleDiscovery();
-
-      };
-
-
-    /* PROFILE */
 
     const profile =
       create(
@@ -1996,32 +1333,25 @@
         dock
       );
 
+    profile.type = "button";
 
-    profile.type =
-      "button";
-
-
-    profile.title =
-      "Profile";
-
+    profile.title = "Profile";
 
     profile.innerHTML =
       '<span>👤</span><span>Profile</span>';
 
+    profile.onclick = () => {
 
-    profile.onclick =
-      () => {
+      if (
+        typeof window.showProfile ===
+        "function"
+      ) {
 
-        if (
-          typeof showProfile ===
-          "function"
-        ) {
+        window.showProfile();
 
-          showProfile();
+      }
 
-        }
-
-      };
+    };
 
   }
 
@@ -2044,17 +1374,24 @@
         document.body
       );
 
-
     overlay.id =
       "fcDiscoveryOverlay";
 
 
-    overlay.onclick =
-      () => {
+    overlay.addEventListener(
+      "click",
+      event => {
 
-        closeDiscovery();
+        if (
+          event.target === overlay
+        ) {
 
-      };
+          closeDiscovery();
+
+        }
+
+      }
+    );
 
 
     const panel =
@@ -2063,7 +1400,6 @@
         "fc-discovery",
         document.body
       );
-
 
     panel.id =
       "fcDiscovery";
@@ -2114,11 +1450,7 @@
     if (closeButton) {
 
       closeButton.onclick =
-        () => {
-
-          closeDiscovery();
-
-        };
+        closeDiscovery;
 
     }
 
@@ -2127,23 +1459,20 @@
 
   function toggleDiscovery() {
 
-    const p =
+    const panel =
       $("fcDiscovery");
 
-
-    const o =
+    const overlay =
       $("fcDiscoveryOverlay");
 
 
-    if (!p || !o) {
+    if (!panel || !overlay) {
       return;
     }
 
 
     if (
-      p.classList.contains(
-        "open"
-      )
+      panel.classList.contains("open")
     ) {
 
       closeDiscovery();
@@ -2152,15 +1481,9 @@
 
       renderDiscovery();
 
+      panel.classList.add("open");
 
-      p.classList.add(
-        "open"
-      );
-
-
-      o.classList.add(
-        "open"
-      );
+      overlay.classList.add("open");
 
     }
 
@@ -2170,15 +1493,10 @@
   function closeDiscovery() {
 
     $("fcDiscovery")
-      ?.classList.remove(
-        "open"
-      );
-
+      ?.classList.remove("open");
 
     $("fcDiscoveryOverlay")
-      ?.classList.remove(
-        "open"
-      );
+      ?.classList.remove("open");
 
   }
 
@@ -2195,90 +1513,67 @@
 
 
     const friendSource =
-      Array.isArray(
-        window.friends
-      )
+      Array.isArray(window.friends)
         ? window.friends
         : [];
 
 
     const presence =
-      window.friendChatPresence ||
-      {};
+      window.friendChatPresence || {};
 
 
     const map =
       new Map();
 
 
-    friendSource.forEach(
-      user => {
+    friendSource.forEach(user => {
+
+      map.set(
+        String(user.id || "").toUpperCase(),
+        user
+      );
+
+    });
+
+
+    Object.keys(presence).forEach(id => {
+
+      const key =
+        String(id).toUpperCase();
+
+
+      if (!map.has(key)) {
 
         map.set(
-          String(
-            user.id || ""
-          ).toUpperCase(),
-          user
-        );
-
-      }
-    );
-
-
-    Object.keys(
-      presence
-    ).forEach(
-      id => {
-
-        const key =
-          String(id)
-            .toUpperCase();
-
-
-        if (
-          !map.has(key)
-        ) {
-
-          map.set(
-            key,
-            {
-              id: key,
-              name: key
-            }
-          );
-
-        }
-
-      }
-    );
-
-
-    const source =
-      [...map.values()]
-        .filter(
-          user => {
-
-            const myId =
-              window.currentUser?.id;
-
-
-            return (
-              !myId ||
-              String(
-                user.id
-              ).toUpperCase() !==
-              String(
-                myId
-              ).toUpperCase()
-            );
-
+          key,
+          {
+            id: key,
+            name: key
           }
         );
 
+      }
 
-    if (
-      !source.length
-    ) {
+    });
+
+
+    const source =
+      [...map.values()].filter(user => {
+
+        const myId =
+          window.currentUser?.id;
+
+
+        return (
+          !myId ||
+          String(user.id).toUpperCase() !==
+          String(myId).toUpperCase()
+        );
+
+      });
+
+
+    if (!source.length) {
 
       list.innerHTML = `
 
@@ -2289,118 +1584,94 @@
             color:var(--fc-muted);
           "
         >
-
           No users available yet.
-
         </div>
 
       `;
 
       return;
-
     }
 
 
-    list.innerHTML =
-      "";
+    list.innerHTML = "";
 
 
-    source.forEach(
-      user => {
+    source.forEach(user => {
 
-        const row =
-          create(
-            "div",
-            "fc-user-suggestion",
-            list
-          );
-
-
-        const avatar =
-          create(
-            "div",
-            "fc-user-avatar",
-            row
-          );
+      const row =
+        create(
+          "div",
+          "fc-user-suggestion",
+          list
+        );
 
 
-        avatar.textContent =
-          (
-            user.name ||
-            "?"
-          )
-            .charAt(0)
-            .toUpperCase();
+      const avatar =
+        create(
+          "div",
+          "fc-user-avatar",
+          row
+        );
 
 
-        const info =
-          create(
-            "div",
-            "fc-user-info",
-            row
-          );
+      avatar.textContent =
+        (
+          user.name || "?"
+        )
+          .charAt(0)
+          .toUpperCase();
 
 
-        info.innerHTML = `
-
-          <div class="fc-user-name">
-
-            ${esc(
-              user.name ||
-              "Unknown"
-            )}
-
-          </div>
+      const info =
+        create(
+          "div",
+          "fc-user-info",
+          row
+        );
 
 
-          <div class="fc-user-id">
+      info.innerHTML = `
 
-            ${esc(
-              user.id ||
-              ""
-            )}
+        <div class="fc-user-name">
+          ${esc(user.name || "Unknown")}
+        </div>
 
-          </div>
+        <div class="fc-user-id">
+          ${esc(user.id || "")}
+        </div>
 
-        `;
-
-
-        const add =
-          create(
-            "button",
-            "fc-user-add",
-            row
-          );
+      `;
 
 
-        add.type =
-          "button";
+      const add =
+        create(
+          "button",
+          "fc-user-add",
+          row
+        );
 
 
-        add.textContent =
-          "Chat";
+      add.type = "button";
+
+      add.textContent = "Chat";
 
 
-        add.onclick =
-          () => {
+      add.onclick = () => {
 
-            if (
-              typeof openChat ===
-              "function"
-            ) {
+        if (
+          typeof window.openChat ===
+          "function"
+        ) {
 
-              openChat(
-                user
-              );
+          window.openChat(user);
 
-            }
+        }
 
-            closeDiscovery();
+        closeDiscovery();
 
-          };
+      };
 
-      }
-    );
+    });
 
   }
 
@@ -2411,10 +1682,26 @@
 
   function addThemePanel() {
 
-    if ($("fcThemePanel")) {
+    if (
+      $("fcThemePanel") &&
+      $("fcThemeOverlay")
+    ) {
       return;
     }
 
+
+    /* -------------------------------------------------------
+       REMOVE BROKEN OLD PANEL IF ONE EXISTS
+       ------------------------------------------------------- */
+
+    $("fcThemePanel")?.remove();
+
+    $("fcThemeOverlay")?.remove();
+
+
+    /* -------------------------------------------------------
+       OVERLAY
+       ------------------------------------------------------- */
 
     const overlay =
       create(
@@ -2423,18 +1710,34 @@
         document.body
       );
 
-
     overlay.id =
       "fcThemeOverlay";
 
 
-    overlay.onclick =
-      () => {
+    /* IMPORTANT:
+       clicking the dark background closes it,
+       clicking the panel does NOT.
+    */
 
-        closeThemePanel();
+    overlay.addEventListener(
+      "click",
+      event => {
 
-      };
+        if (
+          event.target === overlay
+        ) {
 
+          closeThemePanel();
+
+        }
+
+      }
+    );
+
+
+    /* -------------------------------------------------------
+       PANEL
+       ------------------------------------------------------- */
 
     const panel =
       create(
@@ -2442,7 +1745,6 @@
         "fc-theme-panel",
         document.body
       );
-
 
     panel.id =
       "fcThemePanel";
@@ -2469,6 +1771,7 @@
           class="fc-dock-btn"
           data-close
           type="button"
+          aria-label="Close themes"
         >
           ×
         </button>
@@ -2496,12 +1799,18 @@
 
     if (closeButton) {
 
-      closeButton.onclick =
-        () => {
+      closeButton.addEventListener(
+        "click",
+        event => {
+
+          event.preventDefault();
+
+          event.stopPropagation();
 
           closeThemePanel();
 
-        };
+        }
+      );
 
     }
 
@@ -2517,9 +1826,7 @@
     }
 
 
-    Object.entries(
-      themes
-    ).forEach(
+    Object.entries(themes).forEach(
       ([key, theme]) => {
 
         const button =
@@ -2530,12 +1837,9 @@
           );
 
 
-        button.type =
-          "button";
+        button.type = "button";
 
-
-        button.dataset.theme =
-          key;
+        button.dataset.theme = key;
 
 
         button.innerHTML = `
@@ -2548,7 +1852,7 @@
                   135deg,
                   ${theme.accent},
                   ${theme.accent2}
-                )
+                );
             "
           ></div>
 
@@ -2565,14 +1869,18 @@
         `;
 
 
-        button.onclick =
-          () => {
+        button.addEventListener(
+          "click",
+          event => {
 
-            setTheme(
-              key
-            );
+            event.preventDefault();
 
-          };
+            event.stopPropagation();
+
+            setTheme(key);
+
+          }
+        );
 
       }
     );
@@ -2580,40 +1888,222 @@
   }
 
 
+  /* =========================================================
+     OPEN THEME PANEL
+     ========================================================= */
+
   function openThemePanel() {
 
-    $("fcThemePanel")
-      ?.classList.add(
-        "open"
+    /*
+       Make absolutely sure the panel exists.
+    */
+
+    if (
+      !$("fcThemePanel") ||
+      !$("fcThemeOverlay")
+    ) {
+
+      addThemePanel();
+
+    }
+
+
+    const overlay =
+      $("fcThemeOverlay");
+
+    const panel =
+      $("fcThemePanel");
+
+
+    if (!overlay || !panel) {
+
+      console.error(
+        "FriendChat: Theme panel could not be created."
       );
 
+      return;
 
-    $("fcThemeOverlay")
-      ?.classList.add(
-        "open"
-      );
-
-  }
+    }
 
 
-  function closeThemePanel() {
+    /*
+       FORCE OPEN.
+       This avoids conflicts with old CSS.
+    */
 
-    $("fcThemePanel")
-      ?.classList.remove(
-        "open"
-      );
+    overlay.classList.add("open");
+
+    panel.classList.add("open");
 
 
-    $("fcThemeOverlay")
-      ?.classList.remove(
-        "open"
-      );
+    overlay.style.setProperty(
+      "display",
+      "block",
+      "important"
+    );
+
+
+    panel.style.setProperty(
+      "display",
+      "block",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "visibility",
+      "visible",
+      "important"
+    );
+
+
+    panel.style.setProperty(
+      "visibility",
+      "visible",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "opacity",
+      "1",
+      "important"
+    );
+
+
+    panel.style.setProperty(
+      "opacity",
+      "1",
+      "important"
+    );
+
+
+    overlay.style.setProperty(
+      "pointer-events",
+      "auto",
+      "important"
+    );
+
+
+    panel.style.setProperty(
+      "pointer-events",
+      "auto",
+      "important"
+    );
+
+
+    /*
+       Put theme panel above everything.
+    */
+
+    overlay.style.setProperty(
+      "z-index",
+      "2147483000",
+      "important"
+    );
+
+
+    panel.style.setProperty(
+      "z-index",
+      "2147483001",
+      "important"
+    );
+
+
+    /*
+       Lock normal page scrolling.
+       The theme overlay itself scrolls.
+    */
+
+    document.body.dataset.fcThemeWasOverflow =
+      document.body.style.overflow || "";
+
+    document.body.style.overflow = "hidden";
+
+
+    /*
+       Scroll to top when opened.
+    */
+
+    overlay.scrollTop = 0;
 
   }
 
 
   /* =========================================================
-     APPLY THEME
+     CLOSE THEME PANEL
+     ========================================================= */
+
+  function closeThemePanel() {
+
+    const overlay =
+      $("fcThemeOverlay");
+
+    const panel =
+      $("fcThemePanel");
+
+
+    if (overlay) {
+
+      overlay.classList.remove("open");
+
+      overlay.style.setProperty(
+        "display",
+        "none",
+        "important"
+      );
+
+      overlay.style.setProperty(
+        "pointer-events",
+        "none",
+        "important"
+      );
+
+    }
+
+
+    if (panel) {
+
+      panel.classList.remove("open");
+
+      panel.style.setProperty(
+        "display",
+        "none",
+        "important"
+      );
+
+      panel.style.setProperty(
+        "pointer-events",
+        "none",
+        "important"
+      );
+
+    }
+
+
+    if (
+      document.body.dataset.fcThemeWasOverflow !==
+      undefined
+    ) {
+
+      document.body.style.overflow =
+        document.body.dataset.fcThemeWasOverflow;
+
+      delete document.body.dataset.fcThemeWasOverflow;
+
+    } else {
+
+      document.body.style.removeProperty(
+        "overflow"
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     THEME APPLY
      ========================================================= */
 
   function setTheme(key) {
@@ -2631,15 +2121,11 @@
       document.documentElement;
 
 
-    /* Theme attribute */
-
     root.setAttribute(
       "data-fc-theme",
       key
     );
 
-
-    /* CSS variables */
 
     root.style.setProperty(
       "--fc-bg",
@@ -2683,50 +2169,66 @@
     );
 
 
-    /* Save */
-
     localStorage.setItem(
       "friendchat_theme",
       key
     );
 
 
-    /* Highlight selected theme */
-
     document
       .querySelectorAll(
         ".fc-theme-choice"
       )
-      .forEach(
-        button => {
+      .forEach(button => {
 
-          button.classList.toggle(
-            "selected",
-            button.dataset.theme === key
-          );
+        button.classList.toggle(
+          "selected",
+          button.dataset.theme === key
+        );
 
-        }
-      );
+      });
 
   }
 
 
   function applySavedTheme() {
 
-    const saved =
+    let saved =
       localStorage.getItem(
         "friendchat_theme"
-      ) ||
-      "midnight";
+      );
 
 
-    setTheme(
-      themes[saved]
-        ? saved
-        : "midnight"
-    );
+    if (!saved || !themes[saved]) {
+      saved = "midnight";
+    }
+
+
+    setTheme(saved);
 
   }
+
+
+  /* =========================================================
+     ESC KEY
+     ========================================================= */
+
+  document.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Escape"
+      ) {
+
+        closeThemePanel();
+
+        closeDiscovery();
+
+      }
+
+    }
+  );
 
 
   /* =========================================================
@@ -2740,7 +2242,6 @@
       const login =
         $("loginScreen");
 
-
       const signup =
         $("signupScreen");
 
@@ -2748,70 +2249,58 @@
       const authenticated =
         !!(
           login &&
-          login.classList.contains(
-            "hidden"
-          ) &&
+          login.classList.contains("hidden") &&
           (
             !signup ||
-            signup.classList.contains(
-              "hidden"
-            )
+            signup.classList.contains("hidden")
           )
         );
 
 
-      /* =====================================================
-         LEFT NAV
-         ===================================================== */
-
       [
         "fcNavToggle",
         "fcCustomSidebar"
-      ].forEach(
-        id => {
+      ].forEach(id => {
 
-          const el =
-            $(id);
+        const el = $(id);
 
-
-          if (!el) {
-            return;
-          }
-
-
-          el.style.setProperty(
-            "display",
-            authenticated
-              ? "flex"
-              : "none",
-            "important"
-          );
-
-
-          el.style.setProperty(
-            "visibility",
-            authenticated
-              ? "visible"
-              : "hidden",
-            "important"
-          );
-
-
-          el.style.setProperty(
-            "opacity",
-            authenticated
-              ? "1"
-              : "0",
-            "important"
-          );
-
+        if (!el) {
+          return;
         }
-      );
 
 
-      /* =====================================================
-         CHAT STATUS
-         ===================================================== */
+        el.style.setProperty(
+          "display",
+          authenticated
+            ? (
+                id === "fcNavToggle"
+                  ? "flex"
+                  : "block"
+              )
+            : "none",
+          "important"
+        );
+
+
+        el.style.setProperty(
+          "visibility",
+          authenticated
+            ? "visible"
+            : "hidden",
+          "important"
+        );
+
+
+        el.style.setProperty(
+          "opacity",
+          authenticated
+            ? "1"
+            : "0",
+          "important"
+        );
+
+      });
+
 
       const chatScreen =
         $("chatScreen");
@@ -2832,50 +2321,44 @@
       );
 
 
-      /* =====================================================
-         BOTTOM DOCK
-         ===================================================== */
-
       document
         .querySelectorAll(
           ".fc-bottom-dock"
         )
-        .forEach(
-          el => {
+        .forEach(el => {
 
-            const showDock =
-              authenticated &&
-              !chatOpen;
-
-
-            el.style.setProperty(
-              "display",
-              showDock
-                ? "flex"
-                : "none",
-              "important"
-            );
+          const showDock =
+            authenticated &&
+            !chatOpen;
 
 
-            el.style.setProperty(
-              "visibility",
-              showDock
-                ? "visible"
-                : "hidden",
-              "important"
-            );
+          el.style.setProperty(
+            "display",
+            showDock
+              ? "flex"
+              : "none",
+            "important"
+          );
 
 
-            el.style.setProperty(
-              "opacity",
-              showDock
-                ? "1"
-                : "0",
-              "important"
-            );
+          el.style.setProperty(
+            "visibility",
+            showDock
+              ? "visible"
+              : "hidden",
+            "important"
+          );
 
-          }
-        );
+
+          el.style.setProperty(
+            "opacity",
+            showDock
+              ? "1"
+              : "0",
+            "important"
+          );
+
+        });
 
     };
 
@@ -2910,25 +2393,23 @@
 
 
   /* =========================================================
-     REMOVE OLD SPOTIFY BUTTONS
+     SPOTIFY CLEANUP
      ========================================================= */
 
   function hideOldSpotifyButton() {
 
-    const hide =
-      () => {
+    const hide = () => {
 
-        document
-          .querySelectorAll(
-            ".spotify-side-button,"
-            + ".spotify-side-bar"
-          )
-          .forEach(
-            e =>
-              e.remove()
-          );
+      document
+        .querySelectorAll(
+          ".spotify-side-button, .spotify-side-bar"
+        )
+        .forEach(
+          element =>
+            element.remove()
+        );
 
-      };
+    };
 
 
     hide();
@@ -2943,11 +2424,7 @@
 
     setTimeout(
       () => {
-
-        clearInterval(
-          timer
-        );
-
+        clearInterval(timer);
       },
       15000
     );
@@ -2974,5 +2451,27 @@
     init();
 
   }
+
+
+  /* =========================================================
+     GLOBAL FUNCTIONS
+     ========================================================= */
+
+  /*
+     These make the theme system available to your
+     HTML and other FriendChat scripts.
+  */
+
+  window.openThemePanel =
+    openThemePanel;
+
+  window.closeThemePanel =
+    closeThemePanel;
+
+  window.changeTheme =
+    openThemePanel;
+
+  window.toggleTheme =
+    openThemePanel;
 
 })();
