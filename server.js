@@ -16,6 +16,17 @@ const serverMessages = new Map();
 const presence = new Map();
 const profilePhotos = new Map();
 
+/*
+   FriendChat community/server data.
+
+   IMPORTANT:
+   This is NOT the backend server itself.
+
+   These are the servers/communities that
+   FriendChat users create inside the app.
+*/
+const friendchatServers = new Map();
+
 
 /* =====================================================
    FIND WEBSITE ROOT
@@ -40,20 +51,8 @@ console.log("Website root:", ROOT_DIR);
 
 
 /* =====================================================
-   PERSISTENT USER ACCOUNTS
+   PERSISTENT DATA
    ===================================================== */
-
-/*
-   User accounts are stored outside the website folder.
-
-   Only:
-   - FriendChat ID
-   - Name
-
-   are saved.
-
-   Passwords and emails are NOT stored here.
-*/
 
 const DATA_DIR = path.join(
   PARENT_FOLDER,
@@ -63,6 +62,11 @@ const DATA_DIR = path.join(
 const USERS_FILE = path.join(
   DATA_DIR,
   "users.json"
+);
+
+const SERVERS_FILE = path.join(
+  DATA_DIR,
+  "servers.json"
 );
 
 
@@ -75,6 +79,33 @@ function normalizeId(value) {
   return String(value || "")
     .trim()
     .toUpperCase();
+
+}
+
+
+function cleanText(value, maxLength = 500) {
+
+  return String(value || "")
+    .trim()
+    .slice(0, maxLength);
+
+}
+
+
+function generateID(prefix) {
+
+  return (
+    prefix +
+    "-" +
+    Math.random()
+      .toString(36)
+      .substring(2, 8)
+      .toUpperCase() +
+    Date.now()
+      .toString(36)
+      .slice(-4)
+      .toUpperCase()
+  );
 
 }
 
@@ -115,7 +146,145 @@ function sendToUser(userId, payload) {
 
 
 /* =====================================================
-   LOAD SAVED USERS
+   HTTP JSON HELPERS
+   ===================================================== */
+
+function sendJSON(
+  res,
+  statusCode,
+  data
+) {
+
+  res.writeHead(
+    statusCode,
+    {
+      "Content-Type":
+        "application/json; charset=utf-8",
+
+      "Cache-Control":
+        "no-cache"
+    }
+  );
+
+  res.end(
+    JSON.stringify(data)
+  );
+
+}
+
+
+function sendError(
+  res,
+  statusCode,
+  message
+) {
+
+  sendJSON(
+    res,
+    statusCode,
+    {
+      ok: false,
+      error: message
+    }
+  );
+
+}
+
+
+function readJSONBody(req) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      let body = "";
+
+      let size = 0;
+
+      const MAX_BODY =
+        5 * 1024 * 1024;
+
+
+      req.on(
+        "data",
+        chunk => {
+
+          size += chunk.length;
+
+          if (
+            size >
+            MAX_BODY
+          ) {
+
+            reject(
+              new Error(
+                "Request body is too large."
+              )
+            );
+
+            req.destroy();
+
+            return;
+
+          }
+
+          body += chunk.toString();
+
+        }
+      );
+
+
+      req.on(
+        "end",
+        () => {
+
+          if (!body.trim()) {
+
+            resolve({});
+
+            return;
+
+          }
+
+
+          try {
+
+            resolve(
+              JSON.parse(body)
+            );
+
+          }
+
+          catch (error) {
+
+            reject(
+              new Error(
+                "Invalid JSON."
+              )
+            );
+
+          }
+
+        }
+      );
+
+
+      req.on(
+        "error",
+        error => {
+
+          reject(error);
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   LOAD USERS
    ===================================================== */
 
 function loadUsers() {
@@ -207,14 +376,6 @@ function loadUsers() {
       );
 
 
-      /*
-        Every user loaded from disk
-        starts offline.
-
-        When they connect, this
-        changes to online.
-      */
-
       presence.set(
         id,
         {
@@ -290,14 +451,6 @@ function saveUsers() {
       );
 
 
-    /*
-      Write to temporary file first.
-
-      This helps prevent users.json
-      from becoming corrupted if the
-      server stops while saving.
-    */
-
     const tempFile =
       USERS_FILE + ".tmp";
 
@@ -318,7 +471,6 @@ function saveUsers() {
       USERS_FILE
     );
 
-
   }
 
   catch (error) {
@@ -333,11 +485,647 @@ function saveUsers() {
 }
 
 
+/* =====================================================
+   SERVER / COMMUNITY DATA
+   ===================================================== */
+
 /*
-   Load accounts when server starts.
+   Normalize old/new member formats.
+
+   Supported:
+
+   "FC-ABC123"
+
+   OR
+
+   {
+      userID: "FC-ABC123",
+      name: "Harry",
+      role: "member"
+   }
+*/
+
+function normalizeMember(
+  member
+) {
+
+  if (
+    typeof member ===
+    "string"
+  ) {
+
+    const userID =
+      normalizeId(
+        member
+      );
+
+    const user =
+      users.get(
+        userID
+      );
+
+    return {
+
+      userID:
+        userID,
+
+      name:
+        user?.name ||
+        "Friend",
+
+      role:
+        "member",
+
+      joinedAt:
+        Date.now()
+
+    };
+
+  }
+
+
+  if (
+    member &&
+    typeof member ===
+      "object"
+  ) {
+
+    const userID =
+      normalizeId(
+        member.userID ||
+        member.id
+      );
+
+    if (!userID) {
+
+      return null;
+
+    }
+
+    const user =
+      users.get(
+        userID
+      );
+
+
+    return {
+
+      userID:
+        userID,
+
+      name:
+        cleanText(
+          member.name ||
+          user?.name ||
+          "Friend",
+          100
+        ),
+
+      role:
+        member.role ===
+          "owner"
+          ? "owner"
+          : "member",
+
+      joinedAt:
+        Number(
+          member.joinedAt
+        ) ||
+        Date.now()
+
+    };
+
+  }
+
+
+  return null;
+
+}
+
+
+function normalizeServer(
+  serverData
+) {
+
+  if (
+    !serverData ||
+    typeof serverData !==
+      "object"
+  ) {
+
+    return null;
+
+  }
+
+
+  const serverID =
+    cleanText(
+      serverData.serverID ||
+      serverData.id,
+      100
+    );
+
+
+  const ownerID =
+    normalizeId(
+      serverData.ownerID
+    );
+
+
+  if (
+    !serverID ||
+    !ownerID
+  ) {
+
+    return null;
+
+  }
+
+
+  let members =
+    Array.isArray(
+      serverData.members
+    )
+      ? serverData.members
+          .map(
+            normalizeMember
+          )
+          .filter(Boolean)
+      : [];
+
+
+  /*
+    Always make sure owner exists.
+  */
+
+  const ownerExists =
+    members.some(
+      member =>
+        normalizeId(
+          member.userID
+        ) === ownerID
+    );
+
+
+  if (!ownerExists) {
+
+    const owner =
+      users.get(
+        ownerID
+      );
+
+    members.unshift({
+
+      userID:
+        ownerID,
+
+      name:
+        owner?.name ||
+        "Owner",
+
+      role:
+        "owner",
+
+      joinedAt:
+        Number(
+          serverData.createdAt
+        ) ||
+        Date.now()
+
+    });
+
+  }
+
+
+  /*
+    Make owner role correct.
+  */
+
+  members =
+    members.map(
+      member => ({
+
+        ...member,
+
+        role:
+          normalizeId(
+            member.userID
+          ) === ownerID
+            ? "owner"
+            : (
+                member.role ===
+                  "owner"
+                  ? "member"
+                  : member.role ||
+                    "member"
+              )
+
+      })
+    );
+
+
+  return {
+
+    serverID:
+      serverID,
+
+    ownerID:
+      ownerID,
+
+    name:
+      cleanText(
+        serverData.name ||
+        "FriendChat Server",
+        40
+      ),
+
+    description:
+      cleanText(
+        serverData.description,
+        200
+      ),
+
+    icon:
+      serverData.icon ||
+      null,
+
+    banner:
+      serverData.banner ||
+      null,
+
+    createdAt:
+      Number(
+        serverData.createdAt
+      ) ||
+      Date.now(),
+
+    members:
+      members,
+
+    channels:
+      Array.isArray(
+        serverData.channels
+      )
+        ? serverData.channels
+        : [],
+
+    roles:
+      Array.isArray(
+        serverData.roles
+      )
+        ? serverData.roles
+        : [],
+
+    rules:
+      Array.isArray(
+        serverData.rules
+      )
+        ? serverData.rules
+        : [],
+
+    settings:
+      serverData.settings &&
+      typeof serverData.settings ===
+        "object"
+        ? serverData.settings
+        : {
+
+            theme:
+              "dark",
+
+            accentColor:
+              "#6c63ff",
+
+            background:
+              null
+
+          }
+
+  };
+
+}
+
+
+/* =====================================================
+   LOAD SERVERS
+   ===================================================== */
+
+function loadServers() {
+
+  try {
+
+    if (!fs.existsSync(DATA_DIR)) {
+
+      fs.mkdirSync(
+        DATA_DIR,
+        {
+          recursive: true
+        }
+      );
+
+    }
+
+
+    if (!fs.existsSync(SERVERS_FILE)) {
+
+      console.log(
+        "No saved servers file found."
+      );
+
+      return;
+
+    }
+
+
+    const raw =
+      fs.readFileSync(
+        SERVERS_FILE,
+        "utf8"
+      );
+
+
+    const savedServers =
+      JSON.parse(raw);
+
+
+    if (!Array.isArray(savedServers)) {
+
+      console.log(
+        "servers.json is not an array."
+      );
+
+      return;
+
+    }
+
+
+    for (
+      const saved
+      of savedServers
+    ) {
+
+      const server =
+        normalizeServer(
+          saved
+        );
+
+
+      if (!server) {
+
+        continue;
+
+      }
+
+
+      friendchatServers.set(
+        server.serverID,
+        server
+      );
+
+    }
+
+
+    console.log(
+      `Loaded ${friendchatServers.size} FriendChat servers.`
+    );
+
+  }
+
+  catch (error) {
+
+    console.log(
+      "Could not load servers:",
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   SAVE SERVERS
+   ===================================================== */
+
+function saveServers() {
+
+  try {
+
+    if (!fs.existsSync(DATA_DIR)) {
+
+      fs.mkdirSync(
+        DATA_DIR,
+        {
+          recursive: true
+        }
+      );
+
+    }
+
+
+    const savedServers =
+      Array.from(
+        friendchatServers.values()
+      );
+
+
+    const tempFile =
+      SERVERS_FILE + ".tmp";
+
+
+    fs.writeFileSync(
+      tempFile,
+      JSON.stringify(
+        savedServers,
+        null,
+        2
+      ),
+      "utf8"
+    );
+
+
+    fs.renameSync(
+      tempFile,
+      SERVERS_FILE
+    );
+
+
+  }
+
+  catch (error) {
+
+    console.log(
+      "Could not save servers:",
+      error.message
+    );
+
+  }
+
+}
+
+
+/*
+   Load accounts first.
+
+   Then load communities so member
+   names can be resolved.
 */
 
 loadUsers();
+loadServers();
+
+
+/* =====================================================
+   SERVER MEMBER HELPERS
+   ===================================================== */
+
+function getServerMember(
+  server,
+  userID
+) {
+
+  const id =
+    normalizeId(
+      userID
+    );
+
+
+  return server.members.find(
+    member =>
+      normalizeId(
+        member.userID
+      ) === id
+  );
+
+}
+
+
+function isServerMember(
+  server,
+  userID
+) {
+
+  return !!getServerMember(
+    server,
+    userID
+  );
+
+}
+
+
+function isServerOwner(
+  server,
+  userID
+) {
+
+  return (
+    normalizeId(
+      server.ownerID
+    ) ===
+    normalizeId(
+      userID
+    )
+  );
+
+}
+
+
+function publicMember(
+  member
+) {
+
+  return {
+
+    userID:
+      member.userID,
+
+    name:
+      member.name,
+
+    role:
+      member.role,
+
+    joinedAt:
+      member.joinedAt
+
+  };
+
+}
+
+
+/* =====================================================
+   PUBLIC SERVER DATA
+   ===================================================== */
+
+function publicServer(
+  server,
+  viewerID
+) {
+
+  const viewer =
+    normalizeId(
+      viewerID
+    );
+
+
+  return {
+
+    serverID:
+      server.serverID,
+
+    ownerID:
+      server.ownerID,
+
+    name:
+      server.name,
+
+    description:
+      server.description,
+
+    icon:
+      server.icon,
+
+    banner:
+      server.banner,
+
+    createdAt:
+      server.createdAt,
+
+    members:
+      server.members.map(
+        publicMember
+      ),
+
+    memberCount:
+      server.members.length,
+
+    channels:
+      server.channels,
+
+    roles:
+      server.roles,
+
+    rules:
+      server.rules,
+
+    settings:
+      server.settings,
+
+    isMember:
+      isServerMember(
+        server,
+        viewer
+      ),
+
+    isOwner:
+      isServerOwner(
+        server,
+        viewer
+      )
+
+  };
+
+}
 
 
 /* =====================================================
@@ -396,400 +1184,192 @@ const contentTypes = {
    ===================================================== */
 
 const server = http.createServer(
-  (req, res) => {
+  async (req, res) => {
 
-    const url =
-      new URL(
-        req.url,
-        `http://${req.headers.host || "localhost"}`
-      );
+    try {
 
-
-    const pathname =
-      url.pathname;
-
-
-    /* ================================================
-       HEALTH
-       ================================================ */
-
-    if (pathname === "/health") {
-
-      res.writeHead(
-        200,
-        {
-          "Content-Type":
-            "application/json; charset=utf-8"
-        }
-      );
-
-
-      res.end(
-        JSON.stringify({
-
-          ok:
-            true,
-
-          service:
-            "FriendChat"
-
-        })
-      );
-
-
-      return;
-
-    }
-
-
-    /* ================================================
-       ALL FRIENDCHAT USERS
-       ================================================
-
-       /api/users
-
-       /api/users?exclude=FC-ABC123
-
-       Returns all saved users.
-
-       Online users:
-       status = active/busy
-
-       Offline users:
-       status = offline
-
-       Own account is excluded.
-       ================================================ */
-
-    if (pathname === "/api/users") {
-
-      const excludeId =
-        normalizeId(
-          url.searchParams.get(
-            "exclude"
-          )
+      const url =
+        new URL(
+          req.url,
+          `http://${req.headers.host || "localhost"}`
         );
 
 
-      const viewer =
-        excludeId;
+      const pathname =
+        url.pathname;
 
 
-      const presenceForViewer =
-        viewer
-          ? getPresenceForViewer(
-              viewer
-            )
-          : {};
+      /* ================================================
+         HEALTH
+         ================================================ */
 
-
-      const result = [];
-
-
-      for (
-        const [id, user]
-        of users.entries()
+      if (
+        req.method === "GET" &&
+        pathname === "/health"
       ) {
 
-        /*
-          Do not show own account.
-        */
+        sendJSON(
+          res,
+          200,
+          {
 
-        if (
-          excludeId &&
-          id === excludeId
-        ) {
+            ok:
+              true,
 
-          continue;
+            service:
+              "FriendChat",
 
-        }
+            servers:
+              friendchatServers.size,
 
-
-        const presenceInfo =
-          presenceForViewer[id];
-
-
-        let status =
-          "offline";
-
-
-        if (presenceInfo) {
-
-          status =
-            presenceInfo.status ||
-            "offline";
-
-        }
-
-        else {
-
-          const info =
-            presence.get(id);
-
-
-          if (
-            info &&
-            info.online
-          ) {
-
-            status =
-              "active";
+            users:
+              users.size
 
           }
+        );
 
-        }
-
-
-        result.push({
-
-          id:
-            user.id,
-
-          name:
-            user.name,
-
-          status:
-            status,
-
-          online:
-            status !== "offline"
-
-        });
+        return;
 
       }
 
 
-      /*
-        Online users first.
-        Offline users after that.
+      /* ================================================
+         ALL FRIENDCHAT USERS
+         ================================================ */
 
-        Within each group,
-        sort alphabetically.
-      */
+      if (
+        req.method === "GET" &&
+        pathname === "/api/users"
+      ) {
 
-      result.sort(
-        (a, b) => {
-
-          if (
-            a.online !==
-            b.online
-          ) {
-
-            return a.online
-              ? -1
-              : 1;
-
-          }
-
-
-          return String(
-            a.name
-          ).localeCompare(
-            String(
-              b.name
+        const excludeId =
+          normalizeId(
+            url.searchParams.get(
+              "exclude"
             )
           );
 
-        }
-      );
+
+        const viewer =
+          excludeId;
 
 
-      res.writeHead(
-        200,
-        {
-
-          "Content-Type":
-            "application/json; charset=utf-8",
-
-          "Cache-Control":
-            "no-cache"
-
-        }
-      );
+        const presenceForViewer =
+          viewer
+            ? getPresenceForViewer(
+                viewer
+              )
+            : {};
 
 
-      res.end(
-        JSON.stringify({
-
-          users:
-            result
-
-        })
-      );
+        const result = [];
 
 
-      return;
+        for (
+          const [id, user]
+          of users.entries()
+        ) {
 
-    }
+          if (
+            excludeId &&
+            id === excludeId
+          ) {
 
+            continue;
 
-    /* ================================================
-       FIND ONE USER
-       ================================================ */
-
-    if (
-      pathname.startsWith(
-        "/api/user/"
-      )
-    ) {
-
-      const id =
-        normalizeId(
-          decodeURIComponent(
-            pathname.substring(
-              "/api/user/".length
-            )
-          )
-        );
+          }
 
 
-      const user =
-        users.get(id);
+          const presenceInfo =
+            presenceForViewer[id];
 
 
-      res.writeHead(
-        200,
-        {
-
-          "Content-Type":
-            "application/json; charset=utf-8"
-
-        }
-      );
+          let status =
+            "offline";
 
 
-      res.end(
-        JSON.stringify({
+          if (presenceInfo) {
 
-          found:
-            !!user,
+            status =
+              presenceInfo.status ||
+              "offline";
 
-          user:
-            user
-              ? {
+          }
 
-                  id:
-                    user.id,
+          else {
 
-                  name:
-                    user.name
-
-                }
-
-              : null
-
-        })
-      );
+            const info =
+              presence.get(id);
 
 
-      return;
+            if (
+              info &&
+              info.online
+            ) {
 
-    }
+              status =
+                "active";
 
+            }
 
-    /* ================================================
-       PRESENCE API
-       ================================================ */
-
-    if (
-      pathname ===
-      "/api/presence"
-    ) {
-
-      const result = {};
+          }
 
 
-      for (
-        const [id, info]
-        of presence.entries()
-      ) {
+          result.push({
 
-        result[id] = {
+            id:
+              user.id,
 
-          id:
-            info.id,
+            name:
+              user.name,
 
-          name:
-            info.name,
+            status:
+              status,
 
-          online:
-            info.online,
+            online:
+              status !== "offline"
 
-          chattingWith:
-            info.chattingWith
-
-        };
-
-      }
-
-
-      res.writeHead(
-        200,
-        {
-
-          "Content-Type":
-            "application/json; charset=utf-8"
+          });
 
         }
-      );
 
 
-      res.end(
-        JSON.stringify(
-          result
-        )
-      );
+        result.sort(
+          (a, b) => {
+
+            if (
+              a.online !==
+              b.online
+            ) {
+
+              return a.online
+                ? -1
+                : 1;
+
+            }
 
 
-      return;
-
-    }
-
-
-    /* ================================================
-       PROFILE PHOTO API
-       ================================================ */
-
-    if (
-      pathname.startsWith(
-        "/api/profile-photo/"
-      )
-    ) {
-
-      const id =
-        normalizeId(
-          decodeURIComponent(
-            pathname.substring(
-              "/api/profile-photo/".length
-            )
-          )
-        );
-
-
-      const photo =
-        profilePhotos.get(id);
-
-
-      if (!photo) {
-
-        res.writeHead(
-          404,
-          {
-
-            "Content-Type":
-              "application/json; charset=utf-8"
+            return String(
+              a.name
+            ).localeCompare(
+              String(
+                b.name
+              )
+            );
 
           }
         );
 
 
-        res.end(
-          JSON.stringify({
+        sendJSON(
+          res,
+          200,
+          {
 
-            found:
-              false
+            users:
+              result
 
-          })
+          }
         );
 
 
@@ -798,204 +1378,1430 @@ const server = http.createServer(
       }
 
 
-      res.writeHead(
-        200,
-        {
+      /* ================================================
+         FIND ONE USER
+         ================================================ */
 
-          "Content-Type":
-            "application/json; charset=utf-8"
+      if (
+        req.method === "GET" &&
+        pathname.startsWith(
+          "/api/user/"
+        )
+      ) {
 
-        }
-      );
-
-
-      res.end(
-        JSON.stringify({
-
-          found:
-            true,
-
-          userId:
-            id,
-
-          photo:
-            photo
-
-        })
-      );
+        const id =
+          normalizeId(
+            decodeURIComponent(
+              pathname.substring(
+                "/api/user/".length
+              )
+            )
+          );
 
 
-      return;
-
-    }
-
-
-    /* ================================================
-       STATIC WEBSITE FILES
-       ================================================ */
-
-    let requestedFile =
-      pathname;
+        const user =
+          users.get(id);
 
 
-    if (
-      requestedFile === "/"
-    ) {
+        sendJSON(
+          res,
+          200,
+          {
 
-      requestedFile =
-        "/index.html";
+            found:
+              !!user,
 
-    }
+            user:
+              user
+                ? {
 
+                    id:
+                      user.id,
 
-    let relativeFile =
-      requestedFile
-        .replace(
-          /^\/+/,
-          ""
+                    name:
+                      user.name
+
+                  }
+
+                : null
+
+          }
         );
 
 
-    /*
-      Prevent ../ path traversal.
-    */
+        return;
 
-    relativeFile =
-      path.normalize(
-        relativeFile
-      );
+      }
 
 
-    if (
-      relativeFile.startsWith(
-        ".." + path.sep
-      ) ||
-      relativeFile === ".."
-    ) {
-
-      res.writeHead(
-        403
-      );
+      /* =================================================
+         SERVER API
+         ================================================= */
 
 
-      res.end(
-        "Forbidden"
-      );
+      /* ================================================
+         GET SERVERS FOR USER
+         
+         GET /api/servers?user=FC-ABC123
+         ================================================ */
 
+      if (
+        req.method === "GET" &&
+        pathname === "/api/servers"
+      ) {
 
-      return;
-
-    }
-
-
-    const filePath =
-      path.resolve(
-        ROOT_DIR,
-        relativeFile
-      );
-
-
-    /*
-      Make absolutely sure the requested file
-      remains inside ROOT_DIR.
-    */
-
-    const rootWithSeparator =
-      ROOT_DIR.endsWith(
-        path.sep
-      )
-        ? ROOT_DIR
-        : ROOT_DIR + path.sep;
-
-
-    if (
-      filePath !== ROOT_DIR &&
-      !filePath.startsWith(
-        rootWithSeparator
-      )
-    ) {
-
-      res.writeHead(
-        403
-      );
-
-
-      res.end(
-        "Forbidden"
-      );
-
-
-      return;
-
-    }
-
-
-    fs.readFile(
-      filePath,
-      (error, data) => {
-
-        if (error) {
-
-          console.log(
-            "FILE NOT FOUND:",
-            filePath
+        const userID =
+          normalizeId(
+            url.searchParams.get(
+              "user"
+            )
           );
 
 
-          res.writeHead(
-            404,
-            {
+        if (!userID) {
 
-              "Content-Type":
-                "text/plain; charset=utf-8"
-
-            }
+          sendError(
+            res,
+            400,
+            "User ID is required."
           );
-
-
-          res.end(
-            `FILE NOT FOUND: ${filePath}`
-          );
-
 
           return;
 
         }
 
 
-        const extension =
-          path.extname(
-            filePath
-          ).toLowerCase();
+        const result = [];
 
 
-        res.writeHead(
+        for (
+          const server
+          of friendchatServers.values()
+        ) {
+
+          if (
+            isServerMember(
+              server,
+              userID
+            )
+          ) {
+
+            result.push(
+              publicServer(
+                server,
+                userID
+              )
+            );
+
+          }
+
+        }
+
+
+        result.sort(
+          (a, b) =>
+            Number(
+              a.createdAt
+            ) -
+            Number(
+              b.createdAt
+            )
+        );
+
+
+        sendJSON(
+          res,
           200,
           {
 
-            "Content-Type":
-              contentTypes[
-                extension
-              ] ||
-              "application/octet-stream",
+            ok:
+              true,
 
-
-            "Cache-Control":
-              extension === ".css" ||
-              extension === ".js"
-                ? "no-cache"
-                : "public, max-age=3600"
+            servers:
+              result
 
           }
         );
 
 
+        return;
+
+      }
+
+
+      /* ================================================
+         CREATE SERVER
+
+         POST /api/servers
+         ================================================ */
+
+      if (
+        req.method === "POST" &&
+        pathname === "/api/servers"
+      ) {
+
+        const body =
+          await readJSONBody(
+            req
+          );
+
+
+        const ownerID =
+          normalizeId(
+            body.ownerID ||
+            body.userID
+          );
+
+
+        if (!ownerID) {
+
+          sendError(
+            res,
+            400,
+            "Owner ID is required."
+          );
+
+          return;
+
+        }
+
+
+        /*
+          The account must exist.
+        */
+
+        const owner =
+          users.get(
+            ownerID
+          );
+
+
+        if (!owner) {
+
+          sendError(
+            res,
+            404,
+            "Owner account was not found."
+          );
+
+          return;
+
+        }
+
+
+        const name =
+          cleanText(
+            body.name,
+            40
+          );
+
+
+        if (
+          name.length < 2
+        ) {
+
+          sendError(
+            res,
+            400,
+            "Server name must be at least 2 characters."
+          );
+
+          return;
+
+        }
+
+
+        const serverID =
+          generateID(
+            "FC-SRV"
+          );
+
+
+        const serverData = {
+
+          serverID:
+            serverID,
+
+          ownerID:
+            ownerID,
+
+          name:
+            name,
+
+          description:
+            cleanText(
+              body.description,
+              200
+            ),
+
+          icon:
+            body.icon ||
+            null,
+
+          banner:
+            body.banner ||
+            null,
+
+          createdAt:
+            Date.now(),
+
+          members: [
+
+            {
+
+              userID:
+                ownerID,
+
+              name:
+                owner.name,
+
+              role:
+                "owner",
+
+              joinedAt:
+                Date.now()
+
+            }
+
+          ],
+
+          channels: [
+
+            {
+
+              channelID:
+                generateID(
+                  "CH"
+                ),
+
+              name:
+                "general",
+
+              type:
+                "text",
+
+              createdAt:
+                Date.now()
+
+            }
+
+          ],
+
+          roles: [],
+
+          rules: [],
+
+          settings: {
+
+            theme:
+              "dark",
+
+            accentColor:
+              "#6c63ff",
+
+            background:
+              null
+
+          }
+
+        };
+
+
+        friendchatServers.set(
+          serverID,
+          serverData
+        );
+
+
+        saveServers();
+
+
+        /*
+          Tell the owner that the server
+          was created.
+        */
+
+        sendToUser(
+          ownerID,
+          {
+
+            type:
+              "server_created",
+
+            server:
+              publicServer(
+                serverData,
+                ownerID
+              )
+
+          }
+        );
+
+
+        sendJSON(
+          res,
+          201,
+          {
+
+            ok:
+              true,
+
+            server:
+              publicServer(
+                serverData,
+                ownerID
+              )
+
+          }
+        );
+
+
+        console.log(
+          "Server created:",
+          serverID,
+          "-",
+          name,
+          "Owner:",
+          ownerID
+        );
+
+
+        return;
+
+      }
+
+
+      /* ================================================
+         GET ONE SERVER
+
+         GET /api/servers/:serverID?user=FC-ABC123
+         ================================================ */
+
+      const serverMatch =
+        pathname.match(
+          /^\/api\/servers\/([^/]+)$/
+        );
+
+
+      if (
+        req.method === "GET" &&
+        serverMatch
+      ) {
+
+        const serverID =
+          decodeURIComponent(
+            serverMatch[1]
+          );
+
+
+        const viewerID =
+          normalizeId(
+            url.searchParams.get(
+              "user"
+            )
+          );
+
+
+        const serverData =
+          friendchatServers.get(
+            serverID
+          );
+
+
+        if (!serverData) {
+
+          sendError(
+            res,
+            404,
+            "Server not found."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          !isServerMember(
+            serverData,
+            viewerID
+          )
+        ) {
+
+          sendError(
+            res,
+            403,
+            "You are not a member of this server."
+          );
+
+          return;
+
+        }
+
+
+        sendJSON(
+          res,
+          200,
+          {
+
+            ok:
+              true,
+
+            server:
+              publicServer(
+                serverData,
+                viewerID
+              )
+
+          }
+        );
+
+
+        return;
+
+      }
+
+
+      /* ================================================
+         ADD MEMBER
+
+         POST /api/servers/:serverID/members
+         ================================================ */
+
+      const membersMatch =
+        pathname.match(
+          /^\/api\/servers\/([^/]+)\/members$/
+        );
+
+
+      if (
+        req.method === "POST" &&
+        membersMatch
+      ) {
+
+        const serverID =
+          decodeURIComponent(
+            membersMatch[1]
+          );
+
+
+        const body =
+          await readJSONBody(
+            req
+          );
+
+
+        const requesterID =
+          normalizeId(
+            body.requesterID ||
+            body.userID
+          );
+
+
+        const memberID =
+          normalizeId(
+            body.memberID
+          );
+
+
+        if (!requesterID) {
+
+          sendError(
+            res,
+            400,
+            "Requester ID is required."
+          );
+
+          return;
+
+        }
+
+
+        if (!memberID) {
+
+          sendError(
+            res,
+            400,
+            "Member ID is required."
+          );
+
+          return;
+
+        }
+
+
+        const serverData =
+          friendchatServers.get(
+            serverID
+          );
+
+
+        if (!serverData) {
+
+          sendError(
+            res,
+            404,
+            "Server not found."
+          );
+
+          return;
+
+        }
+
+
+        /*
+          For now only the owner can
+          add members.
+
+          Roles & permissions will later
+          allow admins/moderators too.
+        */
+
+        if (
+          !isServerOwner(
+            serverData,
+            requesterID
+          )
+        ) {
+
+          sendError(
+            res,
+            403,
+            "Only the server owner can add members."
+          );
+
+          return;
+
+        }
+
+
+        const user =
+          users.get(
+            memberID
+          );
+
+
+        if (!user) {
+
+          sendError(
+            res,
+            404,
+            "FriendChat user was not found."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          isServerMember(
+            serverData,
+            memberID
+          )
+        ) {
+
+          sendError(
+            res,
+            409,
+            "This user is already a member."
+          );
+
+          return;
+
+        }
+
+
+        const member = {
+
+          userID:
+            memberID,
+
+          name:
+            user.name,
+
+          role:
+            "member",
+
+          joinedAt:
+            Date.now()
+
+        };
+
+
+        serverData.members.push(
+          member
+        );
+
+
+        saveServers();
+
+
+        /*
+          Send live notification if the
+          friend is currently online.
+        */
+
+        sendToUser(
+          memberID,
+          {
+
+            type:
+              "server_added",
+
+            server:
+              publicServer(
+                serverData,
+                memberID
+              )
+
+          }
+        );
+
+
+        /*
+          Also notify the owner.
+        */
+
+        sendToUser(
+          requesterID,
+          {
+
+            type:
+              "server_member_added",
+
+            serverID:
+              serverID,
+
+            member:
+              publicMember(
+                member
+              )
+
+          }
+        );
+
+
+        sendJSON(
+          res,
+          200,
+          {
+
+            ok:
+              true,
+
+            server:
+              publicServer(
+                serverData,
+                requesterID
+              )
+
+          }
+        );
+
+
+        console.log(
+          "Member added:",
+          memberID,
+          "→",
+          serverID
+        );
+
+
+        return;
+
+      }
+
+
+      /* ================================================
+         REMOVE MEMBER
+
+         DELETE /api/servers/:serverID/members/:userID
+         ================================================ */
+
+      const removeMemberMatch =
+        pathname.match(
+          /^\/api\/servers\/([^/]+)\/members\/([^/]+)$/
+        );
+
+
+      if (
+        req.method === "DELETE" &&
+        removeMemberMatch
+      ) {
+
+        const serverID =
+          decodeURIComponent(
+            removeMemberMatch[1]
+          );
+
+
+        const memberID =
+          normalizeId(
+            decodeURIComponent(
+              removeMemberMatch[2]
+            )
+          );
+
+
+        const requesterID =
+          normalizeId(
+            url.searchParams.get(
+              "requester"
+            )
+          );
+
+
+        const serverData =
+          friendchatServers.get(
+            serverID
+          );
+
+
+        if (!serverData) {
+
+          sendError(
+            res,
+            404,
+            "Server not found."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          !isServerOwner(
+            serverData,
+            requesterID
+          )
+        ) {
+
+          sendError(
+            res,
+            403,
+            "Only the server owner can remove members."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          memberID ===
+          normalizeId(
+            serverData.ownerID
+          )
+        ) {
+
+          sendError(
+            res,
+            400,
+            "The server owner cannot be removed."
+          );
+
+          return;
+
+        }
+
+
+        const oldLength =
+          serverData.members.length;
+
+
+        serverData.members =
+          serverData.members.filter(
+            member =>
+              normalizeId(
+                member.userID
+              ) !== memberID
+          );
+
+
+        if (
+          serverData.members.length ===
+          oldLength
+        ) {
+
+          sendError(
+            res,
+            404,
+            "Member was not found."
+          );
+
+          return;
+
+        }
+
+
+        saveServers();
+
+
+        /*
+          Tell removed user immediately
+          if they are online.
+        */
+
+        sendToUser(
+          memberID,
+          {
+
+            type:
+              "server_removed",
+
+            serverID:
+              serverID
+
+          }
+        );
+
+
+        sendJSON(
+          res,
+          200,
+          {
+
+            ok:
+              true,
+
+            server:
+              publicServer(
+                serverData,
+                requesterID
+              )
+
+          }
+        );
+
+
+        console.log(
+          "Member removed:",
+          memberID,
+          "from",
+          serverID
+        );
+
+
+        return;
+
+      }
+
+
+      /* ================================================
+         SERVER UPDATE
+
+         PUT /api/servers/:serverID
+         ================================================ */
+
+      const updateServerMatch =
+        pathname.match(
+          /^\/api\/servers\/([^/]+)$/
+        );
+
+
+      if (
+        req.method === "PUT" &&
+        updateServerMatch
+      ) {
+
+        const serverID =
+          decodeURIComponent(
+            updateServerMatch[1]
+          );
+
+
+        const body =
+          await readJSONBody(
+            req
+          );
+
+
+        const requesterID =
+          normalizeId(
+            body.requesterID ||
+            body.userID
+          );
+
+
+        const serverData =
+          friendchatServers.get(
+            serverID
+          );
+
+
+        if (!serverData) {
+
+          sendError(
+            res,
+            404,
+            "Server not found."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          !isServerOwner(
+            serverData,
+            requesterID
+          )
+        ) {
+
+          sendError(
+            res,
+            403,
+            "Only the server owner can edit server settings."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          body.name !==
+          undefined
+        ) {
+
+          const newName =
+            cleanText(
+              body.name,
+              40
+            );
+
+
+          if (
+            newName.length < 2
+          ) {
+
+            sendError(
+              res,
+              400,
+              "Server name must be at least 2 characters."
+            );
+
+            return;
+
+          }
+
+
+          serverData.name =
+            newName;
+
+        }
+
+
+        if (
+          body.description !==
+          undefined
+        ) {
+
+          serverData.description =
+            cleanText(
+              body.description,
+              200
+            );
+
+        }
+
+
+        if (
+          body.icon !==
+          undefined
+        ) {
+
+          serverData.icon =
+            body.icon ||
+            null;
+
+        }
+
+
+        if (
+          body.banner !==
+          undefined
+        ) {
+
+          serverData.banner =
+            body.banner ||
+            null;
+
+        }
+
+
+        if (
+          body.settings &&
+          typeof body.settings ===
+            "object"
+        ) {
+
+          serverData.settings =
+            {
+
+              ...serverData.settings,
+
+              ...body.settings
+
+            };
+
+        }
+
+
+        saveServers();
+
+
+        /*
+          Notify every connected member
+          that the server changed.
+        */
+
+        for (
+          const member
+          of serverData.members
+        ) {
+
+          sendToUser(
+            member.userID,
+            {
+
+              type:
+                "server_updated",
+
+              server:
+                publicServer(
+                  serverData,
+                  member.userID
+                )
+
+            }
+          );
+
+        }
+
+
+        sendJSON(
+          res,
+          200,
+          {
+
+            ok:
+              true,
+
+            server:
+              publicServer(
+                serverData,
+                requesterID
+              )
+
+          }
+        );
+
+
+        return;
+
+      }
+
+
+      /* ================================================
+         PRESENCE API
+         ================================================ */
+
+      if (
+        req.method === "GET" &&
+        pathname ===
+          "/api/presence"
+      ) {
+
+        const result = {};
+
+
+        for (
+          const [id, info]
+          of presence.entries()
+        ) {
+
+          result[id] = {
+
+            id:
+              info.id,
+
+            name:
+              info.name,
+
+            online:
+              info.online,
+
+            chattingWith:
+              info.chattingWith
+
+          };
+
+        }
+
+
+        sendJSON(
+          res,
+          200,
+          result
+        );
+
+
+        return;
+
+      }
+
+
+      /* ================================================
+         PROFILE PHOTO API
+         ================================================ */
+
+      if (
+        req.method === "GET" &&
+        pathname.startsWith(
+          "/api/profile-photo/"
+        )
+      ) {
+
+        const id =
+          normalizeId(
+            decodeURIComponent(
+              pathname.substring(
+                "/api/profile-photo/".length
+              )
+            )
+          );
+
+
+        const photo =
+          profilePhotos.get(id);
+
+
+        if (!photo) {
+
+          sendJSON(
+            res,
+            404,
+            {
+
+              found:
+                false
+
+            }
+          );
+
+          return;
+
+        }
+
+
+        sendJSON(
+          res,
+          200,
+          {
+
+            found:
+              true,
+
+            userId:
+              id,
+
+            photo:
+              photo
+
+          }
+        );
+
+
+        return;
+
+      }
+
+
+      /* ================================================
+         STATIC WEBSITE FILES
+         ================================================ */
+
+      let requestedFile =
+        pathname;
+
+
+      if (
+        requestedFile === "/"
+      ) {
+
+        requestedFile =
+          "/index.html";
+
+      }
+
+
+      let relativeFile =
+        requestedFile
+          .replace(
+            /^\/+/,
+            ""
+          );
+
+
+      relativeFile =
+        path.normalize(
+          relativeFile
+        );
+
+
+      if (
+        relativeFile.startsWith(
+          ".." + path.sep
+        ) ||
+        relativeFile === ".."
+      ) {
+
+        res.writeHead(
+          403
+        );
+
+
         res.end(
-          data
+          "Forbidden"
+        );
+
+
+        return;
+
+      }
+
+
+      const filePath =
+        path.resolve(
+          ROOT_DIR,
+          relativeFile
+        );
+
+
+      const rootWithSeparator =
+        ROOT_DIR.endsWith(
+          path.sep
+        )
+          ? ROOT_DIR
+          : ROOT_DIR + path.sep;
+
+
+      if (
+        filePath !== ROOT_DIR &&
+        !filePath.startsWith(
+          rootWithSeparator
+        )
+      ) {
+
+        res.writeHead(
+          403
+        );
+
+
+        res.end(
+          "Forbidden"
+        );
+
+
+        return;
+
+      }
+
+
+      fs.readFile(
+        filePath,
+        (error, data) => {
+
+          if (error) {
+
+            console.log(
+              "FILE NOT FOUND:",
+              filePath
+            );
+
+
+            res.writeHead(
+              404,
+              {
+
+                "Content-Type":
+                  "text/plain; charset=utf-8"
+
+              }
+            );
+
+
+            res.end(
+              `FILE NOT FOUND: ${filePath}`
+            );
+
+
+            return;
+
+          }
+
+
+          const extension =
+            path.extname(
+              filePath
+            ).toLowerCase();
+
+
+          res.writeHead(
+            200,
+            {
+
+              "Content-Type":
+                contentTypes[
+                  extension
+                ] ||
+                "application/octet-stream",
+
+              "Cache-Control":
+                extension === ".css" ||
+                extension === ".js"
+                  ? "no-cache"
+                  : "public, max-age=3600"
+
+            }
+          );
+
+
+          res.end(
+            data
+          );
+
+        }
+      );
+
+    }
+
+    catch (error) {
+
+      console.log(
+        "HTTP API error:",
+        error.message
+      );
+
+
+      if (
+        !res.headersSent
+      ) {
+
+        sendError(
+          res,
+          500,
+          error.message ||
+            "Internal server error."
         );
 
       }
-    );
+
+    }
 
   }
 );
@@ -1018,11 +2824,6 @@ function getPresenceForViewer(
   const result = {};
 
 
-  /*
-    Use users as the source of truth so
-    saved offline users are also included.
-  */
-
   for (
     const [id, user]
     of users.entries()
@@ -1041,11 +2842,6 @@ function getPresenceForViewer(
       info.online
     ) {
 
-      /*
-        User is talking directly
-        to the viewer.
-      */
-
       if (
         info.chattingWith &&
         normalizeId(
@@ -1058,11 +2854,6 @@ function getPresenceForViewer(
 
       }
 
-
-      /*
-        User is talking to someone else.
-      */
-
       else if (
         info.chattingWith
       ) {
@@ -1071,11 +2862,6 @@ function getPresenceForViewer(
           "busy";
 
       }
-
-
-      /*
-        Online and not talking.
-      */
 
       else {
 
@@ -1229,6 +3015,30 @@ function broadcastProfilePhoto(
 
 
 /* =====================================================
+   NOTIFY SERVER MEMBERS
+   ===================================================== */
+
+function notifyServerMembers(
+  serverData,
+  payload
+) {
+
+  for (
+    const member
+    of serverData.members
+  ) {
+
+    sendToUser(
+      member.userID,
+      payload
+    );
+
+  }
+
+}
+
+
+/* =====================================================
    WEBSOCKET SERVER
    ===================================================== */
 
@@ -1265,10 +3075,6 @@ wss.on(
       }
     );
 
-
-    /* ================================================
-       ALL WEBSOCKET MESSAGES
-       ================================================ */
 
     socket.on(
       "message",
@@ -1311,11 +3117,6 @@ wss.on(
             }
 
 
-            /*
-              Close previous connection
-              for same account.
-            */
-
             const oldSocket =
               sockets.get(
                 userId
@@ -1350,23 +3151,11 @@ wss.on(
             };
 
 
-            /*
-              Save/update user in memory.
-            */
-
             users.set(
               userId,
               user
             );
 
-
-            /*
-              IMPORTANT:
-              Save account permanently.
-
-              This is what allows the
-              account to appear when offline.
-            */
 
             saveUsers();
 
@@ -1380,10 +3169,6 @@ wss.on(
             socket.userId =
               userId;
 
-
-            /*
-              User is now online.
-            */
 
             presence.set(
               userId,
@@ -1419,8 +3204,7 @@ wss.on(
 
 
             /*
-              Send known profile photos
-              to newly connected device.
+              Send saved profile photos.
             */
 
             for (
@@ -1453,6 +3237,59 @@ wss.on(
             }
 
 
+            /*
+              IMPORTANT:
+
+              When a user logs in,
+              immediately send all servers
+              they belong to.
+
+              This is what allows the
+              server sidebar to update
+              without waiting for another
+              action.
+            */
+
+            const userServers = [];
+
+
+            for (
+              const serverData
+              of friendchatServers.values()
+            ) {
+
+              if (
+                isServerMember(
+                  serverData,
+                  userId
+                )
+              ) {
+
+                userServers.push(
+                  publicServer(
+                    serverData,
+                    userId
+                  )
+                );
+
+              }
+
+            }
+
+
+            socket.send(
+              JSON.stringify({
+
+                type:
+                  "server_list",
+
+                servers:
+                  userServers
+
+              })
+            );
+
+
             console.log(
               "Registered:",
               userId,
@@ -1460,11 +3297,6 @@ wss.on(
               user.name
             );
 
-
-            /*
-              Tell everyone that presence
-              has changed.
-            */
 
             broadcastPresence();
 
@@ -1548,10 +3380,6 @@ wss.on(
 
             }
 
-
-            /*
-              Limit profile photo size.
-            */
 
             const photoSize =
               JSON.stringify(
@@ -1682,6 +3510,74 @@ wss.on(
 
 
             broadcastPresence();
+
+
+            return;
+
+          }
+
+
+          /* ==========================================
+             SERVER REQUEST THROUGH WEBSOCKET
+             ========================================== */
+
+          if (
+            msg.type ===
+            "server_list_request"
+          ) {
+
+            const userId =
+              normalizeId(
+                socket.userId
+              );
+
+
+            if (!userId) {
+
+              return;
+
+            }
+
+
+            const userServers = [];
+
+
+            for (
+              const serverData
+              of friendchatServers.values()
+            ) {
+
+              if (
+                isServerMember(
+                  serverData,
+                  userId
+                )
+              ) {
+
+                userServers.push(
+                  publicServer(
+                    serverData,
+                    userId
+                  )
+                );
+
+              }
+
+            }
+
+
+            sendToUser(
+              userId,
+              {
+
+                type:
+                  "server_list",
+
+                servers:
+                  userServers
+
+              }
+            );
 
 
             return;
@@ -2372,10 +4268,6 @@ wss.on(
         }
 
 
-        /*
-          Only remove the current connection.
-        */
-
         if (
           sockets.get(
             userId
@@ -2416,16 +4308,6 @@ wss.on(
 
         }
 
-
-        /*
-          IMPORTANT:
-
-          We DO NOT delete the user
-          from users.
-
-          Therefore the account remains
-          available as OFFLINE.
-        */
 
         console.log(
           "Disconnected:",
@@ -2556,6 +4438,11 @@ server.listen(
 
     console.log(
       `Saved users: ${users.size}`
+    );
+
+
+    console.log(
+      `Saved FriendChat servers: ${friendchatServers.size}`
     );
 
   }
