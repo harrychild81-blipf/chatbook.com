@@ -2,11 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>FriendChat - Create Server</title>
 
-    <link rel="stylesheet" href="server.css">
+    <link
+        rel="stylesheet"
+        href="create-server.css"
+    >
 </head>
 
 <body>
@@ -15,17 +22,32 @@
 
         <section class="create-card">
 
+            <!-- BRAND -->
+
             <div class="brand">
-                <div class="brand-icon">FC</div>
-                <span>FriendChat</span>
+                <div class="brand-icon">
+                    FC
+                </div>
+
+                <span>
+                    FriendChat
+                </span>
             </div>
 
+
+            <!-- HEADER -->
+
             <div class="header">
-                <h1>Create your server</h1>
+
+                <h1>
+                    Create your server
+                </h1>
 
                 <p>
-                    Build your own space for friends, communities and conversations.
+                    Build your own space for friends,
+                    communities and conversations.
                 </p>
+
             </div>
 
 
@@ -33,10 +55,24 @@
 
             <div class="icon-section">
 
-                <div class="server-icon" id="serverIconPreview">
-                    <span id="iconText">+</span>
-                    <img id="iconImage" src="" alt="Server icon">
+                <div
+                    class="server-icon"
+                    id="serverIconPreview"
+                    title="Choose server icon"
+                >
+
+                    <span id="iconText">
+                        +
+                    </span>
+
+                    <img
+                        id="iconImage"
+                        src=""
+                        alt="Server icon preview"
+                    >
+
                 </div>
+
 
                 <input
                     type="file"
@@ -45,6 +81,7 @@
                     hidden
                 >
 
+
                 <button
                     type="button"
                     class="upload-button"
@@ -52,6 +89,7 @@
                 >
                     Upload server icon
                 </button>
+
 
                 <small>
                     JPG, PNG or other image formats
@@ -88,8 +126,13 @@
             <div class="form-group">
 
                 <label for="serverDescription">
+
                     Description
-                    <span class="optional">Optional</span>
+
+                    <span class="optional">
+                        Optional
+                    </span>
+
                 </label>
 
                 <textarea
@@ -121,10 +164,19 @@
                 class="create-button"
                 id="createServerButton"
             >
-                <span>Create Server</span>
-                <span class="arrow">→</span>
+
+                <span>
+                    Create Server
+                </span>
+
+                <span class="arrow">
+                    →
+                </span>
+
             </button>
 
+
+            <!-- CANCEL -->
 
             <button
                 type="button"
@@ -139,7 +191,7 @@
     </main>
 
 
-    <script src="server.js"></script>
+    <script src="create-server.js"></script>
 
 </body>
 </html>
