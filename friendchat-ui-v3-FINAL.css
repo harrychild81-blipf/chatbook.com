@@ -1,6 +1,12 @@
 /* =========================================================
-   FRIENDCHAT UI V3 - COMPLETE FIXED CSS
+   FRIENDCHAT UI V4 - COMPLETE CSS
    SIDEBAR + ARROW + BOTTOM DOCK + CHAT + THEMES
+   THEME PANEL = SMALL LEFT SIDE PANEL
+   ========================================================= */
+
+
+/* =========================================================
+   GLOBAL VARIABLES
    ========================================================= */
 
 :root {
@@ -120,9 +126,12 @@ textarea {
 
     border-radius: 0 !important;
     border: 0 !important;
-    border-bottom: 1px solid var(--fc-border) !important;
 
-    background: rgba(7,10,16,.88) !important;
+    border-bottom:
+        1px solid var(--fc-border) !important;
+
+    background:
+        rgba(7,10,16,.88) !important;
 
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
@@ -170,10 +179,13 @@ textarea {
 
     margin: 10px 0 !important;
 
-    border: 1px solid transparent !important;
+    border:
+        1px solid transparent !important;
+
     border-radius: 18px !important;
 
-    background: rgba(13,18,27,.86) !important;
+    background:
+        rgba(13,18,27,.86) !important;
 
     transition:
         transform .2s ease,
@@ -185,9 +197,11 @@ textarea {
 #homeScreen .friendItem:hover {
     transform: translateX(4px);
 
-    background: var(--fc-panel-2) !important;
+    background:
+        var(--fc-panel-2) !important;
 
-    border-color: var(--fc-border) !important;
+    border-color:
+        var(--fc-border) !important;
 
     box-shadow:
         0 12px 35px rgba(0,0,0,.22);
@@ -222,11 +236,14 @@ body #fc-sidebar {
     display: flex !important;
     flex-direction: column !important;
 
-    border-radius: 0 20px 20px 0 !important;
+    border-radius:
+        0 20px 20px 0 !important;
 
-    background: rgba(13,18,27,.98) !important;
+    background:
+        rgba(13,18,27,.98) !important;
 
-    border: 1px solid var(--fc-border) !important;
+    border:
+        1px solid var(--fc-border) !important;
 
     box-shadow:
         0 22px 70px rgba(0,0,0,.48) !important;
@@ -254,9 +271,11 @@ body #fc-sidebar {
 body #fcCustomSidebar.open,
 body .fc-sidebar.open,
 body #fc-sidebar.open {
-    transform: translateX(0) !important;
+    transform:
+        translateX(0) !important;
 
-    pointer-events: auto !important;
+    pointer-events:
+        auto !important;
 }
 
 
@@ -275,8 +294,11 @@ body .fc-sidebar .fc-sidebar-brand {
 
     gap: 10px !important;
 
-    padding: 5px 4px 12px !important;
-    margin: 0 0 8px !important;
+    padding:
+        5px 4px 12px !important;
+
+    margin:
+        0 0 8px !important;
 
     border-bottom:
         1px solid var(--fc-border) !important;
@@ -289,6 +311,7 @@ body .fc-sidebar-logo {
     min-width: 40px !important;
 
     display: flex !important;
+
     align-items: center !important;
     justify-content: center !important;
 
@@ -341,6 +364,7 @@ body .fc-nav-item {
     padding: 7px 9px !important;
 
     display: flex !important;
+
     align-items: center !important;
     justify-content: flex-start !important;
 
@@ -369,7 +393,8 @@ body .fc-nav-item:hover {
     background:
         rgba(255,255,255,.06) !important;
 
-    color: var(--fc-text) !important;
+    color:
+        var(--fc-text) !important;
 }
 
 body #fcCustomSidebar .fc-nav-item.active,
@@ -381,7 +406,8 @@ body .fc-sidebar .fc-nav-item.active {
             rgba(139,92,246,.12)
         ) !important;
 
-    color: var(--fc-text) !important;
+    color:
+        var(--fc-text) !important;
 }
 
 
@@ -397,6 +423,7 @@ body .fc-sidebar-icon {
     height: 30px !important;
 
     display: flex !important;
+
     align-items: center !important;
     justify-content: center !important;
 
@@ -479,14 +506,17 @@ html body #fc-nav-toggle {
     box-shadow:
         0 6px 18px rgba(0,0,0,.35) !important;
 
-    z-index: 2147483647 !important;
+    z-index:
+        2147483647 !important;
 
     opacity: 1 !important;
     visibility: visible !important;
 
-    pointer-events: auto !important;
+    pointer-events:
+        auto !important;
 
-    cursor: pointer !important;
+    cursor:
+        pointer !important;
 
     transform:
         translateY(-50%) !important;
@@ -755,7 +785,7 @@ body.fc-chat-open #fc-bottom-dock {
 
 
 /* =========================================================
-   CHAT
+   CHAT SCREEN
    ========================================================= */
 
 html body #chatScreen {
@@ -782,6 +812,11 @@ html body #chatScreen {
     background:
         var(--fc-bg) !important;
 }
+
+
+/* =========================================================
+   CHAT HEADER
+   ========================================================= */
 
 html body #chatScreen > header {
     position: absolute !important;
@@ -889,7 +924,8 @@ html body #chatScreen #messages .fc-message-row {
     box-sizing: border-box !important;
 }
 
-html body #chatScreen #messages .fc-message-row.other {
+html body #chatScreen #messages
+.fc-message-row.other {
     justify-content:
         flex-start !important;
 
@@ -897,7 +933,8 @@ html body #chatScreen #messages .fc-message-row.other {
         flex-end !important;
 }
 
-html body #chatScreen #messages .fc-message-row.mine {
+html body #chatScreen #messages
+.fc-message-row.mine {
     justify-content:
         flex-end !important;
 
@@ -953,7 +990,8 @@ html body #chatScreen #messages .fc-message-bubble {
 }
 
 html body #chatScreen #messages
-.fc-message-row.other .fc-message-bubble {
+.fc-message-row.other
+.fc-message-bubble {
     background:
         #262b35 !important;
 
@@ -962,7 +1000,8 @@ html body #chatScreen #messages
 }
 
 html body #chatScreen #messages
-.fc-message-row.mine .fc-message-bubble {
+.fc-message-row.mine
+.fc-message-bubble {
     background:
         var(--fc-accent) !important;
 
@@ -970,7 +1009,8 @@ html body #chatScreen #messages
         5px !important;
 }
 
-html body #chatScreen #messages .fc-message-text {
+html body #chatScreen #messages
+.fc-message-text {
     display: block !important;
 
     width: auto !important;
@@ -999,7 +1039,8 @@ html body #chatScreen #messages .fc-message-text {
     word-break: break-word !important;
 }
 
-html body #chatScreen #messages .fc-message-content {
+html body #chatScreen #messages
+.fc-message-content {
     display: block !important;
 
     width: auto !important;
@@ -1019,7 +1060,8 @@ html body #chatScreen #messages .fc-message-content {
    MESSAGE META / TICKS
    ========================================================= */
 
-html body #chatScreen #messages .fc-message-meta {
+html body #chatScreen #messages
+.fc-message-meta {
     display: flex !important;
 
     align-items: center !important;
@@ -1063,7 +1105,8 @@ html body #chatScreen #messages
         #000 !important;
 }
 
-html body #chatScreen #messages .fc-ticks {
+html body #chatScreen #messages
+.fc-ticks {
     display: inline-block !important;
 
     color:
@@ -1097,7 +1140,8 @@ html body #chatScreen #messages
    REACTIONS
    ========================================================= */
 
-html body #chatScreen #messages .fc-reaction {
+html body #chatScreen #messages
+.fc-reaction {
     position: absolute !important;
 
     right: 7px !important;
@@ -1108,7 +1152,8 @@ html body #chatScreen #messages .fc-reaction {
 
     height: 20px !important;
 
-    padding: 1px 5px !important;
+    padding:
+        1px 5px !important;
 
     display: flex !important;
 
@@ -1645,15 +1690,9 @@ html body #emojiPicker::-webkit-scrollbar-thumb {
         10px !important;
 }
 
-html body #emojiPicker::-webkit-scrollbar-thumb:hover {
-    background:
-        rgba(255,255,255,.25) !important;
-}
-
 @keyframes fcEmojiOpen {
     from {
         opacity: 0;
-
         transform:
             translateY(8px)
             scale(.96);
@@ -1661,7 +1700,6 @@ html body #emojiPicker::-webkit-scrollbar-thumb:hover {
 
     to {
         opacity: 1;
-
         transform:
             translateY(0)
             scale(1);
@@ -1762,9 +1800,7 @@ body #fcDiscoveryOverlay {
 
 body #fcDiscoveryOverlay.open {
     opacity: 1;
-
     visibility: visible;
-
     pointer-events: auto;
 }
 
@@ -1923,7 +1959,8 @@ body .fc-user-add {
 
 /* =========================================================
    THEME OVERLAY
-   NEW LEFT-SIDE VERSION
+   IMPORTANT:
+   PANEL IS INSIDE THIS OVERLAY
    ========================================================= */
 
 html body #fcThemeOverlay {
@@ -1938,13 +1975,13 @@ html body #fcThemeOverlay {
     padding: 0 !important;
 
     background:
-        rgba(0,0,0,.58) !important;
+        rgba(0,0,0,.45) !important;
 
     backdrop-filter:
-        blur(7px) !important;
+        blur(5px) !important;
 
     -webkit-backdrop-filter:
-        blur(7px) !important;
+        blur(5px) !important;
 
     opacity:
         0 !important;
@@ -1973,21 +2010,11 @@ html body #fcThemeOverlay {
     touch-action:
         pan-y !important;
 
-    scrollbar-width:
-        thin !important;
-
-    box-sizing:
-        border-box !important;
-
     transition:
-        opacity .2s ease,
-        visibility .2s ease !important;
+        opacity .22s ease,
+        visibility .22s ease !important;
 }
 
-
-/* JS uses fc-theme-open */
-
-html body #fcThemeOverlay.fc-theme-open,
 html body #fcThemeOverlay.open {
     opacity:
         1 !important;
@@ -2001,82 +2028,53 @@ html body #fcThemeOverlay.open {
 
 
 /* =========================================================
-   THEME OVERLAY SCROLLBAR
-   ========================================================= */
-
-html body #fcThemeOverlay::-webkit-scrollbar {
-    width:
-        7px !important;
-}
-
-html body #fcThemeOverlay::-webkit-scrollbar-track {
-    background:
-        transparent !important;
-}
-
-html body #fcThemeOverlay::-webkit-scrollbar-thumb {
-    background:
-        rgba(255,255,255,.18) !important;
-
-    border-radius:
-        10px !important;
-}
-
-html body #fcThemeOverlay::-webkit-scrollbar-thumb:hover {
-    background:
-        rgba(255,255,255,.30) !important;
-}
-
-
-/* =========================================================
    THEME PANEL
-   LEFT SIDE
-   SMALL / CLEAN
+   SMALL LEFT SIDE PANEL
    ========================================================= */
 
 html body #fcThemeOverlay #fcThemePanel {
     position: relative !important;
 
     left: auto !important;
-    right: auto !important;
     top: auto !important;
+    right: auto !important;
     bottom: auto !important;
 
     width:
-        380px !important;
-
-    max-width:
-        88vw !important;
+        min(390px,calc(100vw - 24px)) !important;
 
     min-width:
         0 !important;
+
+    max-width:
+        390px !important;
 
     height:
         auto !important;
 
     min-height:
-        100vh !important;
+        0 !important;
 
     max-height:
         none !important;
 
     margin:
-        0 !important;
+        20px 0 20px 20px !important;
 
     padding:
         0 !important;
 
     transform:
-        translateX(-100%) !important;
+        none !important;
 
     opacity:
-        0 !important;
+        1 !important;
 
     visibility:
-        hidden !important;
+        visible !important;
 
     pointer-events:
-        none !important;
+        auto !important;
 
     display:
         block !important;
@@ -2088,55 +2086,19 @@ html body #fcThemeOverlay #fcThemePanel {
         border-box !important;
 
     background:
-        linear-gradient(
-            180deg,
-            rgba(20,17,48,.99),
-            rgba(9,8,25,.99)
-        ) !important;
-
-    color:
-        var(--fc-text) !important;
+        var(--fc-panel) !important;
 
     border:
-        0 !important;
-
-    border-right:
-        1px solid rgba(255,255,255,.12) !important;
+        1px solid var(--fc-border) !important;
 
     border-radius:
-        0 20px 20px 0 !important;
+        18px !important;
 
     box-shadow:
-        15px 0 55px rgba(0,0,0,.48) !important;
+        0 25px 80px rgba(0,0,0,.65) !important;
 
     z-index:
         2147483647 !important;
-
-    animation:
-        none !important;
-
-    transition:
-        transform .24s cubic-bezier(.22,1,.36,1),
-        opacity .2s ease,
-        visibility .2s ease !important;
-}
-
-
-/* Panel becomes visible when overlay opens */
-
-html body #fcThemeOverlay.fc-theme-open #fcThemePanel,
-html body #fcThemeOverlay.open #fcThemePanel {
-    transform:
-        translateX(0) !important;
-
-    opacity:
-        1 !important;
-
-    visibility:
-        visible !important;
-
-    pointer-events:
-        auto !important;
 }
 
 
@@ -2151,23 +2113,14 @@ html body #fcThemeOverlay #fcThemePanel .fc-theme-head {
     top:
         0 !important;
 
-    z-index:
-        10 !important;
-
     width:
         100% !important;
 
     min-height:
-        70px !important;
-
-    height:
-        70px !important;
+        64px !important;
 
     padding:
         14px 16px !important;
-
-    margin:
-        0 !important;
 
     display:
         flex !important;
@@ -2179,154 +2132,27 @@ html body #fcThemeOverlay #fcThemePanel .fc-theme-head {
         space-between !important;
 
     gap:
-        12px !important;
+        10px !important;
 
     box-sizing:
         border-box !important;
 
     background:
-        rgba(17,14,40,.96) !important;
+        var(--fc-panel) !important;
 
     border-bottom:
-        1px solid rgba(255,255,255,.09) !important;
-
-    backdrop-filter:
-        blur(18px) !important;
-
-    -webkit-backdrop-filter:
-        blur(18px) !important;
-
-    flex:
-        none !important;
-}
-
-
-/* =========================================================
-   THEME TITLE
-   ========================================================= */
-
-html body #fcThemeOverlay #fcThemePanel .fc-theme-title {
-    margin:
-        0 !important;
-
-    padding:
-        0 !important;
-
-    color:
-        #ffffff !important;
-
-    font-size:
-        19px !important;
-
-    line-height:
-        23px !important;
-
-    font-weight:
-        800 !important;
-
-    letter-spacing:
-        -.3px !important;
-}
-
-html body #fcThemeOverlay #fcThemePanel .fc-theme-subtitle {
-    margin-top:
-        2px !important;
-
-    color:
-        rgba(255,255,255,.52) !important;
-
-    font-size:
-        10px !important;
-
-    line-height:
-        14px !important;
-}
-
-
-/* =========================================================
-   THEME CLOSE BUTTON
-   ========================================================= */
-
-html body #fcThemeOverlay #fcThemePanel .fc-theme-close,
-html body #fcThemeOverlay #fcThemePanel .fc-close,
-html body #fcThemeOverlay #fcThemePanel button[data-close-theme] {
-    flex:
-        0 0 34px !important;
-
-    width:
-        34px !important;
-
-    min-width:
-        34px !important;
-
-    max-width:
-        34px !important;
-
-    height:
-        34px !important;
-
-    min-height:
-        34px !important;
-
-    max-height:
-        34px !important;
-
-    margin:
-        0 !important;
-
-    padding:
-        0 !important;
-
-    display:
-        flex !important;
-
-    align-items:
-        center !important;
-
-    justify-content:
-        center !important;
-
-    border:
-        1px solid rgba(255,255,255,.12) !important;
+        1px solid var(--fc-border) !important;
 
     border-radius:
-        10px !important;
+        18px 18px 0 0 !important;
 
-    background:
-        rgba(255,255,255,.06) !important;
-
-    color:
-        #ffffff !important;
-
-    font-size:
-        16px !important;
-
-    line-height:
-        1 !important;
-
-    cursor:
-        pointer !important;
-
-    transition:
-        background .15s ease,
-        transform .15s ease !important;
-}
-
-html body #fcThemeOverlay #fcThemePanel .fc-theme-close:hover,
-html body #fcThemeOverlay #fcThemePanel .fc-close:hover,
-html body #fcThemeOverlay #fcThemePanel button[data-close-theme]:hover {
-    background:
-        rgba(255,255,255,.13) !important;
-
-    transform:
-        scale(1.04) !important;
+    z-index:
+        5 !important;
 }
 
 
 /* =========================================================
    THEME BODY
-   IMPORTANT:
-   The OVERLAY scrolls, not this body.
    ========================================================= */
 
 html body #fcThemeOverlay #fcThemePanel .fc-theme-body {
@@ -2352,16 +2178,10 @@ html body #fcThemeOverlay #fcThemePanel .fc-theme-body {
         14px !important;
 
     padding-bottom:
-        28px !important;
-
-    margin:
-        0 !important;
+        22px !important;
 
     box-sizing:
         border-box !important;
-
-    flex:
-        none !important;
 }
 
 
@@ -2388,34 +2208,16 @@ html body #fcThemeOverlay #fcThemePanel .fc-theme-grid {
     min-height:
         0 !important;
 
-    max-height:
-        none !important;
-
     overflow:
         visible !important;
-
-    margin:
-        0 !important;
-
-    padding:
-        0 !important;
 }
 
 
 /* =========================================================
    THEME CARDS
-   Supports BOTH:
-   .fc-theme-card
-   .fc-theme-choice
    ========================================================= */
 
-html body #fcThemeOverlay #fcThemePanel .fc-theme-card,
-html body #fcThemeOverlay #fcThemePanel .fc-theme-choice,
-html body #fcThemePanel .fc-theme-card,
-html body #fcThemePanel .fc-theme-choice {
-    position:
-        relative !important;
-
+html body #fcThemeOverlay #fcThemePanel .fc-theme-choice {
     width:
         100% !important;
 
@@ -2423,46 +2225,31 @@ html body #fcThemePanel .fc-theme-choice {
         0 !important;
 
     min-height:
-        108px !important;
-
-    height:
-        auto !important;
-
-    max-height:
-        none !important;
-
-    margin:
-        0 !important;
+        92px !important;
 
     padding:
-        12px !important;
-
-    display:
-        block !important;
+        11px !important;
 
     box-sizing:
         border-box !important;
 
     border:
-        1px solid rgba(130,100,255,.20) !important;
+        1px solid var(--fc-border) !important;
 
     border-radius:
-        15px !important;
+        14px !important;
 
     background:
-        rgba(35,29,75,.60) !important;
+        var(--fc-panel-2) !important;
 
     color:
-        #ffffff !important;
+        var(--fc-text) !important;
 
     text-align:
         left !important;
 
     cursor:
         pointer !important;
-
-    overflow:
-        hidden !important;
 
     transition:
         transform .15s ease,
@@ -2471,88 +2258,98 @@ html body #fcThemePanel .fc-theme-choice {
         box-shadow .15s ease !important;
 }
 
-
-/* =========================================================
-   THEME CARD HOVER
-   ========================================================= */
-
-html body #fcThemeOverlay #fcThemePanel .fc-theme-card:hover,
-html body #fcThemeOverlay #fcThemePanel .fc-theme-choice:hover,
-html body #fcThemePanel .fc-theme-card:hover,
-html body #fcThemePanel .fc-theme-choice:hover {
+html body #fcThemeOverlay #fcThemePanel
+.fc-theme-choice:hover {
     transform:
         translateY(-2px) !important;
 
-    background:
-        rgba(54,45,105,.78) !important;
-
     border-color:
-        rgba(150,120,255,.62) !important;
+        var(--fc-accent) !important;
+
+    background:
+        var(--fc-panel-3) !important;
 
     box-shadow:
-        0 8px 24px rgba(0,0,0,.25) !important;
+        0 8px 22px rgba(0,0,0,.25) !important;
 }
 
+html body #fcThemeOverlay #fcThemePanel
+.fc-theme-choice.active,
 
-/* =========================================================
-   ACTIVE / SELECTED THEME
-   ========================================================= */
-
-html body #fcThemeOverlay #fcThemePanel .fc-theme-card.fc-selected,
-html body #fcThemeOverlay #fcThemePanel .fc-theme-card.active,
-html body #fcThemeOverlay #fcThemePanel .fc-theme-card.selected,
-html body #fcThemeOverlay #fcThemePanel .fc-theme-choice.active,
-html body #fcThemeOverlay #fcThemePanel .fc-theme-choice.selected,
-html body #fcThemePanel .fc-theme-choice.active,
-html body #fcThemePanel .fc-theme-choice.selected {
+html body #fcThemeOverlay #fcThemePanel
+.fc-theme-choice.selected {
     border-color:
         var(--fc-accent) !important;
 
     box-shadow:
-        0 0 0 2px rgba(108,124,255,.17),
-        0 7px 24px rgba(0,0,0,.22) !important;
+        0 0 0 2px rgba(108,124,255,.18) !important;
 }
 
 
 /* =========================================================
-   THEME NUMBER
+   THEME SWATCH
    ========================================================= */
 
-html body #fcThemeOverlay #fcThemePanel .fc-theme-number {
-    position:
-        absolute !important;
+html body #fcThemeOverlay #fcThemePanel
+.fc-theme-swatch {
+    width:
+        100% !important;
 
-    top:
-        8px !important;
+    height:
+        32px !important;
 
-    right:
+    margin-bottom:
+        7px !important;
+
+    border-radius:
         9px !important;
+}
 
-    margin:
-        0 !important;
 
-    padding:
-        0 !important;
+/* =========================================================
+   THEME TEXT
+   ========================================================= */
+
+html body #fcThemeOverlay #fcThemePanel
+.fc-theme-name {
+    font-size:
+        13px !important;
+
+    line-height:
+        17px !important;
+
+    font-weight:
+        700 !important;
+}
+
+html body #fcThemeOverlay #fcThemePanel
+.fc-theme-desc {
+    margin-top:
+        3px !important;
 
     color:
-        rgba(255,255,255,.50) !important;
+        var(--fc-muted) !important;
 
     font-size:
         10px !important;
 
     line-height:
-        12px !important;
-
-    font-weight:
-        400 !important;
+        14px !important;
 }
 
 
 /* =========================================================
-   THEME ICON
+   THEME CLOSE BUTTON
    ========================================================= */
 
-html body #fcThemeOverlay #fcThemePanel .fc-theme-icon {
+html body #fcThemeOverlay #fcThemePanel
+.fc-theme-close,
+
+html body #fcThemeOverlay #fcThemePanel
+.fc-close,
+
+html body #fcThemeOverlay #fcThemePanel
+button[data-close-theme] {
     width:
         32px !important;
 
@@ -2564,9 +2361,6 @@ html body #fcThemeOverlay #fcThemePanel .fc-theme-icon {
 
     min-height:
         32px !important;
-
-    margin:
-        0 0 7px 0 !important;
 
     padding:
         0 !important;
@@ -2578,98 +2372,34 @@ html body #fcThemeOverlay #fcThemePanel .fc-theme-icon {
         center !important;
 
     justify-content:
-        flex-start !important;
+        center !important;
 
-    font-size:
-        24px !important;
-
-    line-height:
-        1 !important;
-}
-
-
-/* =========================================================
-   THEME NAME
-   ========================================================= */
-
-html body #fcThemeOverlay #fcThemePanel .fc-theme-name {
-    margin:
-        0 !important;
-
-    padding:
-        0 !important;
-
-    color:
-        #ffffff !important;
-
-    font-size:
-        13px !important;
-
-    line-height:
-        17px !important;
-
-    font-weight:
-        750 !important;
-
-    white-space:
-        normal !important;
-
-    overflow:
-        hidden !important;
-
-    text-overflow:
-        ellipsis !important;
-}
-
-
-/* =========================================================
-   THEME DESCRIPTION
-   Supports BOTH:
-   .fc-theme-description
-   .fc-theme-desc
-   ========================================================= */
-
-html body #fcThemeOverlay #fcThemePanel .fc-theme-description,
-html body #fcThemeOverlay #fcThemePanel .fc-theme-desc,
-html body #fcThemePanel .fc-theme-description,
-html body #fcThemePanel .fc-theme-desc {
-    margin:
-        4px 0 0 0 !important;
-
-    padding:
-        0 !important;
-
-    color:
-        rgba(255,255,255,.55) !important;
-
-    font-size:
-        10px !important;
-
-    line-height:
-        13px !important;
-
-    font-weight:
-        400 !important;
-}
-
-
-/* =========================================================
-   OPTIONAL THEME SWATCH
-   ========================================================= */
-
-html body #fcThemeOverlay #fcThemePanel .fc-theme-swatch,
-html body #fcThemePanel .fc-theme-swatch {
-    width:
-        100% !important;
-
-    height:
-        32px !important;
-
-    margin:
-        0 0 7px 0 !important;
+    border:
+        1px solid var(--fc-border) !important;
 
     border-radius:
         9px !important;
+
+    background:
+        rgba(255,255,255,.06) !important;
+
+    color:
+        var(--fc-text) !important;
+
+    cursor:
+        pointer !important;
+}
+
+html body #fcThemeOverlay #fcThemePanel
+.fc-theme-close:hover,
+
+html body #fcThemeOverlay #fcThemePanel
+.fc-close:hover,
+
+html body #fcThemeOverlay #fcThemePanel
+button[data-close-theme]:hover {
+    background:
+        rgba(255,255,255,.11) !important;
 }
 
 
@@ -2750,6 +2480,7 @@ body #bottomNav {
         --fc-sidebar-width: 180px;
     }
 
+
     /* Arrow */
 
     html body #fcNavToggle,
@@ -2777,13 +2508,11 @@ body #bottomNav {
         width: 26px !important;
 
         min-width: 26px !important;
-
         max-width: 26px !important;
 
         height: 36px !important;
 
         min-height: 36px !important;
-
         max-height: 36px !important;
     }
 
@@ -2796,13 +2525,11 @@ body #bottomNav {
         width: 15px !important;
 
         min-width: 15px !important;
-
         max-width: 15px !important;
 
         height: 28px !important;
 
         min-height: 28px !important;
-
         max-height: 28px !important;
     }
 
@@ -2812,13 +2539,11 @@ body #bottomNav {
         width: 26px !important;
 
         min-width: 26px !important;
-
         max-width: 26px !important;
 
         height: 36px !important;
 
         min-height: 36px !important;
-
         max-height: 36px !important;
     }
 
@@ -3079,91 +2804,60 @@ body #bottomNav {
 
 
     /* =====================================================
-       THEME PANEL - MOBILE
+       THEME PANEL - MOBILE LEFT SIDE
        ===================================================== */
 
     html body #fcThemeOverlay #fcThemePanel {
         width:
-            min(350px, 90vw) !important;
+            calc(100vw - 20px) !important;
 
         max-width:
-            90vw !important;
+            calc(100vw - 20px) !important;
 
-        min-height:
-            100vh !important;
-
-        height:
-            auto !important;
-
-        max-height:
-            none !important;
+        margin:
+            10px 0 10px 10px !important;
 
         border-radius:
-            0 18px 18px 0 !important;
+            16px !important;
     }
 
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-head {
+    html body #fcThemeOverlay #fcThemePanel
+    .fc-theme-head {
         min-height:
-            66px !important;
-
-        height:
-            66px !important;
+            58px !important;
 
         padding:
-            13px 14px !important;
+            12px 14px !important;
     }
 
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-body {
+    html body #fcThemeOverlay #fcThemePanel
+    .fc-theme-body {
         padding:
-            12px !important;
+            11px !important;
 
         padding-bottom:
-            25px !important;
+            18px !important;
     }
 
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-grid {
+    html body #fcThemeOverlay #fcThemePanel
+    .fc-theme-grid {
         grid-template-columns:
             repeat(2,minmax(0,1fr)) !important;
 
         gap:
-            8px !important;
+            7px !important;
     }
 
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-card,
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-choice {
+    html body #fcThemeOverlay #fcThemePanel
+    .fc-theme-choice {
         min-height:
-            104px !important;
+            86px !important;
 
         padding:
-            11px !important;
-
-        border-radius:
-            13px !important;
-    }
-
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-name {
-        font-size:
-            12px !important;
-
-        line-height:
-            16px !important;
-    }
-
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-description,
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-desc {
-        font-size:
             9px !important;
 
-        line-height:
+        border-radius:
             12px !important;
-    }
-
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-icon {
-        font-size:
-            22px !important;
-
-        margin-bottom:
-            6px !important;
     }
 
 
@@ -3229,7 +2923,8 @@ body #bottomNav {
             3px !important;
     }
 
-    html body #chatScreen #messages .fc-message-row {
+    html body #chatScreen #messages
+    .fc-message-row {
         width:
             100% !important;
 
@@ -3240,7 +2935,8 @@ body #bottomNav {
             2px 0 !important;
     }
 
-    html body #chatScreen #messages .fc-message-bubble {
+    html body #chatScreen #messages
+    .fc-message-bubble {
         max-width:
             78% !important;
 
@@ -3258,13 +2954,15 @@ body #bottomNav {
     }
 
     html body #chatScreen #messages
-    .fc-message-row.other .fc-message-bubble {
+    .fc-message-row.other
+    .fc-message-bubble {
         border-bottom-left-radius:
             5px !important;
     }
 
     html body #chatScreen #messages
-    .fc-message-row.mine .fc-message-bubble {
+    .fc-message-row.mine
+    .fc-message-bubble {
         border-bottom-right-radius:
             5px !important;
     }
@@ -3421,59 +3119,36 @@ body #bottomNav {
     }
 
 
-    /* =====================================================
-       VERY SMALL THEME PANEL
-       ===================================================== */
+    /* Small phone theme */
 
     html body #fcThemeOverlay #fcThemePanel {
         width:
-            92vw !important;
+            calc(100vw - 14px) !important;
 
         max-width:
-            92vw !important;
+            calc(100vw - 14px) !important;
 
+        margin:
+            7px 0 7px 7px !important;
+    }
+
+    html body #fcThemeOverlay #fcThemePanel
+    .fc-theme-grid {
+        grid-template-columns:
+            repeat(2,minmax(0,1fr)) !important;
+    }
+
+    html body #fcThemeOverlay #fcThemePanel
+    .fc-theme-choice {
         min-height:
-            100vh !important;
-    }
-
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-body {
-        padding:
-            10px !important;
-
-        padding-bottom:
-            24px !important;
-    }
-
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-grid {
-        gap:
-            7px !important;
-    }
-
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-card,
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-choice {
-        min-height:
-            100px !important;
+            82px !important;
 
         padding:
-            9px !important;
-
-        border-radius:
-            12px !important;
-    }
-
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-title {
-        font-size:
-            18px !important;
-    }
-
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-description,
-    html body #fcThemeOverlay #fcThemePanel .fc-theme-desc {
-        font-size:
             8px !important;
     }
 
 
-    /* Emoji */
+    /* Small phone emoji picker */
 
     html body #emojiPicker {
         left:
@@ -3554,84 +3229,37 @@ body #bottomNav {
 
 
 /* =========================================================
-   FINAL THEME SAFETY
-   IMPORTANT
-   These rules intentionally override the OLD centered
-   theme-panel rules from the previous CSS.
+   IMPORTANT THEME OVERRIDE
+   These rules intentionally come LAST.
+   They prevent old theme CSS from moving the panel
+   back to the center.
    ========================================================= */
 
-/* Overlay is the actual scroll container */
-html body #fcThemeOverlay {
-    z-index:
-        2147483646 !important;
-
-    overflow-y:
-        auto !important;
-
-    overflow-x:
-        hidden !important;
-
-    -webkit-overflow-scrolling:
-        touch !important;
-
-    overscroll-behavior:
-        contain !important;
-
-    touch-action:
-        pan-y !important;
-}
-
-
-/* Panel stays on the LEFT */
 html body #fcThemeOverlay #fcThemePanel {
-    position:
-        relative !important;
+    position: relative !important;
 
-    left:
-        auto !important;
+    left: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
 
-    top:
-        auto !important;
-
-    right:
-        auto !important;
-
-    bottom:
-        auto !important;
+    transform: none !important;
 
     width:
-        380px !important;
+        min(390px,calc(100vw - 24px)) !important;
 
-    max-width:
-        88vw !important;
+    height: auto !important;
 
-    height:
-        auto !important;
-
-    min-height:
-        100vh !important;
-
-    max-height:
-        none !important;
+    max-height: none !important;
 
     margin:
-        0 !important;
-
-    overflow:
-        visible !important;
+        20px 0 20px 20px !important;
 
     display:
         block !important;
 
-    z-index:
-        2147483647 !important;
-}
-
-
-/* Panel opens when JS adds fc-theme-open */
-html body #fcThemeOverlay.fc-theme-open #fcThemePanel {
-    transform:
-        translateX(0) !important;
+    overflow:
+        visible !important;
 
     opacity:
         1 !important;
@@ -3641,94 +3269,23 @@ html body #fcThemeOverlay.fc-theme-open #fcThemePanel {
 
     pointer-events:
         auto !important;
+
+    z-index:
+        2147483647 !important;
 }
 
+html body #fcThemeOverlay {
+    z-index:
+        2147483646 !important;
 
-/* Header stays at top while theme list scrolls */
-html body #fcThemeOverlay #fcThemePanel .fc-theme-head {
-    position:
-        sticky !important;
-
-    top:
-        0 !important;
-
-    flex:
-        none !important;
-}
-
-
-/* Theme body must NOT create a second clipped scroll box */
-html body #fcThemeOverlay #fcThemePanel .fc-theme-body {
-    display:
-        block !important;
-
-    height:
+    overflow-y:
         auto !important;
 
-    min-height:
-        0 !important;
-
-    max-height:
-        none !important;
-
-    overflow:
-        visible !important;
-
-    flex:
-        none !important;
-}
-
-
-/* Grid must never be clipped */
-html body #fcThemeOverlay #fcThemePanel .fc-theme-grid {
-    height:
-        auto !important;
-
-    min-height:
-        0 !important;
-
-    max-height:
-        none !important;
-
-    overflow:
-        visible !important;
-}
-
-
-/* Make sure old centered rules cannot win */
-html body #fcThemePanel {
-    left:
-        auto !important;
-
-    top:
-        auto !important;
-
-    transform:
-        translateX(-100%) !important;
-
-    width:
-        380px !important;
-
-    max-width:
-        88vw !important;
-
-    height:
-        auto !important;
-
-    min-height:
-        100vh !important;
-
-    max-height:
-        none !important;
-
-    margin:
-        0 !important;
-
-    overflow:
-        visible !important;
+    overflow-x:
+        hidden !important;
 }
 
 
 /* =========================================================
-   END
+   END FRIENDCHAT CSS
    ========================================================= */
