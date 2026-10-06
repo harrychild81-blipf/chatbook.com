@@ -1775,126 +1775,317 @@
   }
 
 
+ /* =========================================================
+   BOTTOM DOCK
+   ========================================================= */
+
+function addBottomDock() {
+
+  /*
+     IMPORTANT:
+     If the dock already exists, DO NOT create another one.
+     Instead, repair/rebind its buttons.
+  */
+
+  let dock =
+    document.querySelector(".fc-bottom-dock");
+
+
   /* =========================================================
-     BOTTOM DOCK
+     CREATE DOCK IF IT DOES NOT EXIST
      ========================================================= */
 
-  function addBottomDock() {
+  if (!dock) {
 
-    /*
-       Existing dock = don't create another.
-    */
-
-    if (
-      document.querySelector(
-        ".fc-bottom-dock"
-      )
-    ) {
-
-      return;
-
-    }
-
-
-    const dock =
+    dock =
       create(
         "div",
         "fc-bottom-dock",
         document.body
       );
 
+  }
 
-    const chats =
+
+  /* =========================================================
+     FIND EXISTING BUTTONS
+     ========================================================= */
+
+  let chats =
+    dock.querySelector(
+      '[data-fc-dock="chats"]'
+    );
+
+  let center =
+    dock.querySelector(
+      '[data-fc-dock="suggestions"]'
+    );
+
+  let profile =
+    dock.querySelector(
+      '[data-fc-dock="profile"]'
+    );
+
+
+  /* =========================================================
+     CREATE CHATS BUTTON IF MISSING
+     ========================================================= */
+
+  if (!chats) {
+
+    chats =
       create(
         "button",
         "fc-dock-btn",
         dock
       );
 
+    chats.dataset.fcDock =
+      "chats";
 
-    chats.type =
-      "button";
-
-
-    chats.title =
-      "Chats";
+  }
 
 
-    chats.innerHTML =
-      "<span>💬</span><span>Chats</span>";
+  chats.type =
+    "button";
+
+  chats.title =
+    "Chats";
+
+  chats.innerHTML =
+    "<span>💬</span><span>Chats</span>";
 
 
-    chats.onclick =
-      () => {
+  /* =========================================================
+     CREATE FC SUGGESTIONS BUTTON IF MISSING
+     ========================================================= */
 
-        goHome();
+  if (!center) {
 
-      };
-
-
-    const center =
+    center =
       create(
         "button",
         "fc-dock-btn fc-dock-center",
         dock
       );
 
+    center.dataset.fcDock =
+      "suggestions";
 
-    center.type =
-      "button";
-
-
-    center.title =
-      "Discover FriendChat users";
+  }
 
 
-    center.innerHTML =
-      "<span>FC</span><span>Suggestions</span>";
+  center.type =
+    "button";
+
+  center.title =
+    "Discover FriendChat users";
+
+  center.innerHTML =
+    "<span>FC</span><span>Suggestions</span>";
 
 
-    center.onclick =
-      () => {
+  /* =========================================================
+     CREATE PROFILE BUTTON IF MISSING
+     ========================================================= */
 
-        toggleDiscovery();
+  if (!profile) {
 
-      };
-
-
-    const profile =
+    profile =
       create(
         "button",
         "fc-dock-btn",
         dock
       );
 
+    profile.dataset.fcDock =
+      "profile";
 
-    profile.type =
-      "button";
-
-
-    profile.title =
-      "Profile";
+  }
 
 
-    profile.innerHTML =
-      "<span>👤</span><span>Profile</span>";
+  profile.type =
+    "button";
+
+  profile.title =
+    "Profile";
+
+  profile.innerHTML =
+    "<span>👤</span><span>Profile</span>";
 
 
-    profile.onclick =
-      () => {
+  /* =========================================================
+     REMOVE OLD CLICK LISTENERS
+     ========================================================= */
 
-        if (
-          typeof window.showProfile ===
-          "function"
-        ) {
+  chats.onclick = null;
+  center.onclick = null;
+  profile.onclick = null;
 
-          window.showProfile();
+
+  /* =========================================================
+     CHATS
+     ========================================================= */
+
+  chats.onclick =
+    function(event) {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (
+        typeof window.goHome ===
+        "function"
+      ) {
+
+        window.goHome();
+
+      }
+
+    };
+
+
+  /* =========================================================
+     FC SUGGESTIONS
+     ========================================================= */
+
+  center.onclick =
+    function(event) {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+
+      /*
+         Use the global function created
+         by this script.
+      */
+
+      if (
+        typeof window.openDiscovery ===
+        "function"
+      ) {
+
+        window.openDiscovery();
+
+        return;
+
+      }
+
+
+      /*
+         Fallback:
+         directly open the discovery overlay.
+      */
+
+      const overlay =
+        document.getElementById(
+          "fcDiscoveryOverlay"
+        );
+
+
+      if (overlay) {
+
+        const isOpen =
+          overlay.classList.contains(
+            "open"
+          );
+
+
+        if (isOpen) {
+
+          overlay.classList.remove(
+            "open"
+          );
+
+          overlay.style.display =
+            "none";
+
+        }
+        else {
+
+          overlay.classList.add(
+            "open"
+          );
+
+          overlay.style.display =
+            "block";
+
+
+          if (
+            typeof window.renderDiscovery ===
+            "function"
+          ) {
+
+            window.renderDiscovery();
+
+          }
 
         }
 
-      };
+        return;
 
-  }
+      }
+
+
+      /*
+         Last fallback:
+         create the discovery panel.
+      */
+
+      if (
+        typeof addDiscovery ===
+        "function"
+      ) {
+
+        addDiscovery();
+
+
+        const newOverlay =
+          document.getElementById(
+            "fcDiscoveryOverlay"
+          );
+
+
+        if (newOverlay) {
+
+          newOverlay.classList.add(
+            "open"
+          );
+
+          newOverlay.style.display =
+            "block";
+
+        }
+
+      }
+
+    };
+
+
+  /* =========================================================
+     PROFILE
+     ========================================================= */
+
+  profile.onclick =
+    function(event) {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+
+      if (
+        typeof window.showProfile ===
+        "function"
+      ) {
+
+        window.showProfile();
+
+      }
+
+    };
+
+}
 
 
   /* =========================================================
