@@ -2166,29 +2166,52 @@ function addBottomDock() {
 
     panel.style.cssText = `
 
-      position:relative;
+  position:fixed !important;
 
-      width:min(
-        760px,
-        calc(100vw - 40px)
-      );
+  top:50% !important;
+  left:50% !important;
 
-      margin:20px auto 50px;
+  transform:translate(-50%, -50%) !important;
 
-      padding:22px;
+  width:min(
+    760px,
+    calc(100vw - 40px)
+  ) !important;
 
-      box-sizing:border-box;
+  max-width:760px !important;
 
-      border-radius:20px;
+  max-height:
+    calc(100vh - 40px) !important;
 
-      background:var(--fc-panel);
+  margin:0 !important;
 
-      color:var(--fc-text);
+  padding:22px !important;
 
-      border:1px solid
-        rgba(255,255,255,.12);
+  box-sizing:border-box !important;
 
-    `;
+  border-radius:20px !important;
+
+  background:
+    var(--fc-panel) !important;
+
+  color:
+    var(--fc-text) !important;
+
+  border:
+    1px solid
+    rgba(255,255,255,.12) !important;
+
+  box-shadow:
+    0 25px 80px
+    rgba(0,0,0,.65) !important;
+
+  overflow-y:auto !important;
+
+  overflow-x:hidden !important;
+
+  z-index:2147483647 !important;
+
+`;
 
 
     panel.innerHTML = `
