@@ -2,6 +2,7 @@
    FRIENDCHAT
    CREATE SERVER
    PHASE 1
+   SHARED SERVER SYSTEM
    ========================================================= */
 
 
@@ -47,14 +48,39 @@ const descriptionCounter =
 
 
 /* =========================================================
+   API
+   ========================================================= */
+
+/*
+   IMPORTANT:
+
+   The same FriendChat backend serves the website.
+
+   Therefore:
+
+       /api/servers
+
+   automatically goes to the same backend.
+
+   We do NOT use localhost here because the website
+   may be running on your laptop, phone, or Render.
+*/
+
+const API_BASE = "";
+
+
+/* =========================================================
    OPEN IMAGE PICKER
    ========================================================= */
 
 function openIconPicker() {
 
     if (serverIcon) {
+
         serverIcon.click();
+
     }
+
 }
 
 
@@ -68,6 +94,7 @@ if (uploadIconButton) {
         "click",
         openIconPicker
     );
+
 }
 
 
@@ -81,6 +108,7 @@ if (serverIconPreview) {
         "click",
         openIconPicker
     );
+
 }
 
 
@@ -97,14 +125,17 @@ if (serverIcon) {
             const file =
                 this.files[0];
 
-            /* No file selected */
 
             if (!file) {
+
                 return;
+
             }
 
 
-            /* Make sure it is an image */
+            /* -----------------------------------------
+               CHECK IMAGE
+               ----------------------------------------- */
 
             if (
                 !file.type ||
@@ -118,13 +149,17 @@ if (serverIcon) {
                 this.value = "";
 
                 return;
+
             }
 
 
-            /* Maximum 5 MB */
+            /* -----------------------------------------
+               MAX 5 MB
+               ----------------------------------------- */
 
             const maxSize =
                 5 * 1024 * 1024;
+
 
             if (file.size > maxSize) {
 
@@ -135,10 +170,13 @@ if (serverIcon) {
                 this.value = "";
 
                 return;
+
             }
 
 
-            /* Read image */
+            /* -----------------------------------------
+               READ IMAGE
+               ----------------------------------------- */
 
             const reader =
                 new FileReader();
@@ -147,25 +185,27 @@ if (serverIcon) {
             reader.onload =
                 function (event) {
 
-                    if (!iconImage) {
-                        return;
+                    if (iconImage) {
+
+                        iconImage.src =
+                            event.target.result;
+
+                        iconImage.style.display =
+                            "block";
+
                     }
-
-                    iconImage.src =
-                        event.target.result;
-
-                    iconImage.style.display =
-                        "block";
 
 
                     if (iconText) {
 
                         iconText.style.display =
                             "none";
+
                     }
 
 
                     clearError();
+
                 };
 
 
@@ -175,12 +215,15 @@ if (serverIcon) {
                     showError(
                         "Could not read the selected image."
                     );
+
                 };
 
 
             reader.readAsDataURL(file);
+
         }
     );
+
 }
 
 
@@ -188,7 +231,10 @@ if (serverIcon) {
    SERVER NAME COUNTER
    ========================================================= */
 
-if (serverName && nameCounter) {
+if (
+    serverName &&
+    nameCounter
+) {
 
     serverName.addEventListener(
         "input",
@@ -196,8 +242,10 @@ if (serverName && nameCounter) {
 
             nameCounter.textContent =
                 this.value.length;
+
         }
     );
+
 }
 
 
@@ -216,8 +264,10 @@ if (
 
             descriptionCounter.textContent =
                 this.value.length;
+
         }
     );
+
 }
 
 
@@ -228,32 +278,40 @@ if (
 function showError(message) {
 
     if (!errorMessage) {
+
         return;
+
     }
+
 
     errorMessage.textContent =
         message;
+
 }
 
 
 function clearError() {
 
     if (!errorMessage) {
+
         return;
+
     }
+
 
     errorMessage.textContent =
         "";
+
 }
 
 
 /* =========================================================
-   GET OWNER ID
+   GET CURRENT USER ID
    ========================================================= */
 
 function getOwnerID() {
 
-    let ownerID = null;
+    let ownerID = "";
 
 
     try {
@@ -261,139 +319,254 @@ function getOwnerID() {
         ownerID =
             localStorage.getItem(
                 "friendchat_user_id"
-            );
+            ) || "";
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
-            "Could not read user ID:",
+            "Could not read FriendChat user ID:",
             error
         );
+
     }
 
 
+    ownerID =
+        String(ownerID)
+            .trim()
+            .toUpperCase();
+
+
     /*
-     * Temporary ID for the prototype.
-     *
-     * Later this will come from your
-     * real FriendChat login system.
-     */
+       IMPORTANT:
+
+       Do NOT create a random ID here anymore.
+
+       The backend needs the real logged-in
+       FriendChat account.
+
+       If there is no ID, the user must log in.
+    */
 
     if (!ownerID) {
 
-        ownerID =
-            "user_" +
-            Date.now().toString(36) +
-            "_" +
-            Math.random()
-                .toString(36)
-                .substring(2, 8);
+        return null;
 
-
-        try {
-
-            localStorage.setItem(
-                "friendchat_user_id",
-                ownerID
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Could not save user ID:",
-                error
-            );
-        }
     }
 
 
     return ownerID;
+
 }
 
 
 /* =========================================================
-   CREATE UNIQUE SERVER ID
+   GET CURRENT USER NAME
+   ========================================================= */
+
+function getOwnerName() {
+
+    let name = "";
+
+
+    try {
+
+        name =
+            localStorage.getItem(
+                "friendchat_user_name"
+            ) || "";
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Could not read FriendChat user name:",
+            error
+        );
+
+    }
+
+
+    return String(
+        name || "FriendChat User"
+    ).trim();
+
+}
+
+
+/* =========================================================
+   GENERATE SERVER ID
    ========================================================= */
 
 function generateServerID() {
 
-    return (
-        "srv_" +
-        Date.now().toString(36) +
-        "_" +
+    const randomPart =
         Math.random()
             .toString(36)
             .substring(2, 10)
+            .toUpperCase();
+
+
+    const timePart =
+        Date.now()
+            .toString(36)
+            .toUpperCase();
+
+
+    return (
+        "FC-SRV-" +
+        timePart +
+        "-" +
+        randomPart
     );
+
 }
 
 
 /* =========================================================
-   GET SAVED SERVERS
+   GET SERVER ICON
    ========================================================= */
 
-function getSavedServers() {
+function getServerIcon() {
+
+    if (
+        iconImage &&
+        iconImage.src &&
+        iconImage.style.display !== "none"
+    ) {
+
+        /*
+           Make sure it is actually an image/data URL.
+        */
+
+        if (
+            iconImage.src.startsWith("data:image/")
+        ) {
+
+            return iconImage.src;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   CREATE SERVER ON BACKEND
+   ========================================================= */
+
+async function createServerOnBackend(
+    serverData
+) {
+
+    const response =
+        await fetch(
+            API_BASE + "/api/servers",
+            {
+
+                method:
+                    "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body:
+                    JSON.stringify(
+                        serverData
+                    )
+
+            }
+        );
+
+
+    let result = null;
+
 
     try {
 
-        const saved =
-            localStorage.getItem(
-                "friendchat_servers"
-            );
+        result =
+            await response.json();
+
+    }
+
+    catch (error) {
+
+        result = null;
+
+    }
 
 
-        if (!saved) {
-            return [];
-        }
+    if (!response.ok) {
 
-
-        const servers =
-            JSON.parse(saved);
-
-
-        if (!Array.isArray(servers)) {
-            return [];
-        }
-
-
-        return servers;
-
-    } catch (error) {
-
-        console.error(
-            "Could not load servers:",
-            error
+        throw new Error(
+            result &&
+            result.error
+                ? result.error
+                : "Could not create the server."
         );
 
-        return [];
     }
+
+
+    if (
+        !result ||
+        !result.server
+    ) {
+
+        throw new Error(
+            "The backend returned an invalid server response."
+        );
+
+    }
+
+
+    return result.server;
+
 }
 
 
 /* =========================================================
-   SAVE SERVERS
+   SAVE CURRENT SERVER LOCALLY
+   =========================================================
+
+   This is ONLY for navigation.
+
+   It is NOT the database anymore.
    ========================================================= */
 
-function saveServers(servers) {
+function saveCurrentServerID(
+    serverID
+) {
 
     try {
 
         localStorage.setItem(
-            "friendchat_servers",
-            JSON.stringify(servers)
+            "friendchat_current_server",
+            String(serverID)
         );
 
-        return true;
+    }
 
-    } catch (error) {
+    catch (error) {
 
         console.error(
-            "Could not save servers:",
+            "Could not save current server:",
             error
         );
 
-        return false;
     }
+
 }
 
 
@@ -401,9 +574,46 @@ function saveServers(servers) {
    CREATE SERVER
    ========================================================= */
 
-function createServer() {
+async function createServer() {
 
     clearError();
+
+
+    /* =====================================================
+       PREVENT DOUBLE CLICK
+       ===================================================== */
+
+    if (
+        createServerButton &&
+        createServerButton.disabled
+    ) {
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       GET USER
+       ===================================================== */
+
+    const ownerID =
+        getOwnerID();
+
+
+    if (!ownerID) {
+
+        showError(
+            "Please log in to FriendChat before creating a server."
+        );
+
+        return;
+
+    }
+
+
+    const ownerName =
+        getOwnerName();
 
 
     /* =====================================================
@@ -433,14 +643,15 @@ function createServer() {
         );
 
         if (serverName) {
+
             serverName.focus();
+
         }
 
         return;
+
     }
 
-
-    /* Minimum 2 characters */
 
     if (name.length < 2) {
 
@@ -449,14 +660,15 @@ function createServer() {
         );
 
         if (serverName) {
+
             serverName.focus();
+
         }
 
         return;
+
     }
 
-
-    /* Maximum 40 characters */
 
     if (name.length > 40) {
 
@@ -465,10 +677,34 @@ function createServer() {
         );
 
         if (serverName) {
+
             serverName.focus();
+
         }
 
         return;
+
+    }
+
+
+    /* =====================================================
+       VALIDATE DESCRIPTION
+       ===================================================== */
+
+    if (description.length > 200) {
+
+        showError(
+            "Description cannot be longer than 200 characters."
+        );
+
+        if (serverDescription) {
+
+            serverDescription.focus();
+
+        }
+
+        return;
+
     }
 
 
@@ -476,18 +712,8 @@ function createServer() {
        SERVER ICON
        ===================================================== */
 
-    let icon = null;
-
-
-    if (
-        iconImage &&
-        iconImage.src &&
-        iconImage.style.display !== "none"
-    ) {
-
-        icon =
-            iconImage.src;
-    }
+    const icon =
+        getServerIcon();
 
 
     /* =====================================================
@@ -496,19 +722,14 @@ function createServer() {
 
     const newServer = {
 
-        /* Unique server ID */
-
         serverID:
             generateServerID(),
 
-
-        /* Server owner */
-
         ownerID:
-            getOwnerID(),
+            ownerID,
 
-
-        /* Basic information */
+        ownerName:
+            ownerName,
 
         name:
             name,
@@ -516,37 +737,72 @@ function createServer() {
         description:
             description,
 
-
-        /* Server icon */
-
         icon:
             icon,
-
-
-        /* Server creation time */
 
         createdAt:
             new Date().toISOString(),
 
 
-        /* =================================================
-           INITIAL SERVER DATA
+        /*
+           OWNER IS AUTOMATICALLY
+           THE FIRST SERVER MEMBER.
+        */
 
-           These will be used in later phases.
-           ================================================= */
+        members: [
+
+            {
+
+                userID:
+                    ownerID,
+
+                name:
+                    ownerName,
+
+                role:
+                    "owner",
+
+                joinedAt:
+                    new Date().toISOString()
+
+            }
+
+        ],
+
+
+        /*
+           Channels will be added in
+           the channel phase.
+        */
 
         channels: [],
 
-        members: [],
+
+        /*
+           Roles will be added later.
+        */
 
         roles: [],
 
+
+        /*
+           Rules will be added later.
+        */
+
         rules: [],
+
+
+        /*
+           Invitations will be handled
+           by the backend.
+        */
 
         invites: [],
 
 
-        /* Default server settings */
+        /*
+           Default settings.
+        */
 
         settings: {
 
@@ -558,83 +814,93 @@ function createServer() {
 
             background:
                 null
+
         }
+
     };
 
 
     /* =====================================================
-       GET EXISTING SERVERS
+       BUTTON STATE
        ===================================================== */
 
-    const existingServers =
-        getSavedServers();
+    if (createServerButton) {
 
+        createServerButton.disabled =
+            true;
 
-    /* =====================================================
-       ADD NEW SERVER
-       ===================================================== */
+        createServerButton.dataset.originalText =
+            createServerButton.textContent;
 
-    existingServers.push(
-        newServer
-    );
+        createServerButton.textContent =
+            "Creating...";
 
-
-    /* =====================================================
-       SAVE SERVER
-       ===================================================== */
-
-    const saved =
-        saveServers(
-            existingServers
-        );
-
-
-    if (!saved) {
-
-        showError(
-            "Could not save the server. Please try again."
-        );
-
-        return;
     }
 
-
-    /* =====================================================
-       SAVE CURRENT SERVER
-       ===================================================== */
 
     try {
 
-        localStorage.setItem(
-            "friendchat_current_server",
-            newServer.serverID
+        /* =================================================
+           SEND SERVER TO BACKEND
+           ================================================= */
+
+        const createdServer =
+            await createServerOnBackend(
+                newServer
+            );
+
+
+        /* =================================================
+           SAVE ONLY CURRENT SERVER ID
+           ================================================= */
+
+        saveCurrentServerID(
+            createdServer.serverID
         );
 
-    } catch (error) {
 
-        console.error(
-            "Could not save current server:",
-            error
+        console.log(
+            "FriendChat shared server created:",
+            createdServer
         );
+
+
+        /* =================================================
+           OPEN SERVER HOME
+           ================================================= */
+
+        window.location.href =
+            "server-home.html";
+
     }
 
+    catch (error) {
 
-    /* =====================================================
-       LOG
-       ===================================================== */
-
-    console.log(
-        "FriendChat server created:",
-        newServer
-    );
+        console.error(
+            "Create server error:",
+            error
+        );
 
 
-    /* =====================================================
-       OPEN SERVER HOME
-       ===================================================== */
+        showError(
+            error.message ||
+            "Could not create the server. Please try again."
+        );
 
-    window.location.href =
-        "server-home.html";
+
+        if (createServerButton) {
+
+            createServerButton.disabled =
+                false;
+
+            createServerButton.textContent =
+                createServerButton.dataset.originalText ||
+                "Create Server";
+
+        }
+
+    }
+
 }
 
 
@@ -648,6 +914,7 @@ if (createServerButton) {
         "click",
         createServer
     );
+
 }
 
 
@@ -668,9 +935,12 @@ if (serverName) {
                 event.preventDefault();
 
                 createServer();
+
             }
+
         }
     );
+
 }
 
 
@@ -684,21 +954,48 @@ if (cancelButton) {
         "click",
         function () {
 
-            /*
-             * Go back to FriendChat.
-             */
-
             if (
                 window.history.length > 1
             ) {
 
                 window.history.back();
 
-            } else {
+            }
+
+            else {
 
                 window.location.href =
                     "index.html";
+
             }
+
         }
     );
+
+}
+
+
+/* =========================================================
+   INITIAL COUNTERS
+   ========================================================= */
+
+if (
+    serverName &&
+    nameCounter
+) {
+
+    nameCounter.textContent =
+        serverName.value.length;
+
+}
+
+
+if (
+    serverDescription &&
+    descriptionCounter
+) {
+
+    descriptionCounter.textContent =
+        serverDescription.value.length;
+
 }
