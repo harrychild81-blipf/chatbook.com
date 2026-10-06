@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FriendChat - Create Server</title>
+
+    <link rel="stylesheet" href="server.css">
+</head>
+
+<body>
+
+    <main class="page">
+
+        <section class="create-card">
+
+            <div class="brand">
+                <div class="brand-icon">FC</div>
+                <span>FriendChat</span>
+            </div>
+
+            <div class="header">
+                <h1>Create your server</h1>
+
+                <p>
+                    Build your own space for friends, communities and conversations.
+                </p>
+            </div>
+
+
+            <!-- SERVER ICON -->
+
+            <div class="icon-section">
+
+                <div class="server-icon" id="serverIconPreview">
+                    <span id="iconText">+</span>
+                    <img id="iconImage" src="" alt="Server icon">
+                </div>
+
+                <input
+                    type="file"
+                    id="serverIcon"
+                    accept="image/*"
+                    hidden
+                >
+
+                <button
+                    type="button"
+                    class="upload-button"
+                    id="uploadIconButton"
+                >
+                    Upload server icon
+                </button>
+
+                <small>
+                    JPG, PNG or other image formats
+                </small>
+
+            </div>
+
+
+            <!-- SERVER NAME -->
+
+            <div class="form-group">
+
+                <label for="serverName">
+                    Server name
+                </label>
+
+                <input
+                    type="text"
+                    id="serverName"
+                    placeholder="Enter your server name"
+                    maxlength="40"
+                    autocomplete="off"
+                >
+
+                <div class="counter">
+                    <span id="nameCounter">0</span>/40
+                </div>
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="form-group">
+
+                <label for="serverDescription">
+                    Description
+                    <span class="optional">Optional</span>
+                </label>
+
+                <textarea
+                    id="serverDescription"
+                    placeholder="Tell people what your server is about..."
+                    maxlength="200"
+                    rows="4"
+                ></textarea>
+
+                <div class="counter">
+                    <span id="descriptionCounter">0</span>/200
+                </div>
+
+            </div>
+
+
+            <!-- ERROR -->
+
+            <div
+                class="error-message"
+                id="errorMessage"
+            ></div>
+
+
+            <!-- CREATE BUTTON -->
+
+            <button
+                type="button"
+                class="create-button"
+                id="createServerButton"
+            >
+                <span>Create Server</span>
+                <span class="arrow">→</span>
+            </button>
+
+
+            <button
+                type="button"
+                class="cancel-button"
+                id="cancelButton"
+            >
+                Cancel
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <script src="server.js"></script>
+
+</body>
+</html>
