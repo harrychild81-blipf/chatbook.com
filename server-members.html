@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Members • FriendChat</title>
+
+    <link rel="stylesheet" href="server-members.css">
+</head>
+
+<body>
+
+    <div class="members-page">
+
+        <!-- TOP BAR -->
+        <header class="members-topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    id="backButton"
+                    class="back-button"
+                    type="button"
+                    aria-label="Back"
+                >
+                    <span>←</span>
+                </button>
+
+                <div
+                    id="serverMiniIcon"
+                    class="server-mini-icon"
+                >
+                    FC
+                </div>
+
+                <div class="server-heading">
+
+                    <div
+                        id="serverName"
+                        class="server-name"
+                    >
+                        Server
+                    </div>
+
+                    <div class="server-label">
+                        Members
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="topbar-right">
+
+                <button
+                    id="inviteTopButton"
+                    class="top-action"
+                    type="button"
+                >
+                    <span>＋</span>
+                    Invite
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- MAIN -->
+        <main class="members-main">
+
+            <!-- HERO -->
+            <section class="members-hero">
+
+                <div class="hero-content">
+
+                    <div class="hero-icon" id="heroServerIcon">
+                        FC
+                    </div>
+
+                    <div>
+
+                        <div class="hero-small">
+                            SERVER MEMBERS
+                        </div>
+
+                        <h1 id="heroServerName">
+                            Server Members
+                        </h1>
+
+                        <p id="heroDescription">
+                            Manage the people in your server.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="member-total-box">
+
+                    <span id="memberCount">
+                        0
+                    </span>
+
+                    <small>
+                        Members
+                    </small>
+
+                </div>
+
+            </section>
+
+
+            <!-- TOOLBAR -->
+            <section class="members-toolbar">
+
+                <div class="search-box">
+
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
+                    <input
+                        id="memberSearch"
+                        type="text"
+                        placeholder="Search members..."
+                        autocomplete="off"
+                    >
+
+                    <button
+                        id="clearSearch"
+                        class="clear-search"
+                        type="button"
+                        aria-label="Clear search"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+                <button
+                    id="inviteButton"
+                    class="invite-button"
+                    type="button"
+                >
+                    <span>＋</span>
+                    Add Member
+                </button>
+
+            </section>
+
+
+            <!-- OWNER -->
+            <section class="member-section">
+
+                <div class="section-title">
+
+                    <span>
+                        Server Owner
+                    </span>
+
+                    <span id="ownerCount">
+                        0
+                    </span>
+
+                </div>
+
+                <div
+                    id="ownerList"
+                    class="member-list"
+                ></div>
+
+            </section>
+
+
+            <!-- MEMBERS -->
+            <section class="member-section">
+
+                <div class="section-title">
+
+                    <span>
+                        Members
+                    </span>
+
+                    <span id="regularCount">
+                        0
+                    </span>
+
+                </div>
+
+                <div
+                    id="memberList"
+                    class="member-list"
+                ></div>
+
+            </section>
+
+
+            <!-- EMPTY SEARCH -->
+            <div
+                id="noResults"
+                class="no-results hidden"
+            >
+
+                <div class="no-results-icon">
+                    🔎
+                </div>
+
+                <h3>
+                    No members found
+                </h3>
+
+                <p>
+                    Try a different name or member ID.
+                </p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- INVITE MODAL -->
+    <div
+        id="inviteModal"
+        class="modal-overlay hidden"
+    >
+
+        <div class="modal-card">
+
+            <button
+                id="closeInviteModal"
+                class="modal-close"
+                type="button"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+            <div class="modal-icon">
+                ＋
+            </div>
+
+            <h2>
+                Add Member
+            </h2>
+
+            <p>
+                Enter the FriendChat ID of the person you want to add.
+            </p>
+
+            <label for="memberIdInput">
+                FriendChat ID
+            </label>
+
+            <input
+                id="memberIdInput"
+                type="text"
+                placeholder="FC-ABC123"
+                maxlength="40"
+                autocomplete="off"
+            >
+
+            <div
+                id="inviteError"
+                class="modal-error"
+            ></div>
+
+            <div class="modal-actions">
+
+                <button
+                    id="cancelInvite"
+                    class="secondary-button"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    id="confirmInvite"
+                    class="primary-button"
+                    type="button"
+                >
+                    Add Member
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MEMBER PROFILE MODAL -->
+    <div
+        id="memberModal"
+        class="modal-overlay hidden"
+    >
+
+        <div class="modal-card member-profile-card">
+
+            <button
+                id="closeMemberModal"
+                class="modal-close"
+                type="button"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+            <div
+                id="profileAvatar"
+                class="profile-avatar"
+            >
+                FC
+            </div>
+
+            <div
+                id="profileStatus"
+                class="profile-status"
+            >
+                ● Offline
+            </div>
+
+            <h2 id="profileName">
+                Member
+            </h2>
+
+            <div
+                id="profileId"
+                class="profile-id"
+            >
+                FC-000000
+            </div>
+
+            <div class="profile-info">
+
+                <div class="profile-info-row">
+
+                    <span>
+                        Role
+                    </span>
+
+                    <strong id="profileRole">
+                        Member
+                    </strong>
+
+                </div>
+
+                <div class="profile-info-row">
+
+                    <span>
+                        Joined
+                    </span>
+
+                    <strong id="profileJoined">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <button
+                id="removeMemberButton"
+                class="danger-button"
+                type="button"
+            >
+                Remove Member
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOAST -->
+    <div
+        id="toast"
+        class="toast"
+    ></div>
+
+
+    <script src="server-members.js"></script>
+
+</body>
+</html>
