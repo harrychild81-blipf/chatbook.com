@@ -1,0 +1,490 @@
+/* =========================================================
+   FRIENDCHAT
+   CREATE SERVER - PHASE 1
+   ========================================================= */
+
+:root {
+    --bg: #070a10;
+    --card: #0e141e;
+    --card-border: rgba(255,255,255,0.08);
+
+    --input: #111925;
+    --input-border: rgba(255,255,255,0.09);
+
+    --text: #ffffff;
+    --muted: #8993a4;
+
+    --accent: #6c63ff;
+    --accent-hover: #7b73ff;
+
+    --danger: #ff5c70;
+}
+
+
+/* RESET */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body {
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(108, 99, 255, 0.12),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at bottom right,
+            rgba(0, 190, 255, 0.06),
+            transparent 35%
+        ),
+        var(--bg);
+
+    color: var(--text);
+}
+
+
+/* PAGE */
+
+.page {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 40px 20px;
+}
+
+
+/* CARD */
+
+.create-card {
+    width: 100%;
+    max-width: 520px;
+
+    padding: 38px;
+
+    background: rgba(14, 20, 30, 0.96);
+
+    border: 1px solid var(--card-border);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,0.45);
+
+    backdrop-filter: blur(20px);
+}
+
+
+/* BRAND */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    margin-bottom: 32px;
+}
+
+
+.brand-icon {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: var(--accent);
+
+    font-size: 12px;
+    font-weight: 800;
+
+    box-shadow:
+        0 8px 25px rgba(108,99,255,0.35);
+}
+
+
+/* HEADER */
+
+.header {
+    margin-bottom: 30px;
+}
+
+
+.header h1 {
+    font-size: 30px;
+    line-height: 1.2;
+
+    letter-spacing: -0.5px;
+
+    margin-bottom: 9px;
+}
+
+
+.header p {
+    color: var(--muted);
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* ICON SECTION */
+
+.icon-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-bottom: 30px;
+}
+
+
+.server-icon {
+    width: 112px;
+    height: 112px;
+
+    border-radius: 30px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #151d2a,
+            #0c111a
+        );
+
+    border: 2px dashed rgba(255,255,255,0.16);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.server-icon:hover {
+    transform: translateY(-2px);
+
+    border-color: var(--accent);
+}
+
+
+.server-icon span {
+    font-size: 38px;
+    font-weight: 300;
+
+    color: #8c96a8;
+}
+
+
+.server-icon img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: none;
+}
+
+
+.upload-button {
+    margin-top: 14px;
+
+    background: transparent;
+
+    border: 0;
+
+    color: #aeb7ff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.upload-button:hover {
+    color: white;
+}
+
+
+.icon-section small {
+    margin-top: 6px;
+
+    color: #667082;
+
+    font-size: 11px;
+}
+
+
+/* FORM */
+
+.form-group {
+    position: relative;
+
+    margin-bottom: 22px;
+}
+
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 9px;
+
+    color: #dce1ea;
+
+    font-size: 13px;
+    font-weight: 650;
+}
+
+
+.optional {
+    color: #667082;
+
+    font-weight: 400;
+
+    margin-left: 5px;
+}
+
+
+/* INPUTS */
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+
+    border: 1px solid var(--input-border);
+
+    border-radius: 12px;
+
+    background: var(--input);
+
+    color: white;
+
+    outline: none;
+
+    font-family: inherit;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.form-group input {
+    height: 50px;
+
+    padding: 0 15px;
+
+    font-size: 14px;
+}
+
+
+.form-group textarea {
+    min-height: 105px;
+
+    resize: vertical;
+
+    padding: 14px 15px;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #596477;
+}
+
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--accent);
+
+    box-shadow:
+        0 0 0 3px rgba(108,99,255,0.12);
+}
+
+
+/* COUNTER */
+
+.counter {
+    position: absolute;
+
+    right: 12px;
+    bottom: 8px;
+
+    color: #596477;
+
+    font-size: 10px;
+}
+
+
+/* ERROR */
+
+.error-message {
+    min-height: 20px;
+
+    margin-bottom: 5px;
+
+    color: var(--danger);
+
+    font-size: 13px;
+
+    text-align: center;
+}
+
+
+/* CREATE */
+
+.create-button {
+    width: 100%;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    border: 0;
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--accent),
+            #8179ff
+        );
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 30px rgba(108,99,255,0.22);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.create-button:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 14px 35px rgba(108,99,255,0.30);
+}
+
+
+.create-button:active {
+    transform: translateY(0);
+}
+
+
+.arrow {
+    font-size: 18px;
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+.create-button:hover .arrow {
+    transform: translateX(4px);
+}
+
+
+/* CANCEL */
+
+.cancel-button {
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 10px;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #737e91;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+
+.cancel-button:hover {
+    color: white;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .page {
+        padding: 18px;
+    }
+
+    .create-card {
+        padding: 26px 20px;
+
+        border-radius: 20px;
+    }
+
+    .header h1 {
+        font-size: 26px;
+    }
+
+    .server-icon {
+        width: 100px;
+        height: 100px;
+    }
+}
