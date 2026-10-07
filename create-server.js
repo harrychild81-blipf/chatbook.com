@@ -4,18 +4,23 @@
    PHASE 1
    SHARED SERVER SYSTEM
 
-   FIXED VERSION
+   COMPLETE FIXED VERSION
 
-   FIXES:
-   - Correct logged-in user ID
+   FEATURES:
+   - Correct logged-in user detection
    - Sends ownerID
    - Sends userID
-   - Sends x-friendchat-user-id header
-   - Sends authorization token when available
-   - Better localStorage account detection
-   - Correct server navigation
-   - Prevents fake owner IDs
-   - Better error messages
+   - Sends x-friendchat-user-id
+   - Sends Authorization token when available
+   - Server icon support
+   - Server name validation
+   - Server description validation
+   - Default general channel
+   - Default Owner + Member roles
+   - Saves current server
+   - Opens server-home.html
+   - Better error handling
+   - Prevents duplicate creation
    ========================================================= */
 
 
@@ -61,23 +66,23 @@ const descriptionCounter =
 
 
 /* =========================================================
-   API
+   API BASE
    ========================================================= */
 
 /*
-   Empty API_BASE means:
+   Empty string means use the same website/backend.
 
-       current website
-              ↓
-       same backend
+   Example:
 
-   This works with:
+   https://friendchat.in
+          ↓
+   https://friendchat.in/api/servers
 
-       localhost
-       laptop LAN IP
-       Render
-       custom domain
+   Local:
 
+   http://localhost:8080
+          ↓
+   http://localhost:8080/api/servers
 */
 
 const API_BASE = "";
@@ -89,17 +94,17 @@ const API_BASE = "";
 
 function openIconPicker() {
 
-    if (serverIcon) {
-
-        serverIcon.click();
-
+    if (!serverIcon) {
+        return;
     }
+
+    serverIcon.click();
 
 }
 
 
 /* =========================================================
-   UPLOAD BUTTON
+   UPLOAD ICON BUTTON
    ========================================================= */
 
 if (uploadIconButton) {
@@ -139,7 +144,7 @@ if (serverIconPreview) {
 
 
 /* =========================================================
-   SELECT SERVER ICON
+   SERVER ICON CHANGE
    ========================================================= */
 
 if (serverIcon) {
@@ -154,14 +159,12 @@ if (serverIcon) {
 
 
             if (!file) {
-
                 return;
-
             }
 
 
             /* -----------------------------------------
-               CHECK IMAGE
+               CHECK IMAGE TYPE
                ----------------------------------------- */
 
             if (
@@ -170,7 +173,7 @@ if (serverIcon) {
             ) {
 
                 showError(
-                    "Please select an image file."
+                    "Please select a valid image file."
                 );
 
                 this.value = "";
@@ -181,7 +184,7 @@ if (serverIcon) {
 
 
             /* -----------------------------------------
-               MAX 5 MB
+               MAX FILE SIZE
                ----------------------------------------- */
 
             const maxSize =
@@ -277,7 +280,7 @@ if (
 
 
 /* =========================================================
-   DESCRIPTION COUNTER
+   SERVER DESCRIPTION COUNTER
    ========================================================= */
 
 if (
@@ -299,16 +302,22 @@ if (
 
 
 /* =========================================================
-   ERROR
+   ERROR MESSAGE
    ========================================================= */
 
 function showError(message) {
+
+    const text =
+        String(
+            message || ""
+        );
+
 
     if (!errorMessage) {
 
         console.error(
             "FriendChat:",
-            message
+            text
         );
 
         return;
@@ -317,7 +326,13 @@ function showError(message) {
 
 
     errorMessage.textContent =
-        String(message || "");
+        text;
+
+
+    errorMessage.style.display =
+        text
+            ? "block"
+            : "";
 
 }
 
@@ -325,13 +340,15 @@ function showError(message) {
 function clearError() {
 
     if (!errorMessage) {
-
         return;
-
     }
 
 
     errorMessage.textContent =
+        "";
+
+
+    errorMessage.style.display =
         "";
 
 }
@@ -361,7 +378,7 @@ function normalizeUserID(value) {
 
 
 /* =========================================================
-   READ JSON LOCAL STORAGE VALUE
+   READ JSON FROM LOCAL STORAGE
    ========================================================= */
 
 function readLocalStorageObject(key) {
@@ -373,9 +390,7 @@ function readLocalStorageObject(key) {
 
 
         if (!raw) {
-
             return null;
-
         }
 
 
@@ -383,7 +398,12 @@ function readLocalStorageObject(key) {
 
     }
 
-    catch (_) {
+    catch (error) {
+
+        console.warn(
+            "FriendChat: Could not parse localStorage:",
+            key
+        );
 
         return null;
 
@@ -398,13 +418,13 @@ function readLocalStorageObject(key) {
 
 function getOwnerID() {
 
-    /*
-       Primary FriendChat account ID.
-    */
-
     let ownerID =
         "";
 
+
+    /* -----------------------------------------
+       PRIMARY FRIENDCHAT USER ID
+       ----------------------------------------- */
 
     try {
 
@@ -418,7 +438,7 @@ function getOwnerID() {
     catch (error) {
 
         console.error(
-            "Could not read friendchat_user_id:",
+            "FriendChat: Could not read user ID:",
             error
         );
 
@@ -438,14 +458,9 @@ function getOwnerID() {
     }
 
 
-    /*
-       ------------------------------------------------------
-       FALLBACK 1
-       ------------------------------------------------------
-
-       Some FriendChat versions may store the
-       logged-in account object.
-    */
+    /* -----------------------------------------
+       USER OBJECT FALLBACK
+       ----------------------------------------- */
 
     const possibleObjects = [
 
@@ -498,13 +513,9 @@ function getOwnerID() {
     }
 
 
-    /*
-       ------------------------------------------------------
-       FALLBACK 2
-       ------------------------------------------------------
-
-       Try common direct localStorage keys.
-    */
+    /* -----------------------------------------
+       DIRECT KEY FALLBACK
+       ----------------------------------------- */
 
     const possibleKeys = [
 
@@ -549,12 +560,10 @@ function getOwnerID() {
 
 
     /*
-       IMPORTANT:
+       NEVER generate a fake user ID.
 
-       Do NOT generate a random ID.
-
-       The backend must receive the real
-       FriendChat account ID.
+       The backend must receive the
+       actual FriendChat account ID.
     */
 
     return null;
@@ -572,6 +581,10 @@ function getOwnerName() {
         "";
 
 
+    /* -----------------------------------------
+       DIRECT NAME
+       ----------------------------------------- */
+
     try {
 
         name =
@@ -584,70 +597,72 @@ function getOwnerName() {
     catch (error) {
 
         console.error(
-            "Could not read FriendChat user name:",
+            "FriendChat: Could not read user name:",
             error
         );
 
     }
 
 
-    /*
-       If direct name doesn't exist,
-       check saved user object.
-    */
-
-    if (!name) {
-
-        const possibleObjects = [
-
-            "friendchat_user",
-
-            "friendchat_current_user",
-
-            "currentUser",
-
-            "user",
-
-            "friendchat_account"
-
-        ];
+    name =
+        String(
+            name || ""
+        ).trim();
 
 
-        for (
-            const key of possibleObjects
+    if (name) {
+
+        return name;
+
+    }
+
+
+    /* -----------------------------------------
+       USER OBJECT FALLBACK
+       ----------------------------------------- */
+
+    const possibleObjects = [
+
+        "friendchat_user",
+
+        "friendchat_current_user",
+
+        "currentUser",
+
+        "user",
+
+        "friendchat_account"
+
+    ];
+
+
+    for (
+        const key of possibleObjects
+    ) {
+
+        const object =
+            readLocalStorageObject(
+                key
+            );
+
+
+        if (
+            object &&
+            typeof object ===
+                "object"
         ) {
 
-            const object =
-                readLocalStorageObject(
-                    key
-                );
+            const possibleName =
+                object.name ||
+                object.displayName ||
+                object.username;
 
 
-            if (
-                object &&
-                typeof object ===
-                    "object"
-            ) {
+            if (possibleName) {
 
-                const possibleName =
-                    object.name ||
-                    object.displayName ||
-                    object.username;
-
-
-                if (
+                return String(
                     possibleName
-                ) {
-
-                    name =
-                        String(
-                            possibleName
-                        ).trim();
-
-
-                    break;
-
-                }
+                ).trim();
 
             }
 
@@ -656,9 +671,7 @@ function getOwnerName() {
     }
 
 
-    return String(
-        name || "FriendChat User"
-    ).trim();
+    return "FriendChat User";
 
 }
 
@@ -758,21 +771,32 @@ function generateServerID() {
 function getServerIcon() {
 
     if (
-        iconImage &&
-        iconImage.src &&
-        iconImage.style.display !==
-            "none"
+        !iconImage ||
+        !iconImage.src
     ) {
 
-        if (
-            iconImage.src.startsWith(
-                "data:image/"
-            )
-        ) {
+        return null;
 
-            return iconImage.src;
+    }
 
-        }
+
+    if (
+        iconImage.style.display ===
+        "none"
+    ) {
+
+        return null;
+
+    }
+
+
+    if (
+        iconImage.src.startsWith(
+            "data:image/"
+        )
+    ) {
+
+        return iconImage.src;
 
     }
 
@@ -799,10 +823,8 @@ function getServerRequestHeaders(
             "application/json",
 
         /*
-           IMPORTANT:
-
-           Backend can use this header
-           to identify the logged-in user.
+           Backend can use this to identify
+           the logged-in FriendChat account.
         */
 
         "x-friendchat-user-id":
@@ -848,13 +870,19 @@ async function createServerOnBackend(
 
 
     console.log(
-        "FriendChat: Creating server."
+        "FriendChat: Sending server creation request."
     );
 
 
     console.log(
         "FriendChat: Owner ID:",
         ownerID
+    );
+
+
+    console.log(
+        "FriendChat: Server data:",
+        serverData
     );
 
 
@@ -893,13 +921,30 @@ async function createServerOnBackend(
 
     }
 
-    catch (_) {
+    catch (error) {
 
-        result =
-            null;
+        console.warn(
+            "FriendChat: Server response was not JSON."
+        );
 
     }
 
+
+    console.log(
+        "FriendChat: Server response status:",
+        response.status
+    );
+
+
+    console.log(
+        "FriendChat: Server response:",
+        result
+    );
+
+
+    /* -----------------------------------------
+       BACKEND ERROR
+       ----------------------------------------- */
 
     if (!response.ok) {
 
@@ -920,21 +965,51 @@ async function createServerOnBackend(
         }
 
 
-        /*
-           Give a more useful message
-           for the exact error from your screenshot.
-        */
+        const lowerMessage =
+            message.toLowerCase();
+
 
         if (
-            message
-                .toLowerCase()
-                .includes(
-                    "owner account was not found"
-                )
+            lowerMessage.includes(
+                "owner account was not found"
+            ) ||
+            lowerMessage.includes(
+                "owner not found"
+            ) ||
+            lowerMessage.includes(
+                "account was not found"
+            )
         ) {
 
             message =
                 "Your FriendChat account could not be found by the server. Please log out and log back in, then try again.";
+
+        }
+
+
+        if (
+            lowerMessage.includes(
+                "unauthorized"
+            ) ||
+            lowerMessage.includes(
+                "not authorized"
+            )
+        ) {
+
+            message =
+                "You are not authorized to create a server. Please log out and log back in.";
+
+        }
+
+
+        if (
+            lowerMessage.includes(
+                "failed to fetch"
+            )
+        ) {
+
+            message =
+                "Could not connect to the FriendChat server. Check that your backend is running.";
 
         }
 
@@ -946,10 +1021,20 @@ async function createServerOnBackend(
     }
 
 
+    /* -----------------------------------------
+       INVALID RESPONSE
+       ----------------------------------------- */
+
     if (
         !result ||
         !result.server
     ) {
+
+        console.error(
+            "FriendChat: Invalid backend response:",
+            result
+        );
+
 
         throw new Error(
             "The backend returned an invalid server response."
@@ -964,7 +1049,7 @@ async function createServerOnBackend(
 
 
 /* =========================================================
-   SAVE CURRENT SERVER LOCALLY
+   SAVE CURRENT SERVER
    ========================================================= */
 
 function saveCurrentServerID(
@@ -972,9 +1057,7 @@ function saveCurrentServerID(
 ) {
 
     if (!serverID) {
-
         return;
-
     }
 
 
@@ -985,12 +1068,18 @@ function saveCurrentServerID(
             String(serverID)
         );
 
+
+        console.log(
+            "FriendChat: Current server saved:",
+            serverID
+        );
+
     }
 
     catch (error) {
 
         console.error(
-            "Could not save current server:",
+            "FriendChat: Could not save current server:",
             error
         );
 
@@ -1010,7 +1099,7 @@ function openCreatedServer(
     if (!serverID) {
 
         console.error(
-            "FriendChat: Created server has no server ID."
+            "FriendChat: Created server has no ID."
         );
 
 
@@ -1029,11 +1118,15 @@ function openCreatedServer(
     );
 
 
-    /*
-       Pass the server ID directly.
+    console.log(
+        "FriendChat: Opening created server:",
+        serverID
+    );
 
-       This is safer than relying only
-       on localStorage.
+
+    /*
+       Directly pass the server ID
+       through the URL.
     */
 
     window.location.href =
@@ -1054,9 +1147,9 @@ async function createServer() {
     clearError();
 
 
-    /* =====================================================
+    /* -----------------------------------------
        PREVENT DOUBLE CLICK
-       ===================================================== */
+       ----------------------------------------- */
 
     if (
         createServerButton &&
@@ -1068,16 +1161,16 @@ async function createServer() {
     }
 
 
-    /* =====================================================
-       GET LOGGED-IN USER
-       ===================================================== */
+    /* -----------------------------------------
+       GET OWNER ID
+       ----------------------------------------- */
 
     const ownerID =
         getOwnerID();
 
 
     console.log(
-        "FriendChat: Current owner ID:",
+        "FriendChat: Current logged-in user:",
         ownerID
     );
 
@@ -1094,19 +1187,27 @@ async function createServer() {
     }
 
 
+    /* -----------------------------------------
+       GET OWNER NAME
+       ----------------------------------------- */
+
     const ownerName =
         getOwnerName();
 
 
-    /* =====================================================
-       GET VALUES
-       ===================================================== */
+    /* -----------------------------------------
+       GET SERVER NAME
+       ----------------------------------------- */
 
     const name =
         serverName
             ? serverName.value.trim()
             : "";
 
+
+    /* -----------------------------------------
+       GET DESCRIPTION
+       ----------------------------------------- */
 
     const description =
         serverDescription
@@ -1115,7 +1216,7 @@ async function createServer() {
 
 
     /* =====================================================
-       VALIDATE NAME
+       VALIDATE SERVER NAME
        ===================================================== */
 
     if (!name) {
@@ -1202,7 +1303,7 @@ async function createServer() {
 
 
     /* =====================================================
-       SERVER ICON
+       GET SERVER ICON
        ===================================================== */
 
     const icon =
@@ -1210,11 +1311,19 @@ async function createServer() {
 
 
     /* =====================================================
-       TIME
+       CREATE DATE
        ===================================================== */
 
     const createdAt =
         new Date().toISOString();
+
+
+    /* =====================================================
+       CREATE SERVER ID
+       ===================================================== */
+
+    const serverID =
+        generateServerID();
 
 
     /* =====================================================
@@ -1223,57 +1332,72 @@ async function createServer() {
 
     const newServer = {
 
-        /*
-           The backend may generate its own
-           server ID.
-
-           We still provide one so older
-           backend versions continue working.
-        */
+        /* -----------------------------------------
+           SERVER ID
+           ----------------------------------------- */
 
         serverID:
-            generateServerID(),
+            serverID,
 
 
-        /*
-           MAIN OWNER IDENTIFIER
-        */
+        /* -----------------------------------------
+           OWNER
+           ----------------------------------------- */
 
         ownerID:
             ownerID,
 
 
-        /*
-           ALSO SEND userID FOR BACKEND
-           COMPATIBILITY
-        */
+        /* -----------------------------------------
+           USER ID COMPATIBILITY
+           ----------------------------------------- */
 
         userID:
             ownerID,
 
 
+        /* -----------------------------------------
+           OWNER NAME
+           ----------------------------------------- */
+
         ownerName:
             ownerName,
 
+
+        /* -----------------------------------------
+           SERVER NAME
+           ----------------------------------------- */
 
         name:
             name,
 
 
+        /* -----------------------------------------
+           DESCRIPTION
+           ----------------------------------------- */
+
         description:
             description,
 
 
+        /* -----------------------------------------
+           ICON
+           ----------------------------------------- */
+
         icon:
             icon,
 
+
+        /* -----------------------------------------
+           CREATED AT
+           ----------------------------------------- */
 
         createdAt:
             createdAt,
 
 
         /* =================================================
-           OWNER MEMBER
+           MEMBERS
            ================================================= */
 
         members: [
@@ -1298,7 +1422,7 @@ async function createServer() {
 
 
         /* =================================================
-           DEFAULT CHANNELS
+           CHANNELS
            ================================================= */
 
         channels: [
@@ -1326,7 +1450,7 @@ async function createServer() {
 
 
         /* =================================================
-           DEFAULT ROLES
+           ROLES
            ================================================= */
 
         roles: [
@@ -1346,7 +1470,9 @@ async function createServer() {
                     "#6c63ff",
 
                 permissions: [
+
                     "all"
+
                 ]
 
             },
@@ -1366,8 +1492,11 @@ async function createServer() {
                     "#9ca3af",
 
                 permissions: [
+
                     "send_messages",
+
                     "read_messages"
+
                 ]
 
             }
@@ -1376,7 +1505,7 @@ async function createServer() {
 
 
         /* =================================================
-           RULES
+           SERVER RULES
            ================================================= */
 
         rules: [],
@@ -1390,7 +1519,7 @@ async function createServer() {
 
 
         /* =================================================
-           SETTINGS
+           SERVER SETTINGS
            ================================================= */
 
         settings: {
@@ -1407,6 +1536,12 @@ async function createServer() {
         }
 
     };
+
+
+    console.log(
+        "FriendChat: Creating server object:",
+        newServer
+    );
 
 
     /* =====================================================
@@ -1430,11 +1565,11 @@ async function createServer() {
     }
 
 
-    try {
+    /* =====================================================
+       SEND SERVER TO BACKEND
+       ===================================================== */
 
-        /* =================================================
-           SEND TO BACKEND
-           ================================================= */
+    try {
 
         const createdServer =
             await createServerOnBackend(
@@ -1444,18 +1579,19 @@ async function createServer() {
 
 
         console.log(
-            "FriendChat: Server created successfully:",
+            "FriendChat: Server created:",
             createdServer
         );
 
 
-        /* =================================================
+        /* -----------------------------------------
            GET REAL SERVER ID
-           ================================================= */
+           ----------------------------------------- */
 
         const createdServerID =
             createdServer.serverID ||
-            createdServer.id;
+            createdServer.id ||
+            serverID;
 
 
         if (!createdServerID) {
@@ -1467,18 +1603,41 @@ async function createServer() {
         }
 
 
-        /* =================================================
-           SAVE CURRENT SERVER
-           ================================================= */
+        /* -----------------------------------------
+           SAVE SERVER
+           ----------------------------------------- */
 
         saveCurrentServerID(
             createdServerID
         );
 
 
-        /* =================================================
+        /* -----------------------------------------
+           OPTIONAL EVENT
+           ----------------------------------------- */
+
+        try {
+
+            window.dispatchEvent(
+                new CustomEvent(
+                    "friendchat:server-created",
+                    {
+                        detail: {
+                            server:
+                                createdServer
+                        }
+                    }
+                )
+            );
+
+        }
+
+        catch (_) {}
+
+
+        /* -----------------------------------------
            OPEN SERVER
-           ================================================= */
+           ----------------------------------------- */
 
         openCreatedServer(
             createdServerID
@@ -1495,14 +1654,16 @@ async function createServer() {
 
 
         showError(
-            error.message ||
-            "Could not create the server. Please try again."
+            error &&
+            error.message
+                ? error.message
+                : "Could not create the server. Please try again."
         );
 
 
-        /* =================================================
+        /* -----------------------------------------
            RESTORE BUTTON
-           ================================================= */
+           ----------------------------------------- */
 
         if (createServerButton) {
 
@@ -1523,7 +1684,7 @@ async function createServer() {
 
 
 /* =========================================================
-   CREATE BUTTON
+   CREATE SERVER BUTTON
    ========================================================= */
 
 if (createServerButton) {
@@ -1533,6 +1694,8 @@ if (createServerButton) {
         function (event) {
 
             event.preventDefault();
+
+            event.stopPropagation();
 
             createServer();
 
@@ -1570,7 +1733,7 @@ if (serverName) {
 
 
 /* =========================================================
-   CANCEL
+   CANCEL BUTTON
    ========================================================= */
 
 if (cancelButton) {
@@ -1580,6 +1743,8 @@ if (cancelButton) {
         function (event) {
 
             event.preventDefault();
+
+            event.stopPropagation();
 
 
             if (
@@ -1605,7 +1770,7 @@ if (cancelButton) {
 
 
 /* =========================================================
-   INITIAL COUNTERS
+   INITIAL NAME COUNTER
    ========================================================= */
 
 if (
@@ -1619,6 +1784,10 @@ if (
 }
 
 
+/* =========================================================
+   INITIAL DESCRIPTION COUNTER
+   ========================================================= */
+
 if (
     serverDescription &&
     descriptionCounter
@@ -1631,15 +1800,22 @@ if (
 
 
 /* =========================================================
-   DEBUG INFORMATION
+   DEBUG
    ========================================================= */
 
 console.log(
-    "FriendChat Create Server loaded."
+    "=========================================="
 );
 
+console.log(
+    "FriendChat Create Server JS loaded."
+);
 
 console.log(
-    "FriendChat logged-in user:",
+    "Logged-in user:",
     getOwnerID()
+);
+
+console.log(
+    "=========================================="
 );
