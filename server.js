@@ -443,10 +443,12 @@ function normalizeMember(member) {
                     100
                 ) || "Friend",
 
-            role:
-                member.role === "owner"
-                    ? "owner"
-                    : "member",
+          role:
+    member.role === "owner"
+        ? "owner"
+        : member.role === "admin"
+            ? "admin"
+            : "member",
 
             joinedAt:
                 Number(member.joinedAt) ||
@@ -647,12 +649,14 @@ function normalizeServer(serverData) {
     members =
         members.map(member => ({
             ...member,
-            role:
-                normalizeId(
-                    member.userID
-                ) === ownerID
-                    ? "owner"
-                    : "member"
+       role:
+    normalizeId(
+        member.userID
+    ) === ownerID
+        ? "owner"
+        : member.role === "admin"
+            ? "admin"
+            : "member"
         }));
 
     let channels =
@@ -2129,44 +2133,52 @@ const server =
                         requesterID
                     );
 
-                    const owner =
-                        isServerOwner(
-                            serverData,
-                            requesterID
-                        );
+                 const requesterMember =
+    getServerMember(
+        serverData,
+        requesterID
+    );
 
-                    console.log(
-                        "OWNER CHECK:",
-                        owner
-                    );
+const canManageMembers =
+    isServerOwner(
+        serverData,
+        requesterID
+    ) ||
+    requesterMember?.role === "admin";
 
-                    /*
-                       OWNER CHECK
-                    */
+console.log(
+    "REQUESTER:",
+    requesterID
+);
 
-                    if (!owner) {
-                        console.log(
-                            "OWNER CHECK FAILED"
-                        );
+console.log(
+    "REQUESTER ROLE:",
+    requesterMember?.role
+);
 
-                        sendError(
-                            res,
-                            403,
-                            "Only the server owner can add members.",
-                            {
-                                code:
-                                    "OWNER_ONLY",
+console.log(
+    "CAN MANAGE MEMBERS:",
+    canManageMembers
+);
 
-                                ownerID:
-                                    serverData.ownerID,
+if (!canManageMembers) {
+    sendError(
+        res,
+        403,
+        "Only the server owner or an admin can add members.",
+        {
+            code: "MEMBER_ADD_FORBIDDEN",
+            ownerID:
+                serverData.ownerID,
+            requesterID:
+                requesterID,
+            requesterRole:
+                requesterMember?.role || "none"
+        }
+    );
 
-                                requesterID:
-                                    requesterID
-                            }
-                        );
-
-                        return;
-                    }
+    return;
+}
 
                     /*
                        TARGET USER
@@ -2245,15 +2257,17 @@ const server =
                         serverData.members.map(
                             m => ({
                                 ...m,
-                                role:
-                                    normalizeId(
-                                        m.userID
-                                    ) ===
-                                    normalizeId(
-                                        serverData.ownerID
-                                    )
-                                        ? "owner"
-                                        : "member"
+                           role:
+    normalizeId(
+        m.userID
+    ) ===
+    normalizeId(
+        serverData.ownerID
+    )
+        ? "owner"
+        : m.role === "admin"
+            ? "admin"
+            : "member"
                             })
                         );
 
