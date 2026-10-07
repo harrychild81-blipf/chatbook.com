@@ -7,14 +7,14 @@ const PORT = process.env.PORT || 8080;
 
 
 /* =====================================================
-   FRIENDCHAT DATA
+   MEMORY DATA
    ===================================================== */
 
 const users = new Map();
 const sockets = new Map();
 
 const serverMessages = new Map();
-const serverMessageHistory = new Map();
+const serverChannelMessages = new Map();
 
 const presence = new Map();
 const profilePhotos = new Map();
@@ -23,7 +23,7 @@ const friendchatServers = new Map();
 
 
 /* =====================================================
-   FIND WEBSITE ROOT
+   WEBSITE ROOT
    ===================================================== */
 
 const SAME_FOLDER = __dirname;
@@ -75,13 +75,6 @@ function normalizeId(value) {
 }
 
 
-function normalizeServerId(value) {
-  return String(value || "")
-    .trim()
-    .toUpperCase();
-}
-
-
 function cleanText(value, maxLength = 500) {
   return String(value || "")
     .trim()
@@ -105,10 +98,6 @@ function generateID(prefix) {
 }
 
 
-/* =====================================================
-   REQUEST USER ID
-   ===================================================== */
-
 function getRequestUserID(req, url = null) {
   const queryUser =
     url
@@ -126,21 +115,58 @@ function getRequestUserID(req, url = null) {
 
 
 /* =====================================================
-   GET SERVER
+   FIND SERVER
    ===================================================== */
 
-function getServer(serverID) {
-  const id =
-    normalizeServerId(serverID);
+function findServer(serverID) {
 
-  if (!id) {
+  const wanted =
+    String(serverID || "")
+      .trim();
+
+  if (!wanted) {
     return null;
   }
 
-  return (
-    friendchatServers.get(id) ||
-    null
-  );
+  /* Exact match */
+
+  const exact =
+    friendchatServers.get(
+      wanted
+    );
+
+  if (exact) {
+    return exact;
+  }
+
+  /* Normalized match */
+
+  const normalized =
+    normalizeId(wanted);
+
+  for (
+    const serverData
+    of friendchatServers.values()
+  ) {
+
+    if (
+      normalizeId(
+        serverData.serverID
+      ) === normalized
+    ) {
+      return serverData;
+    }
+
+    if (
+      normalizeId(
+        serverData.id
+      ) === normalized
+    ) {
+      return serverData;
+    }
+  }
+
+  return null;
 }
 
 
@@ -148,7 +174,11 @@ function getServer(serverID) {
    WEBSOCKET SEND
    ===================================================== */
 
-function sendToUser(userId, payload) {
+function sendToUser(
+  userId,
+  payload
+) {
+
   const id =
     normalizeId(userId);
 
@@ -160,13 +190,19 @@ function sendToUser(userId, payload) {
     socket.readyState ===
       WebSocket.OPEN
   ) {
+
     try {
+
       socket.send(
-        JSON.stringify(payload)
+        JSON.stringify(
+          payload
+        )
       );
 
       return true;
+
     } catch (error) {
+
       console.log(
         "Send error:",
         error.message
@@ -179,7 +215,7 @@ function sendToUser(userId, payload) {
 
 
 /* =====================================================
-   SEND JSON
+   HTTP JSON
    ===================================================== */
 
 function sendJSON(
@@ -187,6 +223,7 @@ function sendJSON(
   statusCode,
   data
 ) {
+
   res.writeHead(
     statusCode,
     {
@@ -194,7 +231,7 @@ function sendJSON(
         "application/json; charset=utf-8",
 
       "Cache-Control":
-        "no-cache"
+        "no-cache, no-store, must-revalidate"
     }
   );
 
@@ -209,6 +246,7 @@ function sendError(
   statusCode,
   message
 ) {
+
   sendJSON(
     res,
     statusCode,
@@ -221,10 +259,11 @@ function sendError(
 
 
 /* =====================================================
-   READ JSON
+   READ JSON BODY
    ===================================================== */
 
 function readJSONBody(req) {
+
   return new Promise(
     (resolve, reject) => {
 
@@ -232,7 +271,7 @@ function readJSONBody(req) {
       let size = 0;
 
       const MAX_BODY =
-        35 * 1024 * 1024;
+        30 * 1024 * 1024;
 
       req.on(
         "data",
@@ -269,7 +308,9 @@ function readJSONBody(req) {
           if (
             !body.trim()
           ) {
+
             resolve({});
+
             return;
           }
 
@@ -302,7 +343,7 @@ function readJSONBody(req) {
 
 
 /* =====================================================
-   LOAD USERS
+   USERS
    ===================================================== */
 
 function loadUsers() {
@@ -314,6 +355,7 @@ function loadUsers() {
         DATA_DIR
       )
     ) {
+
       fs.mkdirSync(
         DATA_DIR,
         {
@@ -350,10 +392,6 @@ function loadUsers() {
       )
     ) {
 
-      console.log(
-        "users.json is not an array."
-      );
-
       return;
     }
 
@@ -372,18 +410,15 @@ function loadUsers() {
       }
 
       const name =
-        String(
+        cleanText(
           saved.name ||
-          "Friend"
-        ).trim();
+          "Friend",
+          100
+        ) || "Friend";
 
       const user = {
-        id:
-          id,
-
-        name:
-          name ||
-          "Friend"
+        id,
+        name
       };
 
       users.set(
@@ -394,17 +429,10 @@ function loadUsers() {
       presence.set(
         id,
         {
-          id:
-            id,
-
-          name:
-            user.name,
-
-          online:
-            false,
-
-          chattingWith:
-            null
+          id,
+          name,
+          online: false,
+          chattingWith: null
         }
       );
     }
@@ -423,10 +451,6 @@ function loadUsers() {
 }
 
 
-/* =====================================================
-   SAVE USERS
-   ===================================================== */
-
 function saveUsers() {
 
   try {
@@ -436,6 +460,7 @@ function saveUsers() {
         DATA_DIR
       )
     ) {
+
       fs.mkdirSync(
         DATA_DIR,
         {
@@ -458,7 +483,8 @@ function saveUsers() {
       );
 
     const tempFile =
-      USERS_FILE + ".tmp";
+      USERS_FILE +
+      ".tmp";
 
     fs.writeFileSync(
       tempFile,
@@ -485,17 +511,15 @@ function saveUsers() {
 }
 
 
-/* =====================================================
-   ENSURE USER
-   ===================================================== */
-
 function ensureUser(
   userID,
   name = "Friend"
 ) {
 
   const id =
-    normalizeId(userID);
+    normalizeId(
+      userID
+    );
 
   if (!id) {
     return null;
@@ -506,8 +530,7 @@ function ensureUser(
       name ||
       "Friend",
       100
-    ) ||
-    "Friend";
+    ) || "Friend";
 
   let user =
     users.get(id);
@@ -515,9 +538,7 @@ function ensureUser(
   if (!user) {
 
     user = {
-      id:
-        id,
-
+      id,
       name:
         cleanName
     };
@@ -530,28 +551,15 @@ function ensureUser(
     presence.set(
       id,
       {
-        id:
-          id,
-
+        id,
         name:
           cleanName,
-
-        online:
-          false,
-
-        chattingWith:
-          null
+        online: false,
+        chattingWith: null
       }
     );
 
     saveUsers();
-
-    console.log(
-      "Account synchronized:",
-      id,
-      "-",
-      cleanName
-    );
 
   } else {
 
@@ -578,10 +586,12 @@ function ensureUser(
 
 
 /* =====================================================
-   NORMALIZE MEMBER
+   SERVER MEMBERS
    ===================================================== */
 
-function normalizeMember(member) {
+function normalizeMember(
+  member
+) {
 
   if (
     typeof member ===
@@ -589,19 +599,21 @@ function normalizeMember(member) {
   ) {
 
     const userID =
-      normalizeId(member);
+      normalizeId(
+        member
+      );
 
     if (!userID) {
       return null;
     }
 
     const user =
-      users.get(userID);
+      users.get(
+        userID
+      );
 
     return {
-
-      userID:
-        userID,
+      userID,
 
       name:
         user?.name ||
@@ -614,7 +626,6 @@ function normalizeMember(member) {
         Date.now()
     };
   }
-
 
   if (
     member &&
@@ -633,12 +644,12 @@ function normalizeMember(member) {
     }
 
     const user =
-      users.get(userID);
+      users.get(
+        userID
+      );
 
     return {
-
-      userID:
-        userID,
+      userID,
 
       name:
         cleanText(
@@ -667,10 +678,12 @@ function normalizeMember(member) {
 
 
 /* =====================================================
-   NORMALIZE CHANNEL
+   CHANNEL
    ===================================================== */
 
-function normalizeChannel(channel) {
+function normalizeChannel(
+  channel
+) {
 
   if (
     !channel ||
@@ -703,12 +716,9 @@ function normalizeChannel(channel) {
   }
 
   return {
+    channelID,
 
-    channelID:
-      channelID,
-
-    name:
-      name,
+    name,
 
     type:
       cleanText(
@@ -727,10 +737,12 @@ function normalizeChannel(channel) {
 
 
 /* =====================================================
-   NORMALIZE ROLE
+   ROLE
    ===================================================== */
 
-function normalizeRole(role) {
+function normalizeRole(
+  role
+) {
 
   if (
     !role ||
@@ -763,12 +775,9 @@ function normalizeRole(role) {
   }
 
   return {
+    roleID,
 
-    roleID:
-      roleID,
-
-    name:
-      name,
+    name,
 
     color:
       cleanText(
@@ -796,7 +805,7 @@ function normalizeRole(role) {
 
 
 /* =====================================================
-   NORMALIZE SERVER
+   SERVER NORMALIZATION
    ===================================================== */
 
 function normalizeServer(
@@ -812,10 +821,11 @@ function normalizeServer(
   }
 
   const serverID =
-    normalizeServerId(
+    String(
       serverData.serverID ||
-      serverData.id
-    );
+      serverData.id ||
+      ""
+    ).trim();
 
   const ownerID =
     normalizeId(
@@ -849,7 +859,6 @@ function normalizeServer(
           .filter(Boolean)
       : [];
 
-
   const uniqueMembers =
     new Map();
 
@@ -879,15 +888,14 @@ function normalizeServer(
     );
 
 
-  /* MAKE SURE OWNER EXISTS */
+  /* OWNER */
 
   const ownerExists =
     members.some(
       member =>
         normalizeId(
           member.userID
-        ) ===
-        ownerID
+        ) === ownerID
     );
 
   if (!ownerExists) {
@@ -897,39 +905,32 @@ function normalizeServer(
         ownerID
       );
 
-    members.unshift({
+    members.unshift(
+      {
+        userID:
+          ownerID,
 
-      userID:
-        ownerID,
+        name:
+          owner?.name ||
+          "Owner",
 
-      name:
-        owner?.name ||
-        "Owner",
+        role:
+          "owner",
 
-      role:
-        "owner",
-
-      joinedAt:
-        Number(
-          serverData.createdAt
-        ) ||
-        Date.now()
-    });
+        joinedAt:
+          Number(
+            serverData.createdAt
+          ) ||
+          Date.now()
+      }
+    );
   }
 
-
-  /* FIX ROLES */
 
   members =
     members.map(
       member => ({
-
         ...member,
-
-        userID:
-          normalizeId(
-            member.userID
-          ),
 
         role:
           normalizeId(
@@ -954,30 +955,30 @@ function normalizeServer(
           .filter(Boolean)
       : [];
 
-
   if (
-    channels.length === 0
+    channels.length ===
+    0
   ) {
 
-    channels.push({
+    channels.push(
+      {
+        channelID:
+          "general",
 
-      channelID:
-        generateID("CH"),
+        name:
+          "general",
 
-      name:
-        "general",
+        type:
+          "text",
 
-      type:
-        "text",
-
-      createdAt:
-        Number(
-          serverData.createdAt
-        ) ||
-        Date.now()
-    });
+        createdAt:
+          Number(
+            serverData.createdAt
+          ) ||
+          Date.now()
+      }
+    );
   }
-
 
   channels =
     channels.slice(
@@ -999,7 +1000,6 @@ function normalizeServer(
           .filter(Boolean)
       : [];
 
-
   roles =
     roles.slice(
       0,
@@ -1019,10 +1019,7 @@ function normalizeServer(
 
     rules =
       serverData.rules
-        .slice(
-          0,
-          200
-        )
+        .slice(0, 200)
         .map(
           rule => {
 
@@ -1057,11 +1054,9 @@ function normalizeServer(
 
   return {
 
-    serverID:
-      serverID,
+    serverID,
 
-    ownerID:
-      ownerID,
+    ownerID,
 
     name:
       cleanText(
@@ -1090,25 +1085,22 @@ function normalizeServer(
       ) ||
       Date.now(),
 
-    members:
-      members,
+    members,
 
-    channels:
-      channels,
+    channels,
 
-    roles:
-      roles,
+    roles,
 
-    rules:
-      rules,
+    rules,
 
     settings:
       serverData.settings &&
       typeof serverData.settings ===
         "object"
-        ? serverData.settings
-        : {
 
+        ? serverData.settings
+
+        : {
             theme:
               "dark",
 
@@ -1139,12 +1131,10 @@ function loadServers() {
       fs.mkdirSync(
         DATA_DIR,
         {
-          recursive:
-            true
+          recursive: true
         }
       );
     }
-
 
     if (
       !fs.existsSync(
@@ -1159,52 +1149,42 @@ function loadServers() {
       return;
     }
 
-
     const raw =
       fs.readFileSync(
         SERVERS_FILE,
         "utf8"
       );
 
-
     const savedServers =
       JSON.parse(raw);
-
 
     if (
       !Array.isArray(
         savedServers
       )
     ) {
-
-      console.log(
-        "servers.json is not an array."
-      );
-
       return;
     }
-
 
     for (
       const saved
       of savedServers
     ) {
 
-      const server =
+      const serverData =
         normalizeServer(
           saved
         );
 
-      if (!server) {
+      if (!serverData) {
         continue;
       }
 
       friendchatServers.set(
-        server.serverID,
-        server
+        serverData.serverID,
+        serverData
       );
     }
-
 
     console.log(
       `Loaded ${friendchatServers.size} FriendChat servers.`
@@ -1237,23 +1217,19 @@ function saveServers() {
       fs.mkdirSync(
         DATA_DIR,
         {
-          recursive:
-            true
+          recursive: true
         }
       );
     }
-
 
     const savedServers =
       Array.from(
         friendchatServers.values()
       );
 
-
     const tempFile =
       SERVERS_FILE +
       ".tmp";
-
 
     fs.writeFileSync(
       tempFile,
@@ -1264,7 +1240,6 @@ function saveServers() {
       ),
       "utf8"
     );
-
 
     fs.renameSync(
       tempFile,
@@ -1282,14 +1257,6 @@ function saveServers() {
 
 
 /* =====================================================
-   LOAD DATA
-   ===================================================== */
-
-loadUsers();
-loadServers();
-
-
-/* =====================================================
    SERVER MEMBER HELPERS
    ===================================================== */
 
@@ -1303,18 +1270,11 @@ function getServerMember(
       userID
     );
 
-  if (!server) {
-    return null;
-  }
-
-  return (
-    server.members.find(
-      member =>
-        normalizeId(
-          member.userID
-        ) === id
-    ) ||
-    null
+  return server.members.find(
+    member =>
+      normalizeId(
+        member.userID
+      ) === id
   );
 }
 
@@ -1336,13 +1296,6 @@ function isServerOwner(
   userID
 ) {
 
-  if (
-    !server ||
-    !userID
-  ) {
-    return false;
-  }
-
   return (
     normalizeId(
       server.ownerID
@@ -1359,11 +1312,8 @@ function publicMember(
 ) {
 
   return {
-
     userID:
-      normalizeId(
-        member.userID
-      ),
+      member.userID,
 
     name:
       member.name,
@@ -1450,17 +1400,171 @@ function publicServer(
 
 
 /* =====================================================
-   NOTIFY SERVER MEMBERS
+   SERVER CHANNEL MESSAGES
+   ===================================================== */
+
+function getServerMessageKey(
+  serverID,
+  channelID
+) {
+
+  return (
+    String(
+      serverID
+    ).trim() +
+    "::" +
+    String(
+      channelID ||
+      "general"
+    ).trim()
+  );
+}
+
+
+function getServerMessages(
+  serverID,
+  channelID
+) {
+
+  const key =
+    getServerMessageKey(
+      serverID,
+      channelID
+    );
+
+  if (
+    !serverChannelMessages.has(
+      key
+    )
+  ) {
+
+    serverChannelMessages.set(
+      key,
+      []
+    );
+  }
+
+  return serverChannelMessages.get(
+    key
+  );
+}
+
+
+/* =====================================================
+   PRESENCE
+   ===================================================== */
+
+function getPresenceForViewer(
+  viewerId
+) {
+
+  const viewer =
+    normalizeId(
+      viewerId
+    );
+
+  const result = {};
+
+  for (
+    const [id, user]
+    of users.entries()
+  ) {
+
+    const info =
+      presence.get(
+        id
+      );
+
+    let status =
+      "offline";
+
+    if (
+      info &&
+      info.online
+    ) {
+
+      if (
+        info.chattingWith &&
+        normalizeId(
+          info.chattingWith
+        ) === viewer
+      ) {
+
+        status =
+          "active";
+
+      } else if (
+        info.chattingWith
+      ) {
+
+        status =
+          "busy";
+
+      } else {
+
+        status =
+          "active";
+      }
+    }
+
+    result[id] = {
+
+      id:
+        user.id,
+
+      name:
+        user.name,
+
+      status:
+        status
+    };
+  }
+
+  return result;
+}
+
+
+function sendPresenceToViewer(
+  viewerId
+) {
+
+  sendToUser(
+    viewerId,
+    {
+      type:
+        "presence",
+
+      users:
+        getPresenceForViewer(
+          viewerId
+        )
+    }
+  );
+}
+
+
+function broadcastPresence() {
+
+  for (
+    const id
+    of sockets.keys()
+  ) {
+
+    sendPresenceToViewer(
+      id
+    );
+  }
+}
+
+
+/* =====================================================
+   SERVER MEMBER NOTIFICATION
    ===================================================== */
 
 function notifyServerMembers(
   serverData,
   payload
 ) {
-
-  if (!serverData) {
-    return;
-  }
 
   for (
     const member
@@ -1476,106 +1580,73 @@ function notifyServerMembers(
 
 
 /* =====================================================
-   SERVER MESSAGE HISTORY
+   PROFILE PHOTO BROADCAST
    ===================================================== */
 
-function getServerHistory(
-  serverID,
-  channelID
+function broadcastProfilePhoto(
+  userId,
+  photo
 ) {
 
-  const sid =
-    normalizeServerId(
-      serverID
+  const senderId =
+    normalizeId(
+      userId
     );
 
-  const cid =
-    cleanText(
-      channelID ||
-      "general",
-      100
-    );
-
-  const key =
-    `${sid}:${cid}`;
-
-  return (
-    serverMessageHistory.get(
-      key
-    ) ||
-    []
-  );
-}
-
-
-function saveServerMessage(
-  message
-) {
-
-  const sid =
-    normalizeServerId(
-      message.serverID
-    );
-
-  const cid =
-    cleanText(
-      message.channelID ||
-      "general",
-      100
-    );
-
-  const key =
-    `${sid}:${cid}`;
-
-  let history =
-    serverMessageHistory.get(
-      key
-    );
-
-  if (!history) {
-
-    history = [];
-
-    serverMessageHistory.set(
-      key,
-      history
-    );
-  }
-
-  history.push(
-    message
-  );
-
-  /*
-     Keep last 500 messages
-     per channel in memory.
-  */
-
-  if (
-    history.length >
-    500
+  for (
+    const [id, socket]
+    of sockets.entries()
   ) {
 
-    history.splice(
-      0,
-      history.length - 500
-    );
+    if (
+      id === senderId
+    ) {
+      continue;
+    }
+
+    if (
+      socket &&
+      socket.readyState ===
+        WebSocket.OPEN
+    ) {
+
+      try {
+
+        socket.send(
+          JSON.stringify({
+            type:
+              "profile_photo",
+
+            userId:
+              senderId,
+
+            photo:
+              photo,
+
+            data:
+              photo.data ||
+              photo
+          })
+        );
+
+      } catch (error) {
+
+        console.log(
+          "Profile photo send error:",
+          error.message
+        );
+      }
+    }
   }
 }
 
 
 /* =====================================================
-   SERVER MESSAGE ID
+   LOAD DATA
    ===================================================== */
 
-function getMessageID(msg) {
-
-  return String(
-    msg.messageId ||
-    msg.id ||
-    generateID("MSG")
-  ).trim();
-}
+loadUsers();
+loadServers();
 
 
 /* =====================================================
@@ -1651,9 +1722,9 @@ const server =
           url.pathname;
 
 
-        /* ===============================================
+        /* =================================================
            HEALTH
-           =============================================== */
+           ================================================= */
 
         if (
           req.method === "GET" &&
@@ -1664,7 +1735,6 @@ const server =
             res,
             200,
             {
-
               ok:
                 true,
 
@@ -1675,7 +1745,10 @@ const server =
                 users.size,
 
               servers:
-                friendchatServers.size
+                friendchatServers.size,
+
+              sockets:
+                sockets.size
             }
           );
 
@@ -1683,9 +1756,9 @@ const server =
         }
 
 
-        /* ===============================================
+        /* =================================================
            USERS
-           =============================================== */
+           ================================================= */
 
         if (
           req.method === "GET" &&
@@ -1709,10 +1782,7 @@ const server =
           const result = [];
 
           for (
-            const [
-              id,
-              user
-            ]
+            const [id, user]
             of users.entries()
           ) {
 
@@ -1742,15 +1812,13 @@ const server =
               name:
                 user.name,
 
-              status:
-                status,
+              status,
 
               online:
                 status !==
                 "offline"
             });
           }
-
 
           result.sort(
             (
@@ -1778,7 +1846,6 @@ const server =
             }
           );
 
-
           sendJSON(
             res,
             200,
@@ -1792,9 +1859,9 @@ const server =
         }
 
 
-        /* ===============================================
+        /* =================================================
            ONE USER
-           =============================================== */
+           ================================================= */
 
         if (
           req.method === "GET" &&
@@ -1819,14 +1886,12 @@ const server =
             res,
             200,
             {
-
               found:
                 !!user,
 
               user:
                 user
                   ? {
-
                       id:
                         user.id,
 
@@ -1841,9 +1906,9 @@ const server =
         }
 
 
-        /* ===============================================
+        /* =================================================
            ACCOUNT SYNC
-           =============================================== */
+           ================================================= */
 
         if (
           req.method === "POST" &&
@@ -1874,7 +1939,6 @@ const server =
               100
             );
 
-
           if (!userID) {
 
             sendError(
@@ -1886,36 +1950,20 @@ const server =
             return;
           }
 
-
           const user =
             ensureUser(
               userID,
               name
             );
 
-
-          if (!user) {
-
-            sendError(
-              res,
-              400,
-              "Could not synchronize account."
-            );
-
-            return;
-          }
-
-
           sendJSON(
             res,
             200,
             {
-
               ok:
                 true,
 
               user: {
-
                 id:
                   user.id,
 
@@ -1929,9 +1977,9 @@ const server =
         }
 
 
-        /* ===============================================
+        /* =================================================
            GET USER SERVERS
-           =============================================== */
+           ================================================= */
 
         if (
           req.method === "GET" &&
@@ -1945,7 +1993,6 @@ const server =
               url
             );
 
-
           if (!userID) {
 
             sendError(
@@ -1957,9 +2004,7 @@ const server =
             return;
           }
 
-
           const result = [];
-
 
           for (
             const serverData
@@ -1982,7 +2027,6 @@ const server =
             }
           }
 
-
           result.sort(
             (
               a,
@@ -1996,12 +2040,10 @@ const server =
               )
           );
 
-
           sendJSON(
             res,
             200,
             {
-
               ok:
                 true,
 
@@ -2014,9 +2056,9 @@ const server =
         }
 
 
-        /* ===============================================
+        /* =================================================
            CREATE SERVER
-           =============================================== */
+           ================================================= */
 
         if (
           req.method === "POST" &&
@@ -2029,7 +2071,6 @@ const server =
               req
             );
 
-
           const ownerID =
             normalizeId(
               body.ownerID ||
@@ -2038,7 +2079,6 @@ const server =
                 "x-friendchat-user-id"
               ]
             );
-
 
           if (!ownerID) {
 
@@ -2051,7 +2091,6 @@ const server =
             return;
           }
 
-
           const owner =
             ensureUser(
               ownerID,
@@ -2061,25 +2100,11 @@ const server =
               "Friend"
             );
 
-
-          if (!owner) {
-
-            sendError(
-              res,
-              404,
-              "Owner account could not be created."
-            );
-
-            return;
-          }
-
-
           const name =
             cleanText(
               body.name,
               40
             );
-
 
           if (
             name.length < 2
@@ -2094,7 +2119,6 @@ const server =
             return;
           }
 
-
           const serverID =
             generateID(
               "FC-SRV"
@@ -2103,145 +2127,135 @@ const server =
           const createdAt =
             Date.now();
 
+          const serverData =
+            normalizeServer({
 
-          const serverData = {
-
-            serverID:
               serverID,
 
-            ownerID:
               ownerID,
 
-            name:
+              ownerName:
+                owner.name,
+
               name,
 
-            description:
-              cleanText(
-                body.description,
-                200
-              ),
+              description:
+                cleanText(
+                  body.description,
+                  200
+                ),
 
-            icon:
-              body.icon ||
-              null,
+              icon:
+                body.icon ||
+                null,
 
-            banner:
-              body.banner ||
-              null,
+              banner:
+                body.banner ||
+                null,
 
-            createdAt:
               createdAt,
 
-            members: [
+              members: [
+                {
+                  userID:
+                    ownerID,
 
-              {
+                  name:
+                    owner.name,
 
-                userID:
-                  ownerID,
+                  role:
+                    "owner",
 
-                name:
-                  owner.name,
+                  joinedAt:
+                    createdAt
+                }
+              ],
 
-                role:
-                  "owner",
+              channels: [
+                {
+                  channelID:
+                    "general",
 
-                joinedAt:
+                  name:
+                    "general",
+
+                  type:
+                    "text",
+
                   createdAt
-              }
-            ],
+                }
+              ],
 
-            channels: [
+              roles:
+                Array.isArray(
+                  body.roles
+                )
+                  ? body.roles
+                  : [],
 
-              {
+              rules:
+                Array.isArray(
+                  body.rules
+                )
+                  ? body.rules
+                  : [],
 
-                channelID:
-                  generateID(
-                    "CH"
-                  ),
+              settings:
+                body.settings ||
+                {
+                  theme:
+                    "dark",
 
-                name:
-                  "general",
+                  accentColor:
+                    "#6c63ff",
 
-                type:
-                  "text",
-
-                createdAt:
-                  createdAt
-              }
-            ],
-
-            roles: [],
-
-            rules: [],
-
-            settings: {
-
-              theme:
-                "dark",
-
-              accentColor:
-                "#6c63ff",
-
-              background:
-                null
-            }
-          };
-
-
-          const normalizedServer =
-            normalizeServer(
-              serverData
-            );
-
+                  background:
+                    null
+                }
+            });
 
           friendchatServers.set(
             serverID,
-            normalizedServer
+            serverData
           );
-
 
           saveServers();
 
+          const publicData =
+            publicServer(
+              serverData,
+              ownerID
+            );
 
           sendToUser(
             ownerID,
             {
-
               type:
                 "server_created",
 
               server:
-                publicServer(
-                  normalizedServer,
-                  ownerID
-                )
+                publicData
             }
           );
-
 
           sendJSON(
             res,
             201,
             {
-
               ok:
                 true,
 
               server:
-                publicServer(
-                  normalizedServer,
-                  ownerID
-                )
+                publicData
             }
           );
 
-
           console.log(
-            "SERVER CREATED:",
+            "Server created:",
             serverID,
-            "|",
+            "-",
             name,
-            "| OWNER:",
+            "- Owner:",
             ownerID
           );
 
@@ -2249,9 +2263,9 @@ const server =
         }
 
 
-        /* ===============================================
-           SERVER ID MATCH
-           =============================================== */
+        /* =================================================
+           SERVER ROUTES
+           ================================================= */
 
         const serverMatch =
           pathname.match(
@@ -2259,9 +2273,9 @@ const server =
           );
 
 
-        /* ===============================================
+        /* =================================================
            GET ONE SERVER
-           =============================================== */
+           ================================================= */
 
         if (
           req.method === "GET" &&
@@ -2269,12 +2283,9 @@ const server =
         ) {
 
           const serverID =
-            normalizeServerId(
-              decodeURIComponent(
-                serverMatch[1]
-              )
-            );
-
+            decodeURIComponent(
+              serverMatch[1]
+            ).trim();
 
           const viewerID =
             getRequestUserID(
@@ -2282,24 +2293,24 @@ const server =
               url
             );
 
+          console.log(
+            "SERVER REQUEST:",
+            serverID,
+            "VIEWER:",
+            viewerID
+          );
 
           const serverData =
-            getServer(
+            findServer(
               serverID
             );
 
-
-          console.log(
-            "GET SERVER:",
-            serverID,
-            "| VIEWER:",
-            viewerID,
-            "| FOUND:",
-            !!serverData
-          );
-
-
           if (!serverData) {
+
+            console.log(
+              "SERVER NOT FOUND:",
+              serverID
+            );
 
             sendError(
               res,
@@ -2310,6 +2321,16 @@ const server =
             return;
           }
 
+          if (!viewerID) {
+
+            sendError(
+              res,
+              400,
+              "User ID is required."
+            );
+
+            return;
+          }
 
           if (
             !isServerMember(
@@ -2327,12 +2348,10 @@ const server =
             return;
           }
 
-
           sendJSON(
             res,
             200,
             {
-
               ok:
                 true,
 
@@ -2348,15 +2367,145 @@ const server =
         }
 
 
-        /* ===============================================
+        /* =================================================
+           GET SERVER MESSAGES
+           ================================================= */
+
+        const serverMessagesMatch =
+          pathname.match(
+            /^\/api\/servers\/([^/]+)\/messages$/
+          );
+
+        if (
+          req.method === "GET" &&
+          serverMessagesMatch
+        ) {
+
+          const serverID =
+            decodeURIComponent(
+              serverMessagesMatch[1]
+            ).trim();
+
+          const viewerID =
+            getRequestUserID(
+              req,
+              url
+            );
+
+          const channelID =
+            String(
+              url.searchParams.get(
+                "channel"
+              ) ||
+              "general"
+            ).trim();
+
+          console.log(
+            "SERVER MESSAGES:",
+            serverID,
+            channelID,
+            viewerID
+          );
+
+          const serverData =
+            findServer(
+              serverID
+            );
+
+          if (!serverData) {
+
+            sendError(
+              res,
+              404,
+              "Server not found."
+            );
+
+            return;
+          }
+
+          if (!viewerID) {
+
+            sendError(
+              res,
+              400,
+              "User ID is required."
+            );
+
+            return;
+          }
+
+          if (
+            !isServerMember(
+              serverData,
+              viewerID
+            )
+          ) {
+
+            sendError(
+              res,
+              403,
+              "You are not a member of this server."
+            );
+
+            return;
+          }
+
+          const channelExists =
+            serverData.channels.some(
+              channel =>
+                String(
+                  channel.channelID
+                ) ===
+                channelID
+            );
+
+          if (
+            !channelExists
+          ) {
+
+            sendError(
+              res,
+              404,
+              "Channel not found."
+            );
+
+            return;
+          }
+
+          const messages =
+            getServerMessages(
+              serverData.serverID,
+              channelID
+            );
+
+          sendJSON(
+            res,
+            200,
+            {
+              ok:
+                true,
+
+              serverID:
+                serverData.serverID,
+
+              channelID,
+
+              messages
+            }
+          );
+
+          return;
+        }
+
+
+        /* =================================================
            ADD MEMBER
-           =============================================== */
+           ================================================= */
 
         const membersMatch =
           pathname.match(
             /^\/api\/servers\/([^/]+)\/members$/
           );
-
 
         if (
           req.method === "POST" &&
@@ -2364,18 +2513,14 @@ const server =
         ) {
 
           const serverID =
-            normalizeServerId(
-              decodeURIComponent(
-                membersMatch[1]
-              )
-            );
-
+            decodeURIComponent(
+              membersMatch[1]
+            ).trim();
 
           const body =
             await readJSONBody(
               req
             );
-
 
           const requesterID =
             normalizeId(
@@ -2387,42 +2532,21 @@ const server =
               ]
             );
 
-
           const memberID =
             normalizeId(
               body.memberID ||
               body.friendID ||
-              body.friendUserID ||
-              body.targetUserID
+              body.friendUserID
             );
 
-
-          console.log("");
           console.log(
-            "========================================"
-          );
-          console.log(
-            "FRIENDCHAT ADD MEMBER"
-          );
-          console.log(
-            "SERVER:",
-            serverID
-          );
-          console.log(
-            "REQUESTER:",
-            requesterID
-          );
-          console.log(
-            "MEMBER:",
+            "ADD MEMBER:",
+            serverID,
+            requesterID,
             memberID
           );
 
-
           if (!requesterID) {
-
-            console.log(
-              "ERROR: Missing requester ID"
-            );
 
             sendError(
               res,
@@ -2433,12 +2557,7 @@ const server =
             return;
           }
 
-
           if (!memberID) {
-
-            console.log(
-              "ERROR: Missing member ID"
-            );
 
             sendError(
               res,
@@ -2449,18 +2568,12 @@ const server =
             return;
           }
 
-
           const serverData =
-            getServer(
+            findServer(
               serverID
             );
 
-
           if (!serverData) {
-
-            console.log(
-              "ERROR: SERVER NOT FOUND"
-            );
 
             sendError(
               res,
@@ -2471,31 +2584,12 @@ const server =
             return;
           }
 
-
-          console.log(
-            "OWNER:",
-            serverData.ownerID
-          );
-
-
-          const requesterIsOwner =
-            isServerOwner(
+          if (
+            !isServerOwner(
               serverData,
               requesterID
-            );
-
-
-          console.log(
-            "IS OWNER:",
-            requesterIsOwner
-          );
-
-
-          if (!requesterIsOwner) {
-
-            console.log(
-              "ERROR: REQUESTER IS NOT OWNER"
-            );
+            )
+          ) {
 
             sendError(
               res,
@@ -2506,19 +2600,12 @@ const server =
             return;
           }
 
-
           const user =
             users.get(
               memberID
             );
 
-
           if (!user) {
-
-            console.log(
-              "ERROR: USER NOT FOUND:",
-              memberID
-            );
 
             sendError(
               res,
@@ -2528,7 +2615,6 @@ const server =
 
             return;
           }
-
 
           if (
             isServerMember(
@@ -2546,7 +2632,6 @@ const server =
             return;
           }
 
-
           const member = {
 
             userID:
@@ -2562,48 +2647,37 @@ const server =
               Date.now()
           };
 
-
           serverData.members.push(
             member
           );
 
-
           saveServers();
 
-
-          /*
-             Tell the new member.
-          */
+          const updatedServer =
+            publicServer(
+              serverData,
+              memberID
+            );
 
           sendToUser(
             memberID,
             {
-
               type:
                 "server_added",
 
               server:
-                publicServer(
-                  serverData,
-                  memberID
-                )
+                updatedServer
             }
           );
-
-
-          /*
-             Tell owner.
-          */
 
           sendToUser(
             requesterID,
             {
-
               type:
                 "server_member_added",
 
               serverID:
-                serverID,
+                serverData.serverID,
 
               member:
                 publicMember(
@@ -2612,15 +2686,9 @@ const server =
             }
           );
 
-
-          /*
-             Update every member.
-          */
-
           notifyServerMembers(
             serverData,
             {
-
               type:
                 "server_updated",
 
@@ -2632,22 +2700,10 @@ const server =
             }
           );
 
-
-          console.log(
-            "MEMBER ADDED SUCCESSFULLY:",
-            memberID
-          );
-
-          console.log(
-            "========================================"
-          );
-
-
           sendJSON(
             res,
             200,
             {
-
               ok:
                 true,
 
@@ -2659,19 +2715,25 @@ const server =
             }
           );
 
+          console.log(
+            "Member added:",
+            memberID,
+            "to",
+            serverData.serverID
+          );
+
           return;
         }
 
 
-        /* ===============================================
+        /* =================================================
            REMOVE MEMBER
-           =============================================== */
+           ================================================= */
 
         const removeMemberMatch =
           pathname.match(
             /^\/api\/servers\/([^/]+)\/members\/([^/]+)$/
           );
-
 
         if (
           req.method === "DELETE" &&
@@ -2679,12 +2741,9 @@ const server =
         ) {
 
           const serverID =
-            normalizeServerId(
-              decodeURIComponent(
-                removeMemberMatch[1]
-              )
-            );
-
+            decodeURIComponent(
+              removeMemberMatch[1]
+            ).trim();
 
           const memberID =
             normalizeId(
@@ -2692,7 +2751,6 @@ const server =
                 removeMemberMatch[2]
               )
             );
-
 
           const requesterID =
             normalizeId(
@@ -2704,12 +2762,10 @@ const server =
               ]
             );
 
-
           const serverData =
-            getServer(
+            findServer(
               serverID
             );
-
 
           if (!serverData) {
 
@@ -2721,7 +2777,6 @@ const server =
 
             return;
           }
-
 
           if (
             !isServerOwner(
@@ -2739,7 +2794,6 @@ const server =
             return;
           }
 
-
           if (
             memberID ===
             normalizeId(
@@ -2756,19 +2810,17 @@ const server =
             return;
           }
 
-
           const oldLength =
             serverData.members.length;
-
 
           serverData.members =
             serverData.members.filter(
               member =>
                 normalizeId(
                   member.userID
-                ) !== memberID
+                ) !==
+                memberID
             );
-
 
           if (
             serverData.members.length ===
@@ -2784,27 +2836,22 @@ const server =
             return;
           }
 
-
           saveServers();
-
 
           sendToUser(
             memberID,
             {
-
               type:
                 "server_removed",
 
               serverID:
-                serverID
+                serverData.serverID
             }
           );
-
 
           notifyServerMembers(
             serverData,
             {
-
               type:
                 "server_updated",
 
@@ -2816,12 +2863,10 @@ const server =
             }
           );
 
-
           sendJSON(
             res,
             200,
             {
-
               ok:
                 true,
 
@@ -2833,27 +2878,18 @@ const server =
             }
           );
 
-
-          console.log(
-            "MEMBER REMOVED:",
-            memberID,
-            "FROM:",
-            serverID
-          );
-
           return;
         }
 
 
-        /* ===============================================
+        /* =================================================
            UPDATE SERVER
-           =============================================== */
+           ================================================= */
 
         const updateServerMatch =
           pathname.match(
             /^\/api\/servers\/([^/]+)$/
           );
-
 
         if (
           req.method === "PUT" &&
@@ -2861,35 +2897,28 @@ const server =
         ) {
 
           const serverID =
-            normalizeServerId(
-              decodeURIComponent(
-                updateServerMatch[1]
-              )
-            );
-
+            decodeURIComponent(
+              updateServerMatch[1]
+            ).trim();
 
           const body =
             await readJSONBody(
               req
             );
 
-
           const requesterID =
             normalizeId(
               body.requesterID ||
               body.userID ||
-              body.ownerID ||
               req.headers[
                 "x-friendchat-user-id"
               ]
             );
 
-
           const serverData =
-            getServer(
+            findServer(
               serverID
             );
-
 
           if (!serverData) {
 
@@ -2902,7 +2931,6 @@ const server =
             return;
           }
 
-
           if (!requesterID) {
 
             sendError(
@@ -2913,7 +2941,6 @@ const server =
 
             return;
           }
-
 
           if (
             !isServerOwner(
@@ -2932,6 +2959,8 @@ const server =
           }
 
 
+          /* NAME */
+
           if (
             body.name !==
             undefined
@@ -2942,7 +2971,6 @@ const server =
                 body.name,
                 40
               );
-
 
             if (
               newName.length < 2
@@ -2957,11 +2985,12 @@ const server =
               return;
             }
 
-
             serverData.name =
               newName;
           }
 
+
+          /* DESCRIPTION */
 
           if (
             body.description !==
@@ -2976,6 +3005,8 @@ const server =
           }
 
 
+          /* ICON */
+
           if (
             body.icon !==
             undefined
@@ -2987,6 +3018,8 @@ const server =
           }
 
 
+          /* BANNER */
+
           if (
             body.banner !==
             undefined
@@ -2997,6 +3030,8 @@ const server =
               null;
           }
 
+
+          /* SETTINGS */
 
           if (
             body.settings &&
@@ -3012,6 +3047,8 @@ const server =
             };
           }
 
+
+          /* CHANNELS */
 
           if (
             Array.isArray(
@@ -3030,29 +3067,31 @@ const server =
                   200
                 );
 
-
             if (
               serverData.channels.length ===
               0
             ) {
 
-              serverData.channels.push({
+              serverData.channels.push(
+                {
+                  channelID:
+                    "general",
 
-                channelID:
-                  generateID("CH"),
+                  name:
+                    "general",
 
-                name:
-                  "general",
+                  type:
+                    "text",
 
-                type:
-                  "text",
-
-                createdAt:
-                  Date.now()
-              });
+                  createdAt:
+                    Date.now()
+                }
+              );
             }
           }
 
+
+          /* ROLES */
 
           if (
             Array.isArray(
@@ -3072,6 +3111,8 @@ const server =
                 );
           }
 
+
+          /* RULES */
 
           if (
             Array.isArray(
@@ -3099,7 +3140,6 @@ const server =
                       );
                     }
 
-
                     if (
                       rule &&
                       typeof rule ===
@@ -3110,7 +3150,6 @@ const server =
                         ...rule
                       };
                     }
-
 
                     return null;
                   }
@@ -3125,7 +3164,6 @@ const server =
           notifyServerMembers(
             serverData,
             {
-
               type:
                 "server_updated",
 
@@ -3142,7 +3180,6 @@ const server =
             res,
             200,
             {
-
               ok:
                 true,
 
@@ -3154,120 +3191,13 @@ const server =
             }
           );
 
-
-          console.log(
-            "SERVER UPDATED:",
-            serverID
-          );
-
           return;
         }
 
 
-        /* ===============================================
-           SERVER HISTORY HTTP
-           =============================================== */
-
-        const historyMatch =
-          pathname.match(
-            /^\/api\/servers\/([^/]+)\/messages$/
-          );
-
-
-        if (
-          req.method === "GET" &&
-          historyMatch
-        ) {
-
-          const serverID =
-            normalizeServerId(
-              decodeURIComponent(
-                historyMatch[1]
-              )
-            );
-
-
-          const viewerID =
-            getRequestUserID(
-              req,
-              url
-            );
-
-
-          const channelID =
-            cleanText(
-              url.searchParams.get(
-                "channel"
-              ) ||
-              "general",
-              100
-            );
-
-
-          const serverData =
-            getServer(
-              serverID
-            );
-
-
-          if (!serverData) {
-
-            sendError(
-              res,
-              404,
-              "Server not found."
-            );
-
-            return;
-          }
-
-
-          if (
-            !isServerMember(
-              serverData,
-              viewerID
-            )
-          ) {
-
-            sendError(
-              res,
-              403,
-              "You are not a member of this server."
-            );
-
-            return;
-          }
-
-
-          sendJSON(
-            res,
-            200,
-            {
-
-              ok:
-                true,
-
-              serverID:
-                serverID,
-
-              channelID:
-                channelID,
-
-              messages:
-                getServerHistory(
-                  serverID,
-                  channelID
-                )
-            }
-          );
-
-          return;
-        }
-
-
-        /* ===============================================
-           PRESENCE
-           =============================================== */
+        /* =================================================
+           PRESENCE API
+           ================================================= */
 
         if (
           req.method === "GET" &&
@@ -3277,12 +3207,8 @@ const server =
 
           const result = {};
 
-
           for (
-            const [
-              id,
-              info
-            ]
+            const [id, info]
             of presence.entries()
           ) {
 
@@ -3302,7 +3228,6 @@ const server =
             };
           }
 
-
           sendJSON(
             res,
             200,
@@ -3313,9 +3238,9 @@ const server =
         }
 
 
-        /* ===============================================
+        /* =================================================
            PROFILE PHOTO
-           =============================================== */
+           ================================================= */
 
         if (
           req.method === "GET" &&
@@ -3328,17 +3253,16 @@ const server =
             normalizeId(
               decodeURIComponent(
                 pathname.substring(
-                  "/api/profile-photo/".length
+                  "/api/profile-photo/"
+                    .length
                 )
               )
             );
-
 
           const photo =
             profilePhotos.get(
               id
             );
-
 
           if (!photo) {
 
@@ -3354,12 +3278,10 @@ const server =
             return;
           }
 
-
           sendJSON(
             res,
             200,
             {
-
               found:
                 true,
 
@@ -3375,22 +3297,21 @@ const server =
         }
 
 
-        /* ===============================================
+        /* =================================================
            STATIC FILES
-           =============================================== */
+           ================================================= */
 
         let requestedFile =
           pathname;
 
-
         if (
-          requestedFile === "/"
+          requestedFile ===
+          "/"
         ) {
 
           requestedFile =
             "/index.html";
         }
-
 
         let relativeFile =
           requestedFile.replace(
@@ -3398,19 +3319,17 @@ const server =
             ""
           );
 
-
         relativeFile =
           path.normalize(
             relativeFile
           );
 
-
         if (
           relativeFile.startsWith(
-            ".." +
-            path.sep
+            ".." + path.sep
           ) ||
-          relativeFile === ".."
+          relativeFile ===
+            ".."
         ) {
 
           res.writeHead(
@@ -3424,13 +3343,11 @@ const server =
           return;
         }
 
-
         const filePath =
           path.resolve(
             ROOT_DIR,
             relativeFile
           );
-
 
         const rootWithSeparator =
           ROOT_DIR.endsWith(
@@ -3440,10 +3357,8 @@ const server =
             : ROOT_DIR +
               path.sep;
 
-
         if (
-          filePath !==
-            ROOT_DIR &&
+          filePath !== ROOT_DIR &&
           !filePath.startsWith(
             rootWithSeparator
           )
@@ -3460,7 +3375,6 @@ const server =
           return;
         }
 
-
         fs.readFile(
           filePath,
           (
@@ -3475,7 +3389,6 @@ const server =
                 filePath
               );
 
-
               res.writeHead(
                 404,
                 {
@@ -3484,7 +3397,6 @@ const server =
                 }
               );
 
-
               res.end(
                 `FILE NOT FOUND: ${filePath}`
               );
@@ -3492,17 +3404,14 @@ const server =
               return;
             }
 
-
             const extension =
               path.extname(
                 filePath
               ).toLowerCase();
 
-
             res.writeHead(
               200,
               {
-
                 "Content-Type":
                   contentTypes[
                     extension
@@ -3510,13 +3419,14 @@ const server =
                   "application/octet-stream",
 
                 "Cache-Control":
-                  extension === ".css" ||
-                  extension === ".js"
+                  extension ===
+                    ".css" ||
+                  extension ===
+                    ".js"
                     ? "no-cache"
                     : "public, max-age=3600"
               }
             );
-
 
             res.end(
               data
@@ -3530,7 +3440,6 @@ const server =
           "HTTP API error:",
           error.message
         );
-
 
         if (
           !res.headersSent
@@ -3546,198 +3455,6 @@ const server =
       }
     }
   );
-
-
-/* =====================================================
-   PRESENCE
-   ===================================================== */
-
-function getPresenceForViewer(
-  viewerId
-) {
-
-  const viewer =
-    normalizeId(
-      viewerId
-    );
-
-  const result = {};
-
-
-  for (
-    const [
-      id,
-      user
-    ]
-    of users.entries()
-  ) {
-
-    const info =
-      presence.get(
-        id
-      );
-
-
-    let status =
-      "offline";
-
-
-    if (
-      info &&
-      info.online
-    ) {
-
-      if (
-        info.chattingWith &&
-        normalizeId(
-          info.chattingWith
-        ) === viewer
-      ) {
-
-        status =
-          "active";
-
-      } else if (
-        info.chattingWith
-      ) {
-
-        status =
-          "busy";
-
-      } else {
-
-        status =
-          "active";
-      }
-    }
-
-
-    result[id] = {
-
-      id:
-        user.id,
-
-      name:
-        user.name,
-
-      status:
-        status
-    };
-  }
-
-
-  return result;
-}
-
-
-/* =====================================================
-   SEND PRESENCE
-   ===================================================== */
-
-function sendPresenceToViewer(
-  viewerId
-) {
-
-  sendToUser(
-    viewerId,
-    {
-
-      type:
-        "presence",
-
-      users:
-        getPresenceForViewer(
-          viewerId
-        )
-    }
-  );
-}
-
-
-/* =====================================================
-   BROADCAST PRESENCE
-   ===================================================== */
-
-function broadcastPresence() {
-
-  for (
-    const id
-    of sockets.keys()
-  ) {
-
-    sendPresenceToViewer(
-      id
-    );
-  }
-}
-
-
-/* =====================================================
-   PROFILE PHOTO BROADCAST
-   ===================================================== */
-
-function broadcastProfilePhoto(
-  userId,
-  photo
-) {
-
-  const senderId =
-    normalizeId(
-      userId
-    );
-
-
-  for (
-    const [
-      id,
-      socket
-    ]
-    of sockets.entries()
-  ) {
-
-    if (
-      id === senderId
-    ) {
-      continue;
-    }
-
-
-    if (
-      socket &&
-      socket.readyState ===
-        WebSocket.OPEN
-    ) {
-
-      try {
-
-        socket.send(
-          JSON.stringify({
-
-            type:
-              "profile_photo",
-
-            userId:
-              senderId,
-
-            photo:
-              photo,
-
-            data:
-              photo.data ||
-              photo
-          })
-        );
-
-      } catch (error) {
-
-        console.log(
-          "Profile photo send error:",
-          error.message
-        );
-      }
-    }
-  }
-}
 
 
 /* =====================================================
@@ -3762,10 +3479,13 @@ wss.on(
       "Device connected"
     );
 
-
     socket.isAlive =
       true;
 
+
+    /* =================================================
+       PONG
+       ================================================= */
 
     socket.on(
       "pong",
@@ -3776,6 +3496,10 @@ wss.on(
       }
     );
 
+
+    /* =================================================
+       MESSAGE
+       ================================================= */
 
     socket.on(
       "message",
@@ -3803,7 +3527,6 @@ wss.on(
                 msg.userId
               );
 
-
             const name =
               cleanText(
                 msg.name ||
@@ -3811,17 +3534,14 @@ wss.on(
                 100
               );
 
-
             if (!userId) {
               return;
             }
-
 
             const oldSocket =
               sockets.get(
                 userId
               );
-
 
             if (
               oldSocket &&
@@ -3833,28 +3553,23 @@ wss.on(
               } catch {}
             }
 
-
             const user =
               ensureUser(
                 userId,
                 name
               );
 
-
             sockets.set(
               userId,
               socket
             );
 
-
             socket.userId =
               userId;
-
 
             presence.set(
               userId,
               {
-
                 id:
                   userId,
 
@@ -3871,14 +3586,15 @@ wss.on(
 
 
             socket.send(
-              JSON.stringify({
+              JSON.stringify(
+                {
+                  type:
+                    "registered",
 
-                type:
-                  "registered",
-
-                userId:
-                  userId
-              })
+                  userId:
+                    userId
+                }
+              )
             );
 
 
@@ -3893,21 +3609,22 @@ wss.on(
             ) {
 
               socket.send(
-                JSON.stringify({
+                JSON.stringify(
+                  {
+                    type:
+                      "profile_photo",
 
-                  type:
-                    "profile_photo",
+                    userId:
+                      photoUserId,
 
-                  userId:
-                    photoUserId,
+                    photo:
+                      photo,
 
-                  photo:
-                    photo,
-
-                  data:
-                    photo.data ||
-                    photo
-                })
+                    data:
+                      photo.data ||
+                      photo
+                  }
+                )
               );
             }
 
@@ -3915,7 +3632,6 @@ wss.on(
             /* USER SERVERS */
 
             const userServers = [];
-
 
             for (
               const serverData
@@ -3940,14 +3656,15 @@ wss.on(
 
 
             socket.send(
-              JSON.stringify({
+              JSON.stringify(
+                {
+                  type:
+                    "server_list",
 
-                type:
-                  "server_list",
-
-                servers:
-                  userServers
-              })
+                  servers:
+                    userServers
+                }
+              )
             );
 
 
@@ -3957,7 +3674,6 @@ wss.on(
               "-",
               user.name
             );
-
 
             broadcastPresence();
 
@@ -3977,14 +3693,11 @@ wss.on(
             const userId =
               socket.userId;
 
-
             if (!userId) {
               return;
             }
 
-
             let photo;
-
 
             if (
               msg.photo
@@ -4031,22 +3744,16 @@ wss.on(
               return;
             }
 
-
-            const photoSize =
+            if (
               JSON.stringify(
                 photo
-              ).length;
-
-
-            if (
-              photoSize >
+              ).length >
               10 * 1024 * 1024
             ) {
 
               sendToUser(
                 userId,
                 {
-
                   type:
                     "profile_photo_error",
 
@@ -4058,24 +3765,15 @@ wss.on(
               return;
             }
 
-
             profilePhotos.set(
               userId,
               photo
             );
 
-
-            console.log(
-              "Profile photo updated:",
-              userId
-            );
-
-
             broadcastProfilePhoto(
               userId,
               photo
             );
-
 
             return;
           }
@@ -4093,50 +3791,33 @@ wss.on(
             const userId =
               socket.userId;
 
-
             if (!userId) {
               return;
             }
-
 
             const info =
               presence.get(
                 userId
               );
 
-
             if (!info) {
               return;
             }
 
-
             let chatWith =
-              msg.chatWith;
-
-
-            if (chatWith) {
-
-              chatWith =
-                normalizeId(
-                  chatWith
-                );
-
-            } else {
-
-              chatWith =
-                null;
-            }
-
+              msg.chatWith
+                ? normalizeId(
+                    msg.chatWith
+                  )
+                : null;
 
             info.chattingWith =
               chatWith;
-
 
             presence.set(
               userId,
               info
             );
-
 
             broadcastPresence();
 
@@ -4158,14 +3839,11 @@ wss.on(
                 socket.userId
               );
 
-
             if (!userId) {
               return;
             }
 
-
             const userServers = [];
-
 
             for (
               const serverData
@@ -4188,11 +3866,9 @@ wss.on(
               }
             }
 
-
             sendToUser(
               userId,
               {
-
                 type:
                   "server_list",
 
@@ -4201,60 +3877,48 @@ wss.on(
               }
             );
 
-
             return;
           }
 
 
           /* ==========================================
              SERVER MESSAGE
-             
-             Supports:
-             - server_message
-             - server_chat
-             - channel_message
              ========================================== */
 
           if (
             msg.type ===
               "server_message" ||
+
             msg.type ===
               "server_chat" ||
+
             msg.type ===
               "channel_message"
           ) {
 
-            const senderID =
+            const userID =
               normalizeId(
-                msg.from ||
-                msg.userID ||
-                socket.userId
+                socket.userId ||
+                msg.from
               );
-
 
             const serverID =
-              normalizeServerId(
+              String(
                 msg.serverID ||
-                msg.serverId ||
-                msg.guildID ||
-                msg.guildId
-              );
-
+                msg.server ||
+                ""
+              ).trim();
 
             const channelID =
-              cleanText(
+              String(
                 msg.channelID ||
-                msg.channelId ||
                 msg.channel ||
-                "general",
-                100
-              );
-
+                "general"
+              ).trim();
 
             const text =
               String(
                 msg.text ||
-                msg.content ||
                 msg.message ||
                 ""
               )
@@ -4265,51 +3929,20 @@ wss.on(
                 );
 
 
-            console.log("");
-            console.log(
-              "========================================"
-            );
-            console.log(
-              "SERVER MESSAGE"
-            );
-            console.log(
-              "SERVER:",
-              serverID
-            );
-            console.log(
-              "CHANNEL:",
-              channelID
-            );
-            console.log(
-              "FROM:",
-              senderID
-            );
-
-
-            if (!senderID) {
-
-              console.log(
-                "ERROR: No sender ID"
-              );
-
+            if (!userID) {
               return;
             }
 
 
             if (!serverID) {
 
-              console.log(
-                "ERROR: No server ID"
-              );
-
               sendToUser(
-                senderID,
+                userID,
                 {
-
                   type:
                     "server_message_error",
 
-                  reason:
+                  error:
                     "Server ID is missing."
                 }
               );
@@ -4319,17 +3952,12 @@ wss.on(
 
 
             if (!text) {
-
-              console.log(
-                "ERROR: Empty message"
-              );
-
               return;
             }
 
 
             const serverData =
-              getServer(
+              findServer(
                 serverID
               );
 
@@ -4337,29 +3965,25 @@ wss.on(
             if (!serverData) {
 
               console.log(
-                "ERROR: SERVER NOT FOUND:",
+                "SERVER MESSAGE: server not found:",
                 serverID
               );
 
-
               sendToUser(
-                senderID,
+                userID,
                 {
-
                   type:
                     "server_message_error",
 
-                  reason:
-                    "Server not found.",
-
                   serverID:
-                    serverID
+                    serverID,
+
+                  channelID:
+                    channelID,
+
+                  error:
+                    "Server not found."
                 }
-              );
-
-
-              console.log(
-                "========================================"
               );
 
               return;
@@ -4369,98 +3993,101 @@ wss.on(
             if (
               !isServerMember(
                 serverData,
-                senderID
+                userID
               )
             ) {
 
-              console.log(
-                "ERROR: USER IS NOT MEMBER"
-              );
-
-
               sendToUser(
-                senderID,
+                userID,
                 {
-
                   type:
                     "server_message_error",
 
-                  reason:
-                    "You are not a member of this server.",
-
                   serverID:
-                    serverID
+                    serverData.serverID,
+
+                  channelID:
+                    channelID,
+
+                  error:
+                    "You are not a member of this server."
                 }
               );
-
 
               return;
             }
 
 
-            /*
-               Make sure channel exists.
-
-               If frontend sends an unknown channel,
-               use general instead.
-            */
-
-            const channelExists =
-              serverData.channels.some(
-                channel =>
+            const channel =
+              serverData.channels.find(
+                item =>
                   String(
-                    channel.channelID
+                    item.channelID
                   ) ===
-                  String(
-                    channelID
-                  )
+                  channelID
               );
 
 
-            const finalChannelID =
-              channelExists
-                ? channelID
-                : (
-                    serverData.channels[0]
-                      ?.channelID ||
-                    "general"
-                  );
+            if (!channel) {
+
+              sendToUser(
+                userID,
+                {
+                  type:
+                    "server_message_error",
+
+                  serverID:
+                    serverData.serverID,
+
+                  channelID:
+                    channelID,
+
+                  error:
+                    "Channel not found."
+                }
+              );
+
+              return;
+            }
 
 
             const messageID =
-              getMessageID(
-                msg
-              );
+              String(
+                msg.messageID ||
+                msg.messageId ||
+                msg.id ||
+                generateID("MSG")
+              ).trim();
 
 
-            const sender =
+            const user =
               users.get(
-                senderID
+                userID
               );
 
 
-            const serverMessage = {
+            const message = {
 
               id:
                 messageID,
 
-              messageId:
+              messageID:
                 messageID,
 
               serverID:
-                serverID,
+                serverData.serverID,
 
               channelID:
-                finalChannelID,
+                channelID,
 
               from:
-                senderID,
+                userID,
 
               userID:
-                senderID,
+                userID,
 
-              username:
-                sender?.name ||
+              name:
+                user?.name ||
                 "Friend",
 
               text:
@@ -4470,340 +4097,98 @@ wss.on(
                 Number(
                   msg.time
                 ) ||
-                Date.now(),
-
-              type:
-                "server_message"
+                Date.now()
             };
 
 
-            /*
-               Store message.
-            */
+            const messages =
+              getServerMessages(
+                serverData.serverID,
+                channelID
+              );
 
-            serverMessages.set(
-              messageID,
-              serverMessage
+
+            messages.push(
+              message
             );
 
 
-            saveServerMessage(
-              serverMessage
+            /* Keep latest 1000 messages */
+
+            if (
+              messages.length >
+              1000
+            ) {
+
+              messages.splice(
+                0,
+                messages.length -
+                  1000
+              );
+            }
+
+
+            console.log(
+              "SERVER MESSAGE:",
+              serverData.name,
+              "#",
+              channel.name,
+              "-",
+              userID,
+              ":",
+              text
             );
 
 
-            /*
-               Send to every member
-               of the server.
-            */
+            /* Send to every member */
 
             for (
               const member
               of serverData.members
             ) {
 
-              const memberID =
-                normalizeId(
-                  member.userID
-                );
-
-
               sendToUser(
-                memberID,
+                member.userID,
                 {
-
                   type:
                     "server_message",
 
                   id:
-                    messageID,
+                    message.id,
 
-                  messageId:
-                    messageID,
-
-                  serverID:
-                    serverID,
-
-                  serverId:
-                    serverID,
-
-                  channelID:
-                    finalChannelID,
-
-                  channelId:
-                    finalChannelID,
-
-                  from:
-                    senderID,
-
-                  userID:
-                    senderID,
-
-                  username:
-                    sender?.name ||
-                    "Friend",
-
-                  text:
-                    text,
-
-                  time:
-                    serverMessage.time
-                }
-              );
-            }
-
-
-            console.log(
-              "SERVER MESSAGE SENT:",
-              messageID
-            );
-
-            console.log(
-              "========================================"
-            );
-
-
-            return;
-          }
-
-
-          /* ==========================================
-             SERVER MESSAGE REACTION
-             ========================================== */
-
-          if (
-            msg.type ===
-            "server_reaction"
-          ) {
-
-            const messageID =
-              String(
-                msg.messageId ||
-                msg.id ||
-                ""
-              ).trim();
-
-
-            const serverID =
-              normalizeServerId(
-                msg.serverID ||
-                msg.serverId
-              );
-
-
-            const userID =
-              normalizeId(
-                socket.userId
-              );
-
-
-            const serverData =
-              getServer(
-                serverID
-              );
-
-
-            if (
-              !serverData ||
-              !isServerMember(
-                serverData,
-                userID
-              )
-            ) {
-              return;
-            }
-
-
-            const message =
-              serverMessages.get(
-                messageID
-              );
-
-
-            if (!message) {
-              return;
-            }
-
-
-            message.reaction =
-              String(
-                msg.reaction ||
-                ""
-              ).slice(
-                0,
-                20
-              );
-
-
-            for (
-              const member
-              of serverData.members
-            ) {
-
-              sendToUser(
-                member.userID,
-                {
-
-                  type:
-                    "server_reaction",
-
-                  id:
-                    messageID,
-
-                  messageId:
-                    messageID,
-
-                  serverID:
-                    serverID,
-
-                  channelID:
-                    message.channelID,
-
-                  reaction:
-                    message.reaction,
-
-                  from:
-                    userID
-                }
-              );
-            }
-
-
-            return;
-          }
-
-
-          /* ==========================================
-             SERVER MESSAGE DELETE
-             ========================================== */
-
-          if (
-            msg.type ===
-            "server_message_delete"
-          ) {
-
-            const messageID =
-              String(
-                msg.messageId ||
-                msg.id ||
-                ""
-              ).trim();
-
-
-            const userID =
-              normalizeId(
-                socket.userId
-              );
-
-
-            const message =
-              serverMessages.get(
-                messageID
-              );
-
-
-            if (!message) {
-              return;
-            }
-
-
-            const serverData =
-              getServer(
-                message.serverID
-              );
-
-
-            if (!serverData) {
-              return;
-            }
-
-
-            /*
-               Only message sender
-               or server owner can delete.
-            */
-
-            const allowed =
-              normalizeId(
-                message.from
-              ) ===
-                userID ||
-              isServerOwner(
-                serverData,
-                userID
-              );
-
-
-            if (!allowed) {
-              return;
-            }
-
-
-            serverMessages.delete(
-              messageID
-            );
-
-
-            const history =
-              getServerHistory(
-                message.serverID,
-                message.channelID
-              );
-
-
-            const index =
-              history.findIndex(
-                item =>
-                  item.id ===
-                  messageID
-              );
-
-
-            if (
-              index !== -1
-            ) {
-
-              history.splice(
-                index,
-                1
-              );
-            }
-
-
-            for (
-              const member
-              of serverData.members
-            ) {
-
-              sendToUser(
-                member.userID,
-                {
-
-                  type:
-                    "server_message_delete",
-
-                  id:
-                    messageID,
-
-                  messageId:
-                    messageID,
+                  messageID:
+                    message.messageID,
 
                   serverID:
                     message.serverID,
 
                   channelID:
-                    message.channelID
+                    message.channelID,
+
+                  from:
+                    message.from,
+
+                  userID:
+                    message.userID,
+
+                  name:
+                    message.name,
+
+                  text:
+                    message.text,
+
+                  time:
+                    message.time
                 }
               );
             }
-
 
             return;
           }
 
 
           /* ==========================================
-             DIRECT TEXT CHAT
+             PRIVATE TEXT CHAT
              ========================================== */
 
           if (
@@ -4818,11 +4203,9 @@ wss.on(
                 ""
               ).trim();
 
-
             if (!messageId) {
               return;
             }
-
 
             const record = {
 
@@ -4870,7 +4253,6 @@ wss.on(
               sendToUser(
                 record.to,
                 {
-
                   type:
                     "chat",
 
@@ -4899,7 +4281,6 @@ wss.on(
               sendToUser(
                 record.from,
                 {
-
                   type:
                     "delivered",
 
@@ -4916,7 +4297,6 @@ wss.on(
               sendToUser(
                 record.from,
                 {
-
                   type:
                     "delivery_error",
 
@@ -4932,13 +4312,12 @@ wss.on(
               );
             }
 
-
             return;
           }
 
 
           /* ==========================================
-             MEDIA
+             PRIVATE MEDIA
              ========================================== */
 
           if (
@@ -4953,27 +4332,20 @@ wss.on(
                 ""
               ).trim();
 
-
             if (!messageId) {
               return;
             }
 
-
-            const payloadSize =
+            if (
               JSON.stringify(
                 msg
-              ).length;
-
-
-            if (
-              payloadSize >
+              ).length >
               30 * 1024 * 1024
             ) {
 
               sendToUser(
                 socket.userId,
                 {
-
                   type:
                     "media_error",
 
@@ -4984,7 +4356,6 @@ wss.on(
 
               return;
             }
-
 
             const record = {
 
@@ -5045,7 +4416,6 @@ wss.on(
               sendToUser(
                 record.to,
                 {
-
                   type:
                     "media",
 
@@ -5086,7 +4456,6 @@ wss.on(
               sendToUser(
                 record.from,
                 {
-
                   type:
                     "delivered",
 
@@ -5103,7 +4472,6 @@ wss.on(
               sendToUser(
                 record.from,
                 {
-
                   type:
                     "delivery_error",
 
@@ -5118,7 +4486,6 @@ wss.on(
                 }
               );
             }
-
 
             return;
           }
@@ -5140,19 +4507,16 @@ wss.on(
                 ""
               );
 
-
             const record =
               serverMessages.get(
                 id
               );
-
 
             if (record) {
 
               sendToUser(
                 record.from,
                 {
-
                   type:
                     "delivered",
 
@@ -5164,7 +4528,6 @@ wss.on(
                 }
               );
             }
-
 
             return;
           }
@@ -5186,23 +4549,19 @@ wss.on(
                 ""
               );
 
-
             const record =
               serverMessages.get(
                 id
               );
-
 
             if (record) {
 
               record.read =
                 true;
 
-
               sendToUser(
                 record.from,
                 {
-
                   type:
                     "read",
 
@@ -5215,13 +4574,12 @@ wss.on(
               );
             }
 
-
             return;
           }
 
 
           /* ==========================================
-             DIRECT REACTION
+             REACTION
              ========================================== */
 
           if (
@@ -5236,12 +4594,10 @@ wss.on(
                 ""
               );
 
-
             const record =
               serverMessages.get(
                 id
               );
-
 
             if (record) {
 
@@ -5251,16 +4607,13 @@ wss.on(
                   ""
                 );
 
-
               sendToUser(
                 record.from,
                 {
-
                   type:
                     "reaction",
 
-                  id:
-                    id,
+                  id,
 
                   messageId:
                     id,
@@ -5273,16 +4626,13 @@ wss.on(
                 }
               );
 
-
               sendToUser(
                 record.to,
                 {
-
                   type:
                     "reaction",
 
-                  id:
-                    id,
+                  id,
 
                   messageId:
                     id,
@@ -5295,7 +4645,6 @@ wss.on(
                 }
               );
             }
-
 
             return;
           }
@@ -5317,36 +4666,32 @@ wss.on(
                 ""
               );
 
-
             const record =
               serverMessages.get(
                 id
               );
 
+            if (!record) {
+              return;
+            }
 
             serverMessages.delete(
               id
             );
 
 
-            if (record) {
+            sendToUser(
+              record.to,
+              {
+                type:
+                  "unsend",
 
-              sendToUser(
-                record.to,
-                {
+                id,
 
-                  type:
-                    "unsend",
-
-                  id:
-                    id,
-
-                  messageId:
-                    id
-                }
-              );
-            }
-
+                messageId:
+                  id
+              }
+            );
 
             return;
           }
@@ -5368,36 +4713,31 @@ wss.on(
                 ""
               );
 
-
             const record =
               serverMessages.get(
                 id
               );
 
+            if (!record) {
+              return;
+            }
 
             serverMessages.delete(
               id
             );
 
+            sendToUser(
+              record.to,
+              {
+                type:
+                  "server_delete",
 
-            if (record) {
+                id,
 
-              sendToUser(
-                record.to,
-                {
-
-                  type:
-                    "server_delete",
-
-                  id:
-                    id,
-
-                  messageId:
-                    id
-                }
-              );
-            }
-
+                messageId:
+                  id
+              }
+            );
 
             return;
           }
@@ -5413,9 +4753,9 @@ wss.on(
     );
 
 
-    /* ===============================================
-       CONNECTION CLOSED
-       =============================================== */
+    /* =================================================
+       SOCKET CLOSED
+       ================================================= */
 
     socket.on(
       "close",
@@ -5424,11 +4764,9 @@ wss.on(
         const userId =
           socket.userId;
 
-
         if (!userId) {
           return;
         }
-
 
         if (
           sockets.get(
@@ -5438,17 +4776,14 @@ wss.on(
           return;
         }
 
-
         sockets.delete(
           userId
         );
-
 
         const info =
           presence.get(
             userId
           );
-
 
         if (info) {
 
@@ -5458,28 +4793,25 @@ wss.on(
           info.chattingWith =
             null;
 
-
           presence.set(
             userId,
             info
           );
         }
 
-
         console.log(
           "Disconnected:",
           userId
         );
-
 
         broadcastPresence();
       }
     );
 
 
-    /* ===============================================
+    /* =================================================
        SOCKET ERROR
-       =============================================== */
+       ================================================= */
 
     socket.on(
       "error",
@@ -5519,16 +4851,13 @@ const heartbeatInterval =
             "unknown"
           );
 
-
           socket.terminate();
 
           continue;
         }
 
-
         socket.isAlive =
           false;
-
 
         try {
 
@@ -5569,15 +4898,12 @@ server.listen(
   () => {
 
     console.log("");
-
     console.log(
       "========================================"
     );
-
     console.log(
-      "       FRIENDCHAT SERVER STARTED"
+      "        FRIENDCHAT SERVER STARTED"
     );
-
     console.log(
       "========================================"
     );
