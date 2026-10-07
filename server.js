@@ -2138,19 +2138,27 @@ const requesterMember =
         requesterID
     );
 
-console.log("========== MEMBER PERMISSION DEBUG ==========");
-console.log("SERVER ID:", serverData.serverID);
-console.log("REAL OWNER:", serverData.ownerID);
+const isOwner =
+    normalizeId(serverData.ownerID) ===
+    normalizeId(requesterID);
+
+const isAdmin =
+    requesterMember &&
+    requesterMember.role === "admin";
+
+const canManageMembers =
+    isOwner || isAdmin;
+
+console.log("========== ADD MEMBER PERMISSION ==========");
+console.log("SERVER:", serverData.serverID);
+console.log("OWNER:", serverData.ownerID);
 console.log("REQUESTER:", requesterID);
 console.log("REQUESTER MEMBER:", requesterMember);
 console.log("REQUESTER ROLE:", requesterMember?.role);
-console.log("ALL MEMBERS:", serverData.members);
-console.log("=============================================");
-
-const canManageMembers =
-    normalizeId(serverData.ownerID) ===
-        normalizeId(requesterID) ||
-    requesterMember?.role === "admin";
+console.log("IS OWNER:", isOwner);
+console.log("IS ADMIN:", isAdmin);
+console.log("CAN ADD:", canManageMembers);
+console.log("============================================");
 
 if (!canManageMembers) {
     sendError(
