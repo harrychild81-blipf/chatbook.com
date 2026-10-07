@@ -2132,34 +2132,25 @@ const server =
                         "REQUESTER:",
                         requesterID
                     );
-
-                 const requesterMember =
+const requesterMember =
     getServerMember(
         serverData,
         requesterID
     );
 
+console.log("========== MEMBER PERMISSION DEBUG ==========");
+console.log("SERVER ID:", serverData.serverID);
+console.log("REAL OWNER:", serverData.ownerID);
+console.log("REQUESTER:", requesterID);
+console.log("REQUESTER MEMBER:", requesterMember);
+console.log("REQUESTER ROLE:", requesterMember?.role);
+console.log("ALL MEMBERS:", serverData.members);
+console.log("=============================================");
+
 const canManageMembers =
-    isServerOwner(
-        serverData,
-        requesterID
-    ) ||
+    normalizeId(serverData.ownerID) ===
+        normalizeId(requesterID) ||
     requesterMember?.role === "admin";
-
-console.log(
-    "REQUESTER:",
-    requesterID
-);
-
-console.log(
-    "REQUESTER ROLE:",
-    requesterMember?.role
-);
-
-console.log(
-    "CAN MANAGE MEMBERS:",
-    canManageMembers
-);
 
 if (!canManageMembers) {
     sendError(
@@ -2168,10 +2159,8 @@ if (!canManageMembers) {
         "Only the server owner or an admin can add members.",
         {
             code: "MEMBER_ADD_FORBIDDEN",
-            ownerID:
-                serverData.ownerID,
-            requesterID:
-                requesterID,
+            ownerID: serverData.ownerID,
+            requesterID: requesterID,
             requesterRole:
                 requesterMember?.role || "none"
         }
