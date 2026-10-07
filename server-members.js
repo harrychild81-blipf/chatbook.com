@@ -1,21 +1,45 @@
 /* =========================================================
    FRIENDCHAT
    SERVER MEMBERS
-   PHASE 4
-   SHARED BACKEND VERSION
-   FIXED MEMBER INVITE / ADD MEMBER
+   COMPLETE FIXED VERSION
+   OWNER + ADMIN MEMBER MANAGEMENT
+   CODESPACES / LOCAL BACKEND SUPPORT
    ========================================================= */
 
 (function () {
 
     "use strict";
 
-
     /* =====================================================
        CONFIG
        ===================================================== */
 
-    const API_BASE = "";
+    /*
+     * If your frontend and backend are on the SAME server:
+     * leave this empty.
+     *
+     * If using GitHub Codespaces with a separate frontend,
+     * set this before loading this JS:
+     *
+     * window.FRIENDCHAT_API_BASE =
+     *     "https://YOUR-CODESPACE-8080.app.github.dev";
+     *
+     * You can also save the API URL in localStorage:
+     *
+     * localStorage.setItem(
+     *     "friendchat_api_base",
+     *     "https://YOUR-CODESPACE-8080.app.github.dev"
+     * );
+     */
+
+    const API_BASE =
+        String(
+            window.FRIENDCHAT_API_BASE ||
+            localStorage.getItem("friendchat_api_base") ||
+            ""
+        )
+            .trim()
+            .replace(/\/+$/, "");
 
 
     /* =====================================================
@@ -59,15 +83,6 @@
     const cancelInvite = $("cancelInvite");
     const confirmInvite = $("confirmInvite");
 
-    /*
-     * IMPORTANT:
-     * We do NOT permanently trust getElementById()
-     * for the member input.
-     *
-     * The HTML may contain another element with the
-     * same ID. getMemberIDInput() below searches for
-     * the visible/input element actually being used.
-     */
     const memberIdInputElement = $("memberIdInput");
 
     const inviteError = $("inviteError");
@@ -101,7 +116,7 @@
 
 
     /* =====================================================
-       LOCAL STORAGE KEYS
+       LOCAL STORAGE
        ===================================================== */
 
     const CURRENT_SERVER_KEY =
@@ -147,7 +162,7 @@
 
 
     /* =====================================================
-       CURRENT SERVER ID
+       CURRENT SERVER
        ===================================================== */
 
     function getCurrentServerID() {
@@ -182,21 +197,13 @@
 
     function getMemberIDInput() {
 
-        /*
-         * First collect every possible input that
-         * could be the FriendChat ID field.
-         */
-
         const candidates = [];
 
-
         if (memberIdInputElement) {
-
             candidates.push(
                 memberIdInputElement
             );
         }
-
 
         const selectors = [
             "#memberIdInput",
@@ -208,7 +215,6 @@
             'input[data-member-id]',
             'input[data-user-id]'
         ];
-
 
         selectors.forEach(
             function (selector) {
@@ -230,14 +236,13 @@
                                         element
                                     );
                                 }
-
                             }
                         );
 
                 } catch (error) {
 
                     console.warn(
-                        "FriendChat: invalid input selector",
+                        "FriendChat: invalid selector",
                         selector
                     );
                 }
@@ -245,9 +250,7 @@
         );
 
 
-        /*
-         * Prefer the visible input.
-         */
+        /* Prefer visible input */
 
         for (
             let i = 0;
@@ -257,7 +260,6 @@
 
             const element =
                 candidates[i];
-
 
             if (
                 element &&
@@ -270,52 +272,18 @@
                         element
                     );
 
-
                 const visible =
                     style.display !== "none" &&
                     style.visibility !== "hidden" &&
                     element.offsetParent !== null;
 
-
                 if (visible) {
-
                     return element;
                 }
             }
         }
 
-
-        /*
-         * Fallback to the first candidate.
-         */
-
         return candidates[0] || null;
-    }
-
-
-    /* =====================================================
-       GET MEMBER INPUT VALUE
-       ===================================================== */
-
-    function getMemberInputValue() {
-
-        const input =
-            getMemberIDInput();
-
-
-        if (!input) {
-
-            console.warn(
-                "FriendChat: member ID input was not found."
-            );
-
-            return "";
-        }
-
-
-        return String(
-            input.value || ""
-        ).trim();
     }
 
 
@@ -331,57 +299,96 @@
         const userID =
             getCurrentUserID();
 
-
         const requestOptions =
-            options || {};
+            options
+                ? {
+                    ...options
+                }
+                : {};
 
-
-        requestOptions.headers =
-            requestOptions.headers || {};
+        const headers = {
+            ...(requestOptions.headers || {})
+        };
 
 
         /*
-         * Do not overwrite an existing content type.
+         * JSON requests.
          */
 
         if (
-            !requestOptions.headers[
-                "Content-Type"
-            ]
+            !headers["Content-Type"] &&
+            !headers["content-type"]
         ) {
 
-            requestOptions.headers[
-                "Content-Type"
-            ] =
+            headers["Content-Type"] =
                 "application/json";
         }
 
 
+        /*
+         * Important:
+         * The backend uses the FriendChat user ID
+         * instead of cookie authentication.
+         */
+
         if (userID) {
 
-            requestOptions.headers[
+            headers[
                 "x-friendchat-user-id"
-            ] =
-                userID;
+            ] = userID;
+        }
+
+        requestOptions.headers =
+            headers;
+
+
+        const fullURL =
+            API_BASE + url;
+
+
+        console.log(
+            "FriendChat API:",
+            requestOptions.method || "GET",
+            fullURL
+        );
+
+        console.log(
+            "FriendChat requester:",
+            userID
+        );
+
+
+        let response;
+
+        try {
+
+            response =
+                await fetch(
+                    fullURL,
+                    requestOptions
+                );
+
+        } catch (networkError) {
+
+            console.error(
+                "FriendChat network error:",
+                networkError
+            );
+
+            throw new Error(
+                "Cannot connect to FriendChat server. Check your backend/API URL."
+            );
         }
 
 
-        const response =
-            await fetch(
-                API_BASE + url,
-                requestOptions
-            );
-
-
         let data = null;
-
 
         try {
 
             data =
                 await response.json();
 
-        } catch (error) {
+        } catch (_) {
 
             data = null;
         }
@@ -391,14 +398,25 @@
 
             const message =
                 data &&
-                data.error
-                    ? data.error
-                    : (
-                        data &&
+                (
+                    data.error ||
+                    data.message
+                )
+                    ? (
+                        data.error ||
                         data.message
-                            ? data.message
-                            : "Something went wrong."
+                    )
+                    : (
+                        "Server returned HTTP " +
+                        response.status
                     );
+
+
+            console.error(
+                "FriendChat API error:",
+                response.status,
+                data
+            );
 
 
             throw new Error(
@@ -421,7 +439,6 @@
             return;
         }
 
-
         loadingServer = true;
 
 
@@ -433,11 +450,9 @@
 
             loadingServer = false;
 
-
             showToast(
                 "No server selected."
             );
-
 
             setTimeout(
                 function () {
@@ -448,7 +463,6 @@
                 },
                 700
             );
-
 
             return;
         }
@@ -509,19 +523,10 @@
             );
 
 
-            setTimeout(
-                function () {
-
-                    window.location.href =
-                        "server-home.html?server=" +
-                        encodeURIComponent(
-                            serverID
-                        );
-
-                },
-                1200
-            );
-
+            /*
+             * Do not immediately redirect on API
+             * errors. This makes debugging much easier.
+             */
 
         } finally {
 
@@ -536,8 +541,9 @@
 
     function normalizeServer(server) {
 
-        const normalized =
-            server || {};
+        const normalized = {
+            ...(server || {})
+        };
 
 
         if (
@@ -560,16 +566,6 @@
         }
 
 
-        if (
-            !normalized.ownerID
-        ) {
-
-            console.warn(
-                "FriendChat: server has no ownerID."
-            );
-        }
-
-
         normalized.members =
             normalized.members.map(
                 function (member) {
@@ -578,7 +574,6 @@
                         member,
                         normalized
                     );
-
                 }
             );
 
@@ -600,23 +595,32 @@
             typeof member === "string"
         ) {
 
+            const memberID =
+                String(member).trim();
+
+
+            const owner =
+                String(
+                    server.ownerID || ""
+                )
+                    .trim()
+                    .toUpperCase();
+
+
             return {
 
-                memberID: member,
+                memberID: memberID,
 
-                userID: member,
+                userID: memberID,
 
-                name: member,
+                name: memberID,
 
-                username: member,
+                username: memberID,
 
                 role:
-                    String(member).toUpperCase() ===
-                    String(
-                        server.ownerID || ""
-                    ).toUpperCase()
-                        ? "Owner"
-                        : "Member",
+                    memberID.toUpperCase() === owner
+                        ? "owner"
+                        : "member",
 
                 status: "offline",
 
@@ -625,13 +629,13 @@
                     new Date().toISOString(),
 
                 avatar: null
-
             };
         }
 
 
-        const normalized =
-            member || {};
+        const normalized = {
+            ...(member || {})
+        };
 
 
         const memberID =
@@ -663,16 +667,49 @@
             normalized.name;
 
 
-        normalized.role =
-            normalized.role ||
-            (
-                String(memberID).toUpperCase() ===
-                String(
-                    server.ownerID || ""
-                ).toUpperCase()
-                    ? "Owner"
-                    : "Member"
-            );
+        /*
+         * IMPORTANT FIX:
+         *
+         * Do NOT turn admin into member.
+         */
+
+        const existingRole =
+            String(
+                normalized.role || ""
+            )
+                .trim()
+                .toLowerCase();
+
+
+        const isServerOwner =
+            String(memberID)
+                .trim()
+                .toUpperCase() ===
+            String(
+                server.ownerID || ""
+            )
+                .trim()
+                .toUpperCase();
+
+
+        if (isServerOwner) {
+
+            normalized.role =
+                "owner";
+
+        } else if (
+            existingRole === "admin" ||
+            existingRole === "administrator"
+        ) {
+
+            normalized.role =
+                "admin";
+
+        } else {
+
+            normalized.role =
+                "member";
+        }
 
 
         normalized.status =
@@ -718,21 +755,18 @@
 
 
         if (serverName) {
-
             serverName.textContent =
                 name;
         }
 
 
         if (heroServerName) {
-
             heroServerName.textContent =
                 name;
         }
 
 
         if (heroDescription) {
-
             heroDescription.textContent =
                 description;
         }
@@ -899,7 +933,36 @@
             String(
                 currentServer.ownerID ||
                 ""
-            ).toUpperCase()
+            )
+                .trim()
+                .toUpperCase()
+        );
+    }
+
+
+    function isAdmin(member) {
+
+        if (!member) {
+            return false;
+        }
+
+
+        if (isOwner(member)) {
+            return true;
+        }
+
+
+        const role =
+            String(
+                member.role || ""
+            )
+                .trim()
+                .toLowerCase();
+
+
+        return (
+            role === "admin" ||
+            role === "administrator"
         );
     }
 
@@ -938,7 +1001,7 @@
 
 
     /* =====================================================
-       CURRENT USER PERMISSION
+       PERMISSIONS
        ===================================================== */
 
     function canManageMembers() {
@@ -957,17 +1020,37 @@
         }
 
 
-        if (
+        const ownerID =
             String(
                 currentServer.ownerID ||
                 ""
-            ).toUpperCase() ===
-            currentUserID.toUpperCase()
+            )
+                .trim()
+                .toUpperCase();
+
+
+        const requesterID =
+            currentUserID
+                .trim()
+                .toUpperCase();
+
+
+        /*
+         * OWNER
+         */
+
+        if (
+            ownerID ===
+            requesterID
         ) {
 
             return true;
         }
 
+
+        /*
+         * ADMIN
+         */
 
         const currentMember =
             currentServer.members.find(
@@ -975,9 +1058,9 @@
 
                     return (
                         getMemberID(member)
+                            .trim()
                             .toUpperCase() ===
-                        currentUserID
-                            .toUpperCase()
+                        requesterID
                     );
                 }
             );
@@ -990,9 +1073,10 @@
 
         const role =
             String(
-                currentMember.role ||
-                ""
-            ).toLowerCase();
+                currentMember.role || ""
+            )
+                .trim()
+                .toLowerCase();
 
 
         return (
@@ -1079,16 +1163,12 @@
 
 
         if (ownerList) {
-
-            ownerList.innerHTML =
-                "";
+            ownerList.innerHTML = "";
         }
 
 
         if (memberList) {
-
-            memberList.innerHTML =
-                "";
+            memberList.innerHTML = "";
         }
 
 
@@ -1194,7 +1274,7 @@
 
 
     /* =====================================================
-       INVITE BUTTON PERMISSION
+       INVITE BUTTONS
        ===================================================== */
 
     function updateInviteButtons() {
@@ -1229,16 +1309,18 @@
     function createMemberCard(member) {
 
         const card =
-            document.createElement("div");
-
+            document.createElement(
+                "div"
+            );
 
         card.className =
             "member-card";
 
 
         const avatar =
-            document.createElement("div");
-
+            document.createElement(
+                "div"
+            );
 
         avatar.className =
             "member-avatar";
@@ -1247,15 +1329,16 @@
         setImageOrInitial(
             avatar,
             member.avatar ||
-                member.profilePhoto ||
-                null,
+            member.profilePhoto ||
+            null,
             getMemberName(member)
         );
 
 
         const dot =
-            document.createElement("span");
-
+            document.createElement(
+                "span"
+            );
 
         dot.className =
             "online-dot";
@@ -1275,24 +1358,27 @@
 
 
         const info =
-            document.createElement("div");
-
+            document.createElement(
+                "div"
+            );
 
         info.className =
             "member-info";
 
 
         const nameRow =
-            document.createElement("div");
-
+            document.createElement(
+                "div"
+            );
 
         nameRow.className =
             "member-name-row";
 
 
         const name =
-            document.createElement("div");
-
+            document.createElement(
+                "div"
+            );
 
         name.className =
             "member-name";
@@ -1310,61 +1396,46 @@
         if (isOwner(member)) {
 
             const badge =
-                document.createElement("span");
-
+                document.createElement(
+                    "span"
+                );
 
             badge.className =
                 "owner-badge";
 
-
             badge.textContent =
                 "OWNER";
-
 
             nameRow.appendChild(
                 badge
             );
 
-        } else {
+        } else if (isAdmin(member)) {
 
-            const role =
-                String(
-                    member.role ||
-                    ""
-                ).toLowerCase();
-
-
-            if (
-                role === "admin" ||
-                role === "administrator"
-            ) {
-
-                const badge =
-                    document.createElement("span");
-
-
-                badge.className =
-                    "owner-badge";
-
-
-                badge.textContent =
-                    "ADMIN";
-
-
-                nameRow.appendChild(
-                    badge
+            const badge =
+                document.createElement(
+                    "span"
                 );
-            }
+
+            badge.className =
+                "owner-badge";
+
+            badge.textContent =
+                "ADMIN";
+
+            nameRow.appendChild(
+                badge
+            );
         }
 
 
         const id =
-            document.createElement("div");
-
+            document.createElement(
+                "div"
+            );
 
         id.className =
             "member-id";
-
 
         id.textContent =
             getMemberID(member);
@@ -1374,27 +1445,27 @@
             nameRow
         );
 
-
         info.appendChild(
             id
         );
 
 
         const right =
-            document.createElement("div");
-
+            document.createElement(
+                "div"
+            );
 
         right.className =
             "member-right";
 
 
         const status =
-            document.createElement("span");
-
+            document.createElement(
+                "span"
+            );
 
         status.className =
             "status-text";
-
 
         status.textContent =
             isOnline(member)
@@ -1403,12 +1474,12 @@
 
 
         const arrow =
-            document.createElement("span");
-
+            document.createElement(
+                "span"
+            );
 
         arrow.className =
             "member-arrow";
-
 
         arrow.textContent =
             "›";
@@ -1417,7 +1488,6 @@
         right.appendChild(
             status
         );
-
 
         right.appendChild(
             arrow
@@ -1428,11 +1498,9 @@
             avatar
         );
 
-
         card.appendChild(
             info
         );
-
 
         card.appendChild(
             right
@@ -1455,7 +1523,7 @@
 
 
     /* =====================================================
-       OPEN MEMBER PROFILE
+       MEMBER PROFILE
        ===================================================== */
 
     function openMemberProfile(
@@ -1469,8 +1537,8 @@
         setImageOrInitial(
             profileAvatar,
             member.avatar ||
-                member.profilePhoto ||
-                null,
+            member.profilePhoto ||
+            null,
             getMemberName(member)
         );
 
@@ -1495,8 +1563,9 @@
                 isOwner(member)
                     ? "Owner"
                     : (
-                        member.role ||
-                        "Member"
+                        isAdmin(member)
+                            ? "Admin"
+                            : "Member"
                     );
         }
 
@@ -1612,6 +1681,9 @@
 
             inviteError.textContent =
                 "";
+
+            inviteError.style.display =
+                "";
         }
 
 
@@ -1620,9 +1692,7 @@
 
 
         if (input) {
-
-            input.value =
-                "";
+            input.value = "";
         }
 
 
@@ -1644,11 +1714,6 @@
                 if (activeInput) {
 
                     activeInput.focus();
-
-                    /*
-                     * Put the cursor at the end
-                     * instead of selecting old text.
-                     */
 
                     try {
 
@@ -1683,12 +1748,15 @@
 
             inviteError.textContent =
                 "";
+
+            inviteError.style.display =
+                "";
         }
     }
 
 
     /* =====================================================
-       VALIDATE FRIENDCHAT ID
+       FRIENDCHAT ID
        ===================================================== */
 
     function normalizeFriendChatID(
@@ -1704,31 +1772,14 @@
     }
 
 
-    function isValidFriendChatID(
-        id
-    ) {
-
-        /*
-         * Normal FriendChat format:
-         *
-         * FC-ABC123
-         *
-         * We also allow existing IDs that are
-         * slightly different so old accounts
-         * don't break.
-         */
+    function isValidFriendChatID(id) {
 
         if (!id) {
             return false;
         }
 
 
-        if (id.length < 3) {
-            return false;
-        }
-
-
-        return true;
+        return id.length >= 3;
     }
 
 
@@ -1739,14 +1790,6 @@
     async function addMember(
         event
     ) {
-
-        /*
-         * VERY IMPORTANT:
-         *
-         * If this button is inside a <form>,
-         * stop the browser from submitting the
-         * form and running a second validation.
-         */
 
         if (event) {
 
@@ -1794,10 +1837,6 @@
         }
 
 
-        /* =================================================
-           GET THE ACTUAL VISIBLE INPUT
-           ================================================= */
-
         const input =
             getMemberIDInput();
 
@@ -1808,7 +1847,6 @@
                 "FriendChat: memberIdInput was not found."
             );
 
-
             showInviteError(
                 "Member ID field was not found."
             );
@@ -1816,11 +1854,6 @@
             return;
         }
 
-
-        /*
-         * Read the value directly from the
-         * input that is visible to the user.
-         */
 
         const rawValue =
             String(
@@ -1840,7 +1873,6 @@
                 "Enter a FriendChat ID."
             );
 
-
             input.focus();
 
             return;
@@ -1858,7 +1890,6 @@
             showInviteError(
                 "Enter a valid FriendChat ID."
             );
-
 
             input.focus();
 
@@ -1919,9 +1950,73 @@
         try {
 
             console.log(
-                "FriendChat: adding member:",
+                "========================================"
+            );
+
+            console.log(
+                "FRIENDCHAT ADD MEMBER"
+            );
+
+            console.log(
+                "API BASE:",
+                API_BASE
+            );
+
+            console.log(
+                "SERVER ID:",
+                currentServer.serverID
+            );
+
+            console.log(
+                "REQUESTER ID:",
+                currentUserID
+            );
+
+            console.log(
+                "TARGET MEMBER ID:",
                 id
             );
+
+            console.log(
+                "========================================"
+            );
+
+
+            /*
+             * IMPORTANT FIX:
+             *
+             * Send requesterID explicitly.
+             *
+             * This makes the backend know exactly
+             * which user is performing the action.
+             */
+
+            const requestBody = {
+
+                requesterID:
+                    currentUserID,
+
+                requesterId:
+                    currentUserID,
+
+                currentUserID:
+                    currentUserID,
+
+                currentUserId:
+                    currentUserID,
+
+                userID:
+                    id,
+
+                userId:
+                    id,
+
+                memberID:
+                    id,
+
+                memberId:
+                    id
+            };
 
 
             const data =
@@ -1935,18 +2030,9 @@
                         method: "POST",
 
                         body:
-                            JSON.stringify({
-
-                                /*
-                                 * Send both names so the
-                                 * backend can accept either.
-                                 */
-
-                                userID: id,
-
-                                memberID: id
-
-                            })
+                            JSON.stringify(
+                                requestBody
+                            )
                     }
                 );
 
@@ -1975,11 +2061,6 @@
 
 
             } else {
-
-                /*
-                 * Backend didn't return the
-                 * complete server, so reload it.
-                 */
 
                 await refreshServer();
             }
@@ -2390,15 +2471,10 @@
 
 
     /* =====================================================
-       FORM SUBMIT PROTECTION
+       FORM PROTECTION
        ===================================================== */
 
     function setupInviteFormProtection() {
-
-        /*
-         * Find the form containing the Add Member
-         * input/button.
-         */
 
         const input =
             getMemberIDInput();
@@ -2508,7 +2584,6 @@
                     event.preventDefault();
 
                     addMember(event);
-
                 }
             );
         }
@@ -2592,11 +2667,6 @@
         }
 
 
-        /*
-         * Use the dynamically detected input,
-         * not just the original const.
-         */
-
         const input =
             getMemberIDInput();
 
@@ -2679,6 +2749,41 @@
 
 
     /* =====================================================
+       DEBUG
+       ===================================================== */
+
+    function printDebugInfo() {
+
+        console.log(
+            "========================================"
+        );
+
+        console.log(
+            "FRIENDCHAT SERVER MEMBERS"
+        );
+
+        console.log(
+            "API BASE:",
+            API_BASE || "(same origin)"
+        );
+
+        console.log(
+            "CURRENT USER:",
+            getCurrentUserID()
+        );
+
+        console.log(
+            "CURRENT SERVER:",
+            getCurrentServerID()
+        );
+
+        console.log(
+            "========================================"
+        );
+    }
+
+
+    /* =====================================================
        INITIALIZE
        ===================================================== */
 
@@ -2689,16 +2794,7 @@
         );
 
 
-        console.log(
-            "FriendChat: Current User:",
-            getCurrentUserID()
-        );
-
-
-        console.log(
-            "FriendChat: Current Server:",
-            getCurrentServerID()
-        );
+        printDebugInfo();
 
 
         const input =
