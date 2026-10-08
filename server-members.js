@@ -3,6 +3,7 @@
    SERVER MEMBERS
    COMPLETE FIXED VERSION
    OWNER + ADMIN MEMBER MANAGEMENT
+   FRIEND SERVER AUTO-DISCOVERY FIX
    CODESPACES / LOCAL BACKEND SUPPORT
    ========================================================= */
 
@@ -13,24 +14,6 @@
     /* =====================================================
        CONFIG
        ===================================================== */
-
-    /*
-     * If your frontend and backend are on the SAME server:
-     * leave this empty.
-     *
-     * If using GitHub Codespaces with a separate frontend,
-     * set this before loading this JS:
-     *
-     * window.FRIENDCHAT_API_BASE =
-     *     "https://YOUR-CODESPACE-8080.app.github.dev";
-     *
-     * You can also save the API URL in localStorage:
-     *
-     * localStorage.setItem(
-     *     "friendchat_api_base",
-     *     "https://YOUR-CODESPACE-8080.app.github.dev"
-     * );
-     */
 
     const API_BASE =
         String(
@@ -111,6 +94,7 @@
 
     let toastTimer = null;
     let loadingServer = false;
+    let loadingServerList = false;
     let addingMember = false;
     let removingMember = false;
 
@@ -135,18 +119,42 @@
 
     function getCurrentUserID() {
 
-        const id =
-            localStorage.getItem(
-                USER_ID_KEY
-            );
+        const possibleKeys = [
+            "friendchat_user_id",
+            "friendchat_userID",
+            "friendchat_userId",
+            "userID",
+            "userId",
+            "currentUserID",
+            "currentUserId"
+        ];
 
-        if (!id) {
-            return null;
+
+        for (
+            let i = 0;
+            i < possibleKeys.length;
+            i++
+        ) {
+
+            const value =
+                localStorage.getItem(
+                    possibleKeys[i]
+                );
+
+
+            if (
+                value !== null &&
+                String(value).trim() !== ""
+            ) {
+
+                return String(value)
+                    .trim()
+                    .toUpperCase();
+            }
         }
 
-        return String(id)
-            .trim()
-            .toUpperCase();
+
+        return null;
     }
 
 
@@ -155,6 +163,12 @@
         return (
             localStorage.getItem(
                 USER_NAME_KEY
+            ) ||
+            localStorage.getItem(
+                "friendchat_username"
+            ) ||
+            localStorage.getItem(
+                "username"
             ) ||
             "FriendChat User"
         );
@@ -172,8 +186,10 @@
                 window.location.search
             );
 
+
         const urlServer =
             params.get("server");
+
 
         if (urlServer) {
 
@@ -185,8 +201,25 @@
             return urlServer;
         }
 
+
         return localStorage.getItem(
             CURRENT_SERVER_KEY
+        );
+    }
+
+
+    function setCurrentServerID(
+        serverID
+    ) {
+
+        if (!serverID) {
+            return;
+        }
+
+
+        localStorage.setItem(
+            CURRENT_SERVER_KEY,
+            String(serverID)
         );
     }
 
@@ -199,11 +232,14 @@
 
         const candidates = [];
 
+
         if (memberIdInputElement) {
+
             candidates.push(
                 memberIdInputElement
             );
         }
+
 
         const selectors = [
             "#memberIdInput",
@@ -215,6 +251,7 @@
             'input[data-member-id]',
             'input[data-user-id]'
         ];
+
 
         selectors.forEach(
             function (selector) {
@@ -250,8 +287,6 @@
         );
 
 
-        /* Prefer visible input */
-
         for (
             let i = 0;
             i < candidates.length;
@@ -260,6 +295,7 @@
 
             const element =
                 candidates[i];
+
 
             if (
                 element &&
@@ -272,16 +308,19 @@
                         element
                     );
 
+
                 const visible =
                     style.display !== "none" &&
                     style.visibility !== "hidden" &&
                     element.offsetParent !== null;
+
 
                 if (visible) {
                     return element;
                 }
             }
         }
+
 
         return candidates[0] || null;
     }
@@ -299,6 +338,7 @@
         const userID =
             getCurrentUserID();
 
+
         const requestOptions =
             options
                 ? {
@@ -306,14 +346,11 @@
                 }
                 : {};
 
+
         const headers = {
             ...(requestOptions.headers || {})
         };
 
-
-        /*
-         * JSON requests.
-         */
 
         if (
             !headers["Content-Type"] &&
@@ -326,9 +363,8 @@
 
 
         /*
-         * Important:
-         * The backend uses the FriendChat user ID
-         * instead of cookie authentication.
+         * The backend identifies the requester
+         * using this header.
          */
 
         if (userID) {
@@ -337,6 +373,7 @@
                 "x-friendchat-user-id"
             ] = userID;
         }
+
 
         requestOptions.headers =
             headers;
@@ -352,6 +389,7 @@
             fullURL
         );
 
+
         console.log(
             "FriendChat requester:",
             userID
@@ -359,6 +397,7 @@
 
 
         let response;
+
 
         try {
 
@@ -375,6 +414,7 @@
                 networkError
             );
 
+
             throw new Error(
                 "Cannot connect to FriendChat server. Check your backend/API URL."
             );
@@ -382,6 +422,7 @@
 
 
         let data = null;
+
 
         try {
 
@@ -430,6 +471,167 @@
 
 
     /* =====================================================
+       LOAD USER'S SERVERS
+       ===================================================== */
+
+    async function getMyServers() {
+
+        if (loadingServerList) {
+            return [];
+        }
+
+
+        loadingServerList = true;
+
+
+        try {
+
+            const data =
+                await apiRequest(
+                    "/api/servers",
+                    {
+                        method: "GET"
+                    }
+                );
+
+
+            console.log(
+                "FriendChat: user's servers response:",
+                data
+            );
+
+
+            if (
+                data &&
+                Array.isArray(
+                    data.servers
+                )
+            ) {
+
+                return data.servers;
+            }
+
+
+            if (
+                Array.isArray(data)
+            ) {
+
+                return data;
+            }
+
+
+            return [];
+
+        } catch (error) {
+
+            console.error(
+                "FriendChat: failed to load user's servers:",
+                error
+            );
+
+
+            return [];
+
+        } finally {
+
+            loadingServerList = false;
+        }
+    }
+
+
+    /* =====================================================
+       FIND SERVER FOR CURRENT USER
+       ===================================================== */
+
+    async function findAccessibleServer() {
+
+        const userID =
+            getCurrentUserID();
+
+
+        if (!userID) {
+
+            console.warn(
+                "FriendChat: no logged-in user ID."
+            );
+
+            return null;
+        }
+
+
+        console.log(
+            "FriendChat: looking for servers for:",
+            userID
+        );
+
+
+        const servers =
+            await getMyServers();
+
+
+        console.log(
+            "FriendChat: accessible servers:",
+            servers
+        );
+
+
+        if (
+            !Array.isArray(servers) ||
+            servers.length === 0
+        ) {
+
+            return null;
+        }
+
+
+        /*
+         * Prefer a server where this user
+         * is actually a member.
+         */
+
+        const matchingServer =
+            servers.find(
+                function (server) {
+
+                    const members =
+                        Array.isArray(
+                            server.members
+                        )
+                            ? server.members
+                            : [];
+
+
+                    return members.some(
+                        function (member) {
+
+                            return (
+                                getMemberID(member)
+                                    .toUpperCase() ===
+                                userID.toUpperCase()
+                            );
+                        }
+                    );
+                }
+            );
+
+
+        if (matchingServer) {
+
+            return matchingServer;
+        }
+
+
+        /*
+         * Backend /api/servers already filters
+         * servers by membership, so if it returned
+         * something, the first server is usable.
+         */
+
+        return servers[0] || null;
+    }
+
+
+    /* =====================================================
        LOAD SERVER
        ===================================================== */
 
@@ -439,36 +641,99 @@
             return;
         }
 
+
         loadingServer = true;
 
 
-        const serverID =
-            getCurrentServerID();
-
-
-        if (!serverID) {
-
-            loadingServer = false;
-
-            showToast(
-                "No server selected."
-            );
-
-            setTimeout(
-                function () {
-
-                    window.location.href =
-                        "create-server.html";
-
-                },
-                700
-            );
-
-            return;
-        }
-
-
         try {
+
+            let serverID =
+                getCurrentServerID();
+
+
+            /*
+             * IMPORTANT FIX:
+             *
+             * If the friend has no server selected,
+             * automatically get their servers from
+             * /api/servers.
+             */
+
+            if (!serverID) {
+
+                console.log(
+                    "FriendChat: no selected server."
+                );
+
+
+                const accessibleServer =
+                    await findAccessibleServer();
+
+
+                if (
+                    !accessibleServer
+                ) {
+
+                    showToast(
+                        "No server is available for this account."
+                    );
+
+
+                    console.warn(
+                        "FriendChat: /api/servers returned no accessible servers."
+                    );
+
+
+                    return;
+                }
+
+
+                serverID =
+                    accessibleServer.serverID ||
+                    accessibleServer.id;
+
+
+                if (!serverID) {
+
+                    throw new Error(
+                        "Server ID is missing."
+                    );
+                }
+
+
+                setCurrentServerID(
+                    serverID
+                );
+
+
+                /*
+                 * If the returned server already
+                 * contains the information we need,
+                 * use it immediately.
+                 */
+
+                currentServer =
+                    normalizeServer(
+                        accessibleServer
+                    );
+
+
+                renderServer();
+                renderMembers();
+
+                return;
+            }
+
+
+            /*
+             * Normal selected-server loading.
+             */
+
+            console.log(
+                "FriendChat: loading selected server:",
+                serverID
+            );
+
 
             const data =
                 await apiRequest(
@@ -499,8 +764,7 @@
                 );
 
 
-            localStorage.setItem(
-                CURRENT_SERVER_KEY,
+            setCurrentServerID(
                 currentServer.serverID
             );
 
@@ -512,21 +776,64 @@
         } catch (error) {
 
             console.error(
-                "FriendChat: failed to load server",
+                "FriendChat: failed to load server:",
                 error
             );
+
+
+            /*
+             * If the saved server is no longer
+             * accessible, try finding another server
+             * belonging to the current user.
+             */
+
+            console.log(
+                "FriendChat: trying automatic server recovery..."
+            );
+
+
+            const accessibleServer =
+                await findAccessibleServer();
+
+
+            if (accessibleServer) {
+
+                const recoveredID =
+                    accessibleServer.serverID ||
+                    accessibleServer.id;
+
+
+                if (recoveredID) {
+
+                    setCurrentServerID(
+                        recoveredID
+                    );
+
+
+                    currentServer =
+                        normalizeServer(
+                            accessibleServer
+                        );
+
+
+                    renderServer();
+                    renderMembers();
+
+
+                    showToast(
+                        "Server loaded."
+                    );
+
+
+                    return;
+                }
+            }
 
 
             showToast(
                 error.message ||
                 "Could not load server."
             );
-
-
-            /*
-             * Do not immediately redirect on API
-             * errors. This makes debugging much easier.
-             */
 
         } finally {
 
@@ -642,6 +949,8 @@
             normalized.memberID ||
             normalized.userID ||
             normalized.id ||
+            normalized.user_id ||
+            normalized.uid ||
             "";
 
 
@@ -658,6 +967,7 @@
             normalized.name ||
             normalized.username ||
             normalized.displayName ||
+            normalized.display_name ||
             memberID ||
             "Member";
 
@@ -666,12 +976,6 @@
             normalized.username ||
             normalized.name;
 
-
-        /*
-         * IMPORTANT FIX:
-         *
-         * Do NOT turn admin into member.
-         */
 
         const existingRole =
             String(
@@ -755,18 +1059,21 @@
 
 
         if (serverName) {
+
             serverName.textContent =
                 name;
         }
 
 
         if (heroServerName) {
+
             heroServerName.textContent =
                 name;
         }
 
 
         if (heroDescription) {
+
             heroDescription.textContent =
                 description;
         }
@@ -894,6 +1201,8 @@
             member.memberID ||
             member.userID ||
             member.id ||
+            member.user_id ||
+            member.uid ||
             ""
         ).trim();
     }
@@ -910,6 +1219,7 @@
             member.name ||
             member.username ||
             member.displayName ||
+            member.display_name ||
             getMemberID(member) ||
             "Member"
         );
@@ -1035,10 +1345,6 @@
                 .toUpperCase();
 
 
-        /*
-         * OWNER
-         */
-
         if (
             ownerID ===
             requesterID
@@ -1047,10 +1353,6 @@
             return true;
         }
 
-
-        /*
-         * ADMIN
-         */
 
         const currentMember =
             currentServer.members.find(
@@ -1313,6 +1615,7 @@
                 "div"
             );
 
+
         card.className =
             "member-card";
 
@@ -1321,6 +1624,7 @@
             document.createElement(
                 "div"
             );
+
 
         avatar.className =
             "member-avatar";
@@ -1339,6 +1643,7 @@
             document.createElement(
                 "span"
             );
+
 
         dot.className =
             "online-dot";
@@ -1362,6 +1667,7 @@
                 "div"
             );
 
+
         info.className =
             "member-info";
 
@@ -1371,6 +1677,7 @@
                 "div"
             );
 
+
         nameRow.className =
             "member-name-row";
 
@@ -1379,6 +1686,7 @@
             document.createElement(
                 "div"
             );
+
 
         name.className =
             "member-name";
@@ -1400,11 +1708,14 @@
                     "span"
                 );
 
+
             badge.className =
                 "owner-badge";
 
+
             badge.textContent =
                 "OWNER";
+
 
             nameRow.appendChild(
                 badge
@@ -1417,11 +1728,14 @@
                     "span"
                 );
 
+
             badge.className =
                 "owner-badge";
 
+
             badge.textContent =
                 "ADMIN";
+
 
             nameRow.appendChild(
                 badge
@@ -1434,8 +1748,10 @@
                 "div"
             );
 
+
         id.className =
             "member-id";
+
 
         id.textContent =
             getMemberID(member);
@@ -1444,6 +1760,7 @@
         info.appendChild(
             nameRow
         );
+
 
         info.appendChild(
             id
@@ -1455,6 +1772,7 @@
                 "div"
             );
 
+
         right.className =
             "member-right";
 
@@ -1464,8 +1782,10 @@
                 "span"
             );
 
+
         status.className =
             "status-text";
+
 
         status.textContent =
             isOnline(member)
@@ -1478,8 +1798,10 @@
                 "span"
             );
 
+
         arrow.className =
             "member-arrow";
+
 
         arrow.textContent =
             "›";
@@ -1488,6 +1810,7 @@
         right.appendChild(
             status
         );
+
 
         right.appendChild(
             arrow
@@ -1498,9 +1821,11 @@
             avatar
         );
 
+
         card.appendChild(
             info
         );
+
 
         card.appendChild(
             right
@@ -1715,10 +2040,12 @@
 
                     activeInput.focus();
 
+
                     try {
 
                         const length =
                             activeInput.value.length;
+
 
                         activeInput.setSelectionRange(
                             length,
@@ -1843,10 +2170,6 @@
 
         if (!input) {
 
-            console.error(
-                "FriendChat: memberIdInput was not found."
-            );
-
             showInviteError(
                 "Member ID field was not found."
             );
@@ -1859,12 +2182,6 @@
             String(
                 input.value || ""
             ).trim();
-
-
-        console.log(
-            "FriendChat: Add Member input:",
-            rawValue
-        );
 
 
         if (!rawValue) {
@@ -1949,48 +2266,6 @@
 
         try {
 
-            console.log(
-                "========================================"
-            );
-
-            console.log(
-                "FRIENDCHAT ADD MEMBER"
-            );
-
-            console.log(
-                "API BASE:",
-                API_BASE
-            );
-
-            console.log(
-                "SERVER ID:",
-                currentServer.serverID
-            );
-
-            console.log(
-                "REQUESTER ID:",
-                currentUserID
-            );
-
-            console.log(
-                "TARGET MEMBER ID:",
-                id
-            );
-
-            console.log(
-                "========================================"
-            );
-
-
-            /*
-             * IMPORTANT FIX:
-             *
-             * Send requesterID explicitly.
-             *
-             * This makes the backend know exactly
-             * which user is performing the action.
-             */
-
             const requestBody = {
 
                 requesterID:
@@ -2019,6 +2294,21 @@
             };
 
 
+            console.log(
+                "FriendChat: adding member:",
+                {
+                    serverID:
+                        currentServer.serverID,
+
+                    requesterID:
+                        currentUserID,
+
+                    memberID:
+                        id
+                }
+            );
+
+
             const data =
                 await apiRequest(
                     "/api/servers/" +
@@ -2037,12 +2327,6 @@
                 );
 
 
-            console.log(
-                "FriendChat: add member response:",
-                data
-            );
-
-
             if (
                 data &&
                 data.server
@@ -2053,17 +2337,15 @@
                         data.server
                     );
 
-
-                localStorage.setItem(
-                    CURRENT_SERVER_KEY,
-                    currentServer.serverID
-                );
-
-
             } else {
 
                 await refreshServer();
             }
+
+
+            setCurrentServerID(
+                currentServer.serverID
+            );
 
 
             renderServer();
@@ -2081,7 +2363,7 @@
         } catch (error) {
 
             console.error(
-                "FriendChat: failed to add member",
+                "FriendChat: failed to add member:",
                 error
             );
 
@@ -2090,7 +2372,6 @@
                 error.message ||
                 "Could not add member."
             );
-
 
         } finally {
 
@@ -2172,6 +2453,11 @@
             normalizeServer(
                 data.server
             );
+
+
+        setCurrentServerID(
+            currentServer.serverID
+        );
 
 
         renderServer();
@@ -2321,7 +2607,7 @@
         } catch (error) {
 
             console.error(
-                "FriendChat: failed to remove member",
+                "FriendChat: failed to remove member:",
                 error
             );
 
@@ -2758,24 +3044,35 @@
             "========================================"
         );
 
+
         console.log(
             "FRIENDCHAT SERVER MEMBERS"
         );
+
 
         console.log(
             "API BASE:",
             API_BASE || "(same origin)"
         );
 
+
         console.log(
             "CURRENT USER:",
             getCurrentUserID()
         );
 
+
+        console.log(
+            "CURRENT USER NAME:",
+            getCurrentUserName()
+        );
+
+
         console.log(
             "CURRENT SERVER:",
             getCurrentServerID()
         );
+
 
         console.log(
             "========================================"
