@@ -1621,7 +1621,30 @@ body.fc-theme-open {
 
 </style>
 
-\n<style id="friendchat-server-nav-fix">\n/* =====================================================\n   FRIENDCHAT SERVERS NAVIGATION\n   Added without changing existing chat UI\n   ===================================================== */\n#fcServerNav{position:fixed;left:12px;top:50%;width:185px;max-width:185px;max-height:calc(100dvh - 40px);transform:translate(-110%,-50%);z-index:2147483001;pointer-events:none;opacity:0;visibility:hidden;overflow:hidden;border:1px solid var(--fc-border,rgba(255,255,255,.08));border-radius:18px;background:var(--fc-panel,#0d121b);box-shadow:0 20px 60px rgba(0,0,0,.45);transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .2s ease,visibility .2s ease;color:var(--fc-text,#f5f7ff)}\n#fcServerNav.fc-server-open{transform:translate(0,-50%);pointer-events:auto;opacity:1;visibility:visible}\n#fcServerNav .fc-server-nav-head{padding:14px 14px 9px;border-bottom:1px solid var(--fc-border,rgba(255,255,255,.08));font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--fc-muted,#8d97aa)}\n#fcServerNav .fc-server-create{width:calc(100% - 16px);margin:8px;min-height:42px;border:1px dashed color-mix(in srgb,var(--fc-accent,#6c7cff) 65%,transparent);border-radius:12px;background:color-mix(in srgb,var(--fc-accent,#6c7cff) 9%,transparent);color:var(--fc-text,#f5f7ff);display:flex;align-items:center;gap:9px;padding:0 11px;cursor:pointer;font:inherit;font-weight:700;text-align:left}\n#fcServerNav .fc-server-create:hover{background:color-mix(in srgb,var(--fc-accent,#6c7cff) 16%,transparent);transform:translateY(-1px)}\n#fcServerNav .fc-server-plus{width:25px;height:25px;border-radius:8px;display:grid;place-items:center;background:var(--fc-accent,#6c7cff);color:white;font-size:18px;line-height:1}\n#fcServerNav .fc-server-list{padding:2px 8px 10px;max-height:calc(100dvh - 170px);overflow:auto}\n#fcServerNav .fc-server-item{width:100%;min-height:42px;border:0;border-radius:11px;background:transparent;color:var(--fc-text,#f5f7ff);display:flex;align-items:center;gap:9px;padding:6px;cursor:pointer;text-align:left;font:inherit}\n#fcServerNav .fc-server-item:hover{background:rgba(255,255,255,.07)}\n#fcServerNav .fc-server-icon{width:31px;height:31px;min-width:31px;border-radius:9px;object-fit:cover;display:grid;place-items:center;background:var(--fc-panel-2,#111824);font-weight:800;font-size:12px;overflow:hidden}\n#fcServerNav .fc-server-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}\n#fcServerNav .fc-server-empty{padding:9px 7px 12px;color:var(--fc-muted,#8d97aa);font-size:11px;line-height:1.4}\n#fcServerNav .fc-server-create:active,#fcServerNav .fc-server-item:active{transform:scale(.98)}\n@media(max-width:600px){#fcServerNav{left:8px;width:180px;max-width:180px}.fc-server-list{max-height:calc(100dvh - 150px)!important}}\n@media(max-width:420px){#fcServerNav{width:175px;max-width:175px}}\nbody:has(#loginScreen:not(.hidden)) #fcServerNav,body:has(#signupScreen:not(.hidden)) #fcServerNav,body:has(#chatScreen:not(.hidden)) #fcServerNav{display:none!important}\n</style>\n
+
+<style id="friendchat-server-nav-fix">
+/* =====================================================
+   FRIENDCHAT SERVERS NAVIGATION
+   Added without changing existing chat UI
+   ===================================================== */
+#fcServerNav{position:fixed;left:12px;top:50%;width:185px;max-width:185px;max-height:calc(100dvh - 40px);transform:translate(-110%,-50%);z-index:2147483001;pointer-events:none;opacity:0;visibility:hidden;overflow:hidden;border:1px solid var(--fc-border,rgba(255,255,255,.08));border-radius:18px;background:var(--fc-panel,#0d121b);box-shadow:0 20px 60px rgba(0,0,0,.45);transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .2s ease,visibility .2s ease;color:var(--fc-text,#f5f7ff)}
+#fcServerNav.fc-server-open{transform:translate(0,-50%);pointer-events:auto;opacity:1;visibility:visible}
+#fcServerNav .fc-server-nav-head{padding:14px 14px 9px;border-bottom:1px solid var(--fc-border,rgba(255,255,255,.08));font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--fc-muted,#8d97aa)}
+#fcServerNav .fc-server-create{width:calc(100% - 16px);margin:8px;min-height:42px;border:1px dashed color-mix(in srgb,var(--fc-accent,#6c7cff) 65%,transparent);border-radius:12px;background:color-mix(in srgb,var(--fc-accent,#6c7cff) 9%,transparent);color:var(--fc-text,#f5f7ff);display:flex;align-items:center;gap:9px;padding:0 11px;cursor:pointer;font:inherit;font-weight:700;text-align:left}
+#fcServerNav .fc-server-create:hover{background:color-mix(in srgb,var(--fc-accent,#6c7cff) 16%,transparent);transform:translateY(-1px)}
+#fcServerNav .fc-server-plus{width:25px;height:25px;border-radius:8px;display:grid;place-items:center;background:var(--fc-accent,#6c7cff);color:white;font-size:18px;line-height:1}
+#fcServerNav .fc-server-list{padding:2px 8px 10px;max-height:calc(100dvh - 170px);overflow:auto}
+#fcServerNav .fc-server-item{width:100%;min-height:42px;border:0;border-radius:11px;background:transparent;color:var(--fc-text,#f5f7ff);display:flex;align-items:center;gap:9px;padding:6px;cursor:pointer;text-align:left;font:inherit}
+#fcServerNav .fc-server-item:hover{background:rgba(255,255,255,.07)}
+#fcServerNav .fc-server-icon{width:31px;height:31px;min-width:31px;border-radius:9px;object-fit:cover;display:grid;place-items:center;background:var(--fc-panel-2,#111824);font-weight:800;font-size:12px;overflow:hidden}
+#fcServerNav .fc-server-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+#fcServerNav .fc-server-empty{padding:9px 7px 12px;color:var(--fc-muted,#8d97aa);font-size:11px;line-height:1.4}
+#fcServerNav .fc-server-create:active,#fcServerNav .fc-server-item:active{transform:scale(.98)}
+@media(max-width:600px){#fcServerNav{left:8px;width:180px;max-width:180px}.fc-server-list{max-height:calc(100dvh - 150px)!important}}
+@media(max-width:420px){#fcServerNav{width:175px;max-width:175px}}
+body:has(#loginScreen:not(.hidden)) #fcServerNav,body:has(#signupScreen:not(.hidden)) #fcServerNav,body:has(#chatScreen:not(.hidden)) #fcServerNav{display:none!important}
+</style>
+
 </head>
 
 
@@ -3337,265 +3360,106 @@ function toggleStatusInfo() {
 </script>
 
 
+
 <script id="friendchat-server-nav-fix-js">
 (function(){
   "use strict";
-
-  const SERVERS_KEY = "friendchat_servers";
-  const CURRENT_KEY = "friendchat_current_server";
-
-  let nav = null;
-  let initialized = false;
-  let renderQueued = false;
+  const SERVERS_KEY="friendchat_servers";
+  const CURRENT_KEY="friendchat_current_server";
+  let nav=null;
+  let initialized=false;
 
   function getServers(){
     try{
-      const data = JSON.parse(
-        localStorage.getItem(SERVERS_KEY) || "[]"
-      );
-      return Array.isArray(data) ? data : [];
-    }catch(e){
-      return [];
-    }
+      const data=JSON.parse(localStorage.getItem(SERVERS_KEY)||"[]");
+      return Array.isArray(data)?data:[];
+    }catch(e){return [];}
   }
-
-  function escapeHTML(value){
-    return String(value == null ? "" : value)
-      .replace(/[&<>"']/g, function(c){
-        return {
-          "&":"&amp;",
-          "<":"&lt;",
-          ">":"&gt;",
-          '"':"&quot;",
-          "'":"&#39;"
-        }[c];
-      });
-  }
-
   function initials(name){
-    const n = String(name || "Server").trim();
-    const parts = n.split(/\s+/).slice(0,2);
-    const result = parts.map(function(x){
-      return x.charAt(0);
-    }).join("").toUpperCase();
-
-    return result || "S";
+    const n=(name||"Server").trim();
+    return n.split(/\\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"S";
   }
-
   function iconHTML(server){
-    if(server && server.icon){
-      return '<img src="' +
-        escapeHTML(server.icon) +
-        '" alt="">';
-    }
-
-    return escapeHTML(initials(server && server.name));
+    if(server.icon){return '<img src="'+String(server.icon).replace(/"/g,'&quot;')+'" alt="">';}
+    return initials(server.name);
   }
-
   function render(){
-    if(!nav) return;
-
-    const list = nav.querySelector(".fc-server-list");
-    if(!list) return;
-
-    const servers = getServers();
-
+    if(!nav)return;
+    const list=nav.querySelector(".fc-server-list");
+    const servers=getServers();
     if(!servers.length){
-      list.innerHTML =
-        '<div class="fc-server-empty">' +
-        'No servers yet.<br>' +
-        'Use + Create Server to make your first server.' +
-        '</div>';
+      list.innerHTML='<div class="fc-server-empty">No servers yet.<br>Use + Create Server to make your first server.</div>';
       return;
     }
-
-    list.innerHTML = servers.map(function(server){
-      const id = escapeHTML(
-        String(server.serverID || server.id || "")
-      );
-
-      const name = escapeHTML(
-        String(server.name || "Unnamed server")
-      );
-
-      return (
-        '<button type="button" ' +
-        'class="fc-server-item" ' +
-        'data-server-id="' + id + '">' +
-          '<span class="fc-server-icon">' +
-            iconHTML(server) +
-          '</span>' +
-          '<span class="fc-server-name">' +
-            name +
-          '</span>' +
-        '</button>'
-      );
+    list.innerHTML=servers.map(function(server){
+      const id=String(server.serverID||server.id||"").replace(/"/g,'&quot;');
+      const name=String(server.name||"Unnamed server").replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});
+      return '<button type="button" class="fc-server-item" data-server-id="'+id+'"><span class="fc-server-icon">'+iconHTML(server)+'</span><span class="fc-server-name">'+name+'</span></button>';
     }).join("");
-
     list.querySelectorAll(".fc-server-item").forEach(function(btn){
-      btn.addEventListener("click", function(){
-        localStorage.setItem(
-          CURRENT_KEY,
-          btn.dataset.serverId || ""
-        );
-
-        window.location.href = "server-home.html";
+      btn.addEventListener("click",function(){
+        localStorage.setItem(CURRENT_KEY,btn.dataset.serverId);
+        window.location.href="server-home.html";
       });
     });
   }
-
   function createNav(){
-    const existing = document.getElementById("fcServerNav");
-
-    if(existing){
-      nav = existing;
-      render();
-      return;
-    }
-
-    nav = document.createElement("aside");
-    nav.id = "fcServerNav";
-
-    nav.innerHTML =
-      '<div class="fc-server-nav-head">MY SERVERS</div>' +
-      '<button type="button" class="fc-server-create">' +
-        '<span class="fc-server-plus">+</span>' +
-        '<span>Create Server</span>' +
-      '</button>' +
-      '<div class="fc-server-list"></div>';
-
+    if(document.getElementById("fcServerNav")) {nav=document.getElementById("fcServerNav");render();return;}
+    nav=document.createElement("aside");
+    nav.id="fcServerNav";
+    nav.innerHTML='<div class="fc-server-nav-head">MY SERVERS</div><button type="button" class="fc-server-create"><span class="fc-server-plus">+</span><span>Create Server</span></button><div class="fc-server-list"></div>';
     document.body.appendChild(nav);
-
-    const createButton =
-      nav.querySelector(".fc-server-create");
-
-    if(createButton){
-      createButton.addEventListener("click", function(){
-        window.location.href = "create-server.html";
-      });
-    }
-
+    nav.querySelector(".fc-server-create").addEventListener("click",function(){window.location.href="create-server.html";});
     render();
   }
-
-  function sync(){
-    if(!nav) return;
-
-    const arrow = document.getElementById("fcNavToggle");
-    const sidebar = document.getElementById("fcCustomSidebar");
-
-    if(sidebar){
-      nav.classList.toggle(
-        "fc-server-open",
-        sidebar.classList.contains("open")
-      );
-    }else if(arrow){
-      nav.classList.toggle(
-        "fc-server-open",
-        arrow.classList.contains("is-open")
-      );
-    }else{
-      nav.classList.remove("fc-server-open");
-    }
-
-    render();
-  }
-
-  function queueSync(){
-    if(renderQueued) return;
-
-    renderQueued = true;
-
-    requestAnimationFrame(function(){
-      renderQueued = false;
-      sync();
-    });
-  }
-
   function hookArrow(){
-    const arrow = document.getElementById("fcNavToggle");
-
-    if(
-      !arrow ||
-      arrow.dataset.serverHooked === "1"
-    ){
-      return;
-    }
-
-    arrow.dataset.serverHooked = "1";
-
-    arrow.addEventListener("click", function(){
-      setTimeout(sync, 30);
-    });
+    const arrow=document.getElementById("fcNavToggle");
+    if(!arrow || arrow.dataset.serverHooked==="1")return;
+    arrow.dataset.serverHooked="1";
+    arrow.addEventListener("click",function(){
+      setTimeout(function(){
+        const sidebar=document.getElementById("fcCustomSidebar");
+        const open=sidebar ? sidebar.classList.contains("open") : arrow.classList.contains("is-open");
+        if(nav)nav.classList.toggle("fc-server-open",open);
+      },20);
+    },true);
   }
-
+  function sync(){
+    if(!nav)return;
+    const arrow=document.getElementById("fcNavToggle");
+    const sidebar=document.getElementById("fcCustomSidebar");
+    if(sidebar)nav.classList.toggle("fc-server-open",sidebar.classList.contains("open"));
+    else if(arrow)nav.classList.toggle("fc-server-open",arrow.classList.contains("is-open"));
+    else nav.classList.remove("fc-server-open");
+    hookArrow();
+    render();
+  }
   function init(){
-    if(initialized) return;
-
-    initialized = true;
-
+    if(initialized)return; initialized=true;
     createNav();
     hookArrow();
     sync();
+    new MutationObserver(sync).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});
+   window.addEventListener("storage",render);
 
-    /*
-     * IMPORTANT:
-     * Watch DOM additions only.
-     *
-     * Do NOT watch class attributes.
-     * Watching classes here creates an infinite loop because
-     * sync() itself changes fc-server-open.
-     */
-    new MutationObserver(function(){
-      hookArrow();
-      render();
-    }).observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+window.addEventListener(
+  "friendchat-server-list-updated",
+  render
+);
 
-    window.addEventListener("storage", function(){
-      render();
-    });
+window.addEventListener("focus",render);
 
-    window.addEventListener(
-      "friendchat-server-list-updated",
-      function(){
-        render();
-      }
-    );
-
-    window.addEventListener("focus", function(){
-      render();
-    });
-
-    document.addEventListener(
-      "visibilitychange",
-      function(){
-        if(!document.hidden){
-          render();
-        }
-      }
-    );
-
-    setTimeout(sync, 300);
-    setTimeout(sync, 800);
-    setTimeout(sync, 1500);
-    setTimeout(sync, 3000);
+document.addEventListener(
+  "visibilitychange",
+  function(){
+    if(!document.hidden) render();
   }
-
-  if(document.readyState === "loading"){
-    document.addEventListener(
-      "DOMContentLoaded",
-      init
-    );
-  }else{
-    init();
+);;
   }
-
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
 })();
 </script>
-\n
+
 </body>
 
 </html>
