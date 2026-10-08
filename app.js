@@ -650,7 +650,38 @@ function connectSocket() {
           "SERVER:",
           msg
         );
+      /* -----------------------------------------------
+         SERVER LIST
+         ----------------------------------------------- */
 
+      if (
+        msg.type ===
+        "server_list"
+      ) {
+
+        saveServerListFromServer(
+          msg.servers || []
+        );
+
+        return;
+      }
+
+
+      /* -----------------------------------------------
+         SERVER ADDED
+         ----------------------------------------------- */
+
+      if (
+        msg.type ===
+        "server_added"
+      ) {
+
+        addServerFromServer(
+          msg.server
+        );
+
+        return;
+      }
 
         /* -----------------------------------------------
            REGISTERED
