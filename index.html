@@ -3439,7 +3439,10 @@ function toggleStatusInfo() {
     createNav();
     hookArrow();
     sync();
-    new MutationObserver(sync).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});
+    new MutationObserver(function(){
+      hookArrow();
+      render();
+    }).observe(document.body,{childList:true,subtree:true});
    window.addEventListener("storage",render);
 
 window.addEventListener(
