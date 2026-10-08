@@ -3373,93 +3373,108 @@ function toggleStatusInfo() {
     try{
       const data=JSON.parse(localStorage.getItem(SERVERS_KEY)||"[]");
       return Array.isArray(data)?data:[];
-    }catch(e){return [];}
+    }catch(e){ return []; }
   }
+
+  function escapeHTML(value){
+    return String(value==null?"":value).replace(/[&<>"']/g,function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",""":"&quot;","'":"&#39;"}[c];
+    });
+  }
+
   function initials(name){
-    const n=(name||"Server").trim();
-    return n.split(/\\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"S";
+    const n=String(name||"Server").trim();
+    const parts=n.split(/\s+/).slice(0,2);
+    return parts.map(function(x){return x.charAt(0);}).join("").toUpperCase()||"S";
   }
+
   function iconHTML(server){
-    if(server.icon){return '<img src="'+String(server.icon).replace(/"/g,'&quot;')+'" alt="">';}
-    return initials(server.name);
+    if(server && server.icon){
+      return '<img src="'+escapeHTML(server.icon)+'" alt="">';
+    }
+    return escapeHTML(initials(server && server.name));
   }
+
   function render(){
-    if(!nav)return;
+    if(!nav) return;
     const list=nav.querySelector(".fc-server-list");
+    if(!list) return;
     const servers=getServers();
+
     if(!servers.length){
       list.innerHTML='<div class="fc-server-empty">No servers yet.<br>Use + Create Server to make your first server.</div>';
       return;
     }
+
     list.innerHTML=servers.map(function(server){
-      const id=String(server.serverID||server.id||"").replace(/"/g,'&quot;');
-      const name=String(server.name||"Unnamed server").replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});
+      const id=escapeHTML(String(server.serverID||server.id||""));
+      const name=escapeHTML(String(server.name||"Unnamed server"));
       return '<button type="button" class="fc-server-item" data-server-id="'+id+'"><span class="fc-server-icon">'+iconHTML(server)+'</span><span class="fc-server-name">'+name+'</span></button>';
     }).join("");
+
     list.querySelectorAll(".fc-server-item").forEach(function(btn){
       btn.addEventListener("click",function(){
-        localStorage.setItem(CURRENT_KEY,btn.dataset.serverId);
+        localStorage.setItem(CURRENT_KEY,btn.dataset.serverId||"");
         window.location.href="server-home.html";
       });
     });
   }
+
   function createNav(){
-    if(document.getElementById("fcServerNav")) {nav=document.getElementById("fcServerNav");render();return;}
+    const existing=document.getElementById("fcServerNav");
+    if(existing){ nav=existing; render(); return; }
+
     nav=document.createElement("aside");
     nav.id="fcServerNav";
     nav.innerHTML='<div class="fc-server-nav-head">MY SERVERS</div><button type="button" class="fc-server-create"><span class="fc-server-plus">+</span><span>Create Server</span></button><div class="fc-server-list"></div>';
     document.body.appendChild(nav);
-    nav.querySelector(".fc-server-create").addEventListener("click",function(){window.location.href="create-server.html";});
+
+    const createButton=nav.querySelector(".fc-server-create");
+    if(createButton){
+      createButton.addEventListener("click",function(){
+        window.location.href="create-server.html";
+      });
+    }
     render();
   }
+
   function hookArrow(){
     const arrow=document.getElementById("fcNavToggle");
-    if(!arrow || arrow.dataset.serverHooked==="1")return;
+    if(!arrow || arrow.dataset.serverHooked==="1") return;
     arrow.dataset.serverHooked="1";
     arrow.addEventListener("click",function(){
       setTimeout(function(){
         const sidebar=document.getElementById("fcCustomSidebar");
         const open=sidebar ? sidebar.classList.contains("open") : arrow.classList.contains("is-open");
-        if(nav)nav.classList.toggle("fc-server-open",open);
-      },20);
-    },true);
+        if(nav) nav.classList.toggle("fc-server-open",open);
+      },50);
+    });
   }
-  function sync(){
-    if(!nav)return;
-    const arrow=document.getElementById("fcNavToggle");
-    const sidebar=document.getElementById("fcCustomSidebar");
-    if(sidebar)nav.classList.toggle("fc-server-open",sidebar.classList.contains("open"));
-    else if(arrow)nav.classList.toggle("fc-server-open",arrow.classList.contains("is-open"));
-    else nav.classList.remove("fc-server-open");
-    hookArrow();
-    render();
-  }
+
   function init(){
-    if(initialized)return; initialized=true;
+    if(initialized) return;
+    initialized=true;
     createNav();
     hookArrow();
-    sync();
-    new MutationObserver(function(){
-      hookArrow();
-      render();
-    }).observe(document.body,{childList:true,subtree:true});
-   window.addEventListener("storage",render);
 
-window.addEventListener(
-  "friendchat-server-list-updated",
-  render
-);
+    window.addEventListener("storage",render);
+    window.addEventListener("friendchat-server-list-updated",render);
+    window.addEventListener("focus",render);
+    document.addEventListener("visibilitychange",function(){
+      if(!document.hidden) render();
+    });
 
-window.addEventListener("focus",render);
-
-document.addEventListener(
-  "visibilitychange",
-  function(){
-    if(!document.hidden) render();
+    setTimeout(hookArrow,300);
+    setTimeout(hookArrow,800);
+    setTimeout(hookArrow,1500);
+    setTimeout(render,1000);
   }
-);;
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",init);
+  }else{
+    init();
   }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
 })();
 </script>
 
