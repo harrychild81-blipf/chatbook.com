@@ -3359,7 +3359,129 @@ function searchFriends() {
 /* =========================================================
    STARTUP
    ========================================================= */
+/* =========================================================
+   SERVER LIST SYNC
+   ========================================================= */
 
+function saveServerListFromServer(servers) {
+  try {
+    if (!Array.isArray(servers)) {
+      return;
+    }
+
+    localStorage.setItem(
+      "friendchat_servers",
+      JSON.stringify(servers)
+    );
+
+    console.log(
+      "SERVER LIST UPDATED:",
+      servers
+    );
+
+    /*
+      Tell the server navigation in index.html
+      to refresh immediately.
+    */
+    window.dispatchEvent(
+      new Event("friendchat-server-list-updated")
+    );
+
+  } catch (error) {
+    console.error(
+      "SERVER LIST SAVE ERROR:",
+      error
+    );
+  }
+}
+
+
+function addServerFromServer(server) {
+  try {
+    if (!server) {
+      return;
+    }
+
+    const current =
+      JSON.parse(
+        localStorage.getItem(
+          "friendchat_servers"
+        ) || "[]"
+      );
+
+    if (!Array.isArray(current)) {
+      return;
+    }
+
+    const serverId = String(
+      server.serverID ||
+      server.id ||
+      ""
+    );
+
+    if (!serverId) {
+      return;
+    }
+
+    /*
+      Prevent duplicate servers.
+    */
+    const exists =
+      current.some(
+        item =>
+          String(
+            item.serverID ||
+            item.id ||
+            ""
+          ) === serverId
+      );
+
+    if (!exists) {
+      current.push(server);
+    } else {
+      /*
+        Update the existing server
+        with the newest information.
+      */
+      const index =
+        current.findIndex(
+          item =>
+            String(
+              item.serverID ||
+              item.id ||
+              ""
+            ) === serverId
+        );
+
+      if (index !== -1) {
+        current[index] = server;
+      }
+    }
+
+    localStorage.setItem(
+      "friendchat_servers",
+      JSON.stringify(current)
+    );
+
+    console.log(
+      "SERVER ADDED:",
+      server
+    );
+
+    /*
+      Refresh server navigation.
+    */
+    window.dispatchEvent(
+      new Event("friendchat-server-list-updated")
+    );
+
+  } catch (error) {
+    console.error(
+      "SERVER ADD ERROR:",
+      error
+    );
+  }
+}
 (function startFriendChat() {
 
   currentUser =
