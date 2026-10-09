@@ -3337,21 +3337,551 @@ function toggleStatusInfo() {
 </script>
 
 
-\n<script id="friendchat-server-nav-fix-js">\n(function(){\n  "use strict";\n  const SERVERS_KEY="friendchat_servers";\n  const CURRENT_KEY="friendchat_current_server";\n  let nav=null;\n  let initialized=false;\n\n  function getServers(){\n    try{\n      const data=JSON.parse(localStorage.getItem(SERVERS_KEY)||"[]");\n      return Array.isArray(data)?data:[];\n    }catch(e){return [];}\n  }\n  function initials(name){\n    const n=(name||"Server").trim();\n    return n.split(/\\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"S";\n  }\n  function iconHTML(server){\n    if(server.icon){return '<img src="'+String(server.icon).replace(/"/g,'&quot;')+'" alt="">';}\n    return initials(server.name);\n  }\n  function render(){\n    if(!nav)return;\n    const list=nav.querySelector(".fc-server-list");\n    const servers=getServers();\n    if(!servers.length){\n      list.innerHTML='<div class="fc-server-empty">No servers yet.<br>Use + Create Server to make your first server.</div>';\n      return;\n    }\n    list.innerHTML=servers.map(function(server){\n      const id=String(server.serverID||server.id||"").replace(/"/g,'&quot;');\n      const name=String(server.name||"Unnamed server").replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});\n      return '<button type="button" class="fc-server-item" data-server-id="'+id+'"><span class="fc-server-icon">'+iconHTML(server)+'</span><span class="fc-server-name">'+name+'</span></button>';\n    }).join("");\n    list.querySelectorAll(".fc-server-item").forEach(function(btn){\n      btn.addEventListener("click",function(){\n        localStorage.setItem(CURRENT_KEY,btn.dataset.serverId);\n        window.location.href="server-home.html";\n      });\n    });\n  }\n  function createNav(){\n    if(document.getElementById("fcServerNav")) {nav=document.getElementById("fcServerNav");render();return;}\n    nav=document.createElement("aside");\n    nav.id="fcServerNav";\n    nav.innerHTML='<div class="fc-server-nav-head">MY SERVERS</div><button type="button" class="fc-server-create"><span class="fc-server-plus">+</span><span>Create Server</span></button><div class="fc-server-list"></div>';\n    document.body.appendChild(nav);\n    nav.querySelector(".fc-server-create").addEventListener("click",function(){window.location.href="create-server.html";});\n    render();\n  }\n  function hookArrow(){\n    const arrow=document.getElementById("fcNavToggle");\n    if(!arrow || arrow.dataset.serverHooked==="1")return;\n    arrow.dataset.serverHooked="1";\n    arrow.addEventListener("click",function(){\n      setTimeout(function(){\n        const sidebar=document.getElementById("fcCustomSidebar");\n        const open=sidebar ? sidebar.classList.contains("open") : arrow.classList.contains("is-open");\n        if(nav)nav.classList.toggle("fc-server-open",open);\n      },20);\n    },true);\n  }\n  function sync(){\n    if(!nav)return;\n    const arrow=document.getElementById("fcNavToggle");\n    const sidebar=document.getElementById("fcCustomSidebar");\n    if(sidebar)nav.classList.toggle("fc-server-open",sidebar.classList.contains("open"));\n    else if(arrow)nav.classList.toggle("fc-server-open",arrow.classList.contains("is-open"));\n    else nav.classList.remove("fc-server-open");\n    hookArrow();\n    render();\n  }\n  function init(){\n    if(initialized)return; initialized=true;\n    createNav();\n    hookArrow();\n    sync();\n    new MutationObserver(sync).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});\n   window.addEventListener("storage",render);
+<script id="friendchat-server-nav-fix-js">
+(function () {
+  "use strict";
 
-window.addEventListener(
-  "friendchat-server-list-updated",
-  render
-);
+  const SERVERS_KEY = "friendchat_servers";
+  const CURRENT_KEY = "friendchat_current_server";
 
-window.addEventListener("focus",render);
+  let nav = null;
+  let initialized = false;
 
-document.addEventListener(
-  "visibilitychange",
-  function(){
-    if(!document.hidden) render();
+  /* =========================================================
+     SERVER DATA
+     ========================================================= */
+
+  function getServers() {
+    try {
+      const data = JSON.parse(
+        localStorage.getItem(SERVERS_KEY) || "[]"
+      );
+
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error(
+        "FriendChat: could not read server list",
+        error
+      );
+
+      return [];
+    }
   }
-);;\n  }\n  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();\n})();\n</script>\n
+
+
+  function saveServers(servers) {
+    try {
+      if (!Array.isArray(servers)) {
+        servers = [];
+      }
+
+      localStorage.setItem(
+        SERVERS_KEY,
+        JSON.stringify(servers)
+      );
+
+      render();
+    } catch (error) {
+      console.error(
+        "FriendChat: could not save server list",
+        error
+      );
+    }
+  }
+
+
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+
+  function escapeHTML(value) {
+    return String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+
+  function getServerID(server) {
+    return String(
+      server?.serverID ||
+      server?.id ||
+      ""
+    ).trim();
+  }
+
+
+  function getServerName(server) {
+    return String(
+      server?.name ||
+      "Unnamed Server"
+    ).trim();
+  }
+
+
+  function initials(name) {
+    const clean =
+      String(name || "Server").trim();
+
+    const parts =
+      clean
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2);
+
+    if (!parts.length) {
+      return "S";
+    }
+
+    return parts
+      .map(function (part) {
+        return part.charAt(0);
+      })
+      .join("")
+      .toUpperCase();
+  }
+
+
+  function iconHTML(server) {
+    const icon =
+      server?.icon;
+
+    if (icon) {
+      return (
+        '<img src="' +
+        escapeHTML(icon) +
+        '" alt="">'
+      );
+    }
+
+    return escapeHTML(
+      initials(
+        getServerName(server)
+      )
+    );
+  }
+
+
+  /* =========================================================
+     RENDER SERVER LIST
+     ========================================================= */
+
+  function render() {
+    if (!nav) {
+      return;
+    }
+
+    const list =
+      nav.querySelector(
+        ".fc-server-list"
+      );
+
+    if (!list) {
+      return;
+    }
+
+    const servers =
+      getServers();
+
+    if (!servers.length) {
+
+      list.innerHTML = `
+        <div class="fc-server-empty">
+          No servers yet.<br>
+          Use + Create Server to make your first server.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    list.innerHTML =
+      servers
+        .map(function (server) {
+
+          const serverID =
+            getServerID(server);
+
+          if (!serverID) {
+            return "";
+          }
+
+          const name =
+            getServerName(server);
+
+          return `
+            <button
+              type="button"
+              class="fc-server-item"
+              data-server-id="${escapeHTML(serverID)}"
+            >
+
+              <span class="fc-server-icon">
+                ${iconHTML(server)}
+              </span>
+
+              <span class="fc-server-name">
+                ${escapeHTML(name)}
+              </span>
+
+            </button>
+          `;
+        })
+        .join("");
+
+
+    list
+      .querySelectorAll(
+        ".fc-server-item"
+      )
+      .forEach(function (button) {
+
+        button.addEventListener(
+          "click",
+          function () {
+
+            const serverID =
+              button.dataset.serverId;
+
+            if (!serverID) {
+              return;
+            }
+
+            localStorage.setItem(
+              CURRENT_KEY,
+              serverID
+            );
+
+            window.location.href =
+              "server-home.html";
+          }
+        );
+
+      });
+  }
+
+
+  /* =========================================================
+     CREATE NAV
+     ========================================================= */
+
+  function createNav() {
+
+    const existing =
+      document.getElementById(
+        "fcServerNav"
+      );
+
+    if (existing) {
+      nav = existing;
+      render();
+      return;
+    }
+
+
+    nav =
+      document.createElement(
+        "aside"
+      );
+
+    nav.id =
+      "fcServerNav";
+
+
+    nav.innerHTML = `
+      <div class="fc-server-nav-head">
+        MY SERVERS
+      </div>
+
+      <button
+        type="button"
+        class="fc-server-create"
+      >
+        <span class="fc-server-plus">
+          +
+        </span>
+
+        <span>
+          Create Server
+        </span>
+      </button>
+
+      <div class="fc-server-list"></div>
+    `;
+
+
+    document.body.appendChild(
+      nav
+    );
+
+
+    const createButton =
+      nav.querySelector(
+        ".fc-server-create"
+      );
+
+
+    if (createButton) {
+
+      createButton.addEventListener(
+        "click",
+        function () {
+
+          window.location.href =
+            "create-server.html";
+
+        }
+      );
+
+    }
+
+
+    render();
+  }
+
+
+  /* =========================================================
+     ARROW / SIDEBAR
+     ========================================================= */
+
+  function hookArrow() {
+
+    const arrow =
+      document.getElementById(
+        "fcNavToggle"
+      );
+
+    if (!arrow) {
+      return;
+    }
+
+    if (
+      arrow.dataset.serverHooked ===
+      "1"
+    ) {
+      return;
+    }
+
+
+    arrow.dataset.serverHooked =
+      "1";
+
+
+    arrow.addEventListener(
+      "click",
+      function () {
+
+        setTimeout(
+          function () {
+
+            const sidebar =
+              document.getElementById(
+                "fcCustomSidebar"
+              );
+
+
+            const open =
+              sidebar
+                ? sidebar.classList.contains(
+                    "open"
+                  )
+                : arrow.classList.contains(
+                    "is-open"
+                  );
+
+
+            if (nav) {
+
+              nav.classList.toggle(
+                "fc-server-open",
+                open
+              );
+
+            }
+
+          },
+          30
+        );
+
+      },
+      true
+    );
+  }
+
+
+  function sync() {
+
+    if (!nav) {
+      return;
+    }
+
+
+    const arrow =
+      document.getElementById(
+        "fcNavToggle"
+      );
+
+    const sidebar =
+      document.getElementById(
+        "fcCustomSidebar"
+      );
+
+
+    if (sidebar) {
+
+      nav.classList.toggle(
+        "fc-server-open",
+        sidebar.classList.contains(
+          "open"
+        )
+      );
+
+    } else if (arrow) {
+
+      nav.classList.toggle(
+        "fc-server-open",
+        arrow.classList.contains(
+          "is-open"
+        )
+      );
+
+    } else {
+
+      nav.classList.remove(
+        "fc-server-open"
+      );
+
+    }
+
+
+    hookArrow();
+    render();
+  }
+
+
+  /* =========================================================
+     SERVER SYNC FROM APP.JS
+     ========================================================= */
+
+  window.addEventListener(
+    "friendchat-server-list-updated",
+    function () {
+
+      console.log(
+        "FriendChat: server list update received."
+      );
+
+      render();
+
+    }
+  );
+
+
+  window.addEventListener(
+    "storage",
+    function (event) {
+
+      if (
+        event.key ===
+          SERVERS_KEY ||
+        event.key ===
+          CURRENT_KEY
+      ) {
+        render();
+      }
+
+    }
+  );
+
+
+  window.addEventListener(
+    "focus",
+    function () {
+      render();
+    }
+  );
+
+
+  document.addEventListener(
+    "visibilitychange",
+    function () {
+
+      if (!document.hidden) {
+        render();
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     INITIALIZE
+     ========================================================= */
+
+  function init() {
+
+    if (initialized) {
+      return;
+    }
+
+    initialized = true;
+
+
+    createNav();
+
+    hookArrow();
+
+    sync();
+
+
+    /*
+      Extra refreshes after login/load.
+    */
+
+    setTimeout(
+      render,
+      300
+    );
+
+    setTimeout(
+      render,
+      800
+    );
+
+    setTimeout(
+      render,
+      1500
+    );
+
+    setTimeout(
+      render,
+      3000
+    );
+  }
+
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      init
+    );
+
+  } else {
+
+    init();
+
+  }
+
+})();
+</script>
+
 </body>
 
 </html>
