@@ -1,2407 +1,852 @@
-/* =========================================================
-   FRIENDCHAT
-   SERVER HOME
-   FIXED BACKEND CONNECTED VERSION
-   ========================================================= */
+<!DOCTYPE html>
+<html lang="en">
 
-const API_BASE = "";
+<head>
 
+    <meta charset="UTF-8">
 
-/* =========================================================
-   ELEMENTS
-   ========================================================= */
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-const topServerName =
-    document.getElementById("topServerName");
+    <title>FriendChat - Server</title>
 
-const topServerIcon =
-    document.getElementById("topServerIcon");
+    <link
+        rel="stylesheet"
+        href="server-home.css"
+    >
 
-const topServerIconText =
-    document.getElementById("topServerIconText");
+    <link rel="stylesheet" href="server-customization.css">
+</head>
 
-const serverName =
-    document.getElementById("serverName");
 
-const serverDescription =
-    document.getElementById("serverDescription");
+<body>
 
-const serverIcon =
-    document.getElementById("serverIcon");
+    <div class="server-app">
 
-const serverIconText =
-    document.getElementById("serverIconText");
 
-const serverID =
-    document.getElementById("serverID");
+        <!-- =================================================
+             TOP BAR
+             ================================================= -->
 
-const previewIcon =
-    document.getElementById("previewIcon");
+        <header class="top-bar">
 
-const previewIconText =
-    document.getElementById("previewIconText");
+            <div class="top-left">
 
-const previewName =
-    document.getElementById("previewName");
+                <button
+                    class="back-button"
+                    id="backButton"
+                    title="Back"
+                >
+                    ←
+                </button>
 
-const previewChannelList =
-    document.getElementById("previewChannelList");
 
-const toast =
-    document.getElementById("toast");
+                <div class="mini-server-icon">
 
-const toastMessage =
-    document.getElementById("toastMessage");
+                    <img
+                        id="topServerIcon"
+                        src=""
+                        alt=""
+                    >
 
+                    <span id="topServerIconText">
+                        FC
+                    </span>
 
-/* =========================================================
-   CHANNEL ELEMENTS
-   ========================================================= */
-
-const createChannelButton =
-    document.getElementById("createChannelButton");
-
-const channelModal =
-    document.getElementById("channelModal");
-
-const channelModalBackdrop =
-    document.getElementById("channelModalBackdrop");
-
-const closeChannelModal =
-    document.getElementById("closeChannelModal");
-
-const cancelChannelButton =
-    document.getElementById("cancelChannelButton");
-
-const saveChannelButton =
-    document.getElementById("saveChannelButton");
-
-const channelNameInput =
-    document.getElementById("channelNameInput");
-
-const channelFormError =
-    document.getElementById("channelFormError");
-
-const textChannelOption =
-    document.getElementById("textChannelOption");
-
-const voiceChannelOption =
-    document.getElementById("voiceChannelOption");
-
-const textChannelList =
-    document.getElementById("textChannelList");
-
-const voiceChannelList =
-    document.getElementById("voiceChannelList");
-
-
-/* =========================================================
-   STATE
-   ========================================================= */
-
-let currentServer = null;
-
-let selectedChannelID = null;
-
-let toastTimer = null;
-
-
-/* =========================================================
-   CURRENT USER
-   ========================================================= */
-
-function getCurrentUserID() {
-
-    const possibleKeys = [
-        "friendchat_user_id",
-        "userID",
-        "userId",
-        "currentUserID",
-        "currentUserId",
-        "fc_user_id"
-    ];
-
-
-    try {
-
-        for (const key of possibleKeys) {
-
-            const value =
-                localStorage.getItem(key);
-
-            if (
-                value &&
-                String(value).trim()
-            ) {
-
-                return String(value)
-                    .trim()
-                    .toUpperCase();
-            }
-        }
-
-
-        const objectKeys = [
-            "friendchat_user",
-            "friendchat_current_user",
-            "currentUser",
-            "user",
-            "friendchat_account"
-        ];
-
-
-        for (const key of objectKeys) {
-
-            const raw =
-                localStorage.getItem(key);
-
-            if (!raw) {
-                continue;
-            }
-
-
-            try {
-
-                const obj =
-                    JSON.parse(raw);
-
-
-                if (!obj) {
-                    continue;
-                }
-
-
-                const id =
-                    obj.userID ||
-                    obj.userId ||
-                    obj.id ||
-                    obj.ID;
-
-
-                if (
-                    id &&
-                    String(id).trim()
-                ) {
-
-                    return String(id)
-                        .trim()
-                        .toUpperCase();
-                }
-
-            } catch (_) {}
-        }
-
-    } catch (error) {
-
-        console.error(
-            "FriendChat: Could not read current user:",
-            error
-        );
-    }
-
-
-    return "";
-}
-
-
-/* =========================================================
-   SERVER ID
-   ========================================================= */
-
-function getCurrentServerID() {
-
-    let urlID = "";
-
-
-    try {
-
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-
-        urlID =
-            params.get("server") ||
-            params.get("serverID") ||
-            "";
-
-    } catch (error) {
-
-        console.warn(
-            "FriendChat: URL server ID read failed:",
-            error
-        );
-    }
-
-
-    if (
-        urlID &&
-        String(urlID).trim()
-    ) {
-
-        return String(urlID).trim();
-    }
-
-
-    try {
-
-        const saved =
-            localStorage.getItem(
-                "friendchat_current_server"
-            );
-
-
-        if (
-            saved &&
-            String(saved).trim()
-        ) {
-
-            return String(saved).trim();
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "FriendChat: saved server ID read failed:",
-            error
-        );
-    }
-
-
-    return "";
-}
-
-
-/* =========================================================
-   SAVE SERVER ID
-   ========================================================= */
-
-function saveCurrentServerID(id) {
-
-    if (!id) {
-        return;
-    }
-
-
-    try {
-
-        localStorage.setItem(
-            "friendchat_current_server",
-            String(id)
-        );
-
-    } catch (error) {
-
-        console.error(
-            "FriendChat: Could not save server ID:",
-            error
-        );
-    }
-}
-
-
-/* =========================================================
-   TOAST
-   ========================================================= */
-
-function showToast(message) {
-
-    if (!toast || !toastMessage) {
-        return;
-    }
-
-
-    toastMessage.textContent =
-        message;
-
-
-    toast.classList.add("show");
-
-
-    clearTimeout(toastTimer);
-
-
-    toastTimer =
-        setTimeout(
-            function () {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2200
-        );
-}
-
-
-/* =========================================================
-   API REQUEST
-   ========================================================= */
-
-async function apiRequest(
-    url,
-    options = {}
-) {
-
-    const headers = {
-        "Content-Type":
-            "application/json"
-    };
-
-
-    if (options.headers) {
-
-        Object.assign(
-            headers,
-            options.headers
-        );
-    }
-
-
-    const userID =
-        getCurrentUserID();
-
-
-    if (userID) {
-
-        headers[
-            "x-friendchat-user-id"
-        ] = userID;
-    }
-
-
-    console.log(
-        "FriendChat API:",
-        options.method || "GET",
-        API_BASE + url,
-        "User:",
-        userID
-    );
-
-
-    let response;
-
-
-    try {
-
-        response =
-            await fetch(
-                API_BASE + url,
-                Object.assign(
-                    {},
-                    options,
-                    {
-                        headers
-                    }
-                )
-            );
-
-    } catch (error) {
-
-        console.error(
-            "FriendChat network error:",
-            error
-        );
-
-
-        throw new Error(
-            "Cannot connect to FriendChat server."
-        );
-    }
-
-
-    let data = null;
-
-
-    try {
-
-        data =
-            await response.json();
-
-    } catch (_) {
-
-        data = null;
-    }
-
-
-    console.log(
-        "FriendChat API response:",
-        response.status,
-        data
-    );
-
-
-    if (!response.ok) {
-
-        let message =
-            "Server request failed.";
-
-
-        if (
-            data &&
-            data.error
-        ) {
-
-            message =
-                data.error;
-        }
-
-
-        throw new Error(
-            message
-        );
-    }
-
-
-    return data;
-}
-
-
-/* =========================================================
-   LOAD SERVER
-   ========================================================= */
-
-async function loadServerFromBackend() {
-
-    const id =
-        getCurrentServerID();
-
-
-    const userID =
-        getCurrentUserID();
-
-
-    console.log(
-        "FriendChat loading server:",
-        id,
-        "User:",
-        userID
-    );
-
-
-    if (!id) {
-
-        showToast(
-            "Server ID is missing."
-        );
-
-
-        setTimeout(
-            function () {
-
-                window.location.href =
-                    "index.html";
-
-            },
-            1200
-        );
-
-
-        return null;
-    }
-
-
-    /*
-       IMPORTANT:
-       Send the user ID in the URL AND header.
-       This makes the request compatible with
-       both versions of the FriendChat backend.
-    */
-
-    let requestURL =
-        "/api/servers/" +
-        encodeURIComponent(id);
-
-
-    if (userID) {
-
-        requestURL +=
-            "?user=" +
-            encodeURIComponent(userID);
-    }
-
-
-    try {
-
-        const data =
-            await apiRequest(
-                requestURL,
-                {
-                    method: "GET"
-                }
-            );
-
-
-        if (
-            !data ||
-            !data.server
-        ) {
-
-            throw new Error(
-                "Server was not returned by the backend."
-            );
-        }
-
-
-        currentServer =
-            data.server;
-
-
-        if (
-            !currentServer.serverID
-        ) {
-
-            currentServer.serverID =
-                id;
-        }
-
-
-        saveCurrentServerID(
-            currentServer.serverID
-        );
-
-
-        normalizeChannels(
-            currentServer
-        );
-
-
-        console.log(
-            "FriendChat server loaded successfully:",
-            currentServer
-        );
-
-
-        return currentServer;
-
-    } catch (error) {
-
-        console.error(
-            "FriendChat server loading failed:",
-            error
-        );
-
-
-        showToast(
-            error.message ||
-            "Server not found."
-        );
-
-
-        /*
-           DO NOT immediately close the page.
-           Keep the page open so we can see the error.
-        */
-
-        return null;
-    }
-}
-
-
-/* =========================================================
-   NORMALIZE CHANNELS
-   ========================================================= */
-
-function normalizeChannels(server) {
-
-    if (
-        !server ||
-        typeof server !== "object"
-    ) {
-
-        return [];
-    }
-
-
-    if (
-        !Array.isArray(
-            server.channels
-        )
-    ) {
-
-        server.channels = [];
-    }
-
-
-    return server.channels;
-}
-
-
-/* =========================================================
-   GET CHANNELS
-   ========================================================= */
-
-function getChannels() {
-
-    if (!currentServer) {
-        return [];
-    }
-
-
-    return normalizeChannels(
-        currentServer
-    );
-}
-
-
-/* =========================================================
-   SERVER INITIALS
-   ========================================================= */
-
-function getServerInitials(name) {
-
-    if (!name) {
-        return "FC";
-    }
-
-
-    const words =
-        String(name)
-            .trim()
-            .split(/\s+/)
-            .filter(Boolean);
-
-
-    if (
-        words.length === 1
-    ) {
-
-        return words[0]
-            .substring(0, 2)
-            .toUpperCase();
-    }
-
-
-    return (
-        words[0][0] +
-        words[1][0]
-    ).toUpperCase();
-}
-
-
-/* =========================================================
-   SERVER IMAGE
-   ========================================================= */
-
-function setServerImage(
-    imageElement,
-    textElement,
-    icon,
-    initials
-) {
-
-    if (
-        imageElement &&
-        textElement &&
-        icon &&
-        typeof icon === "string" &&
-        icon.trim()
-    ) {
-
-        imageElement.src =
-            icon;
-
-        imageElement.style.display =
-            "block";
-
-        textElement.style.display =
-            "none";
-
-        return;
-    }
-
-
-    if (imageElement) {
-
-        imageElement.removeAttribute(
-            "src"
-        );
-
-        imageElement.style.display =
-            "none";
-    }
-
-
-    if (textElement) {
-
-        textElement.textContent =
-            initials;
-
-        textElement.style.display =
-            "block";
-    }
-}
-
-
-/* =========================================================
-   CHANNEL ID
-   ========================================================= */
-
-function generateChannelID() {
-
-    return (
-        "CH-" +
-        Date.now()
-            .toString(36)
-            .toUpperCase() +
-        "-" +
-        Math.random()
-            .toString(36)
-            .substring(2, 8)
-            .toUpperCase()
-    );
-}
-
-
-/* =========================================================
-   SAVED CHANNEL
-   ========================================================= */
-
-function getSavedChannelID() {
-
-    try {
-
-        const raw =
-            localStorage.getItem(
-                "friendchat_current_channel"
-            );
-
-
-        if (!raw) {
-            return null;
-        }
-
-
-        try {
-
-            const data =
-                JSON.parse(raw);
-
-
-            if (
-                data &&
-                typeof data === "object"
-            ) {
-
-                if (
-                    data.serverID &&
-                    currentServer &&
-                    String(data.serverID) !==
-                    String(currentServer.serverID)
-                ) {
-
-                    return null;
-                }
-
-
-                return (
-                    data.channelID ||
-                    null
-                );
-            }
-
-        } catch (_) {
-
-            return raw;
-        }
-
-    } catch (_) {}
-
-
-    return null;
-}
-
-
-/* =========================================================
-   SAVE CHANNEL
-   ========================================================= */
-
-function saveSelectedChannel(channel) {
-
-    if (
-        !currentServer ||
-        !channel
-    ) {
-
-        return;
-    }
-
-
-    try {
-
-        localStorage.setItem(
-            "friendchat_current_channel",
-            JSON.stringify({
-
-                serverID:
-                    currentServer.serverID,
-
-                channelID:
-                    channel.channelID
-
-            })
-        );
-
-    } catch (error) {
-
-        console.error(
-            "FriendChat: Could not save channel:",
-            error
-        );
-    }
-}
-
-
-/* =========================================================
-   GET URL CHANNEL
-   ========================================================= */
-
-function getChannelFromURL() {
-
-    try {
-
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-
-        return (
-            params.get("channel") ||
-            params.get("channelID") ||
-            null
-        );
-
-    } catch (_) {
-
-        return null;
-    }
-}
-
-
-/* =========================================================
-   LOAD SERVER UI
-   ========================================================= */
-
-async function loadServer() {
-
-    const server =
-        await loadServerFromBackend();
-
-
-    if (!server) {
-
-        console.error(
-            "FriendChat: Server could not be loaded."
-        );
-
-        return;
-    }
-
-
-    const name =
-        currentServer.name ||
-        "Unnamed Server";
-
-
-    const description =
-        currentServer.description ||
-        "Welcome to your FriendChat server.";
-
-
-    const initials =
-        getServerInitials(
-            name
-        );
-
-
-    /* =====================================================
-       TOP BAR
-       ===================================================== */
-
-    if (topServerName) {
-
-        topServerName.textContent =
-            name;
-    }
-
-
-    setServerImage(
-        topServerIcon,
-        topServerIconText,
-        currentServer.icon,
-        initials
-    );
-
-
-    /* =====================================================
-       SERVER HERO
-       ===================================================== */
-
-    if (serverName) {
-
-        serverName.textContent =
-            name;
-    }
-
-
-    if (serverDescription) {
-
-        serverDescription.textContent =
-            description;
-    }
-
-
-    if (serverID) {
-
-        serverID.textContent =
-            currentServer.serverID ||
-            "—";
-    }
-
-
-    setServerImage(
-        serverIcon,
-        serverIconText,
-        currentServer.icon,
-        initials
-    );
-
-
-    /* =====================================================
-       PREVIEW
-       ===================================================== */
-
-    if (previewName) {
-
-        previewName.textContent =
-            name;
-    }
-
-
-    setServerImage(
-        previewIcon,
-        previewIconText,
-        currentServer.icon,
-        initials
-    );
-
-
-    /* =====================================================
-       CHANNEL SELECTION
-       ===================================================== */
-
-    const urlChannel =
-        getChannelFromURL();
-
-
-    const savedChannel =
-        getSavedChannelID();
-
-
-    const possibleChannel =
-        urlChannel ||
-        savedChannel;
-
-
-    if (possibleChannel) {
-
-        const found =
-            getChannels().find(
-                function (channel) {
-
-                    return (
-                        String(
-                            channel.channelID
-                        ) ===
-                        String(
-                            possibleChannel
-                        )
-                    );
-
-                }
-            );
-
-
-        if (found) {
-
-            selectedChannelID =
-                found.channelID;
-        }
-    }
-
-
-    /* =====================================================
-       DEFAULT CHANNEL
-       ===================================================== */
-
-    if (
-        !selectedChannelID &&
-        getChannels().length
-    ) {
-
-        selectedChannelID =
-            getChannels()[0].channelID;
-    }
-
-
-    /* =====================================================
-       RENDER
-       ===================================================== */
-
-    renderChannels();
-
-
-    console.log(
-        "FriendChat server home ready.",
-        currentServer
-    );
-}
-
-
-/* =========================================================
-   RENDER CHANNELS
-   ========================================================= */
-
-function renderChannels() {
-
-    if (!currentServer) {
-        return;
-    }
-
-
-    const channels =
-        getChannels();
-
-
-    const textChannels =
-        channels.filter(
-            function (channel) {
-
-                return (
-                    channel.type ===
-                    "text"
-                );
-
-            }
-        );
-
-
-    const voiceChannels =
-        channels.filter(
-            function (channel) {
-
-                return (
-                    channel.type ===
-                    "voice"
-                );
-
-            }
-        );
-
-
-    /* =====================================================
-       TEXT
-       ===================================================== */
-
-    if (textChannelList) {
-
-        textChannelList.innerHTML =
-            "";
-
-
-        if (!textChannels.length) {
-
-            textChannelList.innerHTML = `
-                <div class="channel-empty">
-                    No text channels yet.
                 </div>
-            `;
-
-        } else {
-
-            textChannels.forEach(
-                function (channel) {
-
-                    textChannelList.appendChild(
-                        createChannelElement(
-                            channel
-                        )
-                    );
-
-                }
-            );
-        }
-    }
 
 
-    /* =====================================================
-       VOICE
-       ===================================================== */
+                <div class="top-server-info">
 
-    if (voiceChannelList) {
+                    <div
+                        class="top-server-name"
+                        id="topServerName"
+                    >
+                        Server
+                    </div>
 
-        voiceChannelList.innerHTML =
-            "";
+                    <div class="top-server-status">
+                        Your server
+                    </div>
 
-
-        if (!voiceChannels.length) {
-
-            voiceChannelList.innerHTML = `
-                <div class="channel-empty">
-                    No voice channels yet.
                 </div>
-            `;
 
-        } else {
-
-            voiceChannels.forEach(
-                function (channel) {
-
-                    voiceChannelList.appendChild(
-                        createChannelElement(
-                            channel
-                        )
-                    );
-
-                }
-            );
-        }
-    }
-
-
-    renderPreviewChannels();
-}
-
-
-/* =========================================================
-   CREATE CHANNEL ELEMENT
-   ========================================================= */
-
-function createChannelElement(channel) {
-
-    const button =
-        document.createElement(
-            "button"
-        );
-
-
-    button.type =
-        "button";
-
-
-    button.className =
-        "channel-item";
-
-
-    button.dataset.channelId =
-        channel.channelID;
-
-
-    if (
-        String(
-            channel.channelID
-        ) ===
-        String(
-            selectedChannelID
-        )
-    ) {
-
-        button.classList.add(
-            "active"
-        );
-    }
-
-
-    const icon =
-        channel.type === "voice"
-            ? "🔊"
-            : "#";
-
-
-    const description =
-        channel.description ||
-        (
-            channel.type === "voice"
-                ? "Voice channel"
-                : "Text channel"
-        );
-
-
-    button.innerHTML = `
-
-        <div class="channel-icon">
-            ${icon}
-        </div>
-
-        <div class="channel-info">
-
-            <div class="channel-name">
-                ${escapeHTML(channel.name)}
             </div>
 
-            <div class="channel-description">
-                ${escapeHTML(description)}
+
+            <div class="top-right">
+
+                <button
+                    class="top-button"
+                    id="membersButton"
+                >
+                    <span>👥</span>
+                    <span>Members</span>
+                </button>
+
+
+                <button
+                    class="top-button"
+                    id="settingsButton"
+                >
+                    <span>⚙</span>
+                    <span>Settings</span>
+                </button>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             MAIN CONTENT
+             ================================================= -->
+
+        <main class="main-content">
+
+
+            <!-- =================================================
+                 SERVER HERO
+                 ================================================= -->
+
+            <section class="server-hero">
+
+                <div class="hero-glow"></div>
+
+
+                <div class="large-server-icon">
+
+                    <img
+                        id="serverIcon"
+                        src=""
+                        alt="Server icon"
+                    >
+
+                    <span id="serverIconText">
+                        FC
+                    </span>
+
+                </div>
+
+
+                <div class="hero-info">
+
+                    <div class="server-label">
+                        YOUR SERVER
+                    </div>
+
+                    <h1 id="serverName">
+                        Server
+                    </h1>
+
+                    <p id="serverDescription">
+                        Welcome to your FriendChat server.
+                    </p>
+
+
+                    <div class="server-id">
+
+                        <span>
+                            SERVER ID
+                        </span>
+
+                        <code id="serverID">
+                            —
+                        </code>
+
+                        <button
+                            id="copyServerID"
+                            title="Copy Server ID"
+                        >
+                            Copy
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 CHANNELS
+                 ================================================= -->
+
+            <section
+                class="section channels-section"
+                id="channelsSection"
+            >
+
+                <div class="section-heading channels-heading">
+
+                    <div>
+
+                        <h2>
+                            Channels
+                        </h2>
+
+                        <p>
+                            Create spaces for conversations and activities.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="create-channel-button"
+                        id="createChannelButton"
+                        type="button"
+                    >
+
+                        <span>
+                            +
+                        </span>
+
+                        <span>
+                            Create Channel
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- TEXT CHANNELS -->
+
+                <div class="channel-group">
+
+                    <div class="channel-group-title">
+
+                        <span>
+                            TEXT CHANNELS
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="channel-list"
+                        id="textChannelList"
+                    >
+
+                        <!-- Channels will be inserted here -->
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- VOICE CHANNELS -->
+
+                <div class="channel-group">
+
+                    <div class="channel-group-title">
+
+                        <span>
+                            VOICE CHANNELS
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="channel-list"
+                        id="voiceChannelList"
+                    >
+
+                        <!-- Voice channels will be inserted here -->
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 QUICK ACTIONS
+                 ================================================= -->
+
+            <section class="section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <h2>
+                            Your server
+                        </h2>
+
+                        <p>
+                            Manage and customize your space.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="action-grid">
+
+
+                    <!-- CHANNELS -->
+
+                    <button
+                        class="action-card"
+                        id="channelsCard"
+                        type="button"
+                    >
+
+                        <div class="action-icon">
+                            💬
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Channels
+                            </strong>
+
+                            <span>
+                                Create rooms for conversations
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- MEMBERS -->
+
+                    <button
+                        class="action-card"
+                        id="membersCard"
+                        type="button"
+                    >
+
+                        <div class="action-icon">
+                            👥
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Members
+                            </strong>
+
+                            <span>
+                                See people in your server
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- RULES -->
+
+                    <button
+                        class="action-card"
+                        id="rulesCard"
+                        type="button"
+                    >
+
+                        <div class="action-icon">
+                            📜
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Rules
+                            </strong>
+
+                            <span>
+                                Set rules for your community
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- ROLES -->
+
+                    <button
+                        class="action-card"
+                        id="rolesCard"
+                        type="button"
+                    >
+
+                        <div class="action-icon">
+                            🛡
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Roles
+                            </strong>
+
+                            <span>
+                                Manage roles and permissions
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- AI -->
+
+                    <button
+                        class="action-card"
+                        id="aiCard"
+                        type="button"
+                    >
+
+                        <div class="action-icon">
+                            ✦
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                FriendChat AI
+                            </strong>
+
+                            <span>
+                                AI tools for your server
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- MUSIC -->
+
+                    <button
+                        class="action-card"
+                        id="musicCard"
+                        type="button"
+                    >
+
+                        <div class="action-icon">
+                            ♪
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Music
+                            </strong>
+
+                            <span>
+                                Shared listening and music
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- ACTIVITY -->
+
+                    <button
+                        class="action-card"
+                        id="activityCard"
+                        type="button"
+                    >
+
+                        <div class="action-icon">
+                            ◉
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Activity
+                            </strong>
+
+                            <span>
+                                See what's happening
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+
+                    <!-- SETTINGS -->
+
+                    <button
+                        class="action-card"
+                        id="serverSettingsCard"
+                        type="button"
+                    >
+
+                        <div class="action-icon">
+                            ⚙
+                        </div>
+
+                        <div class="action-text">
+
+                            <strong>
+                                Server Settings
+                            </strong>
+
+                            <span>
+                                Customize your server
+                            </span>
+
+                        </div>
+
+                        <div class="action-arrow">
+                            →
+                        </div>
+
+                    </button>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SERVER PREVIEW
+                 ================================================= -->
+
+            <section class="section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <h2>
+                            Server preview
+                        </h2>
+
+                        <p>
+                            This is how your server currently looks.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="preview-box">
+
+
+                    <div class="preview-header">
+
+                        <div class="preview-server-icon">
+
+                            <img
+                                id="previewIcon"
+                                src=""
+                                alt=""
+                            >
+
+                            <span id="previewIconText">
+                                FC
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <strong id="previewName">
+                                Server
+                            </strong>
+
+                            <p>
+                                FriendChat server
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="preview-line"></div>
+
+
+                    <div
+                        class="preview-content"
+                        id="previewChannelList"
+                    >
+
+                        <!-- Preview channels inserted by JS -->
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </main>
+
+
+
+        <!-- =================================================
+             CREATE CHANNEL MODAL
+             ================================================= -->
+
+        <div
+            class="channel-modal"
+            id="channelModal"
+            aria-hidden="true"
+        >
+
+            <div
+                class="channel-modal-backdrop"
+                id="channelModalBackdrop"
+            ></div>
+
+
+            <div
+                class="channel-modal-box"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="channelModalTitle"
+            >
+
+
+                <div class="channel-modal-header">
+
+                    <div>
+
+                        <div
+                            class="channel-modal-title"
+                            id="channelModalTitle"
+                        >
+                            Create Channel
+                        </div>
+
+                        <div class="channel-modal-subtitle">
+                            Add a new space to your server.
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="channel-modal-close"
+                        id="closeChannelModal"
+                        type="button"
+                        aria-label="Close"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+
+                <!-- CHANNEL NAME -->
+
+                <div class="form-group">
+
+                    <label for="channelNameInput">
+                        Channel name
+                    </label>
+
+                    <input
+                        id="channelNameInput"
+                        type="text"
+                        maxlength="40"
+                        placeholder="e.g. gaming"
+                        autocomplete="off"
+                    >
+
+                    <div
+                        class="form-error"
+                        id="channelFormError"
+                    ></div>
+
+                </div>
+
+
+
+                <!-- CHANNEL TYPE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Channel type
+                    </label>
+
+
+                    <div class="channel-type-options">
+
+
+                        <label
+                            class="channel-type-option selected"
+                            id="textChannelOption"
+                        >
+
+                            <input
+                                type="radio"
+                                name="channelType"
+                                value="text"
+                                checked
+                            >
+
+                            <div class="channel-type-icon">
+                                #
+                            </div>
+
+                            <div class="channel-type-info">
+
+                                <strong>
+                                    Text
+                                </strong>
+
+                                <span>
+                                    Chat with messages
+                                </span>
+
+                            </div>
+
+                        </label>
+
+
+
+                        <label
+                            class="channel-type-option"
+                            id="voiceChannelOption"
+                        >
+
+                            <input
+                                type="radio"
+                                name="channelType"
+                                value="voice"
+                            >
+
+                            <div class="channel-type-icon">
+                                🔊
+                            </div>
+
+                            <div class="channel-type-info">
+
+                                <strong>
+                                    Voice
+                                </strong>
+
+                                <span>
+                                    Talk with your friends
+                                </span>
+
+                            </div>
+
+                        </label>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- MODAL BUTTONS -->
+
+                <div class="channel-modal-actions">
+
+                    <button
+                        class="modal-cancel-button"
+                        id="cancelChannelButton"
+                        type="button"
+                    >
+                        Cancel
+                    </button>
+
+
+                    <button
+                        class="modal-create-button"
+                        id="saveChannelButton"
+                        type="button"
+                    >
+                        Create Channel
+                    </button>
+
+                </div>
+
             </div>
 
         </div>
 
-        <div class="channel-arrow">
-            →
+
+
+        <!-- =================================================
+             TOAST
+             ================================================= -->
+
+        <div
+            class="toast"
+            id="toast"
+        >
+
+            <span id="toastMessage">
+                Done
+            </span>
+
         </div>
 
-    `;
 
+    </div>
 
-    button.addEventListener(
-        "click",
-        function (event) {
 
-            event.preventDefault();
-            event.stopPropagation();
+    <script src="server-home.js"></script>
+    <script src="server-customization.js"></script>
 
-            selectChannel(channel);
+</body>
 
-        }
-    );
-
-
-    return button;
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
-
-function escapeHTML(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-    }
-
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-}
-
-
-/* =========================================================
-   SELECT CHANNEL
-   ========================================================= */
-
-function selectChannel(channel) {
-
-    if (
-        !currentServer ||
-        !channel ||
-        !channel.channelID
-    ) {
-
-        showToast(
-            "Channel is unavailable."
-        );
-
-        return;
-    }
-
-
-    selectedChannelID =
-        channel.channelID;
-
-
-    saveSelectedChannel(
-        channel
-    );
-
-
-    /* =====================================================
-       VOICE
-       ===================================================== */
-
-    if (
-        channel.type === "voice"
-    ) {
-
-        showToast(
-            "🔊 " +
-            channel.name +
-            " selected"
-        );
-
-
-        renderChannels();
-
-        return;
-    }
-
-
-    /* =====================================================
-       TEXT
-       ===================================================== */
-
-    const targetURL =
-        "channel-chat.html" +
-        "?server=" +
-        encodeURIComponent(
-            String(
-                currentServer.serverID
-            )
-        ) +
-        "&channel=" +
-        encodeURIComponent(
-            String(
-                channel.channelID
-            )
-        );
-
-
-    console.log(
-        "FriendChat opening channel:",
-        targetURL
-    );
-
-
-    /*
-       IMPORTANT:
-       Use replace instead of an old relative
-       path that can break if this page is inside
-       another folder.
-    */
-
-    window.location.href =
-        targetURL;
-}
-
-
-/* =========================================================
-   PREVIEW CHANNELS
-   ========================================================= */
-
-function renderPreviewChannels() {
-
-    if (!previewChannelList) {
-        return;
-    }
-
-
-    previewChannelList.innerHTML =
-        "";
-
-
-    const channels =
-        getChannels();
-
-
-    if (!channels.length) {
-
-        previewChannelList.innerHTML = `
-            <div class="preview-channel muted">
-                No channels
-            </div>
-        `;
-
-        return;
-    }
-
-
-    channels
-        .slice(0, 8)
-        .forEach(
-            function (channel) {
-
-                const item =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                item.type =
-                    "button";
-
-
-                item.className =
-                    "preview-channel";
-
-
-                item.dataset.channelId =
-                    channel.channelID;
-
-
-                if (
-                    String(
-                        channel.channelID
-                    ) ===
-                    String(
-                        selectedChannelID
-                    )
-                ) {
-
-                    item.classList.add(
-                        "active"
-                    );
-                }
-
-
-                item.textContent =
-                    channel.type === "voice"
-                        ? "🔊 " + channel.name
-                        : "# " + channel.name;
-
-
-                item.addEventListener(
-                    "click",
-                    function (event) {
-
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        selectChannel(
-                            channel
-                        );
-
-                    }
-                );
-
-
-                previewChannelList.appendChild(
-                    item
-                );
-
-            }
-        );
-}
-
-
-/* =========================================================
-   CHANNEL MODAL
-   ========================================================= */
-
-function openChannelModal() {
-
-    if (!channelModal) {
-        return;
-    }
-
-
-    clearChannelForm();
-
-
-    channelModal.classList.add(
-        "open"
-    );
-
-
-    channelModal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-
-    setTimeout(
-        function () {
-
-            if (channelNameInput) {
-
-                channelNameInput.focus();
-            }
-
-        },
-        100
-    );
-}
-
-
-function closeChannelModalWindow() {
-
-    if (!channelModal) {
-        return;
-    }
-
-
-    channelModal.classList.remove(
-        "open"
-    );
-
-
-    channelModal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-
-    clearChannelForm();
-}
-
-
-function clearChannelForm() {
-
-    if (channelNameInput) {
-
-        channelNameInput.value =
-            "";
-    }
-
-
-    if (channelFormError) {
-
-        channelFormError.textContent =
-            "";
-    }
-
-
-    const textRadio =
-        document.querySelector(
-            'input[name="channelType"][value="text"]'
-        );
-
-
-    if (textRadio) {
-
-        textRadio.checked =
-            true;
-    }
-
-
-    updateChannelTypeUI();
-}
-
-
-function getSelectedChannelType() {
-
-    const selected =
-        document.querySelector(
-            'input[name="channelType"]:checked'
-        );
-
-
-    return selected
-        ? selected.value
-        : "text";
-}
-
-
-function updateChannelTypeUI() {
-
-    const type =
-        getSelectedChannelType();
-
-
-    if (textChannelOption) {
-
-        textChannelOption.classList.toggle(
-            "selected",
-            type === "text"
-        );
-    }
-
-
-    if (voiceChannelOption) {
-
-        voiceChannelOption.classList.toggle(
-            "selected",
-            type === "voice"
-        );
-    }
-}
-
-
-function showChannelError(message) {
-
-    if (channelFormError) {
-
-        channelFormError.textContent =
-            message;
-    }
-}
-
-
-/* =========================================================
-   SAVE SERVER
-   ========================================================= */
-
-async function saveServerToBackend() {
-
-    if (!currentServer) {
-        return false;
-    }
-
-
-    const userID =
-        getCurrentUserID();
-
-
-    try {
-
-        const data =
-            await apiRequest(
-                "/api/servers/" +
-                encodeURIComponent(
-                    currentServer.serverID
-                ),
-                {
-
-                    method:
-                        "PUT",
-
-                    body:
-                        JSON.stringify({
-
-                            ...currentServer,
-
-                            requesterID:
-                                userID,
-
-                            userID:
-                                userID
-
-                        })
-
-                }
-            );
-
-
-        if (
-            data &&
-            data.server
-        ) {
-
-            currentServer =
-                data.server;
-        }
-
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "FriendChat: Server save failed:",
-            error
-        );
-
-
-        showToast(
-            error.message ||
-            "Could not save server."
-        );
-
-
-        return false;
-    }
-}
-
-
-/* =========================================================
-   CREATE CHANNEL
-   ========================================================= */
-
-async function createChannel() {
-
-    if (!currentServer) {
-
-        showChannelError(
-            "No server is currently selected."
-        );
-
-        return;
-    }
-
-
-    const name =
-        channelNameInput
-            ? channelNameInput.value
-                .trim()
-                .replace(
-                    /\s+/g,
-                    " "
-                )
-            : "";
-
-
-    if (!name) {
-
-        showChannelError(
-            "Please enter a channel name."
-        );
-
-        return;
-    }
-
-
-    if (name.length < 2) {
-
-        showChannelError(
-            "Channel name must be at least 2 characters."
-        );
-
-        return;
-    }
-
-
-    if (name.length > 40) {
-
-        showChannelError(
-            "Channel name must be 40 characters or less."
-        );
-
-        return;
-    }
-
-
-    const type =
-        getSelectedChannelType();
-
-
-    const duplicate =
-        getChannels().some(
-            function (channel) {
-
-                return (
-                    String(
-                        channel.name || ""
-                    )
-                    .trim()
-                    .toLowerCase() ===
-                    name.toLowerCase()
-                );
-
-            }
-        );
-
-
-    if (duplicate) {
-
-        showChannelError(
-            "A channel with this name already exists."
-        );
-
-        return;
-    }
-
-
-    const newChannel = {
-
-        channelID:
-            generateChannelID(),
-
-        name:
-            name,
-
-        type:
-            type,
-
-        description:
-            type === "voice"
-                ? "Voice channel"
-                : "Text channel",
-
-        createdAt:
-            new Date().toISOString()
-
-    };
-
-
-    if (saveChannelButton) {
-
-        saveChannelButton.disabled =
-            true;
-
-        saveChannelButton.textContent =
-            "Creating...";
-    }
-
-
-    try {
-
-        currentServer.channels =
-            getChannels();
-
-
-        currentServer.channels.push(
-            newChannel
-        );
-
-
-        const saved =
-            await saveServerToBackend();
-
-
-        if (!saved) {
-
-            currentServer.channels =
-                currentServer.channels.filter(
-                    function (channel) {
-
-                        return (
-                            channel.channelID !==
-                            newChannel.channelID
-                        );
-
-                    }
-                );
-
-            return;
-        }
-
-
-        selectedChannelID =
-            newChannel.channelID;
-
-
-        saveSelectedChannel(
-            newChannel
-        );
-
-
-        renderChannels();
-
-
-        closeChannelModalWindow();
-
-
-        showToast(
-            type === "voice"
-                ? "Voice channel created"
-                : "Text channel created"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "FriendChat: Create channel failed:",
-            error
-        );
-
-
-        showChannelError(
-            error.message ||
-            "Could not create channel."
-        );
-
-    } finally {
-
-        if (saveChannelButton) {
-
-            saveChannelButton.disabled =
-                false;
-
-            saveChannelButton.textContent =
-                "Create Channel";
-        }
-    }
-}
-
-
-/* =========================================================
-   CHANNEL BUTTONS
-   ========================================================= */
-
-if (createChannelButton) {
-
-    createChannelButton.addEventListener(
-        "click",
-        openChannelModal
-    );
-}
-
-
-if (closeChannelModal) {
-
-    closeChannelModal.addEventListener(
-        "click",
-        closeChannelModalWindow
-    );
-}
-
-
-if (cancelChannelButton) {
-
-    cancelChannelButton.addEventListener(
-        "click",
-        closeChannelModalWindow
-    );
-}
-
-
-if (channelModalBackdrop) {
-
-    channelModalBackdrop.addEventListener(
-        "click",
-        closeChannelModalWindow
-    );
-}
-
-
-if (saveChannelButton) {
-
-    saveChannelButton.addEventListener(
-        "click",
-        createChannel
-    );
-}
-
-
-if (channelNameInput) {
-
-    channelNameInput.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (
-                event.key ===
-                "Enter"
-            ) {
-
-                event.preventDefault();
-
-                createChannel();
-            }
-
-        }
-    );
-}
-
-
-/* =========================================================
-   CHANNEL TYPE
-   ========================================================= */
-
-document
-    .querySelectorAll(
-        'input[name="channelType"]'
-    )
-    .forEach(
-        function (radio) {
-
-            radio.addEventListener(
-                "change",
-                updateChannelTypeUI
-            );
-
-        }
-    );
-
-
-/* =========================================================
-   ESCAPE
-   ========================================================= */
-
-document.addEventListener(
-    "keydown",
-    function (event) {
-
-        if (
-            event.key === "Escape" &&
-            channelModal &&
-            channelModal.classList.contains("open")
-        ) {
-
-            closeChannelModalWindow();
-        }
-
-    }
-);
-
-
-/* =========================================================
-   COPY SERVER ID
-   ========================================================= */
-
-const copyServerIDButton =
-    document.getElementById(
-        "copyServerID"
-    );
-
-
-if (copyServerIDButton) {
-
-    copyServerIDButton.addEventListener(
-        "click",
-        async function () {
-
-            if (!serverID) {
-                return;
-            }
-
-
-            const id =
-                serverID.textContent.trim();
-
-
-            if (
-                !id ||
-                id === "—"
-            ) {
-
-                return;
-            }
-
-
-            try {
-
-                await navigator.clipboard.writeText(
-                    id
-                );
-
-
-                showToast(
-                    "Server ID copied"
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Copy failed:",
-                    error
-                );
-
-
-                showToast(
-                    "Could not copy server ID"
-                );
-            }
-
-        }
-    );
-}
-
-
-/* =========================================================
-   BACK BUTTON
-   ========================================================= */
-
-const backButton =
-    document.getElementById(
-        "backButton"
-    );
-
-
-if (backButton) {
-
-    backButton.addEventListener(
-        "click",
-        function () {
-
-            if (
-                window.history.length > 1
-            ) {
-
-                window.history.back();
-
-            } else {
-
-                window.location.href =
-                    "index.html";
-            }
-
-        }
-    );
-}
-
-
-/* =========================================================
-   OPEN MEMBERS
-   ========================================================= */
-
-function openServerMembers() {
-
-    if (!currentServer) {
-
-        showToast(
-            "Server is not loaded yet."
-        );
-
-        return;
-    }
-
-
-    saveCurrentServerID(
-        currentServer.serverID
-    );
-
-
-    const targetURL =
-        "server-members.html" +
-        "?server=" +
-        encodeURIComponent(
-            currentServer.serverID
-        );
-
-
-    console.log(
-        "FriendChat opening Members:",
-        targetURL
-    );
-
-
-    window.location.href =
-        targetURL;
-}
-
-
-/* =========================================================
-   MEMBERS CARD
-   ========================================================= */
-
-const membersCard =
-    document.getElementById(
-        "membersCard"
-    );
-
-
-if (membersCard) {
-
-    membersCard.addEventListener(
-        "click",
-        function (event) {
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            openServerMembers();
-
-        }
-    );
-}
-
-
-/* =========================================================
-   TOP MEMBERS
-   ========================================================= */
-
-const membersButton =
-    document.getElementById(
-        "membersButton"
-    );
-
-
-if (membersButton) {
-
-    membersButton.addEventListener(
-        "click",
-        function (event) {
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            openServerMembers();
-
-        }
-    );
-}
-
-
-/* =========================================================
-   OTHER CARDS
-   ========================================================= */
-
-const rulesCard =
-    document.getElementById("rulesCard");
-
-const rolesCard =
-    document.getElementById("rolesCard");
-
-const aiCard =
-    document.getElementById("aiCard");
-
-const musicCard =
-    document.getElementById("musicCard");
-
-const activityCard =
-    document.getElementById("activityCard");
-
-const serverSettingsCard =
-    document.getElementById("serverSettingsCard");
-
-const channelsCard =
-    document.getElementById("channelsCard");
-
-const settingsButton =
-    document.getElementById("settingsButton");
-
-
-if (channelsCard) {
-
-    channelsCard.addEventListener(
-        "click",
-        function () {
-
-            const section =
-                document.getElementById(
-                    "channelsSection"
-                );
-
-
-            if (section) {
-
-                section.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-
-            }
-
-        }
-    );
-}
-
-
-if (rulesCard) {
-
-    rulesCard.addEventListener(
-        "click",
-        function () {
-
-            showToast(
-                "Rules system coming soon."
-            );
-
-        }
-    );
-}
-
-
-if (rolesCard) {
-
-    rolesCard.addEventListener(
-        "click",
-        function () {
-
-            showToast(
-                "Roles will be added later."
-            );
-
-        }
-    );
-}
-
-
-if (aiCard) {
-
-    aiCard.addEventListener(
-        "click",
-        function () {
-
-            showToast(
-                "FriendChat AI will be added later."
-            );
-
-        }
-    );
-}
-
-
-if (musicCard) {
-
-    musicCard.addEventListener(
-        "click",
-        function () {
-
-            showToast(
-                "Music system will be added later."
-            );
-
-        }
-    );
-}
-
-
-if (activityCard) {
-
-    activityCard.addEventListener(
-        "click",
-        function () {
-
-            showToast(
-                "Activity will be added later."
-            );
-
-        }
-    );
-}
-
-
-if (serverSettingsCard) {
-
-    serverSettingsCard.addEventListener(
-        "click",
-        function () {
-
-            showToast(
-                "Server customization will be added later."
-            );
-
-        }
-    );
-}
-
-
-if (settingsButton) {
-
-    settingsButton.addEventListener(
-        "click",
-        function () {
-
-            showToast(
-                "Server settings coming soon."
-            );
-
-        }
-    );
-}
-
-
-/* =========================================================
-   START
-   ========================================================= */
-
-console.log(
-    "FriendChat server-home.js loaded."
-);
-
-
-console.log(
-    "Current User:",
-    getCurrentUserID()
-);
-
-
-console.log(
-    "Current Server:",
-    getCurrentServerID()
-);
-
-
-loadServer();
+</html>
