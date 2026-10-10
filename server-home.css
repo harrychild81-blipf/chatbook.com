@@ -2428,3 +2428,46 @@ button {
     }
 
 }
+
+/* =========================================================
+   FRIENDCHAT — CUSTOM SERVER BACKGROUND FIX
+   ========================================================= */
+
+/* Keep the custom image behind the entire server page */
+html,
+body {
+    background-color: var(--fc-bg, var(--bg, #070a10));
+}
+
+body {
+    background-image: var(--fc-server-background-image, none);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* Let the body background show through the app */
+.server-app {
+    background: transparent !important;
+    min-height: 100vh;
+}
+
+/* Keep panels readable while allowing the image to show */
+.server-hero {
+    background: rgba(13, 18, 27, 0.62);
+    backdrop-filter: blur(8px);
+}
+
+.channels-section {
+    background: rgba(13, 18, 27, 0.62);
+    backdrop-filter: blur(8px);
+}
+
+.action-card {
+    background: rgba(14, 20, 30, 0.72);
+}
+
+.preview-box {
+    background: rgba(11, 16, 24, 0.72);
+}
