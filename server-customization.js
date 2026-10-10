@@ -99,13 +99,25 @@ function applyServerAppearance() {
     document.body.style.color = colors.text;
     document.body.style.fontFamily = fontMap[settings.fontFamily] || fontMap.system;
 
-    const bgURL = phase3SafeImageURL(settings.background);
-    if (bgURL) {
-        const rgb = isLight ? "243,245,251" : "7,10,16";
-        document.body.style.backgroundImage = `linear-gradient(rgba(${rgb},${isLight ? "0.82" : "0.74"}), rgba(${rgb},${isLight ? "0.91" : "0.88"})), url("${bgURL.replace(/["\\]/g, "\\$&")}")`;
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundPosition = "center";
-        document.body.style.backgroundAttachment = "fixed";
+   
+const bgURL = phase3SafeImageURL(settings.background);
+
+const backgroundImage = bgURL
+    ? `url("${bgURL.replace(/["\\]/g, "\\$&")}")`
+    : "none";
+
+root.style.setProperty(
+    "--fc-server-background-image",
+    backgroundImage
+);
+
+document.body.style.backgroundColor = colors.background;
+document.body.style.backgroundImage = backgroundImage;
+document.body.style.backgroundSize = bgURL ? "cover" : "";
+document.body.style.backgroundPosition = bgURL ? "center center" : "";
+document.body.style.backgroundRepeat = bgURL ? "no-repeat" : "";
+document.body.style.backgroundAttachment = bgURL ? "fixed" : "";
+
     } else {
         document.body.style.backgroundImage = "none";
         document.body.style.backgroundSize = "";
