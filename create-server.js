@@ -64,6 +64,43 @@ const nameCounter =
 const descriptionCounter =
     document.getElementById("descriptionCounter");
 
+const modeOptions =
+    document.querySelectorAll("[data-server-mode]");
+
+const selectedModeInput =
+    document.getElementById("serverCreationMode");
+
+let selectedCreationMode = "simple";
+
+/* =========================================================
+   SERVER CREATION MODE
+   ========================================================= */
+
+function setCreationMode(mode) {
+    const validMode = mode === "advanced" ? "advanced" : "simple";
+    selectedCreationMode = validMode;
+
+    if (selectedModeInput) {
+        selectedModeInput.value = validMode;
+    }
+
+    modeOptions.forEach(function (option) {
+        const isSelected = option.dataset.serverMode === validMode;
+        option.classList.toggle("is-selected", isSelected);
+        option.setAttribute("aria-pressed", String(isSelected));
+    });
+
+    clearError();
+}
+
+modeOptions.forEach(function (option) {
+    option.addEventListener("click", function () {
+        setCreationMode(option.dataset.serverMode);
+    });
+});
+
+setCreationMode("simple");
+
 
 /* =========================================================
    API BASE
@@ -1365,6 +1402,13 @@ async function createServer() {
 
 
         /* -----------------------------------------
+           CREATION MODE
+           ----------------------------------------- */
+
+        creationMode:
+            selectedCreationMode,
+
+        /* -----------------------------------------
            SERVER NAME
            ----------------------------------------- */
 
@@ -1523,6 +1567,9 @@ async function createServer() {
            ================================================= */
 
         settings: {
+
+            creationMode:
+                selectedCreationMode,
 
             theme:
                 "dark",
