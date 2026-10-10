@@ -1,10 +1,9 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>FriendChat - Server</title>
 
     <link rel="stylesheet" href="server-home.css">
@@ -17,9 +16,7 @@
         <!-- TOP BAR -->
         <header class="top-bar">
             <div class="top-left">
-                <button class="back-button" id="backButton" type="button" title="Back">
-                    ←
-                </button>
+                <button class="back-button" id="backButton" type="button" title="Back">←</button>
 
                 <div class="mini-server-icon">
                     <img id="topServerIcon" src="" alt="">
@@ -59,20 +56,14 @@
 
                 <div class="hero-info">
                     <div class="server-label">YOUR SERVER</div>
-
                     <h1 id="serverName">Server</h1>
 
-                    <p id="serverDescription">
-                        Welcome to your FriendChat server.
-                    </p>
+                    <p id="serverDescription">Welcome to your FriendChat server.</p>
 
                     <div class="server-id">
                         <span>SERVER ID</span>
                         <code id="serverID">—</code>
-
-                        <button id="copyServerID" type="button" title="Copy Server ID">
-                            Copy
-                        </button>
+                        <button id="copyServerID" type="button" title="Copy Server ID">Copy</button>
                     </div>
                 </div>
             </section>
@@ -85,11 +76,7 @@
                         <p>Create spaces for conversations and activities.</p>
                     </div>
 
-                    <button
-                        class="create-channel-button"
-                        id="createChannelButton"
-                        type="button"
-                    >
+                    <button class="create-channel-button" id="createChannelButton" type="button">
                         <span>+</span>
                         <span>Create Channel</span>
                     </button>
@@ -100,10 +87,7 @@
                     <div class="channel-group-title">
                         <span>TEXT CHANNELS</span>
                     </div>
-
-                    <div class="channel-list" id="textChannelList">
-                        <!-- Text channels inserted by JavaScript -->
-                    </div>
+                    <div class="channel-list" id="textChannelList"></div>
                 </div>
 
                 <!-- VOICE CHANNELS -->
@@ -111,10 +95,7 @@
                     <div class="channel-group-title">
                         <span>VOICE CHANNELS</span>
                     </div>
-
-                    <div class="channel-list" id="voiceChannelList">
-                        <!-- Voice channels inserted by JavaScript -->
-                    </div>
+                    <div class="channel-list" id="voiceChannelList"></div>
                 </div>
             </section>
 
@@ -191,11 +172,7 @@
                         <div class="action-arrow">→</div>
                     </button>
 
-                    <button
-                        class="action-card"
-                        id="serverSettingsCard"
-                        type="button"
-                    >
+                    <button class="action-card" id="serverSettingsCard" type="button">
                         <div class="action-icon">⚙</div>
                         <div class="action-text">
                             <strong>Server Settings</strong>
@@ -229,60 +206,40 @@
                     </div>
 
                     <div class="preview-line"></div>
-
-                    <div class="preview-content" id="previewChannelList">
-                        <!-- Preview channels inserted by JavaScript -->
-                    </div>
+                    <div class="preview-content" id="previewChannelList"></div>
                 </div>
             </section>
         </main>
 
         <!-- CREATE CHANNEL MODAL -->
         <div class="channel-modal" id="channelModal" aria-hidden="true">
-            <div
-                class="channel-modal-backdrop"
-                id="channelModalBackdrop"
-            ></div>
+            <div class="channel-modal-backdrop" id="channelModalBackdrop"></div>
 
-            <div
-                class="channel-modal-box"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="channelModalTitle"
-            >
+            <div class="channel-modal-box"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="channelModalTitle">
+
                 <div class="channel-modal-header">
                     <div>
-                        <div class="channel-modal-title" id="channelModalTitle">
-                            Create Channel
-                        </div>
-
-                        <div class="channel-modal-subtitle">
-                            Add a new space to your server.
-                        </div>
+                        <div class="channel-modal-title" id="channelModalTitle">Create Channel</div>
+                        <div class="channel-modal-subtitle">Add a new space to your server.</div>
                     </div>
 
-                    <button
-                        class="channel-modal-close"
-                        id="closeChannelModal"
-                        type="button"
-                        aria-label="Close"
-                    >
-                        ×
-                    </button>
+                    <button class="channel-modal-close"
+                            id="closeChannelModal"
+                            type="button"
+                            aria-label="Close">×</button>
                 </div>
 
                 <!-- CHANNEL NAME -->
                 <div class="form-group">
                     <label for="channelNameInput">Channel name</label>
-
-                    <input
-                        id="channelNameInput"
-                        type="text"
-                        maxlength="40"
-                        placeholder="e.g. gaming"
-                        autocomplete="off"
-                    >
-
+                    <input id="channelNameInput"
+                           type="text"
+                           maxlength="40"
+                           placeholder="e.g. gaming"
+                           autocomplete="off">
                     <div class="form-error" id="channelFormError"></div>
                 </div>
 
@@ -291,37 +248,18 @@
                     <label>Channel type</label>
 
                     <div class="channel-type-options">
-                        <label
-                            class="channel-type-option selected"
-                            id="textChannelOption"
-                        >
-                            <input
-                                type="radio"
-                                name="channelType"
-                                value="text"
-                                checked
-                            >
-
+                        <label class="channel-type-option selected" id="textChannelOption">
+                            <input type="radio" name="channelType" value="text" checked>
                             <div class="channel-type-icon">#</div>
-
                             <div class="channel-type-info">
                                 <strong>Text</strong>
                                 <span>Chat with messages</span>
                             </div>
                         </label>
 
-                        <label
-                            class="channel-type-option"
-                            id="voiceChannelOption"
-                        >
-                            <input
-                                type="radio"
-                                name="channelType"
-                                value="voice"
-                            >
-
+                        <label class="channel-type-option" id="voiceChannelOption">
+                            <input type="radio" name="channelType" value="voice">
                             <div class="channel-type-icon">🔊</div>
-
                             <div class="channel-type-info">
                                 <strong>Voice</strong>
                                 <span>Talk with your friends</span>
@@ -332,19 +270,11 @@
 
                 <!-- MODAL BUTTONS -->
                 <div class="channel-modal-actions">
-                    <button
-                        class="modal-cancel-button"
-                        id="cancelChannelButton"
-                        type="button"
-                    >
+                    <button class="modal-cancel-button" id="cancelChannelButton" type="button">
                         Cancel
                     </button>
 
-                    <button
-                        class="modal-create-button"
-                        id="saveChannelButton"
-                        type="button"
-                    >
+                    <button class="modal-create-button" id="saveChannelButton" type="button">
                         Create Channel
                     </button>
                 </div>
@@ -362,4 +292,3 @@
     <script src="server-customization.js"></script>
 </body>
 </html>
-```
