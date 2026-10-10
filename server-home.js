@@ -1,7 +1,7 @@
 
 /* =========================================================
    FRIENDCHAT — SERVER HOME
-   FIXED BACKEND-CONNECTED VERSION
+   MODE-SEPARATED SERVER SELECTION
    ========================================================= */
 
 const API_BASE = "";
@@ -28,7 +28,6 @@ const previewChannelList = document.getElementById("previewChannelList");
 const toast = document.getElementById("toast");
 const toastMessage = document.getElementById("toastMessage");
 
-/* Channel elements */
 const createChannelButton = document.getElementById("createChannelButton");
 const channelModal = document.getElementById("channelModal");
 const channelModalBackdrop = document.getElementById("channelModalBackdrop");
@@ -42,10 +41,67 @@ const voiceChannelOption = document.getElementById("voiceChannelOption");
 const textChannelList = document.getElementById("textChannelList");
 const voiceChannelList = document.getElementById("voiceChannelList");
 
-/* State */
+/* =========================================================
+   STATE
+   ========================================================= */
+
 let currentServer = null;
 let selectedChannelID = null;
 let toastTimer = null;
+
+/* =========================================================
+   MODE AND SERVER ID
+   ========================================================= */
+
+/*
+   Expected URLs:
+
+   Simple:
+   server-home.html?server=YOUR_SIMPLE_SERVER_ID&mode=simple
+
+   Advanced:
+   server-home.html?server=YOUR_ADVANCED_SERVER_ID&mode=advanced
+
+   The URL's server ID always takes priority.
+*/
+
+function getServerMode() {
+    const params = new URLSearchParams(window.location.search);
+    const mode = (params.get("mode") || "simple").toLowerCase();
+
+    return mode === "advanced" ? "advanced" : "simple";
+}
+
+function getServerStorageKey() {
+    return `friendchat_current_server_${getServerMode()}`;
+}
+
+function getCurrentServerID() {
+    const params = new URLSearchParams(window.location.search);
+
+    const urlID = params.get("server") || params.get("serverID");
+
+    if (urlID && urlID.trim()) {
+        return urlID.trim();
+    }
+
+    try {
+        return localStorage.getItem(getServerStorageKey()) || "";
+    } catch (error) {
+        console.error("FriendChat: Could not read saved server ID:", error);
+        return "";
+    }
+}
+
+function saveCurrentServerID(id) {
+    if (!id) return;
+
+    try {
+        localStorage.setItem(getServerStorageKey(), String(id));
+    } catch (error) {
+        console.error("FriendChat: Could not save server ID:", error);
+    }
+}
 
 /* =========================================================
    CURRENT USER
@@ -101,45 +157,6 @@ function getCurrentUserID() {
 }
 
 /* =========================================================
-   SERVER ID
-   ========================================================= */
-
-function getCurrentServerID() {
-    try {
-        const params = new URLSearchParams(window.location.search);
-        const urlID = params.get("server") || params.get("serverID") || "";
-
-        if (urlID.trim()) {
-            return urlID.trim();
-        }
-    } catch (error) {
-        console.warn("FriendChat: URL server ID read failed:", error);
-    }
-
-    try {
-        const saved = localStorage.getItem("friendchat_current_server");
-
-        if (saved && saved.trim()) {
-            return saved.trim();
-        }
-    } catch (error) {
-        console.warn("FriendChat: saved server ID read failed:", error);
-    }
-
-    return "";
-}
-
-function saveCurrentServerID(id) {
-    if (!id) return;
-
-    try {
-        localStorage.setItem("friendchat_current_server", String(id));
-    } catch (error) {
-        console.error("FriendChat: Could not save server ID:", error);
-    }
-}
-
-/* =========================================================
    TOAST
    ========================================================= */
 
@@ -180,7 +197,9 @@ async function apiRequest(url, options = {}) {
         options.method || "GET",
         API_BASE + url,
         "User:",
-        userID
+        userID,
+        "Mode:",
+        getServerMode()
     );
 
     let response;
@@ -222,14 +241,24 @@ async function loadServerFromBackend() {
     const id = getCurrentServerID();
     const userID = getCurrentUserID();
 
-    console.log("FriendChat loading server:", id, "User:", userID);
+    console.log(
+        "FriendChat loading server:",
+        id,
+        "Mode:",
+        getServerMode(),
+        "User:",
+        userID
+    );
 
     if (!id) {
-        showToast("Server ID is missing.");
+        showToast(
+            `No server selected for ${getServerMode()} mode.`
+        );
 
-        setTimeout(() => {
-            window.location.href = "index.html";
-        }, 1200);
+        console.error(
+            "FriendChat: Open this page with ?server=SERVER_ID&mode=" +
+            getServerMode()
+        );
 
         return null;
     }
@@ -241,7 +270,9 @@ async function loadServerFromBackend() {
     }
 
     try {
-        const data = await apiRequest(requestURL, { method: "GET" });
+        const data = await apiRequest(requestURL, {
+            method: "GET"
+        });
 
         if (!data || !data.server) {
             throw new Error("Server was not returned by the backend.");
@@ -253,10 +284,20 @@ async function loadServerFromBackend() {
             currentServer.serverID = id;
         }
 
+        /*
+           Save the selected server under this mode's key.
+           Never overwrite the other mode's saved server ID.
+        */
         saveCurrentServerID(currentServer.serverID);
+
         normalizeChannels(currentServer);
 
-        console.log("FriendChat server loaded successfully:", currentServer);
+        console.log(
+            "FriendChat server loaded:",
+            currentServer.serverID,
+            "Mode:",
+            getServerMode()
+        );
 
         return currentServer;
     } catch (error) {
@@ -368,7 +409,8 @@ function getSavedChannelID() {
                 return data.channelID || null;
             }
         } catch (_) {
-            return raw;
+            // Ignore legacy channel selections that cannot be verified.
+            return null;
         }
     } catch (_) {}
 
@@ -415,13 +457,19 @@ async function loadServer() {
     const name = currentServer.name || "Unnamed Server";
     const description =
         currentServer.description || "Welcome to your FriendChat server.";
+
     const initials = getServerInitials(name);
 
     if (topServerName) {
         topServerName.textContent = name;
     }
 
-    setServerImage(topServerIcon, topServerIconText, currentServer.icon, initials);
+    setServerImage(
+        topServerIcon,
+        topServerIconText,
+        currentServer.icon,
+        initials
+    );
 
     if (serverName) {
         serverName.textContent = name;
@@ -435,8 +483,19 @@ async function loadServer() {
         serverID.textContent = currentServer.serverID || "—";
     }
 
-    setServerImage(serverIcon, serverIconText, currentServer.icon, initials);
-    setServerImage(previewIcon, previewIconText, currentServer.icon, initials);
+    setServerImage(
+        serverIcon,
+        serverIconText,
+        currentServer.icon,
+        initials
+    );
+
+    setServerImage(
+        previewIcon,
+        previewIconText,
+        currentServer.icon,
+        initials
+    );
 
     if (previewName) {
         previewName.textContent = name;
@@ -464,7 +523,12 @@ async function loadServer() {
 
     renderChannels();
 
-    console.log("FriendChat server home ready.", currentServer);
+    console.log(
+        "FriendChat server home ready.",
+        currentServer.serverID,
+        "Mode:",
+        getServerMode()
+    );
 
     return currentServer;
 }
@@ -478,8 +542,13 @@ function renderChannels() {
 
     const channels = getChannels();
 
-    const textChannels = channels.filter(channel => channel.type === "text");
-    const voiceChannels = channels.filter(channel => channel.type === "voice");
+    const textChannels = channels.filter(
+        channel => channel.type === "text"
+    );
+
+    const voiceChannels = channels.filter(
+        channel => channel.type === "voice"
+    );
 
     if (textChannelList) {
         textChannelList.innerHTML = "";
@@ -489,7 +558,9 @@ function renderChannels() {
                 '<div class="channel-empty">No text channels yet.</div>';
         } else {
             textChannels.forEach(channel => {
-                textChannelList.appendChild(createChannelElement(channel));
+                textChannelList.appendChild(
+                    createChannelElement(channel)
+                );
             });
         }
     }
@@ -502,7 +573,9 @@ function renderChannels() {
                 '<div class="channel-empty">No voice channels yet.</div>';
         } else {
             voiceChannels.forEach(channel => {
-                voiceChannelList.appendChild(createChannelElement(channel));
+                voiceChannelList.appendChild(
+                    createChannelElement(channel)
+                );
             });
         }
     }
@@ -512,7 +585,6 @@ function renderChannels() {
 
 /* =========================================================
    CREATE CHANNEL ELEMENT
-   FIXED: Removed the duplicated, invalid if statement.
    ========================================================= */
 
 function createChannelElement(channel) {
@@ -587,6 +659,7 @@ function selectChannel(channel) {
     const targetURL =
         "channel-chat.html" +
         "?server=" + encodeURIComponent(String(currentServer.serverID)) +
+        "&mode=" + encodeURIComponent(getServerMode()) +
         "&channel=" + encodeURIComponent(String(channel.channelID));
 
     console.log("FriendChat opening channel:", targetURL);
@@ -692,11 +765,17 @@ function updateChannelTypeUI() {
     const type = getSelectedChannelType();
 
     if (textChannelOption) {
-        textChannelOption.classList.toggle("selected", type === "text");
+        textChannelOption.classList.toggle(
+            "selected",
+            type === "text"
+        );
     }
 
     if (voiceChannelOption) {
-        voiceChannelOption.classList.toggle("selected", type === "voice");
+        voiceChannelOption.classList.toggle(
+            "selected",
+            type === "voice"
+        );
     }
 }
 
@@ -711,13 +790,17 @@ function showChannelError(message) {
    ========================================================= */
 
 async function saveServerToBackend() {
-    if (!currentServer) return false;
+    if (!currentServer || !currentServer.serverID) {
+        showToast("No server is selected.");
+        return false;
+    }
 
     const userID = getCurrentUserID();
+    const id = String(currentServer.serverID);
 
     try {
         const data = await apiRequest(
-            "/api/servers/" + encodeURIComponent(currentServer.serverID),
+            "/api/servers/" + encodeURIComponent(id),
             {
                 method: "PUT",
                 body: JSON.stringify({
@@ -729,7 +812,24 @@ async function saveServerToBackend() {
         );
 
         if (data && data.server) {
-            currentServer = data.server;
+            /*
+               Guard against a backend response for the wrong record.
+            */
+            if (
+                data.server.serverID &&
+                String(data.server.serverID) !== id
+            ) {
+                throw new Error(
+                    "The backend returned a different server ID."
+                );
+            }
+
+            currentServer = {
+                ...data.server,
+                serverID: data.server.serverID || id
+            };
+
+            saveCurrentServerID(currentServer.serverID);
         }
 
         return true;
@@ -801,7 +901,10 @@ async function createChannel() {
         const saved = await saveServerToBackend();
 
         if (!saved) {
-            currentServer.channels = previousChannels;
+            if (currentServer) {
+                currentServer.channels = previousChannels;
+            }
+
             renderChannels();
             return;
         }
@@ -818,7 +921,10 @@ async function createChannel() {
                 : "Text channel created"
         );
     } catch (error) {
-        currentServer.channels = previousChannels;
+        if (currentServer) {
+            currentServer.channels = previousChannels;
+        }
+
         renderChannels();
 
         console.error("FriendChat: Create channel failed:", error);
@@ -864,12 +970,10 @@ if (channelNameInput) {
     });
 }
 
-/* Channel type selectors */
 document.querySelectorAll('input[name="channelType"]').forEach(radio => {
     radio.addEventListener("change", updateChannelTypeUI);
 });
 
-/* Escape closes the channel modal */
 document.addEventListener("keydown", event => {
     if (
         event.key === "Escape" &&
@@ -933,8 +1037,9 @@ function openServerMembers() {
     saveCurrentServerID(currentServer.serverID);
 
     const targetURL =
-        "server-members.html?server=" +
-        encodeURIComponent(currentServer.serverID);
+        "server-members.html" +
+        "?server=" + encodeURIComponent(currentServer.serverID) +
+        "&mode=" + encodeURIComponent(getServerMode());
 
     console.log("FriendChat opening Members:", targetURL);
     window.location.href = targetURL;
@@ -971,10 +1076,8 @@ const activityCard = document.getElementById("activityCard");
 const channelsCard = document.getElementById("channelsCard");
 
 /*
-   IMPORTANT:
-   Do not add "coming soon" click handlers to settingsButton
-   or serverSettingsCard here. server-customization.js handles
-   those elements and opens the customization modal.
+   server-customization.js handles settingsButton and
+   serverSettingsCard. Do not attach duplicate handlers here.
 */
 
 if (channelsCard) {
@@ -1026,6 +1129,7 @@ if (activityCard) {
 
 console.log("FriendChat server-home.js loaded.");
 console.log("Current User:", getCurrentUserID());
+console.log("Current Mode:", getServerMode());
 console.log("Current Server ID:", getCurrentServerID());
 
 loadServer();
