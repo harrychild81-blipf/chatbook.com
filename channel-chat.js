@@ -208,23 +208,33 @@
             : fallback;
     }
 
-    function safeImageURL(value) {
-        const text = clean(value);
-        if (!text) return "";
+   ```javascript
+function safeImageURL(value) {
+    const text = clean(value);
+    if (!text) return "";
 
-        try {
-            const url = new URL(text, location.href);
-
-            if (
-                url.protocol === "https:" ||
-                url.protocol === "http:"
-            ) {
-                return url.href;
-            }
-        } catch (_) {}
-
-        return "";
+    // Allow uploaded images stored as data URLs.
+    if (
+        /^data:image\/(?:png|jpeg|jpg|webp|gif|avif);base64,[a-z0-9+/=\s]+$/i.test(text)
+    ) {
+        return text;
     }
+
+    // Allow normal HTTP/HTTPS image URLs and relative server paths.
+    try {
+        const url = new URL(text, location.href);
+
+        if (
+            url.protocol === "https:" ||
+            url.protocol === "http:"
+        ) {
+            return url.href;
+        }
+    } catch (_) {}
+
+    return "";
+}
+```
 
     function getFontScale(settings) {
         const value = settings.fontScale;
