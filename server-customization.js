@@ -1,13 +1,14 @@
-```javascript
+
 /* =========================================================
    FRIENDCHAT — SERVER CUSTOMIZATION
    Simple Mode + Advanced Design Studio
-   Fixes:
-   - Correct background image logic
-   - Opens settings from the top-bar button and settings card
-   - Saves server changes through saveServerToBackend()
-   - Applies saved appearance after loading server data
-   - Preserves Simple Mode and Advanced Mode
+   Includes:
+   - Settings mode chooser popup
+   - Blurred dashboard background
+   - No page navigation
+   - Simple and Advanced customization forms
+   - Live design preview
+   - Backend saving and rollback on failure
    ========================================================= */
 
 let serverSettingsOverlay = null;
@@ -29,7 +30,555 @@ const FC_DEFAULTS = {
     shadow: "medium"
 };
 
-/* ------------------------- HELPERS ------------------------- */
+/* =========================================================
+   STYLES
+   ========================================================= */
+
+function installCustomizationStyles() {
+    if (document.getElementById("fc-customization-popup-styles")) {
+        return;
+    }
+
+    const style = document.createElement("style");
+    style.id = "fc-customization-popup-styles";
+
+    style.textContent = `
+        .fc3-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(3, 6, 12, .64);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            animation: fcPopupFadeIn .18s ease;
+        }
+
+        .fc3-modal {
+            position: relative;
+            width: min(760px, 100%);
+            max-height: min(88vh, 900px);
+            overflow-y: auto;
+            color: #f4f5ff;
+            background: #0d121b;
+            border: 1px solid #293246;
+            border-radius: 20px;
+            box-shadow: 0 24px 90px rgba(0, 0, 0, .55);
+            padding: 25px;
+            animation: fcPopupRise .22s ease;
+        }
+
+        .fc-advanced-modal {
+            width: min(920px, 100%);
+        }
+
+        .fc3-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .fc3-head h2 {
+            margin: 0 0 8px;
+            font-size: clamp(21px, 3vw, 29px);
+            line-height: 1.2;
+            color: #f4f5ff;
+        }
+
+        .fc3-sub {
+            color: #9da9be;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .fc3-close {
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            border: 1px solid #30394b;
+            border-radius: 11px;
+            background: #151d29;
+            color: #f4f5ff;
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .fc3-close:hover {
+            background: #252f40;
+        }
+
+        .fc3-form {
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+        }
+
+        .fc3-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .fc3-field label {
+            color: #dce3f2;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .fc3-field input:not([type="color"]),
+        .fc3-field textarea,
+        .fc3-field select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 13px;
+            border: 1px solid #30394b;
+            border-radius: 10px;
+            background: #080d15;
+            color: #f4f5ff;
+            font: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .fc3-field input:focus,
+        .fc3-field textarea:focus,
+        .fc3-field select:focus {
+            border-color: #6c63ff;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, .13);
+        }
+
+        .fc3-field textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        .fc3-help {
+            color: #8995aa;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .fc3-two {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .fc3-colorrow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 42px;
+            padding: 7px 10px;
+            background: #080d15;
+            border: 1px solid #30394b;
+            border-radius: 10px;
+        }
+
+        .fc3-colorrow input[type="color"] {
+            width: 38px;
+            height: 30px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .fc3-colorrow span {
+            color: #cbd4e5;
+            font-size: 12px;
+            font-family: monospace;
+        }
+
+        .fc3-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #252d3a;
+            margin-top: 4px;
+        }
+
+        .fc3-btn {
+            padding: 11px 17px;
+            border: 1px solid #30394b;
+            border-radius: 10px;
+            background: #151d29;
+            color: #f4f5ff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .fc3-btn:hover {
+            filter: brightness(1.15);
+        }
+
+        .fc3-btn:disabled {
+            opacity: .6;
+            cursor: wait;
+        }
+
+        .fc3-save {
+            background: #6c63ff;
+            border-color: #6c63ff;
+            color: white;
+        }
+
+        .fc-advanced-kicker {
+            color: #9c95ff;
+            font-size: 10px;
+            letter-spacing: 2px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .fc-advanced-section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 13px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #252d3a;
+        }
+
+        .fc-advanced-section-title > span {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            color: #c4beff;
+            background: rgba(108, 99, 255, .16);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .fc-advanced-section-title strong,
+        .fc-advanced-section-title small {
+            display: block;
+        }
+
+        .fc-advanced-section-title strong {
+            color: #f4f5ff;
+            font-size: 14px;
+        }
+
+        .fc-advanced-section-title small {
+            margin-top: 4px;
+            color: #8995aa;
+            font-size: 12px;
+        }
+
+        .fc-advanced-toggles {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .fc-advanced-toggles label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 13px;
+            border: 1px solid #293246;
+            border-radius: 12px;
+            background: #101722;
+            cursor: pointer;
+        }
+
+        .fc-advanced-toggles strong,
+        .fc-advanced-toggles small {
+            display: block;
+        }
+
+        .fc-advanced-toggles strong {
+            color: #f4f5ff;
+            font-size: 13px;
+        }
+
+        .fc-advanced-toggles small {
+            margin-top: 4px;
+            color: #8995aa;
+            font-size: 12px;
+        }
+
+        .fc-advanced-toggles input {
+            width: 18px;
+            height: 18px;
+            accent-color: #6c63ff;
+        }
+
+        .fc-advanced-preview-note {
+            display: flex;
+            gap: 12px;
+            padding: 15px;
+            border: 1px solid rgba(108, 99, 255, .3);
+            border-radius: 13px;
+            background: rgba(108, 99, 255, .08);
+        }
+
+        .fc-advanced-preview-note > span {
+            color: #a49dff;
+            font-size: 23px;
+        }
+
+        .fc-advanced-preview-note strong {
+            color: #f4f5ff;
+            font-size: 13px;
+        }
+
+        .fc-advanced-preview-note p {
+            margin: 6px 0 0;
+            color: #a5b0c4;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .fc-advanced-live-preview {
+            overflow: hidden;
+            border: 1px solid var(--preview-border, #252d3a);
+            border-radius: 13px;
+            background: var(--preview-bg, #070a10);
+            color: var(--preview-text, #f4f5ff);
+        }
+
+        .fc-adv-preview-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px;
+            border-bottom: 1px solid var(--preview-border, #252d3a);
+        }
+
+        .fc-adv-preview-top > span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--preview-accent, #6c63ff);
+        }
+
+        .fc-adv-preview-top b {
+            margin-left: auto;
+            color: var(--preview-text, #f4f5ff);
+            font-size: 9px;
+            letter-spacing: 1.5px;
+        }
+
+        .fc-adv-preview-body {
+            display: grid;
+            grid-template-columns: 26% 1fr;
+            min-height: 95px;
+        }
+
+        .fc-adv-preview-body aside {
+            background: var(--preview-sidebar, #111824);
+            border-right: 1px solid var(--preview-border, #252d3a);
+        }
+
+        .fc-adv-preview-main {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            padding: 15px;
+            background: var(--preview-panel, #0d121b);
+        }
+
+        .fc-adv-preview-main > div {
+            height: 9px;
+            width: 72%;
+            border-radius: 5px;
+            background: var(--preview-border, #252d3a);
+        }
+
+        .fc-adv-preview-main > div:first-child {
+            width: 45%;
+            background: var(--preview-accent, #6c63ff);
+        }
+
+        .fc-advanced-live-preview[data-display="cards"] .fc-adv-preview-main {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-content: center;
+        }
+
+        .fc-advanced-live-preview[data-corners="square"] {
+            border-radius: 2px;
+        }
+
+        .fc-advanced-live-preview[data-corners="soft"] {
+            border-radius: 22px;
+        }
+
+        /* Mode chooser */
+
+        .fc-mode-chooser {
+            width: min(680px, 100%);
+            padding: 28px;
+            border: 1px solid #293246;
+            border-radius: 22px;
+            background: #0d121b;
+            color: #f4f5ff;
+            box-shadow: 0 25px 90px rgba(0, 0, 0, .55);
+            animation: fcPopupRise .22s ease;
+        }
+
+        .fc-mode-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .fc-mode-eyebrow {
+            color: #a49dff;
+            font-size: 10px;
+            letter-spacing: 2px;
+            font-weight: 800;
+            margin-bottom: 9px;
+        }
+
+        .fc-mode-heading h2 {
+            margin: 0;
+            font-size: clamp(23px, 4vw, 30px);
+        }
+
+        .fc-mode-description {
+            color: #9da9be;
+            font-size: 13px;
+            line-height: 1.65;
+            margin: 10px 0 23px;
+        }
+
+        .fc-mode-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .fc-mode-option {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-height: 190px;
+            padding: 20px;
+            text-align: left;
+            color: #f4f5ff;
+            background: #111824;
+            border: 1px solid #293246;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: border-color .18s, transform .18s, background .18s;
+        }
+
+        .fc-mode-option:hover {
+            transform: translateY(-3px);
+            border-color: #6c63ff;
+            background: #171e2d;
+        }
+
+        .fc-mode-icon {
+            display: grid;
+            place-items: center;
+            width: 43px;
+            height: 43px;
+            margin-bottom: 17px;
+            border-radius: 13px;
+            color: #c4beff;
+            background: rgba(108, 99, 255, .16);
+            font-size: 22px;
+        }
+
+        .fc-mode-option strong {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .fc-mode-option small {
+            color: #9da9be;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .fc-mode-tag {
+            margin-top: auto;
+            padding-top: 15px;
+            color: #a49dff;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .fc-mode-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 17px;
+            border-top: 1px solid #252d3a;
+            color: #8995aa;
+            font-size: 11px;
+        }
+
+        @keyframes fcPopupFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fcPopupRise {
+            from { opacity: 0; transform: translateY(9px) scale(.99); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @media (max-width: 560px) {
+            .fc3-overlay {
+                padding: 10px;
+                align-items: center;
+            }
+
+            .fc3-modal,
+            .fc-mode-chooser {
+                padding: 18px;
+                border-radius: 16px;
+                max-height: 94vh;
+            }
+
+            .fc3-two,
+            .fc-mode-options {
+                grid-template-columns: 1fr;
+            }
+
+            .fc-mode-option {
+                min-height: 150px;
+            }
+
+            .fc3-actions {
+                flex-wrap: wrap;
+            }
+
+            .fc3-actions .fc3-btn {
+                flex: 1;
+            }
+        }
+    `;
+
+    document.head.appendChild(style);
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
 
 function phase3Escape(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -133,7 +682,9 @@ function settingsBaseValues() {
     };
 }
 
-/* --------------------- APPLY APPEARANCE --------------------- */
+/* =========================================================
+   APPLY APPEARANCE
+   ========================================================= */
 
 function applyServerAppearance() {
     if (!currentServer || !document.documentElement || !document.body) {
@@ -177,8 +728,6 @@ function applyServerAppearance() {
             isLight ? "#d9dfeb" : FC_DEFAULTS.borderColor
         )
     };
-
-    /* CSS variables */
 
     root.style.setProperty("--fc-accent", colors.accent);
     root.style.setProperty("--accent", colors.accent);
@@ -241,8 +790,6 @@ function applyServerAppearance() {
                 : "12px"
     );
 
-    /* Page background and optional image */
-
     const backgroundURL = phase3SafeImageURL(settings.background);
 
     const backgroundImage = backgroundURL
@@ -260,16 +807,10 @@ function applyServerAppearance() {
         fontMap[settings.fontFamily] || fontMap.system;
 
     document.body.style.backgroundImage = backgroundImage;
-    document.body.style.backgroundSize =
-        backgroundURL ? "cover" : "";
-    document.body.style.backgroundPosition =
-        backgroundURL ? "center center" : "";
-    document.body.style.backgroundRepeat =
-        backgroundURL ? "no-repeat" : "";
-    document.body.style.backgroundAttachment =
-        backgroundURL ? "fixed" : "";
-
-    /* Advanced layout classes */
+    document.body.style.backgroundSize = backgroundURL ? "cover" : "";
+    document.body.style.backgroundPosition = backgroundURL ? "center center" : "";
+    document.body.style.backgroundRepeat = backgroundURL ? "no-repeat" : "";
+    document.body.style.backgroundAttachment = backgroundURL ? "fixed" : "";
 
     const app = document.querySelector(".server-app");
 
@@ -332,16 +873,12 @@ function applyServerAppearance() {
         );
     }
 
-    /* Preview visibility */
-
     const previewBox = document.querySelector(".preview-box");
 
     if (previewBox && previewBox.closest(".section")) {
         previewBox.closest(".section").style.display =
             layout.showPreview === false ? "none" : "";
     }
-
-    /* Server hero and banner */
 
     const hero = document.querySelector(".server-hero");
 
@@ -360,7 +897,9 @@ function applyServerAppearance() {
     }
 }
 
-/* ----------------------- OPEN / CLOSE ----------------------- */
+/* =========================================================
+   OPEN / CLOSE SETTINGS
+   ========================================================= */
 
 function closeServerSettings() {
     if (serverSettingsOverlay) {
@@ -381,8 +920,9 @@ function handleServerSettingsEscape(event) {
 }
 
 /*
- * Keep this function globally accessible to server-home.js.
- * Both the top-bar Settings button and the settings card can call it.
+ * Settings now always opens the chooser first.
+ * The user's original server creation mode no longer
+ * decides which settings form opens automatically.
  */
 function openServerSettings() {
     if (!currentServer) {
@@ -391,15 +931,119 @@ function openServerSettings() {
     }
 
     closeServerSettings();
-
-    if (getServerCreationMode() === "advanced") {
-        openAdvancedServerSettings();
-    } else {
-        openSimpleServerSettings();
-    }
+    installCustomizationStyles();
+    openServerModeChooser();
 }
 
-/* -------------------------- SIMPLE MODE -------------------------- */
+function openServerModeChooser() {
+    const overlay = document.createElement("div");
+    overlay.className = "fc3-overlay fc-mode-chooser-overlay";
+
+    overlay.innerHTML = `
+        <section class="fc-mode-chooser"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="fcModeTitle">
+
+            <div class="fc-mode-heading">
+                <div>
+                    <div class="fc-mode-eyebrow">FRIENDCHAT / SETTINGS</div>
+                    <h2 id="fcModeTitle">Customize your server</h2>
+                </div>
+
+                <button class="fc3-close"
+                    type="button"
+                    aria-label="Close">×</button>
+            </div>
+
+            <p class="fc-mode-description">
+                Choose how you want to customize your server.
+                You can change its appearance and design without
+                leaving this page.
+            </p>
+
+            <div class="fc-mode-options">
+
+                <button class="fc-mode-option"
+                    type="button"
+                    data-open-mode="simple">
+
+                    <span class="fc-mode-icon">⚙</span>
+                    <strong>Simple Mode</strong>
+
+                    <small>
+                        Change your server name, description,
+                        icon, theme and main colors with easy controls.
+                    </small>
+
+                    <span class="fc-mode-tag">EASY CUSTOMIZATION →</span>
+                </button>
+
+                <button class="fc-mode-option"
+                    type="button"
+                    data-open-mode="advanced">
+
+                    <span class="fc-mode-icon">✦</span>
+                    <strong>Advanced Mode</strong>
+
+                    <small>
+                        Design your server with detailed colors,
+                        backgrounds, banners, typography, layout
+                        and display settings.
+                    </small>
+
+                    <span class="fc-mode-tag">DESIGN STUDIO →</span>
+                </button>
+
+            </div>
+
+            <div class="fc-mode-footer">
+                <span>Your server · Customize your way</span>
+                <span>Press Esc to close</span>
+            </div>
+        </section>
+    `;
+
+    document.body.appendChild(overlay);
+    serverSettingsOverlay = overlay;
+
+    overlay.querySelector(".fc3-close").addEventListener(
+        "click",
+        closeServerSettings
+    );
+
+    overlay.addEventListener("click", event => {
+        if (event.target === overlay) {
+            closeServerSettings();
+        }
+    });
+
+    overlay.querySelectorAll("[data-open-mode]").forEach(button => {
+        button.addEventListener("click", () => {
+            const mode = button.dataset.openMode;
+
+            closeServerSettings();
+
+            if (mode === "advanced") {
+                openAdvancedServerSettings();
+            } else {
+                openSimpleServerSettings();
+            }
+        });
+    });
+
+    document.addEventListener(
+        "keydown",
+        handleServerSettingsEscape
+    );
+
+    const firstOption = overlay.querySelector("[data-open-mode='simple']");
+    firstOption?.focus();
+}
+
+/* =========================================================
+   SIMPLE MODE
+   ========================================================= */
 
 function openSimpleServerSettings() {
     const settings = getServerSettings();
@@ -535,8 +1179,11 @@ function openSimpleServerSettings() {
                 ? phase3SafeImageURL(iconValue)
                 : null;
 
+            currentServer.creationMode = "simple";
+
             currentServer.settings = {
                 ...getServerSettings(),
+                creationMode: "simple",
                 theme: themeValue,
                 backgroundColor:
                     overlay.querySelector("#fc3BackgroundColor").value,
@@ -554,7 +1201,9 @@ function openSimpleServerSettings() {
     );
 }
 
-/* --------------------- ADVANCED DESIGN STUDIO -------------------- */
+/* =========================================================
+   ADVANCED DESIGN STUDIO
+   ========================================================= */
 
 function openAdvancedServerSettings() {
     const settings = getServerSettings();
@@ -809,22 +1458,27 @@ function openAdvancedServerSettings() {
             "--preview-accent",
             overlay.querySelector("#fcAdvAccent").value
         );
+
         preview.style.setProperty(
             "--preview-bg",
             overlay.querySelector("#fcAdvBackgroundColor").value
         );
+
         preview.style.setProperty(
             "--preview-panel",
             overlay.querySelector("#fcAdvPanelColor").value
         );
+
         preview.style.setProperty(
             "--preview-sidebar",
             overlay.querySelector("#fcAdvSidebarColor").value
         );
+
         preview.style.setProperty(
             "--preview-text",
             overlay.querySelector("#fcAdvTextColor").value
         );
+
         preview.style.setProperty(
             "--preview-border",
             overlay.querySelector("#fcAdvBorderColor").value
@@ -853,12 +1507,16 @@ function openAdvancedServerSettings() {
 
             const saveButton = overlay.querySelector(".fc3-save");
             const name = overlay.querySelector("#fcAdvName").value.trim();
+
             const description =
                 overlay.querySelector("#fcAdvDescription").value.trim();
+
             const iconValue =
                 overlay.querySelector("#fcAdvIcon").value.trim();
+
             const bannerValue =
                 overlay.querySelector("#fcAdvBanner").value.trim();
+
             const backgroundValue =
                 overlay.querySelector("#fcAdvBackground").value.trim();
 
@@ -953,12 +1611,15 @@ function openAdvancedServerSettings() {
 
             currentServer.name = name;
             currentServer.description = description;
+
             currentServer.icon = iconValue
                 ? phase3SafeImageURL(iconValue)
                 : null;
+
             currentServer.banner = bannerValue
                 ? phase3SafeImageURL(bannerValue)
                 : null;
+
             currentServer.creationMode = "advanced";
             currentServer.settings = newSettings;
 
@@ -972,7 +1633,9 @@ function openAdvancedServerSettings() {
     );
 }
 
-/* Creates a color input row for Advanced Mode. */
+/* =========================================================
+   COLOR INPUT BUILDER
+   ========================================================= */
 
 function colorField(id, label, value, textId) {
     return `
@@ -985,7 +1648,9 @@ function colorField(id, label, value, textId) {
       </div>`;
 }
 
-/* ------------------------ EVENT HELPERS ------------------------ */
+/* =========================================================
+   EVENT HELPERS
+   ========================================================= */
 
 function wireCommonOverlay(overlay) {
     overlay.querySelector(".fc3-close")?.addEventListener(
@@ -1021,7 +1686,9 @@ function wireColorLabel(overlay, inputSelector, textSelector) {
     });
 }
 
-/* ------------------------- SAVE CHANGES ------------------------- */
+/* =========================================================
+   SAVE CHANGES
+   ========================================================= */
 
 async function persistServerChanges(
     saveButton,
@@ -1045,12 +1712,11 @@ async function persistServerChanges(
         );
     }
 
+    /*
+     * This keeps the original saveServerToBackend() contract:
+     * it must resolve to a truthy value when saving succeeds.
+     */
     if (!saved) {
-        /*
-         * Restore the original object's contents rather than only
-         * replacing the variable. This helps if other functions
-         * still hold a reference to the same server object.
-         */
         if (currentServer && oldServer) {
             for (const key of Object.keys(currentServer)) {
                 delete currentServer[key];
@@ -1069,6 +1735,7 @@ async function persistServerChanges(
         phase3Toast(
             "Could not save changes. Please try again."
         );
+
         return;
     }
 
@@ -1090,13 +1757,13 @@ async function persistServerChanges(
     phase3Toast(successMessage);
 }
 
-/* ------------------------- INITIALIZATION ------------------------- */
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
 
 function initServerCustomization() {
-    /*
-     * Connect the settings controls without overwriting
-     * server-home.js handlers.
-     */
+    installCustomizationStyles();
+
     const settingsButtons = [
         document.getElementById("settingsButton"),
         document.getElementById("serverSettingsCard")
@@ -1109,16 +1776,17 @@ function initServerCustomization() {
 
         button.dataset.fcCustomizationBound = "true";
 
+        /*
+         * Capture the click before ordinary target/bubble handlers
+         * so the settings button does not navigate away.
+         */
         button.addEventListener("click", event => {
             event.preventDefault();
+            event.stopImmediatePropagation();
             openServerSettings();
-        });
+        }, true);
     });
 
-    /*
-     * Apply appearance after the initial server data becomes available.
-     * The timer stops once the server loads or after a limited wait.
-     */
     if (currentServer) {
         applyServerAppearance();
         return;
@@ -1144,9 +1812,10 @@ function initServerCustomization() {
     }, 100);
 }
 
-/*
- * Expose functions for other classic scripts, including server-home.js.
- */
+/* =========================================================
+   GLOBAL FUNCTIONS
+   ========================================================= */
+
 window.openServerSettings = openServerSettings;
 window.closeServerSettings = closeServerSettings;
 window.applyServerAppearance = applyServerAppearance;
@@ -1160,4 +1829,3 @@ if (document.readyState === "loading") {
 } else {
     initServerCustomization();
 }
-```
