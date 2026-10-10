@@ -2,196 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070a10">
     <title>FriendChat - Create Server</title>
-
-    <link
-        rel="stylesheet"
-        href="create-server.css"
-    >
+    <link rel="stylesheet" href="create-server.css">
 </head>
-
 <body>
-
     <main class="page">
-
         <section class="create-card">
-
-            <!-- BRAND -->
-
             <div class="brand">
-                <div class="brand-icon">
-                    FC
-                </div>
-
-                <span>
-                    FriendChat
-                </span>
+                <div class="brand-icon">FC</div>
+                <span>FriendChat</span>
             </div>
-
-
-            <!-- HEADER -->
 
             <div class="header">
-
-                <h1>
-                    Create your server
-                </h1>
-
-                <p>
-                    Build your own space for friends,
-                    communities and conversations.
-                </p>
-
+                <h1>Create your server</h1>
+                <p>Build your own space for friends, communities and conversations.</p>
             </div>
 
+            <!-- SERVER CREATION MODE -->
+            <section class="mode-section" aria-labelledby="modeHeading">
+                <div class="mode-heading-row">
+                    <div>
+                        <h2 id="modeHeading">How do you want to build?</h2>
+                        <p>Choose a starting point. You can expand your design later.</p>
+                    </div>
+                    <span class="mode-step">STEP 1</span>
+                </div>
+
+                <input type="hidden" id="serverCreationMode" name="serverCreationMode" value="simple">
+
+                <div class="mode-options" role="group" aria-label="Server creation mode">
+                    <button type="button" class="mode-option is-selected" data-server-mode="simple" aria-pressed="true">
+                        <span class="mode-option-top">
+                            <span class="mode-icon simple-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="4" width="17" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 8h8M8 12h5M8 16h8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                            </span>
+                            <span class="mode-check" aria-hidden="true">✓</span>
+                        </span>
+                        <span class="mode-title">Simple Mode</span>
+                        <span class="mode-description">Start with a ready-made server and customize its look, channels and settings.</span>
+                        <span class="mode-tags"><span>Quick setup</span><span>Easy to use</span></span>
+                    </button>
+
+                    <button type="button" class="mode-option" data-server-mode="advanced" aria-pressed="false">
+                        <span class="mode-option-top">
+                            <span class="mode-icon advanced-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.7" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.7" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.7" stroke="currentColor" stroke-width="1.7"/><path d="M15 17h4M17 15v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                            </span>
+                            <span class="mode-check" aria-hidden="true">✓</span>
+                        </span>
+                        <span class="mode-title">Advanced Mode</span>
+                        <span class="mode-description">Choose a blank canvas for a more hands-on, from-scratch server design.</span>
+                        <span class="mode-tags"><span>More control</span><span>Build your way</span></span>
+                    </button>
+                </div>
+                <p class="mode-note"><span class="note-dot"></span> You can change your server's settings later. Advanced building tools will be added in the next phase.</p>
+            </section>
 
             <!-- SERVER ICON -->
-
             <div class="icon-section">
-
-                <div
-                    class="server-icon"
-                    id="serverIconPreview"
-                    title="Choose server icon"
-                >
-
-                    <span id="iconText">
-                        +
-                    </span>
-
-                    <img
-                        id="iconImage"
-                        src=""
-                        alt="Server icon preview"
-                    >
-
+                <div class="server-icon" id="serverIconPreview" title="Choose server icon" role="button" tabindex="0" aria-label="Choose server icon">
+                    <span id="iconText">+</span>
+                    <img id="iconImage" src="" alt="Server icon preview">
                 </div>
-
-
-                <input
-                    type="file"
-                    id="serverIcon"
-                    accept="image/*"
-                    hidden
-                >
-
-
-                <button
-                    type="button"
-                    class="upload-button"
-                    id="uploadIconButton"
-                >
-                    Upload server icon
-                </button>
-
-
-                <small>
-                    JPG, PNG or other image formats
-                </small>
-
+                <input type="file" id="serverIcon" accept="image/*" hidden>
+                <button type="button" class="upload-button" id="uploadIconButton">Upload server icon</button>
+                <small>JPG, PNG or other image formats · Max 5 MB</small>
             </div>
-
 
             <!-- SERVER NAME -->
-
             <div class="form-group">
-
-                <label for="serverName">
-                    Server name
-                </label>
-
-                <input
-                    type="text"
-                    id="serverName"
-                    placeholder="Enter your server name"
-                    maxlength="40"
-                    autocomplete="off"
-                >
-
-                <div class="counter">
-                    <span id="nameCounter">0</span>/40
-                </div>
-
+                <label for="serverName">Server name</label>
+                <input type="text" id="serverName" placeholder="Enter your server name" maxlength="40" autocomplete="off">
+                <div class="counter"><span id="nameCounter">0</span>/40</div>
             </div>
-
 
             <!-- DESCRIPTION -->
-
             <div class="form-group">
-
-                <label for="serverDescription">
-
-                    Description
-
-                    <span class="optional">
-                        Optional
-                    </span>
-
-                </label>
-
-                <textarea
-                    id="serverDescription"
-                    placeholder="Tell people what your server is about..."
-                    maxlength="200"
-                    rows="4"
-                ></textarea>
-
-                <div class="counter">
-                    <span id="descriptionCounter">0</span>/200
-                </div>
-
+                <label for="serverDescription">Description <span class="optional">Optional</span></label>
+                <textarea id="serverDescription" placeholder="Tell people what your server is about..." maxlength="200" rows="4"></textarea>
+                <div class="counter"><span id="descriptionCounter">0</span>/200</div>
             </div>
 
+            <div class="error-message" id="errorMessage" role="alert" aria-live="polite"></div>
 
-            <!-- ERROR -->
-
-            <div
-                class="error-message"
-                id="errorMessage"
-            ></div>
-
-
-            <!-- CREATE BUTTON -->
-
-            <button
-                type="button"
-                class="create-button"
-                id="createServerButton"
-            >
-
-                <span>
-                    Create Server
-                </span>
-
-                <span class="arrow">
-                    →
-                </span>
-
+            <button type="button" class="create-button" id="createServerButton">
+                <span>Create Server</span><span class="arrow" aria-hidden="true">→</span>
             </button>
-
-
-            <!-- CANCEL -->
-
-            <button
-                type="button"
-                class="cancel-button"
-                id="cancelButton"
-            >
-                Cancel
-            </button>
-
+            <button type="button" class="cancel-button" id="cancelButton">Cancel</button>
         </section>
-
     </main>
-
-
     <script src="create-server.js"></script>
-
 </body>
 </html>
