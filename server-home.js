@@ -1646,11 +1646,19 @@ if (activityCard) {
 }
 
 
-if (serverSettingsCard) {
-    serverSettingsCard.addEventListener("click", function () {
-        showToast("Server customization will be added later.");
+
+if (settingsButton) {
+    settingsButton.addEventListener("click", function () {
+        if (typeof openServerSettings === "function") {
+            openServerSettings();
+        } else {
+            showToast(
+                "Customization failed to load. Check server-customization.js."
+            );
+        }
     });
 }
+
 
 
 if (settingsButton) {
