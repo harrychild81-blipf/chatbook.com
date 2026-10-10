@@ -1,120 +1,64 @@
+
 /* =========================================================
    FRIENDCHAT
    SERVER HOME
-   FIXED BACKEND CONNECTED VERSION
+   BACKEND CONNECTED VERSION — SETTINGS BUTTON FIXED
    ========================================================= */
 
 const API_BASE = "";
-
 
 /* =========================================================
    ELEMENTS
    ========================================================= */
 
-const topServerName =
-    document.getElementById("topServerName");
+const topServerName = document.getElementById("topServerName");
+const topServerIcon = document.getElementById("topServerIcon");
+const topServerIconText = document.getElementById("topServerIconText");
 
-const topServerIcon =
-    document.getElementById("topServerIcon");
+const serverName = document.getElementById("serverName");
+const serverDescription = document.getElementById("serverDescription");
+const serverIcon = document.getElementById("serverIcon");
+const serverIconText = document.getElementById("serverIconText");
+const serverID = document.getElementById("serverID");
 
-const topServerIconText =
-    document.getElementById("topServerIconText");
+const previewIcon = document.getElementById("previewIcon");
+const previewIconText = document.getElementById("previewIconText");
+const previewName = document.getElementById("previewName");
+const previewChannelList = document.getElementById("previewChannelList");
 
-const serverName =
-    document.getElementById("serverName");
-
-const serverDescription =
-    document.getElementById("serverDescription");
-
-const serverIcon =
-    document.getElementById("serverIcon");
-
-const serverIconText =
-    document.getElementById("serverIconText");
-
-const serverID =
-    document.getElementById("serverID");
-
-const previewIcon =
-    document.getElementById("previewIcon");
-
-const previewIconText =
-    document.getElementById("previewIconText");
-
-const previewName =
-    document.getElementById("previewName");
-
-const previewChannelList =
-    document.getElementById("previewChannelList");
-
-const toast =
-    document.getElementById("toast");
-
-const toastMessage =
-    document.getElementById("toastMessage");
-
+const toast = document.getElementById("toast");
+const toastMessage = document.getElementById("toastMessage");
 
 /* =========================================================
    CHANNEL ELEMENTS
    ========================================================= */
 
-const createChannelButton =
-    document.getElementById("createChannelButton");
-
-const channelModal =
-    document.getElementById("channelModal");
-
-const channelModalBackdrop =
-    document.getElementById("channelModalBackdrop");
-
-const closeChannelModal =
-    document.getElementById("closeChannelModal");
-
-const cancelChannelButton =
-    document.getElementById("cancelChannelButton");
-
-const saveChannelButton =
-    document.getElementById("saveChannelButton");
-
-const channelNameInput =
-    document.getElementById("channelNameInput");
-
-const channelFormError =
-    document.getElementById("channelFormError");
-
-const textChannelOption =
-    document.getElementById("textChannelOption");
-
-const voiceChannelOption =
-    document.getElementById("voiceChannelOption");
-
-const textChannelList =
-    document.getElementById("textChannelList");
-
-const voiceChannelList =
-    document.getElementById("voiceChannelList");
-
+const createChannelButton = document.getElementById("createChannelButton");
+const channelModal = document.getElementById("channelModal");
+const channelModalBackdrop = document.getElementById("channelModalBackdrop");
+const closeChannelModal = document.getElementById("closeChannelModal");
+const cancelChannelButton = document.getElementById("cancelChannelButton");
+const saveChannelButton = document.getElementById("saveChannelButton");
+const channelNameInput = document.getElementById("channelNameInput");
+const channelFormError = document.getElementById("channelFormError");
+const textChannelOption = document.getElementById("textChannelOption");
+const voiceChannelOption = document.getElementById("voiceChannelOption");
+const textChannelList = document.getElementById("textChannelList");
+const voiceChannelList = document.getElementById("voiceChannelList");
 
 /* =========================================================
    STATE
    ========================================================= */
 
 let currentServer = null;
-
 let selectedChannelID = null;
-
 let toastTimer = null;
-
-// True when the loaded server needs a one-time channel-data repair.
-let serverNeedsInitialSave = false;
-
 
 /* =========================================================
    CURRENT USER
    ========================================================= */
 
 function getCurrentUserID() {
-
     const possibleKeys = [
         "friendchat_user_id",
         "userID",
@@ -124,25 +68,14 @@ function getCurrentUserID() {
         "fc_user_id"
     ];
 
-
     try {
-
         for (const key of possibleKeys) {
+            const value = localStorage.getItem(key);
 
-            const value =
-                localStorage.getItem(key);
-
-            if (
-                value &&
-                String(value).trim()
-            ) {
-
-                return String(value)
-                    .trim()
-                    .toUpperCase();
+            if (value && String(value).trim()) {
+                return String(value).trim().toUpperCase();
             }
         }
-
 
         const objectKeys = [
             "friendchat_user",
@@ -152,228 +85,102 @@ function getCurrentUserID() {
             "friendchat_account"
         ];
 
-
         for (const key of objectKeys) {
-
-            const raw =
-                localStorage.getItem(key);
-
-            if (!raw) {
-                continue;
-            }
-
+            const raw = localStorage.getItem(key);
+            if (!raw) continue;
 
             try {
+                const obj = JSON.parse(raw);
+                if (!obj) continue;
 
-                const obj =
-                    JSON.parse(raw);
+                const id = obj.userID || obj.userId || obj.id || obj.ID;
 
-
-                if (!obj) {
-                    continue;
+                if (id && String(id).trim()) {
+                    return String(id).trim().toUpperCase();
                 }
-
-
-                const id =
-                    obj.userID ||
-                    obj.userId ||
-                    obj.id ||
-                    obj.ID;
-
-
-                if (
-                    id &&
-                    String(id).trim()
-                ) {
-
-                    return String(id)
-                        .trim()
-                        .toUpperCase();
-                }
-
             } catch (_) {}
         }
-
     } catch (error) {
-
-        console.error(
-            "FriendChat: Could not read current user:",
-            error
-        );
+        console.error("FriendChat: Could not read current user:", error);
     }
-
 
     return "";
 }
-
 
 /* =========================================================
    SERVER ID
    ========================================================= */
 
 function getCurrentServerID() {
-
-    let urlID = "";
-
-
     try {
+        const params = new URLSearchParams(window.location.search);
+        const urlID = params.get("server") || params.get("serverID") || "";
 
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-
-        urlID =
-            params.get("server") ||
-            params.get("serverID") ||
-            "";
-
+        if (urlID && String(urlID).trim()) {
+            return String(urlID).trim();
+        }
     } catch (error) {
-
-        console.warn(
-            "FriendChat: URL server ID read failed:",
-            error
-        );
+        console.warn("FriendChat: URL server ID read failed:", error);
     }
-
-
-    if (
-        urlID &&
-        String(urlID).trim()
-    ) {
-
-        return String(urlID).trim();
-    }
-
 
     try {
+        const saved = localStorage.getItem("friendchat_current_server");
 
-        const saved =
-            localStorage.getItem(
-                "friendchat_current_server"
-            );
-
-
-        if (
-            saved &&
-            String(saved).trim()
-        ) {
-
+        if (saved && String(saved).trim()) {
             return String(saved).trim();
         }
-
     } catch (error) {
-
-        console.warn(
-            "FriendChat: saved server ID read failed:",
-            error
-        );
+        console.warn("FriendChat: saved server ID read failed:", error);
     }
-
 
     return "";
 }
 
-
-/* =========================================================
-   SAVE SERVER ID
-   ========================================================= */
-
 function saveCurrentServerID(id) {
-
-    if (!id) {
-        return;
-    }
-
+    if (!id) return;
 
     try {
-
-        localStorage.setItem(
-            "friendchat_current_server",
-            String(id)
-        );
-
+        localStorage.setItem("friendchat_current_server", String(id));
     } catch (error) {
-
-        console.error(
-            "FriendChat: Could not save server ID:",
-            error
-        );
+        console.error("FriendChat: Could not save server ID:", error);
     }
 }
-
 
 /* =========================================================
    TOAST
    ========================================================= */
 
 function showToast(message) {
-
     if (!toast || !toastMessage) {
+        console.log("FriendChat:", message);
         return;
     }
 
-
-    toastMessage.textContent =
-        message;
-
-
+    toastMessage.textContent = message;
     toast.classList.add("show");
-
 
     clearTimeout(toastTimer);
 
-
-    toastTimer =
-        setTimeout(
-            function () {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2200
-        );
+    toastTimer = setTimeout(function () {
+        toast.classList.remove("show");
+    }, 2600);
 }
-
 
 /* =========================================================
    API REQUEST
    ========================================================= */
 
-async function apiRequest(
-    url,
-    options = {}
-) {
-
+async function apiRequest(url, options = {}) {
     const headers = {
-        "Content-Type":
-            "application/json"
+        "Content-Type": "application/json",
+        ...(options.headers || {})
     };
 
-
-    if (options.headers) {
-
-        Object.assign(
-            headers,
-            options.headers
-        );
-    }
-
-
-    const userID =
-        getCurrentUserID();
-
+    const userID = getCurrentUserID();
 
     if (userID) {
-
-        headers[
-            "x-friendchat-user-id"
-        ] = userID;
+        headers["x-friendchat-user-id"] = userID;
     }
-
 
     console.log(
         "FriendChat API:",
@@ -383,553 +190,236 @@ async function apiRequest(
         userID
     );
 
-
     let response;
 
-
     try {
-
-        response =
-            await fetch(
-                API_BASE + url,
-                Object.assign(
-                    {},
-                    options,
-                    {
-                        headers
-                    }
-                )
-            );
-
+        response = await fetch(API_BASE + url, {
+            ...options,
+            headers
+        });
     } catch (error) {
-
-        console.error(
-            "FriendChat network error:",
-            error
-        );
-
-
-        throw new Error(
-            "Cannot connect to FriendChat server."
-        );
+        console.error("FriendChat network error:", error);
+        throw new Error("Cannot connect to FriendChat server.");
     }
-
 
     let data = null;
 
-
     try {
+        data = await response.json();
+    } catch (_) {}
 
-        data =
-            await response.json();
-
-    } catch (_) {
-
-        data = null;
-    }
-
-
-    console.log(
-        "FriendChat API response:",
-        response.status,
-        data
-    );
-
+    console.log("FriendChat API response:", response.status, data);
 
     if (!response.ok) {
-
-        let message =
-            "Server request failed.";
-
-
-        if (
-            data &&
-            data.error
-        ) {
-
-            message =
-                data.error;
-        }
-
-
         throw new Error(
-            message
+            (data && data.error) || "Server request failed."
         );
     }
-
 
     return data;
 }
 
-
 /* =========================================================
-   LOAD SERVER
+   LOAD SERVER FROM BACKEND
    ========================================================= */
 
 async function loadServerFromBackend() {
+    const id = getCurrentServerID();
+    const userID = getCurrentUserID();
 
-    const id =
-        getCurrentServerID();
-
-
-    const userID =
-        getCurrentUserID();
-
-
-    console.log(
-        "FriendChat loading server:",
-        id,
-        "User:",
-        userID
-    );
-
+    console.log("FriendChat loading server:", id, "User:", userID);
 
     if (!id) {
+        showToast("Server ID is missing.");
 
-        showToast(
-            "Server ID is missing."
-        );
-
-
-        setTimeout(
-            function () {
-
-                window.location.href =
-                    "index.html";
-
-            },
-            1200
-        );
-
+        setTimeout(function () {
+            window.location.href = "index.html";
+        }, 1200);
 
         return null;
     }
 
-
-    /*
-       IMPORTANT:
-       Send the user ID in the URL AND header.
-       This makes the request compatible with
-       both versions of the FriendChat backend.
-    */
-
-    let requestURL =
-        "/api/servers/" +
-        encodeURIComponent(id);
-
+    let requestURL = "/api/servers/" + encodeURIComponent(id);
 
     if (userID) {
-
-        requestURL +=
-            "?user=" +
-            encodeURIComponent(userID);
+        requestURL += "?user=" + encodeURIComponent(userID);
     }
 
-
     try {
+        const data = await apiRequest(requestURL, { method: "GET" });
 
-        const data =
-            await apiRequest(
-                requestURL,
-                {
-                    method: "GET"
-                }
-            );
-
-
-        if (
-            !data ||
-            !data.server
-        ) {
-
-            throw new Error(
-                "Server was not returned by the backend."
-            );
+        if (!data || !data.server) {
+            throw new Error("Server was not returned by the backend.");
         }
 
+        currentServer = data.server;
 
-        currentServer =
-            data.server;
-
-
-        if (
-            !currentServer.serverID
-        ) {
-
-            currentServer.serverID =
-                id;
+        if (!currentServer.serverID) {
+            currentServer.serverID = id;
         }
 
+        saveCurrentServerID(currentServer.serverID);
+        normalizeChannels(currentServer);
 
-        saveCurrentServerID(
-            currentServer.serverID
-        );
-
-
-        normalizeChannels(
-            currentServer
-        );
-
-
-        console.log(
-            "FriendChat server loaded successfully:",
-            currentServer
-        );
-
+        console.log("FriendChat server loaded:", currentServer);
 
         return currentServer;
-
     } catch (error) {
-
-        console.error(
-            "FriendChat server loading failed:",
-            error
-        );
-
-
-        showToast(
-            error.message ||
-            "Server not found."
-        );
-
-
-        /*
-           DO NOT immediately close the page.
-           Keep the page open so we can see the error.
-        */
-
+        console.error("FriendChat server loading failed:", error);
+        showToast(error.message || "Server not found.");
         return null;
     }
 }
 
-
 /* =========================================================
-   NORMALIZE CHANNELS
+   CHANNEL DATA
    ========================================================= */
 
 function normalizeChannels(server) {
+    if (!server || typeof server !== "object") return [];
 
-    if (
-        !server ||
-        typeof server !== "object"
-    ) {
-
-        return [];
-    }
-
-
-    if (
-        !Array.isArray(
-            server.channels
-        )
-    ) {
-
+    if (!Array.isArray(server.channels)) {
         server.channels = [];
     }
-
 
     return server.channels;
 }
 
-
-/* =========================================================
-   GET CHANNELS
-   ========================================================= */
-
 function getChannels() {
-
-    if (!currentServer) {
-        return [];
-    }
-
-
-    return normalizeChannels(
-        currentServer
-    );
+    return currentServer ? normalizeChannels(currentServer) : [];
 }
 
-
 /* =========================================================
-   SERVER INITIALS
+   SERVER INITIALS AND ICON
    ========================================================= */
 
 function getServerInitials(name) {
+    if (!name) return "FC";
 
-    if (!name) {
-        return "FC";
+    const words = String(name).trim().split(/\s+/).filter(Boolean);
+
+    if (words.length === 1) {
+        return words[0].substring(0, 2).toUpperCase();
     }
 
-
-    const words =
-        String(name)
-            .trim()
-            .split(/\s+/)
-            .filter(Boolean);
-
-
-    if (
-        words.length === 1
-    ) {
-
-        return words[0]
-            .substring(0, 2)
-            .toUpperCase();
-    }
-
-
-    return (
-        words[0][0] +
-        words[1][0]
-    ).toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-
-/* =========================================================
-   SERVER IMAGE
-   ========================================================= */
-
-function setServerImage(
-    imageElement,
-    textElement,
-    icon,
-    initials
-) {
-
+function setServerImage(imageElement, textElement, icon, initials) {
     if (
         imageElement &&
         textElement &&
-        icon &&
         typeof icon === "string" &&
         icon.trim()
     ) {
+        imageElement.src = icon;
+        imageElement.style.display = "block";
+        textElement.style.display = "none";
 
-        imageElement.src =
-            icon;
-
-        imageElement.style.display =
-            "block";
-
-        textElement.style.display =
-            "none";
+        imageElement.onerror = function () {
+            imageElement.style.display = "none";
+            imageElement.removeAttribute("src");
+            textElement.textContent = initials;
+            textElement.style.display = "block";
+        };
 
         return;
     }
 
-
     if (imageElement) {
-
-        imageElement.removeAttribute(
-            "src"
-        );
-
-        imageElement.style.display =
-            "none";
+        imageElement.removeAttribute("src");
+        imageElement.style.display = "none";
     }
 
-
     if (textElement) {
-
-        textElement.textContent =
-            initials;
-
-        textElement.style.display =
-            "block";
+        textElement.textContent = initials;
+        textElement.style.display = "block";
     }
 }
 
-
 /* =========================================================
-   CHANNEL ID
+   CHANNEL IDs AND SAVED SELECTION
    ========================================================= */
 
 function generateChannelID() {
-
     return (
         "CH-" +
-        Date.now()
-            .toString(36)
-            .toUpperCase() +
+        Date.now().toString(36).toUpperCase() +
         "-" +
-        Math.random()
-            .toString(36)
-            .substring(2, 8)
-            .toUpperCase()
+        Math.random().toString(36).substring(2, 8).toUpperCase()
     );
 }
 
-
-/* =========================================================
-   SAVED CHANNEL
-   ========================================================= */
-
 function getSavedChannelID() {
-
     try {
-
-        const raw =
-            localStorage.getItem(
-                "friendchat_current_channel"
-            );
-
-
-        if (!raw) {
-            return null;
-        }
-
+        const raw = localStorage.getItem("friendchat_current_channel");
+        if (!raw) return null;
 
         try {
+            const data = JSON.parse(raw);
 
-            const data =
-                JSON.parse(raw);
-
-
-            if (
-                data &&
-                typeof data === "object"
-            ) {
-
+            if (data && typeof data === "object") {
                 if (
                     data.serverID &&
                     currentServer &&
-                    String(data.serverID) !==
-                    String(currentServer.serverID)
+                    String(data.serverID) !== String(currentServer.serverID)
                 ) {
-
                     return null;
                 }
 
-
-                return (
-                    data.channelID ||
-                    null
-                );
+                return data.channelID || null;
             }
-
         } catch (_) {
-
             return raw;
         }
-
     } catch (_) {}
-
 
     return null;
 }
 
-
-/* =========================================================
-   SAVE CHANNEL
-   ========================================================= */
-
 function saveSelectedChannel(channel) {
-
-    if (
-        !currentServer ||
-        !channel
-    ) {
-
-        return;
-    }
-
+    if (!currentServer || !channel) return;
 
     try {
-
         localStorage.setItem(
             "friendchat_current_channel",
             JSON.stringify({
-
-                serverID:
-                    currentServer.serverID,
-
-                channelID:
-                    channel.channelID
-
+                serverID: currentServer.serverID,
+                channelID: channel.channelID
             })
         );
-
     } catch (error) {
-
-        console.error(
-            "FriendChat: Could not save channel:",
-            error
-        );
+        console.error("FriendChat: Could not save channel:", error);
     }
 }
 
-
-/* =========================================================
-   GET URL CHANNEL
-   ========================================================= */
-
 function getChannelFromURL() {
-
     try {
-
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-
-        return (
-            params.get("channel") ||
-            params.get("channelID") ||
-            null
-        );
-
+        const params = new URLSearchParams(window.location.search);
+        return params.get("channel") || params.get("channelID") || null;
     } catch (_) {
-
         return null;
     }
 }
-
 
 /* =========================================================
    LOAD SERVER UI
    ========================================================= */
 
 async function loadServer() {
-
-    const server =
-        await loadServerFromBackend();
-
+    const server = await loadServerFromBackend();
 
     if (!server) {
-
-        console.error(
-            "FriendChat: Server could not be loaded."
-        );
-
+        console.error("FriendChat: Server could not be loaded.");
         return;
     }
 
-
-    const name =
-        currentServer.name ||
-        "Unnamed Server";
-
-
+    const name = currentServer.name || "Unnamed Server";
     const description =
-        currentServer.description ||
-        "Welcome to your FriendChat server.";
+        currentServer.description || "Welcome to your FriendChat server.";
+    const initials = getServerInitials(name);
 
-
-    const initials =
-        getServerInitials(
-            name
-        );
-
-
-    /* =====================================================
-       TOP BAR
-       ===================================================== */
-
-    if (topServerName) {
-
-        topServerName.textContent =
-            name;
-    }
-
+    if (topServerName) topServerName.textContent = name;
 
     setServerImage(
         topServerIcon,
@@ -938,51 +428,16 @@ async function loadServer() {
         initials
     );
 
-
-    /* =====================================================
-       SERVER HERO
-       ===================================================== */
-
-    if (serverName) {
-
-        serverName.textContent =
-            name;
-    }
-
-
-    if (serverDescription) {
-
-        serverDescription.textContent =
-            description;
-    }
-
+    if (serverName) serverName.textContent = name;
+    if (serverDescription) serverDescription.textContent = description;
 
     if (serverID) {
-
-        serverID.textContent =
-            currentServer.serverID ||
-            "—";
+        serverID.textContent = currentServer.serverID || "—";
     }
 
+    setServerImage(serverIcon, serverIconText, currentServer.icon, initials);
 
-    setServerImage(
-        serverIcon,
-        serverIconText,
-        currentServer.icon,
-        initials
-    );
-
-
-    /* =====================================================
-       PREVIEW
-       ===================================================== */
-
-    if (previewName) {
-
-        previewName.textContent =
-            name;
-    }
-
+    if (previewName) previewName.textContent = name;
 
     setServerImage(
         previewIcon,
@@ -991,26 +446,16 @@ async function loadServer() {
         initials
     );
 
-
-    /* =====================================================
-       CHANNEL SELECTION
-       ===================================================== */
-
-    const urlChannel =
-        getChannelFromURL();
-
-
-    const savedChannel =
-        getSavedChannelID();    const possibleChannel = urlChannel || savedChannel;
+    const urlChannel = getChannelFromURL();
+    const savedChannel = getSavedChannelID();
+    const possibleChannel = urlChannel || savedChannel;
 
     if (possibleChannel) {
         const found = getChannels().find(function (channel) {
             return String(channel.channelID) === String(possibleChannel);
         });
 
-        if (found) {
-            selectedChannelID = found.channelID;
-        }
+        if (found) selectedChannelID = found.channelID;
     }
 
     if (!selectedChannelID && getChannels().length) {
@@ -1021,7 +466,6 @@ async function loadServer() {
 
     console.log("FriendChat server home ready.", currentServer);
 }
-
 
 /* =========================================================
    RENDER CHANNELS
@@ -1044,9 +488,8 @@ function renderChannels() {
         textChannelList.innerHTML = "";
 
         if (!textChannels.length) {
-            textChannelList.innerHTML = `
-                <div class="channel-empty">No text channels yet.</div>
-            `;
+            textChannelList.innerHTML =
+                '<div class="channel-empty">No text channels yet.</div>';
         } else {
             textChannels.forEach(function (channel) {
                 textChannelList.appendChild(createChannelElement(channel));
@@ -1058,9 +501,8 @@ function renderChannels() {
         voiceChannelList.innerHTML = "";
 
         if (!voiceChannels.length) {
-            voiceChannelList.innerHTML = `
-                <div class="channel-empty">No voice channels yet.</div>
-            `;
+            voiceChannelList.innerHTML =
+                '<div class="channel-empty">No voice channels yet.</div>';
         } else {
             voiceChannels.forEach(function (channel) {
                 voiceChannelList.appendChild(createChannelElement(channel));
@@ -1071,9 +513,23 @@ function renderChannels() {
     renderPreviewChannels();
 }
 
+/* =========================================================
+   SAFE HTML
+   ========================================================= */
+
+function escapeHTML(value) {
+    if (value === null || value === undefined) return "";
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 /* =========================================================
-   CREATE CHANNEL ELEMENT
+   CHANNEL ELEMENT
    ========================================================= */
 
 function createChannelElement(channel) {
@@ -1088,8 +544,8 @@ function createChannelElement(channel) {
     }
 
     const icon = channel.type === "voice" ? "🔊" : "#";
-
-    const description = channel.description ||
+    const description =
+        channel.description ||
         (channel.type === "voice" ? "Voice channel" : "Text channel");
 
     button.innerHTML = `
@@ -1109,23 +565,6 @@ function createChannelElement(channel) {
 
     return button;
 }
-
-
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
-
-function escapeHTML(value) {
-    if (value === null || value === undefined) return "";
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
 
 /* =========================================================
    SELECT CHANNEL
@@ -1155,7 +594,6 @@ function selectChannel(channel) {
     window.location.href = targetURL;
 }
 
-
 /* =========================================================
    PREVIEW CHANNELS
    ========================================================= */
@@ -1168,9 +606,8 @@ function renderPreviewChannels() {
     const channels = getChannels();
 
     if (!channels.length) {
-        previewChannelList.innerHTML = `
-            <div class="preview-channel muted">No channels</div>
-        `;
+        previewChannelList.innerHTML =
+            '<div class="preview-channel muted">No channels</div>';
         return;
     }
 
@@ -1185,9 +622,10 @@ function renderPreviewChannels() {
             item.classList.add("active");
         }
 
-        item.textContent = channel.type === "voice"
-            ? "🔊 " + channel.name
-            : "# " + channel.name;
+        item.textContent =
+            channel.type === "voice"
+                ? "🔊 " + channel.name
+                : "# " + channel.name;
 
         item.addEventListener("click", function (event) {
             event.preventDefault();
@@ -1198,7 +636,6 @@ function renderPreviewChannels() {
         previewChannelList.appendChild(item);
     });
 }
-
 
 /* =========================================================
    CHANNEL MODAL
@@ -1217,7 +654,6 @@ function openChannelModal() {
     }, 100);
 }
 
-
 function closeChannelModalWindow() {
     if (!channelModal) return;
 
@@ -1226,7 +662,6 @@ function closeChannelModalWindow() {
 
     clearChannelForm();
 }
-
 
 function clearChannelForm() {
     if (channelNameInput) channelNameInput.value = "";
@@ -1241,7 +676,6 @@ function clearChannelForm() {
     updateChannelTypeUI();
 }
 
-
 function getSelectedChannelType() {
     const selected = document.querySelector(
         'input[name="channelType"]:checked'
@@ -1249,7 +683,6 @@ function getSelectedChannelType() {
 
     return selected ? selected.value : "text";
 }
-
 
 function updateChannelTypeUI() {
     const type = getSelectedChannelType();
@@ -1263,16 +696,14 @@ function updateChannelTypeUI() {
     }
 }
 
-
 function showChannelError(message) {
     if (channelFormError) {
         channelFormError.textContent = message;
     }
 }
 
-
 /* =========================================================
-   SAVE SERVER
+   SAVE SERVER TO BACKEND
    ========================================================= */
 
 async function saveServerToBackend() {
@@ -1304,7 +735,6 @@ async function saveServerToBackend() {
         return false;
     }
 }
-
 
 /* =========================================================
    CREATE CHANNEL
@@ -1360,19 +790,15 @@ async function createChannel() {
         saveChannelButton.textContent = "Creating...";
     }
 
+    const previousChannels = getChannels().slice();
+
     try {
-        currentServer.channels = getChannels();
-        currentServer.channels.push(newChannel);
+        currentServer.channels = previousChannels.concat(newChannel);
 
         const saved = await saveServerToBackend();
 
         if (!saved) {
-            currentServer.channels = currentServer.channels.filter(
-                function (channel) {
-                    return channel.channelID !== newChannel.channelID;
-                }
-            );
-
+            currentServer.channels = previousChannels;
             return;
         }
 
@@ -1388,10 +814,8 @@ async function createChannel() {
         );
     } catch (error) {
         console.error("FriendChat: Create channel failed:", error);
-
-        showChannelError(
-            error.message || "Could not create channel."
-        );
+        currentServer.channels = previousChannels;
+        showChannelError(error.message || "Could not create channel.");
     } finally {
         if (saveChannelButton) {
             saveChannelButton.disabled = false;
@@ -1400,9 +824,8 @@ async function createChannel() {
     }
 }
 
-
 /* =========================================================
-   CHANNEL BUTTONS
+   CHANNEL BUTTON EVENTS
    ========================================================= */
 
 if (createChannelButton) {
@@ -1410,24 +833,15 @@ if (createChannelButton) {
 }
 
 if (closeChannelModal) {
-    closeChannelModal.addEventListener(
-        "click",
-        closeChannelModalWindow
-    );
+    closeChannelModal.addEventListener("click", closeChannelModalWindow);
 }
 
 if (cancelChannelButton) {
-    cancelChannelButton.addEventListener(
-        "click",
-        closeChannelModalWindow
-    );
+    cancelChannelButton.addEventListener("click", closeChannelModalWindow);
 }
 
 if (channelModalBackdrop) {
-    channelModalBackdrop.addEventListener(
-        "click",
-        closeChannelModalWindow
-    );
+    channelModalBackdrop.addEventListener("click", closeChannelModalWindow);
 }
 
 if (saveChannelButton) {
@@ -1443,21 +857,9 @@ if (channelNameInput) {
     });
 }
 
-
-/* =========================================================
-   CHANNEL TYPE
-   ========================================================= */
-
-document
-    .querySelectorAll('input[name="channelType"]')
-    .forEach(function (radio) {
-        radio.addEventListener("change", updateChannelTypeUI);
-    });
-
-
-/* =========================================================
-   ESCAPE KEY
-   ========================================================= */
+document.querySelectorAll('input[name="channelType"]').forEach(function (radio) {
+    radio.addEventListener("change", updateChannelTypeUI);
+});
 
 document.addEventListener("keydown", function (event) {
     if (
@@ -1469,13 +871,11 @@ document.addEventListener("keydown", function (event) {
     }
 });
 
-
 /* =========================================================
    COPY SERVER ID
    ========================================================= */
 
-const copyServerIDButton =
-    document.getElementById("copyServerID");
+const copyServerIDButton = document.getElementById("copyServerID");
 
 if (copyServerIDButton) {
     copyServerIDButton.addEventListener("click", async function () {
@@ -1495,13 +895,11 @@ if (copyServerIDButton) {
     });
 }
 
-
 /* =========================================================
    BACK BUTTON
    ========================================================= */
 
-const backButton =
-    document.getElementById("backButton");
+const backButton = document.getElementById("backButton");
 
 if (backButton) {
     backButton.addEventListener("click", function () {
@@ -1512,7 +910,6 @@ if (backButton) {
         }
     });
 }
-
 
 /* =========================================================
    OPEN MEMBERS
@@ -1531,17 +928,11 @@ function openServerMembers() {
         encodeURIComponent(currentServer.serverID);
 
     console.log("FriendChat opening Members:", targetURL);
-
     window.location.href = targetURL;
 }
 
-
-/* =========================================================
-   MEMBERS CARD
-   ========================================================= */
-
-const membersCard =
-    document.getElementById("membersCard");
+const membersCard = document.getElementById("membersCard");
+const membersButton = document.getElementById("membersButton");
 
 if (membersCard) {
     membersCard.addEventListener("click", function (event) {
@@ -1551,14 +942,6 @@ if (membersCard) {
     });
 }
 
-
-/* =========================================================
-   TOP MEMBERS BUTTON
-   ========================================================= */
-
-const membersButton =
-    document.getElementById("membersButton");
-
 if (membersButton) {
     membersButton.addEventListener("click", function (event) {
         event.preventDefault();
@@ -1567,38 +950,83 @@ if (membersButton) {
     });
 }
 
-
 /* =========================================================
-   OTHER CARDS
+   OTHER SERVER CARDS
    ========================================================= */
 
-const rulesCard =
-    document.getElementById("rulesCard");
+const rulesCard = document.getElementById("rulesCard");
+const rolesCard = document.getElementById("rolesCard");
+const aiCard = document.getElementById("aiCard");
+const musicCard = document.getElementById("musicCard");
+const activityCard = document.getElementById("activityCard");
+const channelsCard = document.getElementById("channelsCard");
 
-const rolesCard =
-    document.getElementById("rolesCard");
+/* =========================================================
+   SERVER SETTINGS — FIXED
+   ========================================================= */
 
-const aiCard =
-    document.getElementById("aiCard");
+/*
+   IMPORTANT:
+   There must be ONLY ONE click handler for settingsButton.
+   Do not add another handler that displays "coming soon".
+*/
 
-const musicCard =
-    document.getElementById("musicCard");
+const serverSettingsCard = document.getElementById("serverSettingsCard");
+const settingsButton = document.getElementById("settingsButton");
 
-const activityCard =
-    document.getElementById("activityCard");
+function openServerSettingsPage(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
 
-const serverSettingsCard =
-    document.getElementById("serverSettingsCard");
+    if (!currentServer) {
+        showToast("Please wait for the server to finish loading.");
+        return;
+    }
 
-const channelsCard =
-    document.getElementById("channelsCard");
+    // Save the selected server before opening its settings.
+    saveCurrentServerID(currentServer.serverID);
 
-const settingsButton =
-    document.getElementById("settingsButton");
+    /*
+       The customization script may expose openServerSettings().
+       Call it if it exists. Otherwise navigate to the standalone
+       customization page, preserving the current server ID.
+    */
 
+    if (typeof window.openServerSettings === "function") {
+        try {
+            window.openServerSettings();
+            return;
+        } catch (error) {
+            console.error("FriendChat: Could not open settings:", error);
+        }
+    }
+
+    const settingsURL =
+        "server-customization.html?server=" +
+        encodeURIComponent(String(currentServer.serverID));
+
+    console.log("FriendChat opening server settings:", settingsURL);
+    window.location.href = settingsURL;
+}
+
+if (settingsButton) {
+    settingsButton.addEventListener("click", openServerSettingsPage);
+}
+
+if (serverSettingsCard && serverSettingsCard !== settingsButton) {
+    serverSettingsCard.addEventListener("click", openServerSettingsPage);
+}
+
+/* =========================================================
+   OTHER CARD ACTIONS
+   ========================================================= */
 
 if (channelsCard) {
-    channelsCard.addEventListener("click", function () {
+    channelsCard.addEventListener("click", function (event) {
+        event.preventDefault();
+
         const section = document.getElementById("channelsSection");
 
         if (section) {
@@ -1610,13 +1038,11 @@ if (channelsCard) {
     });
 }
 
-
 if (rulesCard) {
     rulesCard.addEventListener("click", function () {
         showToast("Rules system coming soon.");
     });
 }
-
 
 if (rolesCard) {
     rolesCard.addEventListener("click", function () {
@@ -1624,13 +1050,11 @@ if (rolesCard) {
     });
 }
 
-
 if (aiCard) {
     aiCard.addEventListener("click", function () {
         showToast("FriendChat AI will be added later.");
     });
 }
-
 
 if (musicCard) {
     musicCard.addEventListener("click", function () {
@@ -1638,35 +1062,11 @@ if (musicCard) {
     });
 }
 
-
 if (activityCard) {
     activityCard.addEventListener("click", function () {
         showToast("Activity will be added later.");
     });
 }
-
-
-
-if (settingsButton) {
-    settingsButton.addEventListener("click", function () {
-        if (typeof openServerSettings === "function") {
-            openServerSettings();
-        } else {
-            showToast(
-                "Customization failed to load. Check server-customization.js."
-            );
-        }
-    });
-}
-
-
-
-if (settingsButton) {
-    settingsButton.addEventListener("click", function () {
-        showToast("Server settings coming soon.");
-    });
-}
-
 
 /* =========================================================
    START
