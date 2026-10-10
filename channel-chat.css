@@ -991,3 +991,49 @@ textarea:focus-visible {
         animation-duration: 0.01ms !important;
     }
 }
+/* =====================================================
+   FRIENDCHAT — SERVER BACKGROUND VISIBILITY FIX
+   ===================================================== */
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    background-color: var(--fc-custom-bg, #070a10);
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* Let the server background show through */
+.channel-app,
+.channel-main,
+.messages {
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+/* Keep the header readable */
+.channel-topbar {
+    background-color: rgba(13, 18, 27, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Keep the message composer readable */
+.composer-area {
+    background: linear-gradient(
+        to top,
+        rgba(7, 10, 16, 0.96),
+        transparent
+    ) !important;
+}
+
+.composer {
+    background-color: rgba(17, 24, 36, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
