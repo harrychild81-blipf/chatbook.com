@@ -1,33 +1,34 @@
 
 /* =========================================================
-   FRIENDCHAT — SERVER CUSTOMIZATION FIX
-   Simple + Advanced Settings
-   File: server-customization.js
+   FRIENDCHAT SERVER CUSTOMIZATION
+   Settings button + simple/advanced customization
    ========================================================= */
 
-(() => {
+(function () {
     "use strict";
 
-    const STYLE_ID = "fc-customization-fixed-css";
-    const MODAL_ID = "fc-customization-modal";
-
-    let isSaving = false;
-
-    /* ---------- SERVER ACCESS ---------- */
+    let activeTab = "general";
+    let modalCreated = false;
 
     function getServer() {
-        try {
-            if (typeof currentServer !== "undefined" && currentServer) {
-                return currentServer;
-            }
-        } catch (error) {
-            console.warn("FriendChat: currentServer unavailable.", error);
-        }
-
-        return window.currentServer || null;
+        return typeof currentServer !== "undefined"
+            ? currentServer
+            : null;
     }
 
-    function getSettings(server) {
+    function toast(message) {
+        if (typeof showToast === "function") {
+            showToast(message);
+        } else {
+            alert(message);
+        }
+    }
+
+    function getSettings() {
+        const server = getServer();
+
+        if (!server) return {};
+
         if (!server.settings || typeof server.settings !== "object") {
             server.settings = {};
         }
@@ -35,283 +36,285 @@
         return server.settings;
     }
 
-    function getMode(server) {
-        const settings = getSettings(server);
-        return (settings.creationMode || server.creationMode) === "advanced"
-            ? "advanced"
-            : "simple";
-    }
-
     function escapeHTML(value) {
-        return String(value ?? "").replace(/[&<>"']/g, char => ({
+        return String(value ?? "").replace(/[&<>"']/g, character => ({
             "&": "&amp;",
             "<": "&lt;",
             ">": "&gt;",
             '"': "&quot;",
-            "'": "&#39;"
-        })[char]);
+            "'": "&#039;"
+        })[character]);
     }
 
-    function notify(message) {
-        if (typeof window.showToast === "function") {
-            window.showToast(message);
-        } else {
-            console.log("[FriendChat]", message);
-        }
-    }
-
-    function getAccent(server) {
-        const color = getSettings(server).accentColor || "#6c63ff";
-        return /^#[0-9a-fA-F]{6}$/.test(color) ? color : "#6c63ff";
-    }
-
-    /* ---------- APPEARANCE ---------- */
-
-    function applyAppearance() {
-        const server = getServer();
-        if (!server) return;
-
-        const settings = getSettings(server);
-
-        document.documentElement.style.setProperty(
-            "--fc-accent",
-            getAccent(server)
-        );
-
-        document.documentElement.style.setProperty(
-            "--fc-accent-color",
-            getAccent(server)
-        );
-
-        document.documentElement.dataset.serverTheme =
-            settings.theme || "dark";
-
-        document.dispatchEvent(new CustomEvent(
-            "friendchat:server-appearance",
-            { detail: { serverId: server.id, settings } }
-        ));
-    }
-
-    /* ---------- CSS ---------- */
-
-    function addCSS() {
-        if (document.getElementById(STYLE_ID)) return;
+    function addCustomizationCSS() {
+        if (document.getElementById("fcCustomizationCSS")) return;
 
         const style = document.createElement("style");
-        style.id = STYLE_ID;
+        style.id = "fcCustomizationCSS";
 
         style.textContent = `
-            #${MODAL_ID} {
+            #fcCustomizationOverlay {
                 position: fixed;
                 inset: 0;
-                z-index: 999999;
-                display: flex;
-                justify-content: center;
+                z-index: 99990;
+                display: none;
                 align-items: center;
-                padding: 16px;
-                background: rgba(0,0,0,.78);
+                justify-content: center;
+                padding: 18px;
+                background: rgba(0, 0, 0, .72);
                 backdrop-filter: blur(7px);
-                overflow-y: auto;
             }
 
-            .fc-cm-window {
+            #fcCustomizationOverlay.fc-open {
+                display: flex;
+            }
+
+            #fcCustomizationModal {
                 width: min(900px, 100%);
-                max-height: 92vh;
+                max-height: min(800px, 92vh);
                 display: flex;
                 flex-direction: column;
                 overflow: hidden;
-                color: #edf0f7;
+                color: #f3f5fa;
                 background: #0d121b;
-                border: 1px solid #293449;
+                border: 1px solid #283244;
                 border-radius: 16px;
                 box-shadow: 0 25px 90px #0009;
                 font-family: inherit;
             }
 
-            .fc-cm-header, .fc-cm-footer {
+            #fcCustomizationModal * {
+                box-sizing: border-box;
+            }
+
+            .fc-c-head {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                gap: 12px;
+                gap: 16px;
                 padding: 18px 22px;
-                border-bottom: 1px solid #273143;
+                border-bottom: 1px solid #263044;
             }
 
-            .fc-cm-footer {
-                justify-content: flex-end;
-                border-top: 1px solid #273143;
-                border-bottom: 0;
-            }
-
-            .fc-cm-header h2 {
+            .fc-c-head h2 {
                 margin: 0;
-                font-size: 21px;
-            }
-
-            .fc-cm-subtitle {
-                margin: 5px 0 0;
-                color: #96a2b5;
-                font-size: 12px;
-            }
-
-            .fc-cm-body {
-                padding: 22px;
-                overflow-y: auto;
-            }
-
-            .fc-cm-close, .fc-cm-btn {
-                padding: 10px 14px;
-                color: #edf0f7;
-                background: #182131;
-                border: 1px solid #344158;
-                border-radius: 9px;
-                cursor: pointer;
-                font: inherit;
-                font-size: 13px;
-            }
-
-            .fc-cm-close {
                 font-size: 20px;
             }
 
-            .fc-cm-btn.primary {
-                background: #6c63ff;
-                border-color: #6c63ff;
-            }
-
-            .fc-cm-layout {
-                display: grid;
-                grid-template-columns: 175px minmax(0, 1fr);
-                gap: 22px;
-            }
-
-            .fc-cm-nav {
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-            }
-
-            .fc-cm-nav button {
-                padding: 12px;
-                text-align: left;
-                color: #aeb8c9;
-                background: transparent;
-                border: 1px solid transparent;
+            .fc-c-close {
+                border: 0;
                 border-radius: 8px;
+                padding: 8px 12px;
+                background: #202938;
+                color: #fff;
                 cursor: pointer;
+                font-size: 20px;
             }
 
-            .fc-cm-nav button.active {
-                color: white;
-                background: #252247;
-                border-color: #4942a1;
+            .fc-c-layout {
+                display: grid;
+                grid-template-columns: 185px minmax(0, 1fr);
+                min-height: 0;
+                overflow: auto;
             }
 
-            .fc-cm-panel h3 {
+            .fc-c-nav {
+                padding: 14px 10px;
+                border-right: 1px solid #263044;
+                background: #0a0f17;
+            }
+
+            .fc-c-nav button {
+                display: block;
+                width: 100%;
+                margin-bottom: 5px;
+                padding: 11px 12px;
+                text-align: left;
+                border: 0;
+                border-radius: 8px;
+                color: #bfc9d9;
+                background: transparent;
+                cursor: pointer;
+                font: inherit;
+            }
+
+            .fc-c-nav button.active,
+            .fc-c-nav button:hover {
+                color: #fff;
+                background: #222b3c;
+            }
+
+            .fc-c-content {
+                padding: 22px;
+                overflow: auto;
+                min-width: 0;
+            }
+
+            .fc-c-content h3 {
                 margin: 0 0 8px;
                 font-size: 19px;
             }
 
-            .fc-cm-panel > p {
-                margin: 0 0 20px;
-                color: #96a2b5;
+            .fc-c-help {
+                margin: 0 0 22px;
+                color: #98a5b8;
                 font-size: 13px;
-                line-height: 1.6;
+                line-height: 1.5;
             }
 
-            .fc-cm-field {
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                margin-bottom: 17px;
+            .fc-c-field {
+                display: block;
+                margin-bottom: 18px;
             }
 
-            .fc-cm-field label {
+            .fc-c-field > span {
+                display: block;
+                margin-bottom: 7px;
+                color: #dce4f0;
                 font-size: 13px;
                 font-weight: 600;
             }
 
-            .fc-cm-field input,
-            .fc-cm-field textarea,
-            .fc-cm-field select {
-                box-sizing: border-box;
+            .fc-c-field input,
+            .fc-c-field textarea,
+            .fc-c-field select {
+                display: block;
                 width: 100%;
-                padding: 11px;
-                color: #edf0f7;
-                background: #080d14;
-                border: 1px solid #344158;
+                min-width: 0;
+                padding: 11px 12px;
+                color: #f4f6fb;
+                background: #090e16;
+                border: 1px solid #303b4e;
                 border-radius: 8px;
+                outline: none;
                 font: inherit;
-                font-size: 13px;
             }
 
-            .fc-cm-field input[type="color"] {
-                height: 44px;
-                padding: 4px;
+            .fc-c-field input:focus,
+            .fc-c-field textarea:focus,
+            .fc-c-field select:focus {
+                border-color: var(--fc-accent, #6c63ff);
             }
 
-            .fc-cm-field textarea {
+            .fc-c-field textarea {
                 min-height: 90px;
                 resize: vertical;
             }
 
-            .fc-cm-card {
-                padding: 14px;
-                margin-bottom: 10px;
-                background: #121a27;
-                border: 1px solid #293449;
-                border-radius: 10px;
-                font-size: 13px;
+            .fc-c-row {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 14px;
             }
 
-            .fc-cm-card small {
-                display: block;
-                margin-top: 6px;
-                color: #96a2b5;
-                line-height: 1.5;
-            }
-
-            .fc-cm-notice {
-                padding: 12px;
-                margin-bottom: 16px;
-                color: #e9d8a7;
-                background: #292316;
-                border: 1px solid #584824;
-                border-radius: 9px;
-                font-size: 12px;
-                line-height: 1.5;
-            }
-
-            .fc-cm-check {
+            .fc-c-footer {
                 display: flex;
                 align-items: center;
-                gap: 12px;
-                margin-bottom: 14px;
-                padding: 14px;
-                background: #121a27;
-                border: 1px solid #293449;
-                border-radius: 10px;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 14px 22px;
+                border-top: 1px solid #263044;
+                background: #0a0f17;
+            }
+
+            .fc-c-footer small {
+                color: #96a2b5;
+            }
+
+            .fc-c-actions {
+                display: flex;
+                gap: 9px;
+            }
+
+            .fc-c-btn {
+                padding: 10px 15px;
+                border: 1px solid #344056;
+                border-radius: 8px;
+                color: #f5f6fa;
+                background: #1b2433;
+                cursor: pointer;
+                font: inherit;
+            }
+
+            .fc-c-btn.primary {
+                color: white;
+                background: var(--fc-accent, #6c63ff);
+                border-color: transparent;
+            }
+
+            .fc-c-btn:disabled {
+                opacity: .6;
+                cursor: wait;
+            }
+
+            .fc-c-list {
+                display: grid;
+                gap: 9px;
+            }
+
+            .fc-c-list-item {
+                padding: 12px;
+                background: #151d29;
+                border: 1px solid #2b3547;
+                border-radius: 9px;
+            }
+
+            .fc-c-list-item strong {
+                display: block;
+                margin-bottom: 4px;
+            }
+
+            .fc-c-list-item small {
+                color: #98a5b8;
+            }
+
+            .fc-c-warning {
+                padding: 12px;
+                margin: 0 0 16px;
+                border: 1px solid #6c5530;
+                background: #302719;
+                border-radius: 8px;
+                color: #f3d9a6;
                 font-size: 13px;
+                line-height: 1.5;
             }
 
-            .fc-cm-check input {
-                width: 18px;
-                height: 18px;
-                accent-color: #6c63ff;
-            }
+            @media (max-width: 620px) {
+                #fcCustomizationOverlay {
+                    padding: 8px;
+                }
 
-            @media(max-width:600px) {
-                .fc-cm-layout {
+                #fcCustomizationModal {
+                    max-height: 96vh;
+                    border-radius: 12px;
+                }
+
+                .fc-c-layout {
                     grid-template-columns: 1fr;
                 }
 
-                .fc-cm-nav {
-                    display: grid;
-                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                .fc-c-nav {
+                    display: flex;
+                    gap: 5px;
+                    overflow-x: auto;
+                    border-right: 0;
+                    border-bottom: 1px solid #263044;
                 }
 
-                .fc-cm-body {
-                    padding: 15px;
+                .fc-c-nav button {
+                    width: auto;
+                    flex: 0 0 auto;
+                    margin: 0;
+                }
+
+                .fc-c-content {
+                    padding: 16px;
+                }
+
+                .fc-c-row {
+                    grid-template-columns: 1fr;
+                    gap: 0;
                 }
             }
         `;
@@ -319,499 +322,462 @@
         document.head.appendChild(style);
     }
 
-    /* ---------- FORM HELPERS ---------- */
+    function ensureModal() {
+        if (modalCreated) return;
 
-    function inputField(label, id, value, type = "text") {
-        return `
-            <div class="fc-cm-field">
-                <label for="${id}">${escapeHTML(label)}</label>
-                <input id="${id}" type="${type}"
-                       value="${escapeHTML(value)}">
-            </div>
-        `;
-    }
+        addCustomizationCSS();
 
-    function textareaField(label, id, value) {
-        return `
-            <div class="fc-cm-field">
-                <label for="${id}">${escapeHTML(label)}</label>
-                <textarea id="${id}">${escapeHTML(value)}</textarea>
-            </div>
-        `;
-    }
-
-    function selectField(label, id, value, options) {
-        return `
-            <div class="fc-cm-field">
-                <label for="${id}">${escapeHTML(label)}</label>
-                <select id="${id}">
-                    ${options.map(option => `
-                        <option value="${option.value}"
-                            ${value === option.value ? "selected" : ""}>
-                            ${option.label}
-                        </option>
-                    `).join("")}
-                </select>
-            </div>
-        `;
-    }
-
-    function read(id, fallback = "") {
-        const element = document.getElementById(id);
-        return element ? element.value.trim() : fallback;
-    }
-
-    function checked(id, fallback = false) {
-        const element = document.getElementById(id);
-        return element ? element.checked : fallback;
-    }
-
-    /* ---------- SIMPLE MODE ---------- */
-
-    function simplePanel(server) {
-        const settings = getSettings(server);
-
-        return `
-            <div class="fc-cm-panel">
-                <h3>Basic Customization</h3>
-                <p>Change your server's name, details, and appearance.</p>
-
-                ${inputField("Server Name", "fc-cm-name", server.name || "")}
-                ${textareaField("Description", "fc-cm-description",
-                    server.description || "")}
-                ${inputField("Icon URL", "fc-cm-icon", server.icon || "")}
-                ${inputField("Banner URL", "fc-cm-banner",
-                    server.banner || "")}
-                ${inputField("Background Image URL", "fc-cm-background",
-                    settings.background || "")}
-
-                ${selectField("Theme", "fc-cm-theme",
-                    settings.theme || "dark", [
-                        { value: "dark", label: "Dark" },
-                        { value: "midnight", label: "Midnight" },
-                        { value: "light", label: "Light" }
-                    ])}
-
-                <div class="fc-cm-field">
-                    <label for="fc-cm-accent">Accent Color</label>
-                    <input id="fc-cm-accent" type="color"
-                           value="${getAccent(server)}">
-                </div>
-            </div>
-        `;
-    }
-
-    /* ---------- ADVANCED MODE ---------- */
-
-    const tabs = [
-        ["general", "General"],
-        ["appearance", "Appearance"],
-        ["channels", "Channels"],
-        ["roles", "Roles"],
-        ["privacy", "Safety & Privacy"]
-    ];
-
-    function advancedPanel(server, tab) {
-        const settings = getSettings(server);
-        const privacy = settings.privacy || {};
-        const channels = Array.isArray(server.channels) ? server.channels : [];
-        const roles = Array.isArray(server.roles) ? server.roles : [];
-
-        if (tab === "general") {
-            return `
-                <h3>General Settings</h3>
-                <p>Manage your server identity and description.</p>
-
-                ${inputField("Server Name", "fc-cm-name", server.name || "")}
-                ${textareaField("Description", "fc-cm-description",
-                    server.description || "")}
-                ${inputField("Icon URL", "fc-cm-icon", server.icon || "")}
-
-                <div class="fc-cm-card">
-                    <strong>Server ID</strong>
-                    <small>${escapeHTML(server.id || server._id || "Unavailable")}</small>
-                </div>
-
-                <div class="fc-cm-card">
-                    <strong>Mode: Advanced</strong>
-                    <small>Use the navigation to access additional settings.</small>
-                </div>
-            `;
-        }
-
-        if (tab === "appearance") {
-            return `
-                <h3>Appearance</h3>
-                <p>Customize your server's visual style.</p>
-
-                ${inputField("Banner URL", "fc-cm-banner", server.banner || "")}
-                ${inputField("Background Image URL", "fc-cm-background",
-                    settings.background || "")}
-
-                ${selectField("Theme", "fc-cm-theme",
-                    settings.theme || "dark", [
-                        { value: "dark", label: "Dark" },
-                        { value: "midnight", label: "Midnight" },
-                        { value: "light", label: "Light" }
-                    ])}
-
-                <div class="fc-cm-field">
-                    <label for="fc-cm-accent">Accent Color</label>
-                    <input id="fc-cm-accent" type="color"
-                           value="${getAccent(server)}">
-                </div>
-            `;
-        }
-
-        if (tab === "channels") {
-            return `
-                <h3>Channel Overview</h3>
-                <p>Review the channels stored on your server.</p>
-
-                <div class="fc-cm-notice">
-                    This is a read-only overview. Your existing channel
-                    management code remains responsible for editing channels.
-                </div>
-
-                ${channels.length ? channels.map(channel => `
-                    <div class="fc-cm-card">
-                        ${channel.type === "voice" ? "🔊" : "#"}
-                        ${escapeHTML(channel.name || "Unnamed channel")}
-                        <small>${escapeHTML(channel.type || "text")}</small>
-                    </div>
-                `).join("") : `
-                    <div class="fc-cm-card">No channels found.</div>
-                `}
-            `;
-        }
-
-        if (tab === "roles") {
-            return `
-                <h3>Role Overview</h3>
-                <p>Review the roles stored on your server.</p>
-
-                <div class="fc-cm-notice">
-                    Role editing and permission enforcement need backend support.
-                </div>
-
-                ${roles.length ? roles.map(role => `
-                    <div class="fc-cm-card">
-                        ${escapeHTML(role.name || "Unnamed role")}
-                    </div>
-                `).join("") : `
-                    <div class="fc-cm-card">No roles found.</div>
-                `}
-            `;
-        }
-
-        return `
-            <h3>Safety & Privacy</h3>
-            <p>Configure the privacy preferences for your server.</p>
-
-            <div class="fc-cm-notice">
-                These preferences are saved as settings only. Your backend
-                must enforce them to prevent unauthorized access.
-            </div>
-
-            ${checkRow("Private Server", "fc-cm-private",
-                privacy.privateServer,
-                "Intended for invited members.")}
-
-            ${checkRow("Require Join Approval", "fc-cm-approval",
-                privacy.requireApproval,
-                "New members should be approved.")}
-
-            ${checkRow("Require Verification", "fc-cm-verification",
-                privacy.requireVerification,
-                "New members should complete verification.")}
-
-            ${selectField("Moderation Preference", "fc-cm-moderation",
-                settings.moderationLevel || "standard", [
-                    { value: "relaxed", label: "Relaxed" },
-                    { value: "standard", label: "Standard" },
-                    { value: "strict", label: "Strict" }
-                ])}
-        `;
-    }
-
-    function checkRow(label, id, value, description) {
-        return `
-            <label class="fc-cm-check">
-                <input id="${id}" type="checkbox"
-                       ${value ? "checked" : ""}>
-                <span>
-                    <strong>${escapeHTML(label)}</strong>
-                    <small>${escapeHTML(description)}</small>
-                </span>
-            </label>
-        `;
-    }
-
-    function renderAdvanced(server, tab) {
-        const content = document.getElementById("fc-cm-content");
-        if (!content) return;
-
-        content.innerHTML = `
-            <div class="fc-cm-layout">
-                <nav class="fc-cm-nav">
-                    ${tabs.map(([id, label]) => `
-                        <button type="button"
-                                data-cm-tab="${id}"
-                                class="${id === tab ? "active" : ""}">
-                            ${label}
-                        </button>
-                    `).join("")}
-                </nav>
-
-                <div class="fc-cm-panel" id="fc-cm-panel">
-                    ${advancedPanel(server, tab)}
-                </div>
-            </div>
-        `;
-
-        content.querySelectorAll("[data-cm-tab]").forEach(button => {
-            button.addEventListener("click", () => {
-                renderAdvanced(server, button.dataset.cmTab);
-            });
-        });
-    }
-
-    /* ---------- OPEN MODAL ---------- */
-
-    function openSettings() {
-        const server = getServer();
-
-        if (!server) {
-            console.error(
-                "FriendChat: no current server. Wait for server-home.js to load it."
-            );
-            notify("Server is still loading. Please try again.");
-            return;
-        }
-
-        addCSS();
-
-        document.getElementById(MODAL_ID)?.remove();
-
-        const mode = getMode(server);
         const overlay = document.createElement("div");
-        overlay.id = MODAL_ID;
+        overlay.id = "fcCustomizationOverlay";
 
         overlay.innerHTML = `
-            <section class="fc-cm-window"
-                     role="dialog" aria-modal="true"
-                     aria-label="Server Settings">
+            <section id="fcCustomizationModal"
+                     role="dialog"
+                     aria-modal="true"
+                     aria-labelledby="fcCustomizationTitle">
 
-                <header class="fc-cm-header">
-                    <div>
-                        <h2>Server Settings</h2>
-                        <p class="fc-cm-subtitle">
-                            ${mode === "advanced"
-                                ? "Advanced customization"
-                                : "Simple customization"}
-                        </p>
-                    </div>
-                    <button class="fc-cm-close" type="button"
-                            data-cm-close aria-label="Close">×</button>
+                <header class="fc-c-head">
+                    <h2 id="fcCustomizationTitle">Server Settings</h2>
+                    <button type="button"
+                            class="fc-c-close"
+                            id="fcCustomizationClose"
+                            aria-label="Close settings">×</button>
                 </header>
 
-                <main class="fc-cm-body">
-                    <div id="fc-cm-content"></div>
-                </main>
+                <div class="fc-c-layout">
+                    <nav class="fc-c-nav" aria-label="Server settings">
+                        <button type="button" data-tab="general" class="active">
+                            General
+                        </button>
+                        <button type="button" data-tab="appearance">
+                            Appearance
+                        </button>
+                        <button type="button" data-tab="channels">
+                            Channels
+                        </button>
+                        <button type="button" data-tab="roles">
+                            Roles
+                        </button>
+                        <button type="button" data-tab="privacy">
+                            Safety &amp; Privacy
+                        </button>
+                    </nav>
 
-                <footer class="fc-cm-footer">
-                    <button class="fc-cm-btn" type="button"
-                            data-cm-close>Cancel</button>
-                    <button class="fc-cm-btn primary" type="button"
-                            id="fc-cm-save">Save Changes</button>
+                    <main class="fc-c-content" id="fcCustomizationContent"></main>
+                </div>
+
+                <footer class="fc-c-footer">
+                    <small id="fcCustomizationStatus">
+                        Changes are saved to your server.
+                    </small>
+
+                    <div class="fc-c-actions">
+                        <button type="button" class="fc-c-btn"
+                                id="fcCustomizationCancel">
+                            Cancel
+                        </button>
+                        <button type="button" class="fc-c-btn primary"
+                                id="fcCustomizationSave">
+                            Save Changes
+                        </button>
+                    </div>
                 </footer>
             </section>
         `;
 
-        overlay.addEventListener("click", event => {
-            if (event.target === overlay ||
-                event.target.closest("[data-cm-close]")) {
-                overlay.remove();
-            }
-        });
-
         document.body.appendChild(overlay);
 
-        if (mode === "advanced") {
-            renderAdvanced(server, "general");
-        } else {
-            document.getElementById("fc-cm-content").innerHTML =
-                simplePanel(server);
+        overlay.addEventListener("click", event => {
+            if (event.target === overlay) closeServerSettings();
+        });
+
+        overlay.querySelector("#fcCustomizationClose")
+            .addEventListener("click", closeServerSettings);
+
+        overlay.querySelector("#fcCustomizationCancel")
+            .addEventListener("click", closeServerSettings);
+
+        overlay.querySelector("#fcCustomizationSave")
+            .addEventListener("click", saveCustomization);
+
+        overlay.querySelectorAll("[data-tab]").forEach(button => {
+            button.addEventListener("click", () => {
+                activeTab = button.dataset.tab;
+
+                overlay.querySelectorAll("[data-tab]").forEach(tab => {
+                    tab.classList.toggle("active", tab === button);
+                });
+
+                renderTab();
+            });
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") closeServerSettings();
+        });
+
+        modalCreated = true;
+    }
+
+    function openServerSettings() {
+        const server = getServer();
+
+        if (!server) {
+            toast("Please wait for the server to load, then try again.");
+            return;
         }
 
-        overlay.querySelector("#fc-cm-save")
-            .addEventListener("click", saveSettings);
+        ensureModal();
 
-        const escapeHandler = event => {
-            if (event.key === "Escape") {
-                overlay.remove();
-                document.removeEventListener("keydown", escapeHandler);
-            }
+        activeTab = "general";
+
+        const overlay = document.getElementById("fcCustomizationOverlay");
+        overlay.classList.add("fc-open");
+
+        overlay.querySelectorAll("[data-tab]").forEach(button => {
+            button.classList.toggle(
+                "active",
+                button.dataset.tab === activeTab
+            );
+        });
+
+        renderTab();
+    }
+
+    function closeServerSettings() {
+        const overlay = document.getElementById("fcCustomizationOverlay");
+
+        if (overlay) {
+            overlay.classList.remove("fc-open");
+        }
+    }
+
+    function field(label, id, value, placeholder = "", type = "text") {
+        return `
+            <label class="fc-c-field">
+                <span>${escapeHTML(label)}</span>
+                <input id="${id}"
+                       type="${type}"
+                       value="${escapeHTML(value)}"
+                       placeholder="${escapeHTML(placeholder)}">
+            </label>
+        `;
+    }
+
+    function renderTab() {
+        const server = getServer();
+
+        if (!server) return;
+
+        const settings = getSettings();
+        const content = document.getElementById("fcCustomizationContent");
+
+        if (!content) return;
+
+        if (activeTab === "general") {
+            content.innerHTML = `
+                <h3>General settings</h3>
+                <p class="fc-c-help">
+                    Change the server name, icon, and description.
+                </p>
+
+                ${field("Server name", "fcServerName",
+                    server.name || "", "Enter server name")}
+
+                ${field("Server icon URL", "fcServerIcon",
+                    server.icon || "", "https://example.com/icon.png", "url")}
+
+                <label class="fc-c-field">
+                    <span>Server description</span>
+                    <textarea id="fcServerDescription"
+                              placeholder="Describe your server">${escapeHTML(
+                                  server.description || ""
+                              )}</textarea>
+                </label>
+
+                ${field("Banner image URL", "fcServerBanner",
+                    server.banner || "", "https://example.com/banner.png", "url")}
+
+                <div class="fc-c-warning">
+                    Icon and banner fields expect image URLs. They do not upload
+                    local files. Anyone who can access this server may be able
+                    to see its public details.
+                </div>
+            `;
+            return;
+        }
+
+        if (activeTab === "appearance") {
+            content.innerHTML = `
+                <h3>Appearance</h3>
+                <p class="fc-c-help">
+                    Personalize your server's colors and visual theme.
+                </p>
+
+                <div class="fc-c-row">
+                    <label class="fc-c-field">
+                        <span>Accent color</span>
+                        <input id="fcServerAccent"
+                               type="color"
+                               value="${escapeHTML(settings.accent || "#6c63ff")}">
+                    </label>
+
+                    <label class="fc-c-field">
+                        <span>Background color</span>
+                        <input id="fcServerBackground"
+                               type="color"
+                               value="${escapeHTML(settings.background || "#070a10")}">
+                    </label>
+                </div>
+
+                <label class="fc-c-field">
+                    <span>Theme</span>
+                    <select id="fcServerTheme">
+                        <option value="dark" ${settings.theme === "dark" ? "selected" : ""}>
+                            Dark
+                        </option>
+                        <option value="light" ${settings.theme === "light" ? "selected" : ""}>
+                            Light
+                        </option>
+                        <option value="midnight" ${settings.theme === "midnight" ? "selected" : ""}>
+                            Midnight
+                        </option>
+                    </select>
+                </label>
+
+                <div class="fc-c-warning">
+                    The accent and background colors are applied through CSS
+                    variables. Other pages or elements may need matching CSS
+                    rules to reflect every theme change.
+                </div>
+            `;
+            return;
+        }
+
+        if (activeTab === "channels") {
+            const channels = server.channels || [];
+
+            content.innerHTML = `
+                <h3>Channels</h3>
+                <p class="fc-c-help">
+                    These are the channels currently stored for this server.
+                </p>
+
+                <div class="fc-c-list">
+                    ${channels.length ? channels.map(channel => `
+                        <div class="fc-c-list-item">
+                            <strong>
+                                ${channel.type === "voice" ? "🔊" : "#"}
+                                ${escapeHTML(channel.name)}
+                            </strong>
+                            <small>
+                                ${escapeHTML(channel.type || "text")} channel
+                                · ID: ${escapeHTML(channel.id)}
+                            </small>
+                        </div>
+                    `).join("") : `
+                        <div class="fc-c-list-item">
+                            No channels have been created yet.
+                        </div>
+                    `}
+                </div>
+
+                <p class="fc-c-help" style="margin-top:16px">
+                    Use your server's channel creation button to add channels.
+                </p>
+            `;
+            return;
+        }
+
+        if (activeTab === "roles") {
+            const roles = Array.isArray(settings.roles) ? settings.roles : [];
+
+            content.innerHTML = `
+                <h3>Roles</h3>
+                <p class="fc-c-help">
+                    Roles can be configured here, but permissions must also
+                    be implemented and checked by your backend.
+                </p>
+
+                <div class="fc-c-list">
+                    ${roles.length ? roles.map(role => `
+                        <div class="fc-c-list-item">
+                            <strong>${escapeHTML(role.name || "Unnamed role")}</strong>
+                            <small>${escapeHTML(role.description || "No description")}</small>
+                        </div>
+                    `).join("") : `
+                        <div class="fc-c-list-item">
+                            <strong>Default member</strong>
+                            <small>No custom roles are configured.</small>
+                        </div>
+                    `}
+                </div>
+
+                <div class="fc-c-warning" style="margin-top:16px">
+                    This screen does not create secure permissions by itself.
+                    Do not rely on frontend role settings to protect server data.
+                </div>
+            `;
+            return;
+        }
+
+        if (activeTab === "privacy") {
+            content.innerHTML = `
+                <h3>Safety &amp; Privacy</h3>
+                <p class="fc-c-help">
+                    Choose a privacy preference for this server.
+                </p>
+
+                <label class="fc-c-field">
+                    <span>Server visibility preference</span>
+                    <select id="fcServerPrivacy">
+                        <option value="private" ${settings.privacy === "private" ? "selected" : ""}>
+                            Private
+                        </option>
+                        <option value="invite-only" ${settings.privacy === "invite-only" ? "selected" : ""}>
+                            Invite only
+                        </option>
+                        <option value="public" ${settings.privacy === "public" ? "selected" : ""}>
+                            Public
+                        </option>
+                    </select>
+                </label>
+
+                <div class="fc-c-warning">
+                    This saves a preference only. Your backend must enforce
+                    membership, invitations, access control, and permissions
+                    for the setting to provide real privacy.
+                </div>
+            `;
+        }
+    }
+
+    async function saveCustomization() {
+        const server = getServer();
+
+        if (!server) {
+            toast("No server is loaded.");
+            return;
+        }
+
+        const saveButton = document.getElementById("fcCustomizationSave");
+        const status = document.getElementById("fcCustomizationStatus");
+
+        const readValue = id => {
+            const element = document.getElementById(id);
+            return element ? element.value.trim() : null;
         };
 
-        document.addEventListener("keydown", escapeHandler);
-    }
+        if (activeTab === "general") {
+            const name = readValue("fcServerName");
 
-    /* ---------- SAVE ---------- */
-
-    async function saveSettings() {
-        if (isSaving) return;
-
-        const server = getServer();
-        if (!server) {
-            notify("Could not find the current server.");
-            return;
-        }
-
-        const name = read("fc-cm-name", server.name || "");
-        const description = read(
-            "fc-cm-description",
-            server.description || ""
-        );
-
-        if (!name) {
-            notify("Please enter a server name.");
-            return;
-        }
-
-        if (name.length > 80 || description.length > 1000) {
-            notify("Server name or description is too long.");
-            return;
-        }
-
-        const icon = read("fc-cm-icon", server.icon || "");
-        const banner = read("fc-cm-banner", server.banner || "");
-        const background = read(
-            "fc-cm-background",
-            getSettings(server).background || ""
-        );
-
-        for (const [label, value] of [
-            ["icon", icon],
-            ["banner", banner],
-            ["background", background]
-        ]) {
-            if (value) {
-                try {
-                    const url = new URL(value);
-                    if (!["http:", "https:"].includes(url.protocol)) {
-                        throw new Error("Invalid protocol");
-                    }
-                } catch {
-                    notify("Please enter a valid URL for the server " + label + ".");
-                    return;
-                }
+            if (!name) {
+                toast("Server name cannot be empty.");
+                return;
             }
+
+            server.name = name;
+            server.icon = readValue("fcServerIcon") || "";
+            server.description = readValue("fcServerDescription") || "";
+            server.banner = readValue("fcServerBanner") || "";
         }
 
-        const settings = getSettings(server);
+        if (activeTab === "appearance") {
+            const settings = getSettings();
 
-        server.name = name;
-        server.description = description;
-        server.icon = icon;
-        server.banner = banner;
+            settings.accent =
+                readValue("fcServerAccent") || "#6c63ff";
 
-        settings.theme = read("fc-cm-theme", settings.theme || "dark");
-        settings.accentColor = read(
-            "fc-cm-accent",
-            getAccent(server)
-        );
-        settings.background = background;
+            settings.background =
+                readValue("fcServerBackground") || "#070a10";
 
-        if (getMode(server) === "advanced") {
-            settings.privacy = {
-                privateServer: checked(
-                    "fc-cm-private",
-                    settings.privacy?.privateServer || false
-                ),
-                requireApproval: checked(
-                    "fc-cm-approval",
-                    settings.privacy?.requireApproval || false
-                ),
-                requireVerification: checked(
-                    "fc-cm-verification",
-                    settings.privacy?.requireVerification || false
-                )
-            };
-
-            settings.moderationLevel = read(
-                "fc-cm-moderation",
-                settings.moderationLevel || "standard"
-            );
+            settings.theme =
+                readValue("fcServerTheme") || "dark";
         }
 
-        isSaving = true;
-
-        const saveButton = document.getElementById("fc-cm-save");
-        if (saveButton) {
-            saveButton.disabled = true;
-            saveButton.textContent = "Saving...";
+        if (activeTab === "privacy") {
+            getSettings().privacy =
+                readValue("fcServerPrivacy") || "private";
         }
+
+        if (activeTab === "channels" || activeTab === "roles") {
+            toast("There are no changes to save on this tab.");
+            return;
+        }
+
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+        status.textContent = "Saving to server...";
 
         try {
-            if (typeof window.saveServerToBackend !== "function") {
-                throw new Error(
-                    "saveServerToBackend() is missing from server-home.js"
-                );
+            if (typeof saveServerToBackend !== "function") {
+                throw new Error("saveServerToBackend() was not found.");
             }
 
-            const result = await window.saveServerToBackend();
+            const success = await saveServerToBackend();
 
-            if (result === false) {
-                throw new Error("Backend rejected the save.");
+            if (success === false) {
+                throw new Error("The backend could not save your changes.");
             }
 
-            applyAppearance();
-            document.getElementById(MODAL_ID)?.remove();
-            notify("Server settings saved!");
+            if (typeof paintServerDetails === "function") {
+                paintServerDetails();
+            }
+
+            if (typeof applyServerAppearance === "function") {
+                applyServerAppearance();
+            }
+
+            status.textContent = "Changes saved.";
+            toast("Server settings saved.");
+            closeServerSettings();
         } catch (error) {
-            console.error("FriendChat settings save error:", error);
-            notify("Settings could not be saved. Check the server connection.");
+            console.error("FriendChat customization save failed:", error);
+            status.textContent = "Save failed.";
+            toast(error.message || "Could not save settings.");
         } finally {
-            isSaving = false;
+            saveButton.disabled = false;
+            saveButton.textContent = "Save Changes";
         }
     }
 
-    /* ---------- CONNECT BUTTON ---------- */
+    function initServerCustomization() {
+        ensureModal();
 
-    function connectButton() {
-        const button = document.getElementById("settingsButton");
+        const settingsButton = document.getElementById("settingsButton");
+        const settingsCard = document.getElementById("serverSettingsCard");
 
-        if (!button || button.dataset.fcCustomizationConnected === "yes") {
-            return;
+        if (settingsButton && !settingsButton.dataset.fcSettingsConnected) {
+            settingsButton.dataset.fcSettingsConnected = "true";
+
+            settingsButton.addEventListener("click", event => {
+                event.preventDefault();
+                openServerSettings();
+            });
         }
 
-        button.dataset.fcCustomizationConnected = "yes";
+        if (settingsCard && !settingsCard.dataset.fcSettingsConnected) {
+            settingsCard.dataset.fcSettingsConnected = "true";
 
-        button.addEventListener("click", event => {
-            event.preventDefault();
-            openSettings();
-        });
+            settingsCard.addEventListener("click", event => {
+                event.preventDefault();
+                openServerSettings();
+            });
+        }
     }
 
-    function init() {
-        addCSS();
-        connectButton();
-        applyAppearance();
-    }
+    // Make these functions available to other classic scripts.
+    window.openServerSettings = openServerSettings;
+    window.closeServerSettings = closeServerSettings;
+    window.initServerCustomization = initServerCustomization;
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init, { once: true });
+        document.addEventListener(
+            "DOMContentLoaded",
+            initServerCustomization,
+            { once: true }
+        );
     } else {
-        init();
+        initServerCustomization();
     }
-
-    // Public functions for existing FriendChat scripts.
-    window.openServerSettings = openSettings;
-    window.closeServerSettings = () => {
-        document.getElementById(MODAL_ID)?.remove();
-    };
-    window.applyServerAppearance = applyAppearance;
-    window.initServerCustomization = init;
-
 })();
