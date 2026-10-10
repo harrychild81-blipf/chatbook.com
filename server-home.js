@@ -1,3 +1,4 @@
+
 /* =========================================================
    FRIENDCHAT
    SERVER HOME
@@ -1213,6 +1214,16 @@ function createChannelElement(channel) {
             "active"
         );
     }
+        ) ===
+        String(
+            selectedChannelID
+        )
+    ) {
+
+        button.classList.add(
+            "active"
+        );
+    }
 
 
     const icon =
@@ -2346,6 +2357,36 @@ if (activityCard) {
 
             showToast(
                 "Activity will be added later."
+            );
+
+        }
+    );
+}
+
+
+if (serverSettingsCard) {
+
+    serverSettingsCard.addEventListener(
+        "click",
+        function () {
+
+            showToast(
+                "Server customization will be added later."
+            );
+
+        }
+    );
+}
+
+
+if (settingsButton) {
+
+    settingsButton.addEventListener(
+        "click",
+        function () {
+
+            showToast(
+                "Server settings coming soon."
             );
 
         }
