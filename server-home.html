@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>FriendChat - Server Customization</title>
+    <title>FriendChat - Server</title>
 
     <link
         rel="stylesheet"
@@ -847,27 +847,6 @@
 
     <script src="server-home.js"></script>
     <script src="server-customization.js"></script>
-    <script>
-        // Standalone customization page: wait for the existing server loader,
-        // then open the same Simple/Advanced editor used by FriendChat.
-        (function openStandaloneCustomization() {
-            let attempts = 0;
-            const timer = setInterval(function () {
-                attempts += 1;
-                if (typeof currentServer !== "undefined" && currentServer &&
-                    typeof openServerSettings === "function") {
-                    clearInterval(timer);
-                    openServerSettings();
-                } else if (attempts >= 100) {
-                    clearInterval(timer);
-                    const message = document.createElement("div");
-                    message.style.cssText = "margin:24px;padding:16px;border:1px solid #d97706;border-radius:12px;background:#1f2937;color:#fff;font:14px system-ui";
-                    message.textContent = "Your server could not be loaded. Go back to Server Home, open your server, and try Settings again.";
-                    document.body.prepend(message);
-                }
-            }, 100);
-        })();
-    </script>
 
 </body>
 
