@@ -1,7 +1,7 @@
 
 /* =========================================================
    FRIENDCHAT - CHANNEL CHAT
-   BACKEND CONNECTED + SERVER APPEARANCE
+   BACKEND CONNECTED + SERVER APPEARANCE FIX
    ========================================================= */
 
 (() => {
@@ -197,6 +197,12 @@
     function validColor(value, fallback) {
         const color = clean(value);
 
+        if (/^#[0-9a-f]{3}$/i.test(color)) {
+            return "#" + color[1] + color[1] +
+                color[2] + color[2] +
+                color[3] + color[3];
+        }
+
         return /^#[0-9a-f]{6}$/i.test(color)
             ? color
             : fallback;
@@ -220,19 +226,72 @@
         return "";
     }
 
+    function getFontScale(settings) {
+        const value = settings.fontScale;
+
+        if (value === "small") return 0.92;
+        if (value === "large") return 1.08;
+
+        return 1;
+    }
+
+    function getSpacingScale(settings) {
+        const value = settings.spacing;
+
+        if (value === "compact") return 0.78;
+        if (value === "relaxed") return 1.2;
+
+        return 1;
+    }
+
+    function getCornerRadius(settings) {
+        if (settings.corners === "square") return "3px";
+        if (settings.corners === "soft") return "18px";
+
+        return "12px";
+    }
+
+    function getFontFamily(settings) {
+        const fonts = {
+            system:
+                "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+
+            rounded:
+                "'Trebuchet MS', 'Segoe UI', sans-serif",
+
+            mono:
+                "ui-monospace, SFMono-Regular, Consolas, monospace",
+
+            serif:
+                "Georgia, 'Times New Roman', serif"
+        };
+
+        return fonts[settings.fontFamily] || fonts.system;
+    }
+
+    function getReadableTextColor(hexColor) {
+        const hex = validColor(hexColor, "#6c63ff").slice(1);
+
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+
+        const brightness =
+            (r * 299 + g * 587 + b * 114) / 1000;
+
+        return brightness >= 155 ? "#151525" : "#ffffff";
+    }
+
     /* =========================================================
        SERVER APPEARANCE
-       Uses the real settings keys from server-customization.js:
-       accentColor, backgroundColor, panelColor, sidebarColor,
-       textColor, borderColor, theme, background, fontFamily,
-       fontScale, spacing, shadow, corners.
+       Reads settings saved by server-customization.js.
        ========================================================= */
 
     function applyServerAppearance() {
-        if (!currentServer || !document.documentElement) return;
+        if (!document.documentElement || !document.body) return;
 
         const settings =
-            currentServer.settings &&
+            currentServer?.settings &&
             typeof currentServer.settings === "object"
                 ? currentServer.settings
                 : {};
@@ -271,137 +330,111 @@
             )
         };
 
-        const root = document.documentElement;
+        const fontFamily = getFontFamily(settings);
+        const fontScale = getFontScale(settings);
+        const spacingScale = getSpacingScale(settings);
+        const radius = getCornerRadius(settings);
+        const ownMessageText = getReadableTextColor(colors.accent);
 
-        root.style.setProperty("--fc-accent", colors.accent);
-        root.style.setProperty("--accent", colors.accent);
-        root.style.setProperty("--fc-bg", colors.background);
-        root.style.setProperty("--fc-panel", colors.panel);
-        root.style.setProperty("--fc-panel-2", colors.sidebar);
-        root.style.setProperty("--fc-panel-3", colors.sidebar);
-        root.style.setProperty("--fc-text", colors.text);
-        root.style.setProperty("--fc-border", colors.border);
-
-        root.style.setProperty(
-            "--fc-font-scale",
-            settings.fontScale === "small"
-                ? "0.92"
-                : settings.fontScale === "large"
-                    ? "1.08"
-                    : "1"
-        );
-
-        root.style.setProperty(
-            "--fc-space-scale",
-            settings.spacing === "compact"
-                ? "0.78"
-                : settings.spacing === "relaxed"
-                    ? "1.2"
-                    : "1"
-        );
-
-        root.style.setProperty(
-            "--fc-shadow-strength",
+        const shadowOpacity =
             settings.shadow === "none"
                 ? "0"
                 : settings.shadow === "strong"
                     ? "0.42"
-                    : "0.20"
-        );
+                    : "0.20";
 
-        root.style.setProperty(
-            "--fc-radius",
-            settings.corners === "square"
-                ? "3px"
-                : settings.corners === "soft"
-                    ? "18px"
-                    : "12px"
-        );
+        const root = document.documentElement;
 
-        const fontMap = {
-            system:
-                "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-            rounded:
-                "'Trebuchet MS', 'Segoe UI', sans-serif",
-            mono:
-                "ui-monospace, SFMono-Regular, Consolas, monospace",
-            serif:
-                "Georgia, 'Times New Roman', serif"
+        /* Core variables shared with the site's CSS. */
+
+        const variables = {
+            "--fc-accent": colors.accent,
+            "--accent": colors.accent,
+
+            "--fc-bg": colors.background,
+            "--fc-background": colors.background,
+
+            "--fc-panel": colors.panel,
+            "--fc-panel-2": colors.sidebar,
+            "--fc-panel-3": colors.sidebar,
+
+            "--fc-text": colors.text,
+            "--fc-border": colors.border,
+
+            "--fc-font-family": fontFamily,
+            "--fc-font-scale": String(fontScale),
+            "--fc-space-scale": String(spacingScale),
+            "--fc-shadow-strength": shadowOpacity,
+            "--fc-radius": radius,
+
+            "--fc-chat-background": colors.background,
+            "--fc-chat-panel": colors.panel,
+
+            "--fc-chat-own-message": colors.accent,
+            "--fc-chat-own-text": ownMessageText,
+
+            "--fc-chat-other-message": colors.sidebar,
+            "--fc-chat-other-text": colors.text,
+
+            "--fc-chat-text": colors.text,
+            "--fc-chat-border": colors.border
         };
 
-        const fontFamily =
-            fontMap[settings.fontFamily] || fontMap.system;
+        Object.entries(variables).forEach(([name, value]) => {
+            root.style.setProperty(name, value);
+        });
 
-        root.style.setProperty("--fc-font-family", fontFamily);
+        /* Page background and typography. */
 
         document.body.style.backgroundColor = colors.background;
         document.body.style.color = colors.text;
         document.body.style.fontFamily = fontFamily;
+        document.body.style.fontSize = `${fontScale}rem`;
+
+        /*
+         * Clear any old background image before applying the
+         * currently saved one.
+         */
+
         document.body.style.backgroundImage = "none";
         document.body.style.backgroundSize = "";
         document.body.style.backgroundPosition = "";
         document.body.style.backgroundAttachment = "";
 
-        /*
-         * Optional background image saved by Advanced Mode.
-         */
         const backgroundURL = safeImageURL(settings.background);
 
         if (backgroundURL) {
-            const overlayColor = isLight
-                ? "243,245,251"
-                : "7,10,16";
+            const overlay = isLight
+                ? "rgba(243,245,251,0.82)"
+                : "rgba(7,10,16,0.74)";
 
-            const overlayOpacity = isLight ? "0.82" : "0.74";
+            const overlayEnd = isLight
+                ? "rgba(243,245,251,0.88)"
+                : "rgba(7,10,16,0.88)";
 
             document.body.style.backgroundImage =
-                `linear-gradient(rgba(${overlayColor},${overlayOpacity}), rgba(${overlayColor},0.88)), url("${backgroundURL}")`;
+                `linear-gradient(${overlay}, ${overlayEnd}), url("${backgroundURL}")`;
 
             document.body.style.backgroundSize = "cover";
             document.body.style.backgroundPosition = "center";
             document.body.style.backgroundAttachment = "fixed";
         }
 
-        /*
-         * Chat-specific variables.
-         * The customization panel doesn't currently save separate
-         * sent/received bubble colors, so the accent and sidebar
-         * colors are used for those bubbles.
-         */
-        root.style.setProperty(
-            "--fc-chat-background",
-            colors.background
-        );
+        document.body.dataset.serverTheme =
+            isLight ? "light" : "dark";
 
-        root.style.setProperty(
-            "--fc-chat-panel",
-            colors.panel
-        );
+        document.body.dataset.serverCorners =
+            settings.corners || "rounded";
 
-        root.style.setProperty(
-            "--fc-chat-own-message",
-            colors.accent
-        );
-
-        root.style.setProperty(
-            "--fc-chat-other-message",
-            colors.sidebar
-        );
-
-        root.style.setProperty(
-            "--fc-chat-text",
-            colors.text
-        );
-
-        root.style.setProperty(
-            "--fc-chat-border",
-            colors.border
-        );
+        document.body.dataset.serverSpacing =
+            settings.spacing || "normal";
 
         /*
-         * Install chat overrides once, then update their variables
-         * whenever the server's saved settings change.
+         * Create/update one stylesheet.
+         * This ensures the actual chat DOM receives the settings,
+         * even when the original CSS has stronger background rules.
          */
+
         let style = $("fc-chat-server-appearance");
 
         if (!style) {
@@ -413,135 +446,292 @@
         style.textContent = `
             :root {
                 --fc-accent: ${colors.accent};
+                --accent: ${colors.accent};
+
                 --fc-bg: ${colors.background};
+                --fc-background: ${colors.background};
+
                 --fc-panel: ${colors.panel};
                 --fc-panel-2: ${colors.sidebar};
                 --fc-panel-3: ${colors.sidebar};
+
                 --fc-text: ${colors.text};
                 --fc-border: ${colors.border};
+
                 --fc-font-family: ${fontFamily};
+                --fc-font-scale: ${fontScale};
+                --fc-space-scale: ${spacingScale};
+                --fc-radius: ${radius};
+                --fc-shadow-strength: ${shadowOpacity};
+
+                --fc-chat-background: ${colors.background};
+                --fc-chat-panel: ${colors.panel};
+
+                --fc-chat-own-message: ${colors.accent};
+                --fc-chat-own-text: ${ownMessageText};
+
+                --fc-chat-other-message: ${colors.sidebar};
+                --fc-chat-other-text: ${colors.text};
+
+                --fc-chat-text: ${colors.text};
+                --fc-chat-border: ${colors.border};
             }
+
+            /*
+             * Overall page.
+             */
 
             html,
             body {
-                background-color: var(--fc-bg) !important;
-                color: var(--fc-text);
-                font-family: var(--fc-font-family);
+                background-color: ${colors.background} !important;
+                color: ${colors.text} !important;
+                font-family: ${fontFamily} !important;
             }
 
             body {
-                background-color: var(--fc-bg) !important;
+                font-size: ${fontScale}rem !important;
             }
 
             /*
              * Main chat surfaces.
              */
-            #messages,
-            .messages,
-            .message-list,
-            #messageList {
-                background-color: var(--fc-chat-panel) !important;
-                color: var(--fc-chat-text) !important;
-                border-color: var(--fc-chat-border);
+
+            .chat-layout,
+            .chat-shell,
+            .chat-container,
+            .chat-main,
+            .chat-content,
+            .chat-panel,
+            .chat-area {
+                color: ${colors.text};
+                border-color: ${colors.border};
             }
 
             /*
-             * Common app panels. These selectors are intentionally
-             * limited to chat-related UI to avoid changing the
-             * appearance of the message text itself.
+             * Header, channel information and composer.
              */
-            .chat-panel,
-            .chat-main,
-            .chat-container,
-            .chat-content,
+
             .chat-header,
+            .channel-header,
+            .chat-topbar,
             .chat-input-area,
-            .message-composer {
-                border-color: var(--fc-chat-border);
-                color: var(--fc-chat-text);
+            .message-composer,
+            .message-input-area {
+                color: ${colors.text} !important;
+                border-color: ${colors.border} !important;
             }
 
             .chat-header,
+            .channel-header,
+            .chat-topbar,
             .chat-input-area,
-            .message-composer {
-                background-color: var(--fc-chat-panel);
+            .message-composer,
+            .message-input-area {
+                background-color: ${colors.panel} !important;
+            }
+
+            /*
+             * Message list.
+             */
+
+            #messages,
+            .messages,
+            .message-list,
+            #messageList,
+            .chat-messages,
+            .messages-area {
+                color: ${colors.text} !important;
+                border-color: ${colors.border} !important;
+            }
+
+            #messages,
+            .messages,
+            .message-list,
+            #messageList,
+            .chat-messages,
+            .messages-area {
+                background-color: ${colors.panel} !important;
+            }
+
+            /*
+             * Individual message wrappers.
+             */
+
+            .message {
+                color: ${colors.text};
+                border-radius: ${radius};
             }
 
             /*
              * Received message bubbles.
+             * These selectors match the classes used by renderMessages().
              */
+
             .message.other .message-content,
             .message.received .message-content {
-                background-color: var(--fc-chat-other-message) !important;
-                color: var(--fc-chat-text) !important;
-                border-color: var(--fc-chat-border);
+                background-color: ${colors.sidebar} !important;
+                color: ${colors.text} !important;
+                border: 1px solid ${colors.border};
+                border-radius: ${radius};
+            }
+
+            .message.other .message-text,
+            .message.received .message-text {
+                color: ${colors.text} !important;
             }
 
             /*
              * Sent message bubbles.
              */
+
             .message.own .message-content,
             .message.sent .message-content {
-                background-color: var(--fc-chat-own-message) !important;
-                color: #ffffff !important;
-                border-color: var(--fc-chat-own-message);
+                background-color: ${colors.accent} !important;
+                color: ${ownMessageText} !important;
+                border: 1px solid ${colors.accent};
+                border-radius: ${radius};
             }
 
             .message.own .message-text,
             .message.sent .message-text {
-                color: #ffffff !important;
-            }
-
-            .message.other .message-text,
-            .message.received .message-text {
-                color: var(--fc-chat-text) !important;
-            }
-
-            .message-sender,
-            .message-time {
-                color: var(--fc-chat-text);
+                color: ${ownMessageText} !important;
             }
 
             /*
-             * Buttons, borders and focus styles.
+             * Sender name and timestamp.
              */
+
+            .message-sender {
+                color: ${colors.text} !important;
+                font-family: ${fontFamily} !important;
+            }
+
+            .message-time {
+                color: ${ownMessageText} !important;
+                opacity: 0.82;
+            }
+
+            .message.other .message-time,
+            .message.received .message-time {
+                color: ${colors.text} !important;
+                opacity: 0.72;
+            }
+
+            .message-reaction {
+                color: ${colors.text};
+            }
+
+            /*
+             * Input controls.
+             */
+
+            #messageInput,
+            .message-input,
+            textarea,
+            input[type="text"] {
+                font-family: ${fontFamily};
+                color: ${colors.text};
+                border-color: ${colors.border};
+            }
+
+            #messageInput,
+            .message-input {
+                background-color: ${colors.panel};
+            }
+
+            #messageInput::placeholder,
+            .message-input::placeholder,
+            textarea::placeholder {
+                color: ${colors.text};
+                opacity: 0.60;
+            }
+
+            /*
+             * Buttons and accent details.
+             */
+
+            #sendButton,
+            .send-button {
+                border-color: ${colors.accent};
+            }
+
             button:focus-visible,
             input:focus-visible,
             textarea:focus-visible,
             select:focus-visible {
-                outline-color: var(--fc-accent);
+                outline-color: ${colors.accent};
             }
 
+            a,
+            .accent,
+            .channel-active,
+            .active-channel {
+                --fc-accent: ${colors.accent};
+            }
+
+            /*
+             * Apply saved corner preferences.
+             */
+
+            .message-content,
+            .chat-header,
+            .channel-header,
+            .chat-input-area,
+            .message-composer,
+            #messageInput,
             .message-input,
-            #messageInput {
-                color: var(--fc-chat-text);
-                border-color: var(--fc-chat-border);
+            .emoji-picker {
+                border-radius: ${radius};
             }
 
-            #sendButton,
-            .send-button {
-                border-color: var(--fc-accent);
+            /*
+             * Apply font settings to rendered message content.
+             */
+
+            .message-content,
+            .message-text,
+            .message-sender,
+            .message-time,
+            #messageInput {
+                font-family: ${fontFamily} !important;
+            }
+
+            /*
+             * Apply spacing preferences to each message.
+             */
+
+            .message {
+                margin-top: calc(8px * ${spacingScale});
+                margin-bottom: calc(8px * ${spacingScale});
+            }
+
+            .message-content {
+                padding: calc(10px * ${spacingScale})
+                           calc(12px * ${spacingScale});
+            }
+
+            /*
+             * Scrollbar accent.
+             */
+
+            #messages,
+            .messages,
+            .message-list,
+            #messageList {
+                scrollbar-color: ${colors.accent} ${colors.panel};
             }
         `;
 
         /*
-         * Apply text sizing and corner preferences to chat UI.
+         * Re-apply the saved settings to any page-level controls
+         * without replacing their event handlers.
          */
-        document.body.style.fontSize =
-            `calc(1rem * ${settings.fontScale === "small"
-                ? "0.92"
-                : settings.fontScale === "large"
-                    ? "1.08"
-                    : "1"})`;
 
-        document.body.dataset.serverTheme =
-            isLight ? "light" : "dark";
-
-        document.body.dataset.serverCorners =
-            settings.corners || "rounded";
-
-        document.body.dataset.serverSpacing =
-            settings.spacing || "normal";
+        if (messageInput) {
+            messageInput.style.color = colors.text;
+            messageInput.style.borderColor = colors.border;
+            messageInput.style.fontFamily = fontFamily;
+        }
     }
 
     /* =========================================================
@@ -567,10 +757,8 @@
             currentUserID &&
             !/[?&]user=/.test(requestURL)
         ) {
-            requestURL +=
-                separator +
-                "user=" +
-                encodeURIComponent(currentUserID);
+            requestURL += separator +
+                "user=" + encodeURIComponent(currentUserID);
         }
 
         const response = await fetch(requestURL, {
@@ -644,10 +832,6 @@
 
         saveCurrentLocation();
 
-        /*
-         * IMPORTANT: apply the saved design immediately after
-         * receiving the server object from the backend.
-         */
         applyServerAppearance();
 
         return currentServer;
@@ -877,10 +1061,6 @@
         try {
             const data = await apiRequest(path);
 
-            /*
-             * Don't paint stale results if the user has moved
-             * to another server/channel while the request ran.
-             */
             if (
                 serverIDAtStart !== currentServerID ||
                 channelIDAtStart !== currentChannelID
@@ -974,10 +1154,11 @@
             const wrapper = document.createElement("div");
             wrapper.className = "message";
 
-            if (
+            const isOwnMessage =
                 normalizeID(message.from) ===
-                normalizeID(currentUserID)
-            ) {
+                normalizeID(currentUserID);
+
+            if (isOwnMessage) {
                 wrapper.classList.add("own", "sent");
             } else {
                 wrapper.classList.add("other", "received");
@@ -1109,6 +1290,7 @@
             }
 
             if (messageInput) messageInput.value = "";
+
             updateCharacterCount();
             scrollMessagesToBottom();
         } catch (error) {
@@ -1367,23 +1549,59 @@
             type === "server_updated" ||
             type === "server_update"
         ) {
-            const server = data.server || data.data;
-            if (!server) return;
+            const incomingServer = data.server || data.data;
+
+            if (
+                !incomingServer ||
+                typeof incomingServer !== "object"
+            ) {
+                return;
+            }
 
             const incomingID = clean(
-                server.serverID ||
-                server.serverId ||
-                server.id
+                incomingServer.serverID ||
+                incomingServer.serverId ||
+                incomingServer.id
             );
 
             if (
+                incomingID &&
                 normalizeID(incomingID) !==
                 normalizeID(currentServerID)
             ) {
                 return;
             }
 
-            currentServer = server;
+            /*
+             * IMPORTANT FIX:
+             * Merge incoming settings with the existing server.
+             * A partial WebSocket update should not erase saved
+             * colors, font, background, or channel information.
+             */
+
+            const previousServer = currentServer || {};
+
+            currentServer = {
+                ...previousServer,
+                ...incomingServer,
+
+                settings: {
+                    ...(previousServer.settings || {}),
+                    ...(incomingServer.settings || {})
+                },
+
+                channels:
+                    incomingServer.channels !== undefined
+                        ? incomingServer.channels
+                        : previousServer.channels
+            };
+
+            currentServerID = clean(
+                currentServer.serverID ||
+                currentServer.serverId ||
+                currentServer.id ||
+                currentServerID
+            );
 
             currentChannel = findChannel(
                 currentServer,
@@ -1391,11 +1609,12 @@
             );
 
             /*
-             * Apply updated server colors/background immediately.
+             * Apply the updated saved design immediately.
              */
-            applyServerAppearance();
 
+            applyServerAppearance();
             updateChannelHeader();
+
             return;
         }
 
@@ -1494,7 +1713,7 @@
                 background: "var(--fc-panel, #111824)",
                 color: "var(--fc-text, #f4f5ff)",
                 border: "1px solid var(--fc-border, #252d3a)",
-                borderRadius: "12px",
+                borderRadius: "var(--fc-radius, 12px)",
                 zIndex: "9999"
             });
 
@@ -1733,10 +1952,6 @@
         }
 
         try {
-            /*
-             * Load the latest server from the backend.
-             * loadServer() applies its saved appearance.
-             */
             await loadServer();
 
             await loadChannel();
