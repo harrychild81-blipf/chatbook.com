@@ -1,6 +1,7 @@
+
 /* =========================================================
    FRIENDCHAT - CHANNEL CHAT
-   channel-chat.css
+   COMPLETE CSS + SERVER CUSTOM APPEARANCE
    ========================================================= */
 
 :root {
@@ -19,13 +20,25 @@
     --fc-accent: #6c63ff;
     --fc-accent-light: #8179ff;
     --fc-accent-dark: #554de0;
-
     --fc-danger: #ff5f6d;
+
+    /* Server-customizable appearance */
+    --fc-custom-bg: var(--fc-bg);
+    --fc-custom-panel: var(--fc-panel);
+    --fc-custom-panel-2: var(--fc-panel-2);
+    --fc-custom-text: var(--fc-text);
+    --fc-custom-text-soft: var(--fc-text-soft);
+    --fc-custom-text-muted: var(--fc-text-muted);
+    --fc-custom-accent: var(--fc-accent);
+    --fc-custom-accent-light: var(--fc-accent-light);
+    --fc-custom-own-message: var(--fc-accent);
+    --fc-custom-other-message: var(--fc-panel-2);
+    --fc-custom-own-text: #ffffff;
+    --fc-custom-other-text: var(--fc-text);
 
     --fc-radius: 14px;
     --fc-transition: 0.18s ease;
 }
-
 
 /* =========================================================
    RESET
@@ -48,8 +61,8 @@ html {
 }
 
 body {
-    background: var(--fc-bg);
-    color: var(--fc-text);
+    background: var(--fc-custom-bg);
+    color: var(--fc-custom-text);
 
     font-family:
         Inter,
@@ -60,8 +73,9 @@ body {
         sans-serif;
 
     overflow: hidden;
+    transition: background-color var(--fc-transition),
+                color var(--fc-transition);
 }
-
 
 /* =========================================================
    APP
@@ -70,21 +84,13 @@ body {
 .channel-app {
     width: 100%;
     height: 100vh;
-
     min-height: 0;
 
     display: flex;
     flex-direction: column;
 
-    background:
-        radial-gradient(
-            circle at 75% 15%,
-            rgba(108, 99, 255, 0.07),
-            transparent 32%
-        ),
-        var(--fc-bg);
+    background: var(--fc-custom-bg);
 }
-
 
 /* =========================================================
    TOP BAR
@@ -100,8 +106,7 @@ body {
 
     padding: 0 22px;
 
-    background: rgba(13, 18, 27, 0.94);
-
+    background: var(--fc-custom-panel);
     border-bottom: 1px solid var(--fc-border);
 
     backdrop-filter: blur(18px);
@@ -110,20 +115,12 @@ body {
     z-index: 10;
 }
 
-
-/* =========================================================
-   TOP BAR LEFT
-   ========================================================= */
-
 .topbar-left {
     min-width: 0;
-
     display: flex;
     align-items: center;
-
     gap: 14px;
 }
-
 
 /* =========================================================
    BACK BUTTON
@@ -136,23 +133,21 @@ body {
     border: 1px solid var(--fc-border);
     border-radius: 12px;
 
-    background: var(--fc-panel-2);
-    color: var(--fc-text-soft);
+    background: var(--fc-custom-panel-2);
+    color: var(--fc-custom-text-soft);
 
     display: flex;
     align-items: center;
     justify-content: center;
 
     cursor: pointer;
-
     font-size: 28px;
     line-height: 1;
 
-    transition:
-        background var(--fc-transition),
-        color var(--fc-transition),
-        border-color var(--fc-transition),
-        transform var(--fc-transition);
+    transition: background var(--fc-transition),
+                color var(--fc-transition),
+                border-color var(--fc-transition),
+                transform var(--fc-transition);
 }
 
 .back-button span {
@@ -162,10 +157,8 @@ body {
 
 .back-button:hover {
     background: var(--fc-panel-3);
-    color: var(--fc-text);
-
+    color: var(--fc-custom-text);
     border-color: var(--fc-border-light);
-
     transform: translateX(-2px);
 }
 
@@ -173,39 +166,32 @@ body {
     transform: translateX(-3px) scale(0.96);
 }
 
-
 /* =========================================================
    CHANNEL TITLE
    ========================================================= */
 
 .channel-title-area {
     min-width: 0;
-
     display: flex;
     align-items: center;
-
     gap: 12px;
 }
-
 
 .channel-icon {
     width: 42px;
     height: 42px;
-
     flex: 0 0 42px;
 
     border-radius: 12px;
 
-    background:
-        linear-gradient(
-            135deg,
-            rgba(108, 99, 255, 0.22),
-            rgba(108, 99, 255, 0.08)
-        );
+    background: color-mix(
+        in srgb,
+        var(--fc-custom-accent) 18%,
+        var(--fc-custom-panel)
+    );
 
-    border: 1px solid rgba(108, 99, 255, 0.22);
-
-    color: var(--fc-accent-light);
+    border: 1px solid var(--fc-custom-accent);
+    color: var(--fc-custom-accent-light);
 
     display: flex;
     align-items: center;
@@ -215,21 +201,16 @@ body {
     font-weight: 700;
 }
 
-
 .channel-title-text {
     min-width: 0;
 }
 
-
 .channel-name-row {
     display: flex;
     align-items: center;
-
     gap: 9px;
-
     min-width: 0;
 }
-
 
 .channel-name-row h1 {
     max-width: 420px;
@@ -240,43 +221,39 @@ body {
 
     font-size: 18px;
     font-weight: 700;
-
-    color: var(--fc-text);
+    color: var(--fc-custom-text);
 }
-
 
 .channel-type {
     flex-shrink: 0;
-
     padding: 3px 7px;
 
     border-radius: 6px;
 
-    background: rgba(108, 99, 255, 0.10);
+    background: color-mix(
+        in srgb,
+        var(--fc-custom-accent) 15%,
+        transparent
+    );
 
-    color: var(--fc-accent-light);
+    color: var(--fc-custom-accent-light);
 
     font-size: 9px;
     font-weight: 800;
-
     letter-spacing: 0.8px;
 }
 
-
 .channel-title-text p {
     max-width: 500px;
-
     margin-top: 3px;
 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 
-    color: var(--fc-text-muted);
-
+    color: var(--fc-custom-text-muted);
     font-size: 12px;
 }
-
 
 /* =========================================================
    TOP BAR RIGHT
@@ -285,30 +262,22 @@ body {
 .topbar-right {
     display: flex;
     align-items: center;
-
     gap: 12px;
 }
-
 
 .server-info {
     display: flex;
     flex-direction: column;
-
     align-items: flex-end;
-
     gap: 2px;
 }
 
-
 .server-label {
-    color: var(--fc-text-muted);
-
+    color: var(--fc-custom-text-muted);
     font-size: 8px;
     font-weight: 800;
-
     letter-spacing: 1px;
 }
-
 
 #serverName {
     max-width: 180px;
@@ -317,42 +286,35 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
 
-    color: var(--fc-text-soft);
-
+    color: var(--fc-custom-text-soft);
     font-size: 12px;
     font-weight: 600;
 }
 
-
 .server-button {
     height: 38px;
-
     padding: 0 14px;
 
     border: 1px solid var(--fc-border);
     border-radius: 10px;
 
-    background: var(--fc-panel-2);
-    color: var(--fc-text-soft);
+    background: var(--fc-custom-panel-2);
+    color: var(--fc-custom-text-soft);
 
     font-size: 12px;
     font-weight: 600;
-
     cursor: pointer;
 
-    transition:
-        background var(--fc-transition),
-        color var(--fc-transition),
-        border-color var(--fc-transition);
+    transition: background var(--fc-transition),
+                color var(--fc-transition),
+                border-color var(--fc-transition);
 }
 
 .server-button:hover {
     background: var(--fc-panel-3);
-    color: var(--fc-text);
-
+    color: var(--fc-custom-text);
     border-color: var(--fc-border-light);
 }
-
 
 /* =========================================================
    MAIN
@@ -360,23 +322,21 @@ body {
 
 .channel-main {
     flex: 1;
-
     min-height: 0;
 
     display: flex;
     flex-direction: column;
-
     position: relative;
+
+    background: var(--fc-custom-bg);
 }
 
-
 /* =========================================================
-   MESSAGES
+   MESSAGES AREA
    ========================================================= */
 
 .messages {
     flex: 1;
-
     min-height: 0;
 
     overflow-y: auto;
@@ -385,12 +345,11 @@ body {
     padding: 26px 28px 22px;
 
     scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--fc-custom-accent) transparent;
+
+    background: var(--fc-custom-bg);
 }
-
-
-/* =========================================================
-   SCROLLBAR
-   ========================================================= */
 
 .messages::-webkit-scrollbar {
     width: 7px;
@@ -401,25 +360,17 @@ body {
 }
 
 .messages::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.10);
-
+    background: color-mix(
+        in srgb,
+        var(--fc-custom-accent) 55%,
+        transparent
+    );
     border-radius: 20px;
 }
 
 .messages::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.17);
+    background: var(--fc-custom-accent);
 }
-
-
-/* Firefox */
-
-.messages {
-    scrollbar-width: thin;
-    scrollbar-color:
-        rgba(255, 255, 255, 0.10)
-        transparent;
-}
-
 
 /* =========================================================
    EMPTY STATE
@@ -430,22 +381,18 @@ body {
 
     display: flex;
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
 
     text-align: center;
-
     padding: 40px 20px;
 
     animation: fcFadeIn 0.25s ease;
 }
 
-
 .empty-icon {
     width: 68px;
     height: 68px;
-
     margin-bottom: 18px;
 
     border-radius: 20px;
@@ -454,67 +401,60 @@ body {
     align-items: center;
     justify-content: center;
 
-    background:
-        linear-gradient(
-            135deg,
-            rgba(108, 99, 255, 0.18),
-            rgba(108, 99, 255, 0.05)
-        );
+    background: color-mix(
+        in srgb,
+        var(--fc-custom-accent) 16%,
+        transparent
+    );
 
-    border: 1px solid rgba(108, 99, 255, 0.20);
-
-    color: var(--fc-accent-light);
+    border: 1px solid var(--fc-custom-accent);
+    color: var(--fc-custom-accent-light);
 
     font-size: 32px;
     font-weight: 700;
 }
 
-
 .empty-state h2 {
     margin-bottom: 8px;
-
     font-size: 20px;
     font-weight: 700;
-
-    color: var(--fc-text);
+    color: var(--fc-custom-text);
 }
-
 
 .empty-state p {
     max-width: 440px;
 
-    color: var(--fc-text-muted);
-
+    color: var(--fc-custom-text-muted);
     font-size: 13px;
     line-height: 1.6;
 }
 
-
 /* =========================================================
-   MESSAGE
+   MESSAGE ROW
    ========================================================= */
 
 .channel-message {
     position: relative;
 
     display: flex;
-
+    align-items: flex-start;
     gap: 12px;
 
     padding: 8px 12px;
-
     margin-bottom: 3px;
 
     border-radius: 12px;
 
-    transition:
-        background var(--fc-transition);
+    transition: background var(--fc-transition);
 }
 
 .channel-message:hover {
-    background: rgba(255, 255, 255, 0.035);
+    background: color-mix(
+        in srgb,
+        var(--fc-custom-text) 4%,
+        transparent
+    );
 }
-
 
 /* =========================================================
    MESSAGE AVATAR
@@ -523,38 +463,31 @@ body {
 .message-avatar {
     width: 38px;
     height: 38px;
-
     flex: 0 0 38px;
 
     border-radius: 12px;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--fc-accent),
-            var(--fc-accent-dark)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--fc-custom-accent),
+        var(--fc-accent-dark)
+    );
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    color: white;
-
+    color: #ffffff;
     font-size: 13px;
     font-weight: 800;
-
     overflow: hidden;
 }
-
 
 .message-avatar img {
     width: 100%;
     height: 100%;
-
     object-fit: cover;
 }
-
 
 /* =========================================================
    MESSAGE CONTENT
@@ -562,46 +495,67 @@ body {
 
 .message-content {
     min-width: 0;
-
     flex: 1;
 }
-
 
 .message-header {
     display: flex;
     align-items: baseline;
-
     gap: 8px;
-
     margin-bottom: 2px;
 }
 
-
 .message-author {
-    color: var(--fc-text);
-
+    color: var(--fc-custom-text);
     font-size: 13px;
     font-weight: 700;
 }
 
-
 .message-time {
-    color: var(--fc-text-muted);
-
+    color: var(--fc-custom-text-muted);
     font-size: 10px;
 }
 
-
 .message-text {
-    color: #d9deea;
+    color: var(--fc-custom-other-text);
 
     font-size: 14px;
     line-height: 1.55;
 
     white-space: pre-wrap;
-    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
+/* =========================================================
+   CUSTOM MESSAGE BUBBLES
+   JS should add "fc-custom-bubble" to .channel-message
+   for these bubble styles to apply.
+   ========================================================= */
+
+.fc-custom-bubble .message-content {
+    padding: 10px 13px;
+    border-radius: 12px;
+    background: var(--fc-custom-other-message);
+    color: var(--fc-custom-other-text);
+}
+
+/* Your own messages: supported class names */
+.fc-custom-bubble.own .message-content,
+.fc-custom-bubble.sent .message-content,
+.fc-custom-bubble.is-own .message-content {
+    background: var(--fc-custom-own-message);
+    color: var(--fc-custom-own-text);
+}
+
+.fc-custom-bubble.own .message-text,
+.fc-custom-bubble.sent .message-text,
+.fc-custom-bubble.is-own .message-text {
+    color: var(--fc-custom-own-text);
+}
+
+.fc-custom-bubble .message-author {
+    color: inherit;
+}
 
 /* =========================================================
    COMPOSER AREA
@@ -610,14 +564,12 @@ body {
 .composer-area {
     padding: 0 26px 18px;
 
-    background:
-        linear-gradient(
-            to top,
-            var(--fc-bg) 65%,
-            transparent
-        );
+    background: linear-gradient(
+        to top,
+        var(--fc-custom-bg) 65%,
+        transparent
+    );
 }
-
 
 /* =========================================================
    COMPOSER
@@ -625,39 +577,36 @@ body {
 
 .composer {
     width: 100%;
-
     min-height: 52px;
 
     display: flex;
     align-items: flex-end;
-
     gap: 8px;
 
     padding: 7px 8px;
 
     border: 1px solid var(--fc-border);
-
     border-radius: 16px;
 
-    background: var(--fc-panel);
+    background: var(--fc-custom-panel);
 
-    box-shadow:
-        0 12px 35px rgba(0, 0, 0, 0.20);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.20);
 
-    transition:
-        border-color var(--fc-transition),
-        box-shadow var(--fc-transition);
+    transition: border-color var(--fc-transition),
+                box-shadow var(--fc-transition);
 }
 
-
 .composer:focus-within {
-    border-color: rgba(108, 99, 255, 0.38);
+    border-color: var(--fc-custom-accent);
 
     box-shadow:
         0 12px 35px rgba(0, 0, 0, 0.24),
-        0 0 0 3px rgba(108, 99, 255, 0.06);
+        0 0 0 3px color-mix(
+            in srgb,
+            var(--fc-custom-accent) 12%,
+            transparent
+        );
 }
-
 
 /* =========================================================
    COMPOSER TEXTAREA
@@ -665,45 +614,37 @@ body {
 
 #messageInput {
     flex: 1;
-
     min-width: 0;
 
     min-height: 36px;
     max-height: 150px;
 
     resize: none;
-
     padding: 8px 5px;
 
     border: 0;
     outline: none;
 
     background: transparent;
-
-    color: var(--fc-text);
+    color: var(--fc-custom-text);
 
     font-family: inherit;
-
     font-size: 14px;
     line-height: 20px;
 }
 
-
 #messageInput::placeholder {
-    color: var(--fc-text-muted);
+    color: var(--fc-custom-text-muted);
 }
-
 
 #messageInput::-webkit-scrollbar {
     width: 5px;
 }
 
 #messageInput::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.10);
-
+    background: var(--fc-border-light);
     border-radius: 20px;
 }
-
 
 /* =========================================================
    COMPOSER BUTTONS
@@ -712,43 +653,40 @@ body {
 .composer-button {
     width: 36px;
     height: 36px;
-
     flex: 0 0 36px;
 
     border: 0;
     border-radius: 10px;
 
     background: transparent;
-
-    color: var(--fc-text-muted);
+    color: var(--fc-custom-text-muted);
 
     display: flex;
     align-items: center;
     justify-content: center;
 
     cursor: pointer;
-
     font-size: 19px;
     font-weight: 600;
 
-    transition:
-        background var(--fc-transition),
-        color var(--fc-transition),
-        transform var(--fc-transition);
+    transition: background var(--fc-transition),
+                color var(--fc-transition),
+                transform var(--fc-transition);
 }
-
 
 .composer-button:hover {
-    background: rgba(255, 255, 255, 0.07);
+    background: color-mix(
+        in srgb,
+        var(--fc-custom-text) 8%,
+        transparent
+    );
 
-    color: var(--fc-text);
+    color: var(--fc-custom-text);
 }
-
 
 .composer-button:active {
     transform: scale(0.92);
 }
-
 
 /* =========================================================
    SEND BUTTON
@@ -757,20 +695,18 @@ body {
 .send-button {
     width: 38px;
     height: 38px;
-
     flex: 0 0 38px;
 
     border: 0;
     border-radius: 11px;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--fc-accent),
-            var(--fc-accent-dark)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--fc-custom-accent),
+        var(--fc-accent-dark)
+    );
 
-    color: white;
+    color: #ffffff;
 
     display: flex;
     align-items: center;
@@ -778,39 +714,31 @@ body {
 
     cursor: pointer;
 
-    box-shadow:
-        0 6px 18px rgba(108, 99, 255, 0.20);
+    box-shadow: 0 6px 18px color-mix(
+        in srgb,
+        var(--fc-custom-accent) 25%,
+        transparent
+    );
 
-    transition:
-        transform var(--fc-transition),
-        filter var(--fc-transition),
-        box-shadow var(--fc-transition);
+    transition: transform var(--fc-transition),
+                filter var(--fc-transition),
+                box-shadow var(--fc-transition);
 }
-
 
 .send-button span {
     display: block;
-
     transform: translateX(1px) rotate(-1deg);
-
     font-size: 16px;
 }
 
-
 .send-button:hover {
     filter: brightness(1.08);
-
-    box-shadow:
-        0 8px 22px rgba(108, 99, 255, 0.30);
-
     transform: translateY(-1px);
 }
-
 
 .send-button:active {
     transform: scale(0.94);
 }
-
 
 /* =========================================================
    COMPOSER HINT
@@ -821,33 +749,26 @@ body {
 
     display: flex;
     align-items: center;
-
     gap: 14px;
 
     padding: 6px 4px 0;
 
-    color: var(--fc-text-muted);
-
+    color: var(--fc-custom-text-muted);
     font-size: 9px;
 }
 
-
 #characterCount {
     margin-left: auto;
-
     transition: color var(--fc-transition);
 }
-
 
 #characterCount.warning {
     color: #e8b84c;
 }
 
-
 #characterCount.danger {
     color: var(--fc-danger);
 }
-
 
 /* =========================================================
    TOAST
@@ -855,12 +776,10 @@ body {
 
 .toast {
     position: fixed;
-
     left: 50%;
     bottom: 32px;
 
-    transform:
-        translate(-50%, 20px);
+    transform: translate(-50%, 20px);
 
     min-width: 180px;
     max-width: 90vw;
@@ -868,49 +787,38 @@ body {
     padding: 11px 16px;
 
     border: 1px solid var(--fc-border-light);
-
     border-radius: 11px;
 
-    background: rgba(17, 24, 36, 0.96);
+    background: var(--fc-custom-panel-2);
+    color: var(--fc-custom-text);
 
-    color: var(--fc-text);
-
-    box-shadow:
-        0 12px 35px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
 
     font-size: 12px;
     font-weight: 600;
-
     text-align: center;
 
     opacity: 0;
     pointer-events: none;
-
     z-index: 100;
 
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s ease;
+    transition: opacity 0.2s ease,
+                transform 0.2s ease;
 
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
 }
 
-
 .toast.show {
     opacity: 1;
-
-    transform:
-        translate(-50%, 0);
+    transform: translate(-50%, 0);
 }
-
 
 /* =========================================================
    ANIMATION
    ========================================================= */
 
 @keyframes fcFadeIn {
-
     from {
         opacity: 0;
         transform: translateY(6px);
@@ -922,190 +830,143 @@ body {
     }
 }
 
-
 /* =========================================================
    MOBILE
    ========================================================= */
 
 @media (max-width: 700px) {
-
     .channel-topbar {
         height: 68px;
         min-height: 68px;
-
         padding: 0 12px;
     }
-
 
     .back-button {
         width: 36px;
         height: 36px;
-
         border-radius: 10px;
     }
-
 
     .channel-icon {
         width: 38px;
         height: 38px;
-
         flex-basis: 38px;
-
         border-radius: 10px;
-
         font-size: 18px;
     }
-
 
     .channel-title-area {
         gap: 9px;
     }
 
-
     .channel-name-row h1 {
         max-width: 220px;
-
         font-size: 16px;
     }
 
-
     .channel-title-text p {
         max-width: 220px;
-
         font-size: 10px;
     }
-
 
     .topbar-right {
         gap: 6px;
     }
 
-
     .server-info {
         display: none;
     }
 
-
     .server-button {
         height: 34px;
-
         padding: 0 10px;
-
         border-radius: 9px;
-
         font-size: 10px;
     }
-
 
     .messages {
         padding: 18px 10px 16px;
     }
 
-
     .channel-message {
         padding: 7px 6px;
-
         gap: 9px;
     }
-
 
     .message-avatar {
         width: 34px;
         height: 34px;
-
         flex-basis: 34px;
-
         border-radius: 10px;
     }
-
 
     .message-text {
         font-size: 13px;
     }
 
-
     .composer-area {
         padding: 0 10px 10px;
     }
 
-
     .composer {
         min-height: 50px;
-
         border-radius: 14px;
-
         padding: 6px;
     }
-
 
     .composer-hint {
         display: none;
     }
 
-
     .composer-button {
         width: 34px;
         height: 34px;
-
         flex-basis: 34px;
     }
-
 
     .send-button {
         width: 36px;
         height: 36px;
-
         flex-basis: 36px;
     }
 }
-
 
 /* =========================================================
    SMALL PHONES
    ========================================================= */
 
 @media (max-width: 430px) {
-
     .channel-type {
         display: none;
     }
-
 
     .channel-title-text p {
         display: none;
     }
 
-
     .channel-name-row h1 {
         max-width: 180px;
     }
-
 
     .empty-state {
         padding: 30px 16px;
     }
 
-
     .empty-icon {
         width: 58px;
         height: 58px;
-
         border-radius: 17px;
-
         font-size: 27px;
     }
-
 
     .empty-state h2 {
         font-size: 18px;
     }
 
-
     .empty-state p {
         font-size: 12px;
     }
 }
-
 
 /* =========================================================
    ACCESSIBILITY
@@ -1113,17 +974,15 @@ body {
 
 button:focus-visible,
 textarea:focus-visible {
-    outline: 2px solid var(--fc-accent-light);
+    outline: 2px solid var(--fc-custom-accent-light);
     outline-offset: 2px;
 }
-
 
 /* =========================================================
    REDUCED MOTION
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
     *,
     *::before,
     *::after {
