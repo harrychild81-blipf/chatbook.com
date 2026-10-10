@@ -1,18 +1,10 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="theme-color"
-        content="#070a10"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070a10">
 
     <title>FriendChat - Channel</title>
 
@@ -20,16 +12,10 @@
 </head>
 
 <body>
-
-    <!-- =====================================================
-         CHANNEL CHAT
-         ===================================================== -->
-
     <div class="channel-app">
 
         <!-- TOP BAR -->
         <header class="channel-topbar">
-
             <div class="topbar-left">
 
                 <button
@@ -43,53 +29,25 @@
                 </button>
 
                 <div class="channel-title-area">
-
-                    <div
-                        id="channelIcon"
-                        class="channel-icon"
-                    >
-                        #
-                    </div>
+                    <div id="channelIcon" class="channel-icon">#</div>
 
                     <div class="channel-title-text">
-
                         <div class="channel-name-row">
-
-                            <h1 id="channelName">
-                                General
-                            </h1>
-
-                            <span
-                                id="channelType"
-                                class="channel-type"
-                            >
-                                TEXT
-                            </span>
-
+                            <h1 id="channelName">General</h1>
+                            <span id="channelType" class="channel-type">TEXT</span>
                         </div>
 
                         <p id="channelDescription">
                             Welcome to this channel.
                         </p>
-
                     </div>
-
                 </div>
-
             </div>
 
             <div class="topbar-right">
-
                 <div class="server-info">
-
-                    <span class="server-label">
-                        SERVER
-                    </span>
-
-                    <span id="serverName">
-                        FriendChat
-                    </span>
-
+                    <span class="server-label">SERVER</span>
+                    <span id="serverName">FriendChat</span>
                 </div>
 
                 <button
@@ -100,32 +58,22 @@
                 >
                     Server
                 </button>
-
             </div>
-
         </header>
 
-        <!-- =================================================
-             MAIN CHAT AREA
-             ================================================= -->
-
+        <!-- MAIN CHAT AREA -->
         <main class="channel-main">
 
-            <!-- MESSAGES -->
+            <!-- SERVER CHANNEL MESSAGES -->
             <section
                 id="messages"
                 class="messages"
+                aria-label="Channel messages"
+                aria-live="polite"
+                aria-relevant="additions text"
             >
-
-                <!-- EMPTY STATE -->
-                <div
-                    id="emptyState"
-                    class="empty-state"
-                >
-
-                    <div class="empty-icon">
-                        #
-                    </div>
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">#</div>
 
                     <h2 id="emptyChannelName">
                         Welcome to #General
@@ -135,17 +83,11 @@
                         This is the beginning of this channel.
                         Send a message to start the conversation.
                     </p>
-
                 </div>
-
             </section>
 
-            <!-- =================================================
-                 MESSAGE COMPOSER
-                 ================================================= -->
-
+            <!-- MESSAGE COMPOSER -->
             <div class="composer-area">
-
                 <div class="composer">
 
                     <button
@@ -186,35 +128,18 @@
                     >
                         <span>➤</span>
                     </button>
-
                 </div>
 
                 <div class="composer-hint">
-
-                    <span>
-                        Enter to send
-                    </span>
-
-                    <span>
-                        Shift + Enter for a new line
-                    </span>
-
-                    <span id="characterCount">
-                        0 / 2000
-                    </span>
-
+                    <span>Enter to send</span>
+                    <span>Shift + Enter for a new line</span>
+                    <span id="characterCount">0 / 2000</span>
                 </div>
-
             </div>
-
         </main>
-
     </div>
 
-    <!-- =====================================================
-         TOAST
-         ===================================================== -->
-
+    <!-- TOAST NOTIFICATIONS -->
     <div
         id="toast"
         class="toast"
@@ -222,12 +147,7 @@
         role="status"
     ></div>
 
-    <!-- =====================================================
-         JAVASCRIPT
-         ===================================================== -->
-
+    <!-- CHANNEL CHAT LOGIC -->
     <script src="channel-chat.js"></script>
-
 </body>
 </html>
-```
