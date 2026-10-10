@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,11 @@
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#070a10"
     >
 
     <title>FriendChat - Channel</title>
@@ -72,7 +78,6 @@
 
             </div>
 
-
             <div class="topbar-right">
 
                 <div class="server-info">
@@ -99,7 +104,6 @@
             </div>
 
         </header>
-
 
         <!-- =================================================
              MAIN CHAT AREA
@@ -136,7 +140,6 @@
 
             </section>
 
-
             <!-- =================================================
                  MESSAGE COMPOSER
                  ================================================= -->
@@ -150,6 +153,7 @@
                         class="composer-button"
                         type="button"
                         title="Attachments"
+                        aria-label="Attachments"
                     >
                         +
                     </button>
@@ -160,6 +164,7 @@
                         maxlength="2000"
                         placeholder="Message this channel..."
                         autocomplete="off"
+                        aria-label="Message this channel"
                     ></textarea>
 
                     <button
@@ -167,6 +172,7 @@
                         class="composer-button"
                         type="button"
                         title="Emoji"
+                        aria-label="Emoji"
                     >
                         ☺
                     </button>
@@ -176,6 +182,7 @@
                         class="send-button"
                         type="button"
                         title="Send message"
+                        aria-label="Send message"
                     >
                         <span>➤</span>
                     </button>
@@ -183,6 +190,7 @@
                 </div>
 
                 <div class="composer-hint">
+
                     <span>
                         Enter to send
                     </span>
@@ -194,6 +202,7 @@
                     <span id="characterCount">
                         0 / 2000
                     </span>
+
                 </div>
 
             </div>
@@ -201,7 +210,6 @@
         </main>
 
     </div>
-
 
     <!-- =====================================================
          TOAST
@@ -211,8 +219,8 @@
         id="toast"
         class="toast"
         aria-live="polite"
+        role="status"
     ></div>
-
 
     <!-- =====================================================
          JAVASCRIPT
@@ -222,3 +230,4 @@
 
 </body>
 </html>
+```
