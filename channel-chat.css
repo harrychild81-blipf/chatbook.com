@@ -1,7 +1,7 @@
-
+```css
 /* =========================================================
    FRIENDCHAT - CHANNEL CHAT
-   COMPLETE CSS + SERVER CUSTOM APPEARANCE
+   COMPLETE CSS + SERVER BACKGROUND SUPPORT
    ========================================================= */
 
 :root {
@@ -54,6 +54,7 @@ html,
 body {
     width: 100%;
     height: 100%;
+    min-height: 100%;
 }
 
 html {
@@ -61,7 +62,9 @@ html {
 }
 
 body {
-    background: var(--fc-custom-bg);
+    position: relative;
+    overflow: hidden;
+
     color: var(--fc-custom-text);
 
     font-family:
@@ -72,24 +75,35 @@ body {
         "Segoe UI",
         sans-serif;
 
-    overflow: hidden;
-    transition: background-color var(--fc-transition),
-                color var(--fc-transition);
+    /* Default fallback background */
+    background-color: var(--fc-custom-bg, #070a10);
+    background-image: none;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+
+    transition: color var(--fc-transition);
 }
 
 /* =========================================================
    APP
+   Transparent so the server background can show through.
    ========================================================= */
 
 .channel-app {
+    position: relative;
+    z-index: 1;
+
     width: 100%;
-    height: 100vh;
+    height: 100%;
+    height: 100dvh;
     min-height: 0;
 
     display: flex;
     flex-direction: column;
 
-    background: var(--fc-custom-bg);
+    background: transparent !important;
 }
 
 /* =========================================================
@@ -97,6 +111,9 @@ body {
    ========================================================= */
 
 .channel-topbar {
+    position: relative;
+    z-index: 10;
+
     height: 76px;
     min-height: 76px;
 
@@ -106,17 +123,21 @@ body {
 
     padding: 0 22px;
 
-    background: var(--fc-custom-panel);
+    background: color-mix(
+        in srgb,
+        var(--fc-custom-panel) 88%,
+        transparent
+    );
+
     border-bottom: 1px solid var(--fc-border);
 
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
-
-    z-index: 10;
 }
 
 .topbar-left {
     min-width: 0;
+
     display: flex;
     align-items: center;
     gap: 14px;
@@ -129,6 +150,7 @@ body {
 .back-button {
     width: 40px;
     height: 40px;
+    flex: 0 0 40px;
 
     border: 1px solid var(--fc-border);
     border-radius: 12px;
@@ -144,10 +166,11 @@ body {
     font-size: 28px;
     line-height: 1;
 
-    transition: background var(--fc-transition),
-                color var(--fc-transition),
-                border-color var(--fc-transition),
-                transform var(--fc-transition);
+    transition:
+        background var(--fc-transition),
+        color var(--fc-transition),
+        border-color var(--fc-transition),
+        transform var(--fc-transition);
 }
 
 .back-button span {
@@ -172,6 +195,7 @@ body {
 
 .channel-title-area {
     min-width: 0;
+
     display: flex;
     align-items: center;
     gap: 12px;
@@ -226,8 +250,8 @@ body {
 
 .channel-type {
     flex-shrink: 0;
-    padding: 3px 7px;
 
+    padding: 3px 7px;
     border-radius: 6px;
 
     background: color-mix(
@@ -305,9 +329,10 @@ body {
     font-weight: 600;
     cursor: pointer;
 
-    transition: background var(--fc-transition),
-                color var(--fc-transition),
-                border-color var(--fc-transition);
+    transition:
+        background var(--fc-transition),
+        color var(--fc-transition),
+        border-color var(--fc-transition);
 }
 
 .server-button:hover {
@@ -318,17 +343,19 @@ body {
 
 /* =========================================================
    MAIN
+   Transparent to reveal the background image.
    ========================================================= */
 
 .channel-main {
     flex: 1;
     min-height: 0;
+    min-width: 0;
 
     display: flex;
     flex-direction: column;
     position: relative;
 
-    background: var(--fc-custom-bg);
+    background: transparent !important;
 }
 
 /* =========================================================
@@ -348,7 +375,7 @@ body {
     scrollbar-width: thin;
     scrollbar-color: var(--fc-custom-accent) transparent;
 
-    background: var(--fc-custom-bg);
+    background: transparent !important;
 }
 
 .messages::-webkit-scrollbar {
@@ -528,18 +555,16 @@ body {
 
 /* =========================================================
    CUSTOM MESSAGE BUBBLES
-   JS should add "fc-custom-bubble" to .channel-message
-   for these bubble styles to apply.
    ========================================================= */
 
 .fc-custom-bubble .message-content {
     padding: 10px 13px;
     border-radius: 12px;
+
     background: var(--fc-custom-other-message);
     color: var(--fc-custom-other-text);
 }
 
-/* Your own messages: supported class names */
 .fc-custom-bubble.own .message-content,
 .fc-custom-bubble.sent .message-content,
 .fc-custom-bubble.is-own .message-content {
@@ -559,14 +584,19 @@ body {
 
 /* =========================================================
    COMPOSER AREA
+   Keep the lower edge readable while showing the image.
    ========================================================= */
 
 .composer-area {
+    position: relative;
+    z-index: 5;
+
     padding: 0 26px 18px;
 
     background: linear-gradient(
         to top,
-        var(--fc-custom-bg) 65%,
+        rgba(7, 10, 16, 0.94),
+        rgba(7, 10, 16, 0.55) 45%,
         transparent
     );
 }
@@ -588,12 +618,20 @@ body {
     border: 1px solid var(--fc-border);
     border-radius: 16px;
 
-    background: var(--fc-custom-panel);
+    background: color-mix(
+        in srgb,
+        var(--fc-custom-panel) 92%,
+        transparent
+    );
 
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.20);
 
-    transition: border-color var(--fc-transition),
-                box-shadow var(--fc-transition);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    transition:
+        border-color var(--fc-transition),
+        box-shadow var(--fc-transition);
 }
 
 .composer:focus-within {
@@ -669,9 +707,10 @@ body {
     font-size: 19px;
     font-weight: 600;
 
-    transition: background var(--fc-transition),
-                color var(--fc-transition),
-                transform var(--fc-transition);
+    transition:
+        background var(--fc-transition),
+        color var(--fc-transition),
+        transform var(--fc-transition);
 }
 
 .composer-button:hover {
@@ -720,9 +759,10 @@ body {
         transparent
     );
 
-    transition: transform var(--fc-transition),
-                filter var(--fc-transition),
-                box-shadow var(--fc-transition);
+    transition:
+        transform var(--fc-transition),
+        filter var(--fc-transition),
+        box-shadow var(--fc-transition);
 }
 
 .send-button span {
@@ -802,8 +842,9 @@ body {
     pointer-events: none;
     z-index: 100;
 
-    transition: opacity 0.2s ease,
-                transform 0.2s ease;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
 
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -844,6 +885,7 @@ body {
     .back-button {
         width: 36px;
         height: 36px;
+        flex-basis: 36px;
         border-radius: 10px;
     }
 
@@ -991,49 +1033,4 @@ textarea:focus-visible {
         animation-duration: 0.01ms !important;
     }
 }
-/* =====================================================
-   FRIENDCHAT — SERVER BACKGROUND VISIBILITY FIX
-   ===================================================== */
-
-html,
-body {
-    min-height: 100%;
-}
-
-body {
-    background-color: var(--fc-custom-bg, #070a10);
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-/* Let the server background show through */
-.channel-app,
-.channel-main,
-.messages {
-    background-color: transparent !important;
-    background-image: none !important;
-}
-
-/* Keep the header readable */
-.channel-topbar {
-    background-color: rgba(13, 18, 27, 0.88);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-}
-
-/* Keep the message composer readable */
-.composer-area {
-    background: linear-gradient(
-        to top,
-        rgba(7, 10, 16, 0.96),
-        transparent
-    ) !important;
-}
-
-.composer {
-    background-color: rgba(17, 24, 36, 0.94);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-}
+```
