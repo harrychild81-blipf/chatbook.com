@@ -1,7 +1,23 @@
+```css
 /* =========================================================
-   FRIENDCHAT â€” SERVER CUSTOMIZATION PANEL
+   FRIENDCHAT — SERVER CUSTOMIZATION PANEL
+   Theme-aware, responsive, and compatible with shared
+   FriendChat CSS variables.
    Loaded by server-home.html
    ========================================================= */
+
+/* ---------- Theme variables ---------- */
+
+:root {
+    --fc3-accent: var(--fc-accent, #6c63ff);
+    --fc3-bg: var(--fc-bg, #070a10);
+    --fc3-panel: var(--fc-panel, #0d121b);
+    --fc3-panel-2: var(--fc-panel-2, #111824);
+    --fc3-text: var(--fc-text, #f4f5ff);
+    --fc3-border: var(--fc-border, #252d3a);
+}
+
+/* ---------- Overlay ---------- */
 
 .fc3-overlay,
 .fc3-overlay * {
@@ -9,65 +25,133 @@
 }
 
 .fc3-overlay {
+    --fc3-current-accent: var(--fc-accent, #6c63ff);
+    --fc3-current-bg: var(--fc-bg, #070a10);
+    --fc3-current-panel: var(--fc-panel, #0d121b);
+    --fc3-current-panel-2: var(--fc-panel-2, #111824);
+    --fc3-current-text: var(--fc-text, #f4f5ff);
+    --fc3-current-border: var(--fc-border, #252d3a);
+
     position: fixed;
     inset: 0;
     z-index: 99999;
+
     display: grid;
     place-items: center;
+
     padding: 24px;
     overflow-y: auto;
+
+    color: var(--fc3-current-text);
+
     background:
-        radial-gradient(ellipse at 15% 15%, rgba(108, 99, 255, .20), transparent 42%),
-        radial-gradient(ellipse at 90% 85%, rgba(54, 190, 255, .10), transparent 38%),
+        radial-gradient(
+            ellipse at 15% 15%,
+            color-mix(in srgb, var(--fc3-current-accent) 22%, transparent),
+            transparent 42%
+        ),
+        radial-gradient(
+            ellipse at 90% 85%,
+            rgba(54, 190, 255, .10),
+            transparent 38%
+        ),
         rgba(3, 5, 12, .78);
+
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
+
     animation: fc3FadeIn .22s ease-out;
 }
 
+/* ---------- Main modal ---------- */
+
 .fc3-modal {
     position: relative;
+    isolation: isolate;
+
     width: min(100%, 760px);
     max-height: min(90vh, 900px);
+
+    overflow-x: hidden;
     overflow-y: auto;
-    isolation: isolate;
-    color: #f4f5ff;
+
+    color: var(--fc3-current-text, #f4f5ff);
+
     background:
-        linear-gradient(145deg, rgba(22, 27, 45, .98), rgba(10, 14, 25, .98));
-    border: 1px solid rgba(154, 146, 255, .30);
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--fc3-current-panel-2) 96%, white 4%),
+            var(--fc3-current-bg, #070a10)
+        );
+
+    border: 1px solid
+        color-mix(in srgb, var(--fc3-current-accent) 35%, transparent);
+
     border-radius: 24px;
+
     box-shadow:
         0 32px 100px rgba(0, 0, 0, .62),
         0 0 0 1px rgba(255, 255, 255, .035) inset,
-        0 0 70px rgba(108, 99, 255, .15);
+        0 0 70px
+            color-mix(in srgb, var(--fc3-current-accent) 16%, transparent);
+
     animation: fc3RiseIn .28s cubic-bezier(.2, .8, .2, 1);
 }
 
+/* Accent strip */
+
 .fc3-modal::before {
     content: "";
+
     position: absolute;
-    z-index: -1;
+    z-index: 2;
+
+    top: 0;
     left: 0;
     right: 0;
-    top: 0;
+
     height: 4px;
-    background: linear-gradient(90deg, #6c63ff, #a78bfa, #55d6ff);
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--fc3-current-accent),
+            color-mix(in srgb, var(--fc3-current-accent) 55%, white),
+            #55d6ff
+        );
+
+    pointer-events: none;
 }
+
+/* ---------- Header ---------- */
 
 .fc3-head {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
+
     gap: 20px;
     padding: 28px 30px 24px;
+
     border-bottom: 1px solid rgba(255, 255, 255, .08);
+
     background:
-        radial-gradient(ellipse at 0% 0%, rgba(108, 99, 255, .14), transparent 65%);
+        radial-gradient(
+            ellipse at 0% 0%,
+            color-mix(in srgb, var(--fc3-current-accent) 15%, transparent),
+            transparent 65%
+        );
+}
+
+.fc3-head > div {
+    min-width: 0;
 }
 
 .fc3-head h2 {
     margin: 0;
-    color: #fff;
+
+    color: var(--fc3-current-text, #fff);
+
     font-size: clamp(22px, 3vw, 29px);
     font-weight: 750;
     letter-spacing: -.7px;
@@ -76,27 +160,41 @@
 
 .fc3-sub {
     margin-top: 9px;
-    color: #aeb6ce;
+
+    color: color-mix(in srgb, var(--fc3-current-text) 70%, transparent);
+
     font-size: 14px;
     line-height: 1.5;
 }
 
+/* Close button */
+
 .fc3-close {
     display: grid;
     flex: 0 0 38px;
+
     width: 38px;
     height: 38px;
+
     place-items: center;
     padding: 0;
-    color: #cbd1e5;
+
+    color: var(--fc3-current-text, #cbd1e5);
+
     font: inherit;
     font-size: 25px;
     line-height: 1;
+
     cursor: pointer;
+
     background: rgba(255, 255, 255, .055);
     border: 1px solid rgba(255, 255, 255, .10);
     border-radius: 12px;
-    transition: background .18s ease, color .18s ease, transform .18s ease;
+
+    transition:
+        background .18s ease,
+        color .18s ease,
+        transform .18s ease;
 }
 
 .fc3-close:hover {
@@ -105,9 +203,17 @@
     transform: rotate(90deg);
 }
 
+.fc3-close:focus-visible {
+    outline: 2px solid var(--fc3-current-accent);
+    outline-offset: 3px;
+}
+
+/* ---------- Form layout ---------- */
+
 .fc3-form {
     display: grid;
     gap: 20px;
+
     padding: 26px 30px 30px;
 }
 
@@ -118,33 +224,52 @@
 }
 
 .fc3-field label {
-    color: #e5e8f8;
+    color: color-mix(in srgb, var(--fc3-current-text) 90%, transparent);
+
     font-size: 13px;
     font-weight: 650;
     letter-spacing: .15px;
 }
 
+/* ---------- Inputs ---------- */
+
 .fc3-field input:not([type="color"]),
 .fc3-field textarea,
 .fc3-field select {
     display: block;
+
     width: 100%;
+    min-width: 0;
     min-height: 47px;
+
     padding: 12px 14px;
-    color: #f6f7ff;
+
+    color: var(--fc3-current-text, #f6f7ff);
+
     font: inherit;
     font-size: 14px;
-    background: rgba(5, 8, 17, .72);
-    border: 1px solid rgba(164, 173, 206, .20);
+
+    background:
+        color-mix(in srgb, var(--fc3-current-bg) 85%, transparent);
+
+    border: 1px solid
+        color-mix(in srgb, var(--fc3-current-border) 75%, #a4adce 25%);
+
     border-radius: 12px;
     outline: none;
+
     box-shadow: 0 1px 0 rgba(255, 255, 255, .025) inset;
-    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+
+    transition:
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
 }
 
 .fc3-field input:not([type="color"])::placeholder,
 .fc3-field textarea::placeholder {
-    color: #737d99;
+    color: #858eaa;
+    opacity: 1;
 }
 
 .fc3-field textarea {
@@ -162,79 +287,163 @@
     background: #111827;
 }
 
+/* Focus uses the currently selected accent */
+
 .fc3-field input:not([type="color"]):focus,
 .fc3-field textarea:focus,
 .fc3-field select:focus {
-    background: rgba(8, 11, 24, .96);
-    border-color: var(--fc3-accent, #8178ff);
-    box-shadow: 0 0 0 3px rgba(108, 99, 255, .18);
+    border-color: var(--fc3-current-accent);
+
+    box-shadow:
+        0 0 0 3px
+        color-mix(in srgb, var(--fc3-current-accent) 23%, transparent);
 }
+
+.fc3-field input:disabled,
+.fc3-field textarea:disabled,
+.fc3-field select:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+/* ---------- Help text ---------- */
 
 .fc3-help {
     margin-top: -2px;
-    color: #858eaa;
+
+    color: color-mix(in srgb, var(--fc3-current-text) 57%, transparent);
+
     font-size: 12px;
-    line-height: 1.45;
+    line-height: 1.5;
 }
+
+/* ---------- Two-column fields ---------- */
 
 .fc3-two {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
     gap: 18px;
 }
+
+/* ---------- Color picker ---------- */
 
 .fc3-colorrow {
     display: flex;
     align-items: center;
     gap: 12px;
+
     min-height: 47px;
+    min-width: 0;
+
     padding: 6px 12px;
-    background: rgba(5, 8, 17, .72);
-    border: 1px solid rgba(164, 173, 206, .20);
+
+    background:
+        color-mix(in srgb, var(--fc3-current-bg) 85%, transparent);
+
+    border: 1px solid
+        color-mix(in srgb, var(--fc3-current-border) 75%, #a4adce 25%);
+
     border-radius: 12px;
+
+    transition: border-color .18s ease;
+}
+
+.fc3-colorrow:focus-within {
+    border-color: var(--fc3-current-accent);
+
+    box-shadow:
+        0 0 0 3px
+        color-mix(in srgb, var(--fc3-current-accent) 20%, transparent);
 }
 
 .fc3-colorrow input[type="color"] {
+    flex: 0 0 42px;
+
     width: 42px;
     height: 34px;
+
     padding: 3px;
+
     cursor: pointer;
+
     background: transparent;
     border: 1px solid rgba(255, 255, 255, .20);
     border-radius: 8px;
 }
 
+.fc3-colorrow input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.fc3-colorrow input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 5px;
+}
+
+.fc3-colorrow input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: 5px;
+}
+
 .fc3-colorrow span {
-    color: #dce0f5;
+    min-width: 0;
+    overflow-wrap: anywhere;
+
+    color: var(--fc3-current-text, #dce0f5);
+
     font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
     font-size: 13px;
     letter-spacing: .3px;
 }
 
+/* ---------- Action buttons ---------- */
+
 .fc3-actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
+
     margin-top: 5px;
     padding-top: 22px;
+
     border-top: 1px solid rgba(255, 255, 255, .08);
 }
 
 .fc3-btn {
     min-height: 44px;
     padding: 0 20px;
-    color: #e9ecfb;
+
+    color: var(--fc3-current-text, #e9ecfb);
+
     font: inherit;
     font-size: 14px;
     font-weight: 700;
+
     cursor: pointer;
+
     border-radius: 12px;
-    transition: transform .16s ease, background .16s ease, box-shadow .16s ease;
+
+    transition:
+        transform .16s ease,
+        background .16s ease,
+        box-shadow .16s ease,
+        filter .16s ease;
 }
 
 .fc3-btn:active {
     transform: translateY(1px);
 }
+
+.fc3-btn:focus-visible {
+    outline: 2px solid var(--fc3-current-accent);
+    outline-offset: 3px;
+}
+
+/* Cancel */
 
 .fc3-cancel {
     background: rgba(255, 255, 255, .055);
@@ -245,16 +454,31 @@
     background: rgba(255, 255, 255, .10);
 }
 
+/* Save */
+
 .fc3-save {
     color: #fff;
-    background: linear-gradient(135deg, var(--fc3-accent, #6c63ff), #8b5cf6);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--fc3-current-accent),
+            color-mix(in srgb, var(--fc3-current-accent) 60%, #8b5cf6)
+        );
+
     border: 1px solid rgba(255, 255, 255, .15);
-    box-shadow: 0 8px 24px rgba(108, 99, 255, .25);
+
+    box-shadow:
+        0 8px 24px
+        color-mix(in srgb, var(--fc3-current-accent) 28%, transparent);
 }
 
-.fc3-save:hover {
+.fc3-save:hover:not(:disabled) {
     filter: brightness(1.10);
-    box-shadow: 0 10px 30px rgba(108, 99, 255, .34);
+
+    box-shadow:
+        0 10px 30px
+        color-mix(in srgb, var(--fc3-current-accent) 38%, transparent);
 }
 
 .fc3-save:disabled {
@@ -264,15 +488,31 @@
     box-shadow: none;
 }
 
+/* ---------- Animations ---------- */
+
 @keyframes fc3FadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes fc3RiseIn {
-    from { opacity: 0; transform: translateY(12px) scale(.985); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.985);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
+
+/* ---------- Mobile layout ---------- */
 
 @media (max-width: 620px) {
     .fc3-overlay {
@@ -281,12 +521,14 @@
     }
 
     .fc3-modal {
+        width: 100%;
         max-height: none;
         margin: auto 0;
         border-radius: 18px;
     }
 
     .fc3-head {
+        gap: 12px;
         padding: 22px 20px 18px;
     }
 
@@ -296,22 +538,60 @@
     }
 
     .fc3-two {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 17px;
     }
 
     .fc3-actions {
         position: sticky;
         bottom: -20px;
+
         padding: 15px 0 0;
-        background: linear-gradient(180deg, rgba(10, 14, 25, .88), #0a0e19 35%);
+
+        background:
+            linear-gradient(
+                180deg,
+                rgba(10, 14, 25, .88),
+                #0a0e19 35%
+            );
     }
 
     .fc3-btn {
         flex: 1;
+        min-width: 0;
         padding: 0 12px;
     }
 }
+
+/* ---------- Small phones ---------- */
+
+@media (max-width: 380px) {
+    .fc3-overlay {
+        padding: 8px;
+    }
+
+    .fc3-head {
+        padding: 20px 16px 16px;
+    }
+
+    .fc3-form {
+        padding: 16px;
+    }
+
+    .fc3-head h2 {
+        font-size: 21px;
+    }
+
+    .fc3-actions {
+        gap: 8px;
+    }
+
+    .fc3-btn {
+        font-size: 13px;
+    }
+}
+
+/* ---------- Reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
     .fc3-overlay,
@@ -323,7 +603,9 @@
     .fc3-btn,
     .fc3-field input,
     .fc3-field textarea,
-    .fc3-field select {
+    .fc3-field select,
+    .fc3-colorrow {
         transition: none;
     }
 }
+```
