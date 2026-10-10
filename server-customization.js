@@ -1,783 +1,443 @@
-
 /* =========================================================
-   FRIENDCHAT SERVER CUSTOMIZATION
-   Settings button + simple/advanced customization
+   FRIENDCHAT — SERVER CUSTOMIZATION
+   Simple Mode + Advanced Design Studio
+   Requires server-home.js globals:
+   currentServer, saveServerToBackend(), loadServer(), showToast().
    ========================================================= */
 
-(function () {
-    "use strict";
-
-    let activeTab = "general";
-    let modalCreated = false;
-
-    function getServer() {
-        return typeof currentServer !== "undefined"
-            ? currentServer
-            : null;
-    }
-
-    function toast(message) {
-        if (typeof showToast === "function") {
-            showToast(message);
-        } else {
-            alert(message);
-        }
-    }
-
-    function getSettings() {
-        const server = getServer();
-
-        if (!server) return {};
-
-        if (!server.settings || typeof server.settings !== "object") {
-            server.settings = {};
-        }
-
-        return server.settings;
-    }
-
-    function escapeHTML(value) {
-        return String(value ?? "").replace(/[&<>"']/g, character => ({
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#039;"
-        })[character]);
-    }
-
-    function addCustomizationCSS() {
-        if (document.getElementById("fcCustomizationCSS")) return;
-
-        const style = document.createElement("style");
-        style.id = "fcCustomizationCSS";
-
-        style.textContent = `
-            #fcCustomizationOverlay {
-                position: fixed;
-                inset: 0;
-                z-index: 99990;
-                display: none;
-                align-items: center;
-                justify-content: center;
-                padding: 18px;
-                background: rgba(0, 0, 0, .72);
-                backdrop-filter: blur(7px);
-            }
-
-            #fcCustomizationOverlay.fc-open {
-                display: flex;
-            }
-
-            #fcCustomizationModal {
-                width: min(900px, 100%);
-                max-height: min(800px, 92vh);
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-                color: #f3f5fa;
-                background: #0d121b;
-                border: 1px solid #283244;
-                border-radius: 16px;
-                box-shadow: 0 25px 90px #0009;
-                font-family: inherit;
-            }
-
-            #fcCustomizationModal * {
-                box-sizing: border-box;
-            }
-
-            .fc-c-head {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 16px;
-                padding: 18px 22px;
-                border-bottom: 1px solid #263044;
-            }
-
-            .fc-c-head h2 {
-                margin: 0;
-                font-size: 20px;
-            }
-
-            .fc-c-close {
-                border: 0;
-                border-radius: 8px;
-                padding: 8px 12px;
-                background: #202938;
-                color: #fff;
-                cursor: pointer;
-                font-size: 20px;
-            }
-
-            .fc-c-layout {
-                display: grid;
-                grid-template-columns: 185px minmax(0, 1fr);
-                min-height: 0;
-                overflow: auto;
-            }
-
-            .fc-c-nav {
-                padding: 14px 10px;
-                border-right: 1px solid #263044;
-                background: #0a0f17;
-            }
-
-            .fc-c-nav button {
-                display: block;
-                width: 100%;
-                margin-bottom: 5px;
-                padding: 11px 12px;
-                text-align: left;
-                border: 0;
-                border-radius: 8px;
-                color: #bfc9d9;
-                background: transparent;
-                cursor: pointer;
-                font: inherit;
-            }
-
-            .fc-c-nav button.active,
-            .fc-c-nav button:hover {
-                color: #fff;
-                background: #222b3c;
-            }
-
-            .fc-c-content {
-                padding: 22px;
-                overflow: auto;
-                min-width: 0;
-            }
-
-            .fc-c-content h3 {
-                margin: 0 0 8px;
-                font-size: 19px;
-            }
-
-            .fc-c-help {
-                margin: 0 0 22px;
-                color: #98a5b8;
-                font-size: 13px;
-                line-height: 1.5;
-            }
-
-            .fc-c-field {
-                display: block;
-                margin-bottom: 18px;
-            }
-
-            .fc-c-field > span {
-                display: block;
-                margin-bottom: 7px;
-                color: #dce4f0;
-                font-size: 13px;
-                font-weight: 600;
-            }
-
-            .fc-c-field input,
-            .fc-c-field textarea,
-            .fc-c-field select {
-                display: block;
-                width: 100%;
-                min-width: 0;
-                padding: 11px 12px;
-                color: #f4f6fb;
-                background: #090e16;
-                border: 1px solid #303b4e;
-                border-radius: 8px;
-                outline: none;
-                font: inherit;
-            }
-
-            .fc-c-field input:focus,
-            .fc-c-field textarea:focus,
-            .fc-c-field select:focus {
-                border-color: var(--fc-accent, #6c63ff);
-            }
-
-            .fc-c-field textarea {
-                min-height: 90px;
-                resize: vertical;
-            }
-
-            .fc-c-row {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 14px;
-            }
-
-            .fc-c-footer {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                flex-wrap: wrap;
-                gap: 10px;
-                padding: 14px 22px;
-                border-top: 1px solid #263044;
-                background: #0a0f17;
-            }
-
-            .fc-c-footer small {
-                color: #96a2b5;
-            }
-
-            .fc-c-actions {
-                display: flex;
-                gap: 9px;
-            }
-
-            .fc-c-btn {
-                padding: 10px 15px;
-                border: 1px solid #344056;
-                border-radius: 8px;
-                color: #f5f6fa;
-                background: #1b2433;
-                cursor: pointer;
-                font: inherit;
-            }
-
-            .fc-c-btn.primary {
-                color: white;
-                background: var(--fc-accent, #6c63ff);
-                border-color: transparent;
-            }
-
-            .fc-c-btn:disabled {
-                opacity: .6;
-                cursor: wait;
-            }
-
-            .fc-c-list {
-                display: grid;
-                gap: 9px;
-            }
-
-            .fc-c-list-item {
-                padding: 12px;
-                background: #151d29;
-                border: 1px solid #2b3547;
-                border-radius: 9px;
-            }
-
-            .fc-c-list-item strong {
-                display: block;
-                margin-bottom: 4px;
-            }
-
-            .fc-c-list-item small {
-                color: #98a5b8;
-            }
-
-            .fc-c-warning {
-                padding: 12px;
-                margin: 0 0 16px;
-                border: 1px solid #6c5530;
-                background: #302719;
-                border-radius: 8px;
-                color: #f3d9a6;
-                font-size: 13px;
-                line-height: 1.5;
-            }
-
-            @media (max-width: 620px) {
-                #fcCustomizationOverlay {
-                    padding: 8px;
-                }
-
-                #fcCustomizationModal {
-                    max-height: 96vh;
-                    border-radius: 12px;
-                }
-
-                .fc-c-layout {
-                    grid-template-columns: 1fr;
-                }
-
-                .fc-c-nav {
-                    display: flex;
-                    gap: 5px;
-                    overflow-x: auto;
-                    border-right: 0;
-                    border-bottom: 1px solid #263044;
-                }
-
-                .fc-c-nav button {
-                    width: auto;
-                    flex: 0 0 auto;
-                    margin: 0;
-                }
-
-                .fc-c-content {
-                    padding: 16px;
-                }
-
-                .fc-c-row {
-                    grid-template-columns: 1fr;
-                    gap: 0;
-                }
-            }
-        `;
-
-        document.head.appendChild(style);
-    }
-
-    function ensureModal() {
-        if (modalCreated) return;
-
-        addCustomizationCSS();
-
-        const overlay = document.createElement("div");
-        overlay.id = "fcCustomizationOverlay";
-
-        overlay.innerHTML = `
-            <section id="fcCustomizationModal"
-                     role="dialog"
-                     aria-modal="true"
-                     aria-labelledby="fcCustomizationTitle">
-
-                <header class="fc-c-head">
-                    <h2 id="fcCustomizationTitle">Server Settings</h2>
-                    <button type="button"
-                            class="fc-c-close"
-                            id="fcCustomizationClose"
-                            aria-label="Close settings">×</button>
-                </header>
-
-                <div class="fc-c-layout">
-                    <nav class="fc-c-nav" aria-label="Server settings">
-                        <button type="button" data-tab="general" class="active">
-                            General
-                        </button>
-                        <button type="button" data-tab="appearance">
-                            Appearance
-                        </button>
-                        <button type="button" data-tab="channels">
-                            Channels
-                        </button>
-                        <button type="button" data-tab="roles">
-                            Roles
-                        </button>
-                        <button type="button" data-tab="privacy">
-                            Safety &amp; Privacy
-                        </button>
-                    </nav>
-
-                    <main class="fc-c-content" id="fcCustomizationContent"></main>
-                </div>
-
-                <footer class="fc-c-footer">
-                    <small id="fcCustomizationStatus">
-                        Changes are saved to your server.
-                    </small>
-
-                    <div class="fc-c-actions">
-                        <button type="button" class="fc-c-btn"
-                                id="fcCustomizationCancel">
-                            Cancel
-                        </button>
-                        <button type="button" class="fc-c-btn primary"
-                                id="fcCustomizationSave">
-                            Save Changes
-                        </button>
-                    </div>
-                </footer>
-            </section>
-        `;
-
-        document.body.appendChild(overlay);
-
-        overlay.addEventListener("click", event => {
-            if (event.target === overlay) closeServerSettings();
-        });
-
-        overlay.querySelector("#fcCustomizationClose")
-            .addEventListener("click", closeServerSettings);
-
-        overlay.querySelector("#fcCustomizationCancel")
-            .addEventListener("click", closeServerSettings);
-
-        overlay.querySelector("#fcCustomizationSave")
-            .addEventListener("click", saveCustomization);
-
-        overlay.querySelectorAll("[data-tab]").forEach(button => {
-            button.addEventListener("click", () => {
-                activeTab = button.dataset.tab;
-
-                overlay.querySelectorAll("[data-tab]").forEach(tab => {
-                    tab.classList.toggle("active", tab === button);
-                });
-
-                renderTab();
-            });
-        });
-
-        document.addEventListener("keydown", event => {
-            if (event.key === "Escape") closeServerSettings();
-        });
-
-        modalCreated = true;
-    }
-
-    function openServerSettings() {
-        const server = getServer();
-
-        if (!server) {
-            toast("Please wait for the server to load, then try again.");
-            return;
-        }
-
-        ensureModal();
-
-        activeTab = "general";
-
-        const overlay = document.getElementById("fcCustomizationOverlay");
-        overlay.classList.add("fc-open");
-
-        overlay.querySelectorAll("[data-tab]").forEach(button => {
-            button.classList.toggle(
-                "active",
-                button.dataset.tab === activeTab
-            );
-        });
-
-        renderTab();
-    }
-
-    function closeServerSettings() {
-        const overlay = document.getElementById("fcCustomizationOverlay");
-
-        if (overlay) {
-            overlay.classList.remove("fc-open");
-        }
-    }
-
-    function field(label, id, value, placeholder = "", type = "text") {
-        return `
-            <label class="fc-c-field">
-                <span>${escapeHTML(label)}</span>
-                <input id="${id}"
-                       type="${type}"
-                       value="${escapeHTML(value)}"
-                       placeholder="${escapeHTML(placeholder)}">
-            </label>
-        `;
-    }
-
-    function renderTab() {
-        const server = getServer();
-
-        if (!server) return;
-
-        const settings = getSettings();
-        const content = document.getElementById("fcCustomizationContent");
-
-        if (!content) return;
-
-        if (activeTab === "general") {
-            content.innerHTML = `
-                <h3>General settings</h3>
-                <p class="fc-c-help">
-                    Change the server name, icon, and description.
-                </p>
-
-                ${field("Server name", "fcServerName",
-                    server.name || "", "Enter server name")}
-
-                ${field("Server icon URL", "fcServerIcon",
-                    server.icon || "", "https://example.com/icon.png", "url")}
-
-                <label class="fc-c-field">
-                    <span>Server description</span>
-                    <textarea id="fcServerDescription"
-                              placeholder="Describe your server">${escapeHTML(
-                                  server.description || ""
-                              )}</textarea>
-                </label>
-
-                ${field("Banner image URL", "fcServerBanner",
-                    server.banner || "", "https://example.com/banner.png", "url")}
-
-                <div class="fc-c-warning">
-                    Icon and banner fields expect image URLs. They do not upload
-                    local files. Anyone who can access this server may be able
-                    to see its public details.
-                </div>
-            `;
-            return;
-        }
-
-        if (activeTab === "appearance") {
-            content.innerHTML = `
-                <h3>Appearance</h3>
-                <p class="fc-c-help">
-                    Personalize your server's colors and visual theme.
-                </p>
-
-                <div class="fc-c-row">
-                    <label class="fc-c-field">
-                        <span>Accent color</span>
-                        <input id="fcServerAccent"
-                               type="color"
-                               value="${escapeHTML(settings.accent || "#6c63ff")}">
-                    </label>
-
-                    <label class="fc-c-field">
-                        <span>Background color</span>
-                        <input id="fcServerBackground"
-                               type="color"
-                               value="${escapeHTML(settings.background || "#070a10")}">
-                    </label>
-                </div>
-
-                <label class="fc-c-field">
-                    <span>Theme</span>
-                    <select id="fcServerTheme">
-                        <option value="dark" ${settings.theme === "dark" ? "selected" : ""}>
-                            Dark
-                        </option>
-                        <option value="light" ${settings.theme === "light" ? "selected" : ""}>
-                            Light
-                        </option>
-                        <option value="midnight" ${settings.theme === "midnight" ? "selected" : ""}>
-                            Midnight
-                        </option>
-                    </select>
-                </label>
-
-                <div class="fc-c-warning">
-                    The accent and background colors are applied through CSS
-                    variables. Other pages or elements may need matching CSS
-                    rules to reflect every theme change.
-                </div>
-            `;
-            return;
-        }
-
-        if (activeTab === "channels") {
-            const channels = server.channels || [];
-
-            content.innerHTML = `
-                <h3>Channels</h3>
-                <p class="fc-c-help">
-                    These are the channels currently stored for this server.
-                </p>
-
-                <div class="fc-c-list">
-                    ${channels.length ? channels.map(channel => `
-                        <div class="fc-c-list-item">
-                            <strong>
-                                ${channel.type === "voice" ? "🔊" : "#"}
-                                ${escapeHTML(channel.name)}
-                            </strong>
-                            <small>
-                                ${escapeHTML(channel.type || "text")} channel
-                                · ID: ${escapeHTML(channel.id)}
-                            </small>
-                        </div>
-                    `).join("") : `
-                        <div class="fc-c-list-item">
-                            No channels have been created yet.
-                        </div>
-                    `}
-                </div>
-
-                <p class="fc-c-help" style="margin-top:16px">
-                    Use your server's channel creation button to add channels.
-                </p>
-            `;
-            return;
-        }
-
-        if (activeTab === "roles") {
-            const roles = Array.isArray(settings.roles) ? settings.roles : [];
-
-            content.innerHTML = `
-                <h3>Roles</h3>
-                <p class="fc-c-help">
-                    Roles can be configured here, but permissions must also
-                    be implemented and checked by your backend.
-                </p>
-
-                <div class="fc-c-list">
-                    ${roles.length ? roles.map(role => `
-                        <div class="fc-c-list-item">
-                            <strong>${escapeHTML(role.name || "Unnamed role")}</strong>
-                            <small>${escapeHTML(role.description || "No description")}</small>
-                        </div>
-                    `).join("") : `
-                        <div class="fc-c-list-item">
-                            <strong>Default member</strong>
-                            <small>No custom roles are configured.</small>
-                        </div>
-                    `}
-                </div>
-
-                <div class="fc-c-warning" style="margin-top:16px">
-                    This screen does not create secure permissions by itself.
-                    Do not rely on frontend role settings to protect server data.
-                </div>
-            `;
-            return;
-        }
-
-        if (activeTab === "privacy") {
-            content.innerHTML = `
-                <h3>Safety &amp; Privacy</h3>
-                <p class="fc-c-help">
-                    Choose a privacy preference for this server.
-                </p>
-
-                <label class="fc-c-field">
-                    <span>Server visibility preference</span>
-                    <select id="fcServerPrivacy">
-                        <option value="private" ${settings.privacy === "private" ? "selected" : ""}>
-                            Private
-                        </option>
-                        <option value="invite-only" ${settings.privacy === "invite-only" ? "selected" : ""}>
-                            Invite only
-                        </option>
-                        <option value="public" ${settings.privacy === "public" ? "selected" : ""}>
-                            Public
-                        </option>
-                    </select>
-                </label>
-
-                <div class="fc-c-warning">
-                    This saves a preference only. Your backend must enforce
-                    membership, invitations, access control, and permissions
-                    for the setting to provide real privacy.
-                </div>
-            `;
-        }
-    }
-
-    async function saveCustomization() {
-        const server = getServer();
-
-        if (!server) {
-            toast("No server is loaded.");
-            return;
-        }
-
-        const saveButton = document.getElementById("fcCustomizationSave");
-        const status = document.getElementById("fcCustomizationStatus");
-
-        const readValue = id => {
-            const element = document.getElementById(id);
-            return element ? element.value.trim() : null;
-        };
-
-        if (activeTab === "general") {
-            const name = readValue("fcServerName");
-
-            if (!name) {
-                toast("Server name cannot be empty.");
-                return;
-            }
-
-            server.name = name;
-            server.icon = readValue("fcServerIcon") || "";
-            server.description = readValue("fcServerDescription") || "";
-            server.banner = readValue("fcServerBanner") || "";
-        }
-
-        if (activeTab === "appearance") {
-            const settings = getSettings();
-
-            settings.accent =
-                readValue("fcServerAccent") || "#6c63ff";
-
-            settings.background =
-                readValue("fcServerBackground") || "#070a10";
-
-            settings.theme =
-                readValue("fcServerTheme") || "dark";
-        }
-
-        if (activeTab === "privacy") {
-            getSettings().privacy =
-                readValue("fcServerPrivacy") || "private";
-        }
-
-        if (activeTab === "channels" || activeTab === "roles") {
-            toast("There are no changes to save on this tab.");
-            return;
-        }
-
-        saveButton.disabled = true;
-        saveButton.textContent = "Saving...";
-        status.textContent = "Saving to server...";
-
-        try {
-            if (typeof saveServerToBackend !== "function") {
-                throw new Error("saveServerToBackend() was not found.");
-            }
-
-            const success = await saveServerToBackend();
-
-            if (success === false) {
-                throw new Error("The backend could not save your changes.");
-            }
-
-            if (typeof paintServerDetails === "function") {
-                paintServerDetails();
-            }
-
-            if (typeof applyServerAppearance === "function") {
-                applyServerAppearance();
-            }
-
-            status.textContent = "Changes saved.";
-            toast("Server settings saved.");
-            closeServerSettings();
-        } catch (error) {
-            console.error("FriendChat customization save failed:", error);
-            status.textContent = "Save failed.";
-            toast(error.message || "Could not save settings.");
-        } finally {
-            saveButton.disabled = false;
-            saveButton.textContent = "Save Changes";
-        }
-    }
-
-    function initServerCustomization() {
-        ensureModal();
-
-        const settingsButton = document.getElementById("settingsButton");
-        const settingsCard = document.getElementById("serverSettingsCard");
-
-        if (settingsButton && !settingsButton.dataset.fcSettingsConnected) {
-            settingsButton.dataset.fcSettingsConnected = "true";
-
-            settingsButton.addEventListener("click", event => {
-                event.preventDefault();
-                openServerSettings();
-            });
-        }
-
-        if (settingsCard && !settingsCard.dataset.fcSettingsConnected) {
-            settingsCard.dataset.fcSettingsConnected = "true";
-
-            settingsCard.addEventListener("click", event => {
-                event.preventDefault();
-                openServerSettings();
-            });
-        }
-    }
-
-    // Make these functions available to other classic scripts.
-    window.openServerSettings = openServerSettings;
-    window.closeServerSettings = closeServerSettings;
-    window.initServerCustomization = initServerCustomization;
-
-    if (document.readyState === "loading") {
-        document.addEventListener(
-            "DOMContentLoaded",
-            initServerCustomization,
-            { once: true }
-        );
+let serverSettingsOverlay = null;
+
+const FC_DEFAULTS = {
+    accentColor: "#6c63ff",
+    backgroundColor: "#070a10",
+    panelColor: "#0d121b",
+    sidebarColor: "#111824",
+    textColor: "#f4f5ff",
+    borderColor: "#252d3a",
+    fontFamily: "system",
+    fontScale: "normal",
+    spacing: "normal",
+    corners: "rounded",
+    channelDisplay: "list",
+    pageWidth: "standard",
+    shadow: "medium"
+};
+
+function phase3Escape(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char]);
+}
+
+function phase3SafeImageURL(value) {
+    const text = String(value || "").trim();
+    if (!text) return "";
+    try {
+        const parsed = new URL(text, window.location.href);
+        if (parsed.protocol === "https:" || parsed.protocol === "http:") return parsed.href;
+    } catch (_) {}
+    return "";
+}
+
+function phase3ValidColor(value, fallback) {
+    return /^#[0-9a-fA-F]{6}$/.test(String(value || "")) ? value : fallback;
+}
+
+function getServerSettings() {
+    if (!currentServer) return {};
+    if (!currentServer.settings || typeof currentServer.settings !== "object") currentServer.settings = {};
+    return currentServer.settings;
+}
+
+function getServerCreationMode() {
+    if (!currentServer) return "simple";
+    const settings = getServerSettings();
+    const mode = String(currentServer.creationMode || settings.creationMode || settings.mode || "simple").toLowerCase();
+    return mode === "advanced" ? "advanced" : "simple";
+}
+
+function applyServerAppearance() {
+    if (!currentServer || !document.documentElement || !document.body) return;
+
+    const settings = getServerSettings();
+    const layout = settings.advancedLayout && typeof settings.advancedLayout === "object"
+        ? settings.advancedLayout : {};
+    const root = document.documentElement;
+    const isLight = settings.theme === "light";
+
+    const colors = {
+        accent: phase3ValidColor(settings.accentColor, FC_DEFAULTS.accentColor),
+        background: phase3ValidColor(settings.backgroundColor, isLight ? "#f3f5fb" : FC_DEFAULTS.backgroundColor),
+        panel: phase3ValidColor(settings.panelColor, isLight ? "#ffffff" : FC_DEFAULTS.panelColor),
+        sidebar: phase3ValidColor(settings.sidebarColor, isLight ? "#eef1f8" : FC_DEFAULTS.sidebarColor),
+        text: phase3ValidColor(settings.textColor, isLight ? "#182033" : FC_DEFAULTS.textColor),
+        border: phase3ValidColor(settings.borderColor, isLight ? "#d9dfeb" : FC_DEFAULTS.borderColor)
+    };
+
+    root.style.setProperty("--fc-accent", colors.accent);
+    root.style.setProperty("--accent", colors.accent);
+    root.style.setProperty("--fc-bg", colors.background);
+    root.style.setProperty("--fc-panel", colors.panel);
+    root.style.setProperty("--fc-panel-2", colors.sidebar);
+    root.style.setProperty("--fc-panel-3", colors.sidebar);
+    root.style.setProperty("--fc-text", colors.text);
+    root.style.setProperty("--fc-border", colors.border);
+
+    const fontMap = {
+        system: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        rounded: "'Trebuchet MS', 'Segoe UI', sans-serif",
+        mono: "ui-monospace, SFMono-Regular, Consolas, monospace",
+        serif: "Georgia, 'Times New Roman', serif"
+    };
+    root.style.setProperty("--fc-font-family", fontMap[settings.fontFamily] || fontMap.system);
+    root.style.setProperty("--fc-font-scale", settings.fontScale === "small" ? "0.92" : settings.fontScale === "large" ? "1.08" : "1");
+    root.style.setProperty("--fc-space-scale", settings.spacing === "compact" ? "0.78" : settings.spacing === "relaxed" ? "1.2" : "1");
+    root.style.setProperty("--fc-shadow-strength", settings.shadow === "none" ? "0" : settings.shadow === "strong" ? "0.42" : "0.20");
+    root.style.setProperty("--fc-radius", settings.corners === "square" ? "3px" : settings.corners === "soft" ? "18px" : "12px");
+
+    document.body.style.backgroundColor = colors.background;
+    document.body.style.color = colors.text;
+    document.body.style.fontFamily = fontMap[settings.fontFamily] || fontMap.system;
+
+    const bgURL = phase3SafeImageURL(settings.background);
+    if (bgURL) {
+        const rgb = isLight ? "243,245,251" : "7,10,16";
+        document.body.style.backgroundImage = `linear-gradient(rgba(${rgb},${isLight ? "0.82" : "0.74"}), rgba(${rgb},${isLight ? "0.91" : "0.88"})), url("${bgURL.replace(/["\\]/g, "\\$&")}")`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+        document.body.style.backgroundAttachment = "fixed";
     } else {
-        initServerCustomization();
+        document.body.style.backgroundImage = "none";
+        document.body.style.backgroundSize = "";
+        document.body.style.backgroundPosition = "";
+        document.body.style.backgroundAttachment = "";
     }
-})();
+
+    const app = document.querySelector(".server-app");
+    if (app) {
+        app.dataset.creationMode = getServerCreationMode();
+        app.classList.toggle("fc-advanced-layout-wide", layout.pageWidth === "wide");
+        app.classList.toggle("fc-advanced-layout-compact", layout.pageWidth === "compact");
+        app.classList.toggle("fc-advanced-channels-grid", layout.channelDisplay === "cards");
+        app.classList.toggle("fc-advanced-square-corners", layout.corners === "square");
+        app.classList.toggle("fc-advanced-soft-corners", layout.corners === "soft");
+        app.classList.toggle("fc-advanced-spacing-compact", layout.spacing === "compact");
+        app.classList.toggle("fc-advanced-spacing-relaxed", layout.spacing === "relaxed");
+        app.classList.toggle("fc-advanced-hide-hero", layout.showHero === false);
+        app.classList.toggle("fc-advanced-hide-preview", layout.showPreview === false);
+        app.classList.toggle("fc-advanced-hide-server-id", layout.showServerID === false);
+        app.classList.toggle("fc-advanced-no-shadows", layout.shadow === "none");
+    }
+
+    const previewBox = document.querySelector(".preview-box");
+    if (previewBox && previewBox.closest(".section")) {
+        previewBox.closest(".section").style.display = layout.showPreview === false ? "none" : "";
+    }
+    const hero = document.querySelector(".server-hero");
+    if (hero) {
+        hero.style.display = layout.showHero === false ? "none" : "";
+        const bannerURL = phase3SafeImageURL(currentServer.banner);
+        hero.style.backgroundImage = bannerURL
+            ? `linear-gradient(90deg, rgba(7,10,16,.88), rgba(7,10,16,.40)), url("${bannerURL.replace(/["\\]/g, "\\$&")}")`
+            : "";
+        hero.style.backgroundSize = bannerURL ? "cover" : "";
+        hero.style.backgroundPosition = bannerURL ? "center" : "";
+        hero.style.borderColor = colors.accent;
+    }
+}
+
+function closeServerSettings() {
+    if (serverSettingsOverlay) {
+        serverSettingsOverlay.remove();
+        serverSettingsOverlay = null;
+    }
+    document.removeEventListener("keydown", handleServerSettingsEscape);
+}
+
+function handleServerSettingsEscape(event) {
+    if (event.key === "Escape") closeServerSettings();
+}
+
+function settingsBaseValues() {
+    const settings = getServerSettings();
+    const isLight = settings.theme === "light";
+    return {
+        accentColor: phase3ValidColor(settings.accentColor, FC_DEFAULTS.accentColor),
+        backgroundColor: phase3ValidColor(settings.backgroundColor, isLight ? "#f3f5fb" : FC_DEFAULTS.backgroundColor),
+        panelColor: phase3ValidColor(settings.panelColor, isLight ? "#ffffff" : FC_DEFAULTS.panelColor),
+        sidebarColor: phase3ValidColor(settings.sidebarColor, isLight ? "#eef1f8" : FC_DEFAULTS.sidebarColor),
+        textColor: phase3ValidColor(settings.textColor, isLight ? "#182033" : FC_DEFAULTS.textColor),
+        borderColor: phase3ValidColor(settings.borderColor, isLight ? "#d9dfeb" : FC_DEFAULTS.borderColor)
+    };
+}
+
+function openServerSettings() {
+    if (!currentServer) {
+        if (typeof showToast === "function") showToast("Please wait for your server to load.");
+        return;
+    }
+    closeServerSettings();
+    if (getServerCreationMode() === "advanced") openAdvancedServerSettings();
+    else openSimpleServerSettings();
+}
+
+/* -------------------------- SIMPLE MODE -------------------------- */
+function openSimpleServerSettings() {
+    const settings = getServerSettings();
+    const colors = settingsBaseValues();
+    const icon = phase3SafeImageURL(currentServer.icon);
+    const overlay = document.createElement("div");
+    overlay.className = "fc3-overlay";
+    overlay.innerHTML = `
+      <section class="fc3-modal" role="dialog" aria-modal="true" aria-labelledby="fc3Title">
+        <header class="fc3-head"><div><h2 id="fc3Title">Customize your server</h2><div class="fc3-sub">Simple Mode · Change the basics without complicated controls.</div></div><button class="fc3-close" type="button" aria-label="Close">×</button></header>
+        <form class="fc3-form">
+          <div class="fc3-field"><label for="fc3Name">Server name</label><input id="fc3Name" maxlength="40" required value="${phase3Escape(currentServer.name || "")}"></div>
+          <div class="fc3-field"><label for="fc3Description">Description</label><textarea id="fc3Description" maxlength="200">${phase3Escape(currentServer.description || "")}</textarea><div class="fc3-help">A short description for your community · 200 characters max.</div></div>
+          <div class="fc3-field"><label for="fc3Icon">Server photo URL</label><input id="fc3Icon" type="url" placeholder="https://example.com/server-icon.png" value="${phase3Escape(icon)}"><div class="fc3-help">Use a direct image URL starting with https:// or http://.</div></div>
+          <div class="fc3-two">
+            <div class="fc3-field"><label for="fc3BackgroundColor">Background color</label><div class="fc3-colorrow"><input id="fc3BackgroundColor" type="color" value="${colors.backgroundColor}"><span id="fc3BackgroundText">${colors.backgroundColor}</span></div></div>
+            <div class="fc3-field"><label for="fc3Accent">Accent color</label><div class="fc3-colorrow"><input id="fc3Accent" type="color" value="${colors.accentColor}"><span id="fc3AccentText">${colors.accentColor}</span></div></div>
+          </div>
+          <div class="fc3-field"><label for="fc3Theme">Theme preset</label><select id="fc3Theme"><option value="dark" ${settings.theme !== "light" ? "selected" : ""}>Dark</option><option value="light" ${settings.theme === "light" ? "selected" : ""}>Light</option></select></div>
+          <div class="fc3-actions"><button class="fc3-btn fc3-cancel" type="button">Cancel</button><button class="fc3-btn fc3-save" type="submit">Save changes</button></div>
+        </form>
+      </section>`;
+    document.body.appendChild(overlay);
+    serverSettingsOverlay = overlay;
+    wireCommonOverlay(overlay);
+    wireColorLabel(overlay, "#fc3BackgroundColor", "#fc3BackgroundText");
+    wireColorLabel(overlay, "#fc3Accent", "#fc3AccentText");
+
+    overlay.querySelector("form").addEventListener("submit", async event => {
+        event.preventDefault();
+        const saveButton = overlay.querySelector(".fc3-save");
+        const name = overlay.querySelector("#fc3Name").value.trim();
+        const description = overlay.querySelector("#fc3Description").value.trim();
+        const iconValue = overlay.querySelector("#fc3Icon").value.trim();
+        if (name.length < 2) return showToast("Server name must be at least 2 characters.");
+        if (iconValue && !phase3SafeImageURL(iconValue)) return showToast("Server photo must be a valid http or https image URL.");
+
+        const oldServer = JSON.parse(JSON.stringify(currentServer));
+        const themeValue = overlay.querySelector("#fc3Theme").value;
+        currentServer.name = name;
+        currentServer.description = description;
+        currentServer.icon = iconValue ? phase3SafeImageURL(iconValue) : null;
+        currentServer.settings = {
+            ...getServerSettings(),
+            theme: themeValue,
+            backgroundColor: overlay.querySelector("#fc3BackgroundColor").value,
+            accentColor: overlay.querySelector("#fc3Accent").value
+        };
+        await persistServerChanges(saveButton, oldServer, "Save changes", "Server customization saved.");
+    });
+}
+
+/* --------------------- ADVANCED DESIGN STUDIO -------------------- */
+function openAdvancedServerSettings() {
+    const settings = getServerSettings();
+    const layout = settings.advancedLayout && typeof settings.advancedLayout === "object" ? settings.advancedLayout : {};
+    const colors = settingsBaseValues();
+    const icon = phase3SafeImageURL(currentServer.icon);
+    const banner = phase3SafeImageURL(currentServer.banner);
+    const background = phase3SafeImageURL(settings.background);
+    const val = (key, fallback) => settings[key] ?? fallback;
+    const select = (key, fallback, value) => ((layout[key] ?? settings[key] ?? fallback) === value ? "selected" : "");
+    const checked = (key, fallback = true) => (layout[key] === undefined ? fallback : layout[key]) ? "checked" : "";
+    const overlay = document.createElement("div");
+    overlay.className = "fc3-overlay fc-advanced-overlay";
+    overlay.innerHTML = `
+      <section class="fc3-modal fc-advanced-modal" role="dialog" aria-modal="true" aria-labelledby="fcAdvTitle">
+        <header class="fc3-head"><div><div class="fc-advanced-kicker">FRIENDCHAT / DESIGN STUDIO</div><h2 id="fcAdvTitle">Build your server design</h2><div class="fc3-sub">Advanced Mode · Control the colors, layout, typography and details.</div></div><button class="fc3-close" type="button" aria-label="Close">×</button></header>
+        <form class="fc3-form fc-advanced-form">
+          <div class="fc-advanced-section-title"><span>01</span><div><strong>Server identity</strong><small>Name, description and images</small></div></div>
+          <div class="fc3-field"><label for="fcAdvName">Server name</label><input id="fcAdvName" maxlength="40" required value="${phase3Escape(currentServer.name || "")}"></div>
+          <div class="fc3-field"><label for="fcAdvDescription">Description</label><textarea id="fcAdvDescription" maxlength="200">${phase3Escape(currentServer.description || "")}</textarea></div>
+          <div class="fc3-field"><label for="fcAdvIcon">Server icon URL</label><input id="fcAdvIcon" type="url" placeholder="https://example.com/icon.png" value="${phase3Escape(icon)}"></div>
+          <div class="fc3-field"><label for="fcAdvBanner">Server banner URL</label><input id="fcAdvBanner" type="url" placeholder="https://example.com/banner.jpg" value="${phase3Escape(banner)}"></div>
+          <div class="fc3-field"><label for="fcAdvBackground">Page background image URL (optional)</label><input id="fcAdvBackground" type="url" placeholder="https://example.com/background.jpg" value="${phase3Escape(background)}"></div>
+
+          <div class="fc-advanced-section-title"><span>02</span><div><strong>Color designer</strong><small>Customize each major surface</small></div></div>
+          <div class="fc3-two">
+            <div class="fc3-field"><label for="fcAdvBackgroundColor">Page background</label><div class="fc3-colorrow"><input id="fcAdvBackgroundColor" type="color" value="${colors.backgroundColor}"><span id="fcAdvBackgroundColorText">${colors.backgroundColor}</span></div></div>
+            <div class="fc3-field"><label for="fcAdvAccent">Accent / highlight</label><div class="fc3-colorrow"><input id="fcAdvAccent" type="color" value="${colors.accentColor}"><span id="fcAdvAccentText">${colors.accentColor}</span></div></div>
+            <div class="fc3-field"><label for="fcAdvPanelColor">Panel color</label><div class="fc3-colorrow"><input id="fcAdvPanelColor" type="color" value="${colors.panelColor}"><span id="fcAdvPanelColorText">${colors.panelColor}</span></div></div>
+            <div class="fc3-field"><label for="fcAdvSidebarColor">Sidebar / secondary panels</label><div class="fc3-colorrow"><input id="fcAdvSidebarColor" type="color" value="${colors.sidebarColor}"><span id="fcAdvSidebarColorText">${colors.sidebarColor}</span></div></div>
+            <div class="fc3-field"><label for="fcAdvTextColor">Text color</label><div class="fc3-colorrow"><input id="fcAdvTextColor" type="color" value="${colors.textColor}"><span id="fcAdvTextColorText">${colors.textColor}</span></div></div>
+            <div class="fc3-field"><label for="fcAdvBorderColor">Border color</label><div class="fc3-colorrow"><input id="fcAdvBorderColor" type="color" value="${colors.borderColor}"><span id="fcAdvBorderColorText">${colors.borderColor}</span></div></div>
+          </div>
+
+          <div class="fc-advanced-section-title"><span>03</span><div><strong>Layout and shape</strong><small>Choose how the server is arranged</small></div></div>
+          <div class="fc3-two">
+            <div class="fc3-field"><label for="fcAdvWidth">Page width</label><select id="fcAdvWidth"><option value="standard" ${select("pageWidth", "standard", "standard")}>Standard</option><option value="wide" ${select("pageWidth", "standard", "wide")}>Wide</option><option value="compact" ${select("pageWidth", "standard", "compact")}>Compact</option></select></div>
+            <div class="fc3-field"><label for="fcAdvCorners">Corner style</label><select id="fcAdvCorners"><option value="rounded" ${select("corners", "rounded", "rounded")}>Rounded</option><option value="soft" ${select("corners", "rounded", "soft")}>Extra soft</option><option value="square" ${select("corners", "rounded", "square")}>Square / sharp</option></select></div>
+            <div class="fc3-field"><label for="fcAdvChannelDisplay">Channel layout</label><select id="fcAdvChannelDisplay"><option value="list" ${select("channelDisplay", "list", "list")}>Classic list</option><option value="cards" ${select("channelDisplay", "list", "cards")}>Grid cards</option></select></div>
+            <div class="fc3-field"><label for="fcAdvSpacing">Spacing</label><select id="fcAdvSpacing"><option value="compact" ${select("spacing", "normal", "compact")}>Compact</option><option value="normal" ${select("spacing", "normal", "normal")}>Balanced</option><option value="relaxed" ${select("spacing", "normal", "relaxed")}>Relaxed</option></select></div>
+          </div>
+
+          <div class="fc-advanced-section-title"><span>04</span><div><strong>Typography and effects</strong><small>Change the personality of the interface</small></div></div>
+          <div class="fc3-two">
+            <div class="fc3-field"><label for="fcAdvFont">Font style</label><select id="fcAdvFont"><option value="system" ${select("fontFamily", "system", "system")}>System / modern</option><option value="rounded" ${select("fontFamily", "system", "rounded")}>Rounded</option><option value="mono" ${select("fontFamily", "system", "mono")}>Monospace</option><option value="serif" ${select("fontFamily", "system", "serif")}>Serif</option></select></div>
+            <div class="fc3-field"><label for="fcAdvFontScale">Text size</label><select id="fcAdvFontScale"><option value="small" ${select("fontScale", "normal", "small")}>Small</option><option value="normal" ${select("fontScale", "normal", "normal")}>Normal</option><option value="large" ${select("fontScale", "normal", "large")}>Large</option></select></div>
+            <div class="fc3-field"><label for="fcAdvShadow">Shadows</label><select id="fcAdvShadow"><option value="none" ${select("shadow", "medium", "none")}>Off</option><option value="medium" ${select("shadow", "medium", "medium")}>Soft</option><option value="strong" ${select("shadow", "medium", "strong")}>Strong</option></select></div>
+            <div class="fc3-field"><label for="fcAdvTheme">Base theme</label><select id="fcAdvTheme"><option value="dark" ${settings.theme !== "light" ? "selected" : ""}>Dark</option><option value="light" ${settings.theme === "light" ? "selected" : ""}>Light</option></select></div>
+          </div>
+
+          <div class="fc-advanced-section-title"><span>05</span><div><strong>Page elements</strong><small>Show or hide sections</small></div></div>
+          <div class="fc-advanced-toggles">
+            <label><span><strong>Server hero</strong><small>Icon, name and description area</small></span><input id="fcAdvShowHero" type="checkbox" ${checked("showHero")}></label>
+            <label><span><strong>Server ID</strong><small>Show the server ID</small></span><input id="fcAdvShowServerID" type="checkbox" ${checked("showServerID")}></label>
+            <label><span><strong>Server preview</strong><small>Show the preview section</small></span><input id="fcAdvShowPreview" type="checkbox" ${checked("showPreview")}></label>
+          </div>
+
+          <div class="fc-advanced-preview-note"><span>✦</span><div><strong>Custom server design</strong><p>These settings are saved with this server and applied when members open it. Your core FriendChat features remain unchanged.</p></div></div>
+          <div class="fc-advanced-live-preview" id="fcAdvLivePreview"><div class="fc-adv-preview-top"><span></span><span></span><span></span><b>DESIGN PREVIEW</b></div><div class="fc-adv-preview-body"><aside></aside><div class="fc-adv-preview-main"><div></div><div></div><div></div></div></div></div>
+          <div class="fc3-actions"><button class="fc3-btn fc3-cancel" type="button">Cancel</button><button class="fc3-btn fc3-save" type="submit">Save server design</button></div>
+        </form>
+      </section>`;
+    document.body.appendChild(overlay);
+    serverSettingsOverlay = overlay;
+    wireCommonOverlay(overlay);
+
+    ["BackgroundColor", "Accent", "PanelColor", "SidebarColor", "TextColor", "BorderColor"].forEach(suffix => {
+        wireColorLabel(overlay, `#fcAdv${suffix}`, `#fcAdv${suffix}Text`);
+    });
+
+    const preview = overlay.querySelector("#fcAdvLivePreview");
+    const updatePreview = () => {
+        preview.style.setProperty("--preview-accent", overlay.querySelector("#fcAdvAccent").value);
+        preview.style.setProperty("--preview-bg", overlay.querySelector("#fcAdvBackgroundColor").value);
+        preview.style.setProperty("--preview-panel", overlay.querySelector("#fcAdvPanelColor").value);
+        preview.style.setProperty("--preview-sidebar", overlay.querySelector("#fcAdvSidebarColor").value);
+        preview.style.setProperty("--preview-text", overlay.querySelector("#fcAdvTextColor").value);
+        preview.style.setProperty("--preview-border", overlay.querySelector("#fcAdvBorderColor").value);
+        preview.dataset.display = overlay.querySelector("#fcAdvChannelDisplay").value;
+        preview.dataset.corners = overlay.querySelector("#fcAdvCorners").value;
+    };
+    overlay.querySelectorAll('input[type="color"], #fcAdvChannelDisplay, #fcAdvCorners').forEach(control => control.addEventListener("input", updatePreview));
+    overlay.querySelectorAll("#fcAdvChannelDisplay, #fcAdvCorners").forEach(control => control.addEventListener("change", updatePreview));
+    updatePreview();
+
+    overlay.querySelector("form").addEventListener("submit", async event => {
+        event.preventDefault();
+        const saveButton = overlay.querySelector(".fc3-save");
+        const name = overlay.querySelector("#fcAdvName").value.trim();
+        const description = overlay.querySelector("#fcAdvDescription").value.trim();
+        const iconValue = overlay.querySelector("#fcAdvIcon").value.trim();
+        const bannerValue = overlay.querySelector("#fcAdvBanner").value.trim();
+        const backgroundValue = overlay.querySelector("#fcAdvBackground").value.trim();
+        for (const [label, value] of [["Icon", iconValue], ["Banner", bannerValue], ["Background", backgroundValue]]) {
+            if (value && !phase3SafeImageURL(value)) return showToast(`${label} must be a valid http or https image URL.`);
+        }
+        if (name.length < 2) return showToast("Server name must be at least 2 characters.");
+
+        const oldServer = JSON.parse(JSON.stringify(currentServer));
+        const newSettings = {
+            ...getServerSettings(),
+            creationMode: "advanced",
+            theme: overlay.querySelector("#fcAdvTheme").value,
+            accentColor: overlay.querySelector("#fcAdvAccent").value,
+            backgroundColor: overlay.querySelector("#fcAdvBackgroundColor").value,
+            panelColor: overlay.querySelector("#fcAdvPanelColor").value,
+            sidebarColor: overlay.querySelector("#fcAdvSidebarColor").value,
+            textColor: overlay.querySelector("#fcAdvTextColor").value,
+            borderColor: overlay.querySelector("#fcAdvBorderColor").value,
+            fontFamily: overlay.querySelector("#fcAdvFont").value,
+            fontScale: overlay.querySelector("#fcAdvFontScale").value,
+            spacing: overlay.querySelector("#fcAdvSpacing").value,
+            shadow: overlay.querySelector("#fcAdvShadow").value,
+            background: backgroundValue ? phase3SafeImageURL(backgroundValue) : null,
+            advancedLayout: {
+                ...layout,
+                pageWidth: overlay.querySelector("#fcAdvWidth").value,
+                channelDisplay: overlay.querySelector("#fcAdvChannelDisplay").value,
+                corners: overlay.querySelector("#fcAdvCorners").value,
+                spacing: overlay.querySelector("#fcAdvSpacing").value,
+                shadow: overlay.querySelector("#fcAdvShadow").value,
+                showHero: overlay.querySelector("#fcAdvShowHero").checked,
+                showServerID: overlay.querySelector("#fcAdvShowServerID").checked,
+                showPreview: overlay.querySelector("#fcAdvShowPreview").checked
+            }
+        };
+        currentServer.name = name;
+        currentServer.description = description;
+        currentServer.icon = iconValue ? phase3SafeImageURL(iconValue) : null;
+        currentServer.banner = bannerValue ? phase3SafeImageURL(bannerValue) : null;
+        currentServer.creationMode = "advanced";
+        currentServer.settings = newSettings;
+        await persistServerChanges(saveButton, oldServer, "Save server design", "Your server design was saved.");
+    });
+}
+
+function wireCommonOverlay(overlay) {
+    overlay.querySelector(".fc3-close")?.addEventListener("click", closeServerSettings);
+    overlay.querySelector(".fc3-cancel")?.addEventListener("click", closeServerSettings);
+    overlay.addEventListener("click", event => {
+        if (event.target === overlay) closeServerSettings();
+    });
+    document.addEventListener("keydown", handleServerSettingsEscape);
+}
+
+function wireColorLabel(overlay, inputSelector, textSelector) {
+    const input = overlay.querySelector(inputSelector);
+    const text = overlay.querySelector(textSelector);
+    if (!input || !text) return;
+    input.addEventListener("input", () => { text.textContent = input.value.toUpperCase(); });
+}
+
+async function persistServerChanges(saveButton, oldServer, defaultButtonText, successMessage) {
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving…";
+    let saved = false;
+    try {
+        saved = await saveServerToBackend();
+    } catch (error) {
+        console.error("Could not save server customization", error);
+    }
+    if (!saved) {
+        currentServer = oldServer;
+        applyServerAppearance();
+        saveButton.disabled = false;
+        saveButton.textContent = defaultButtonText;
+        showToast("Could not save changes. Please try again.");
+        return;
+    }
+    closeServerSettings();
+    applyServerAppearance();
+    try {
+        await loadServer();
+    } catch (error) {
+        console.warn("Server saved, but reloading the page data failed.", error);
+    }
+    applyServerAppearance();
+    showToast(successMessage);
+}
+
+function initServerCustomization() {
+    const originalLoadServer = window.__fc3OriginalLoadServer;
+    if (!originalLoadServer && typeof loadServer === "function") {
+        window.__fc3OriginalLoadServer = loadServer;
+        window.loadServer = async function (...args) {
+            const result = await window.__fc3OriginalLoadServer.apply(this, args);
+            applyServerAppearance();
+            return result;
+        };
+    }
+    if (currentServer) applyServerAppearance();
+    let attempts = 0;
+    const startupAppearanceTimer = setInterval(() => {
+        attempts += 1;
+        if (currentServer) {
+            applyServerAppearance();
+            clearInterval(startupAppearanceTimer);
+        } else if (attempts >= 100) {
+            clearInterval(startupAppearanceTimer);
+        }
+    }, 100);
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initServerCustomization, { once: true });
+} else {
+    initServerCustomization();
+}
