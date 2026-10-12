@@ -2,13 +2,7 @@
 /* =========================================================
    FRIENDCHAT — SERVER ROLES
    BACKEND CONNECTED VERSION
-
-   Uses existing backend:
-   GET /api/servers/:id
-   PUT /api/servers/:id
-
-   Backend role format:
-   { roleID, name, color, permissions: ["sendMessages", ...] }
+   Role counts + role editing + permissions + saving
    ========================================================= */
 
 (() => {
@@ -164,8 +158,6 @@
     };
   }
 
-  // Convert the UI format into the exact role format
-  // accepted by server.js.
   function rolesForBackend() {
     return roles.map(role => ({
       roleID: role.id,
@@ -190,7 +182,9 @@
     try {
       for (const key of directKeys) {
         const value = localStorage.getItem(key);
-        if (value && value.trim()) return value.trim().toUpperCase();
+        if (value && value.trim()) {
+          return value.trim().toUpperCase();
+        }
       }
 
       const objectKeys = [
@@ -207,7 +201,9 @@
 
         try {
           const obj = JSON.parse(raw);
-          const id = obj && (obj.userID || obj.userId || obj.id || obj.ID);
+          const id = obj &&
+            (obj.userID || obj.userId || obj.id || obj.ID);
+
           if (id) return String(id).trim().toUpperCase();
         } catch (_) {}
       }
@@ -226,11 +222,15 @@
       if (fromURL && fromURL.trim()) return fromURL.trim();
 
       const saved = localStorage.getItem("friendchat_current_server");
+
       if (saved && saved.trim()) {
         try {
           const parsed = JSON.parse(saved);
+
           if (parsed && typeof parsed === "object") {
-            return String(parsed.serverID || parsed.serverId || parsed.id || "").trim();
+            return String(
+              parsed.serverID || parsed.serverId || parsed.id || ""
+            ).trim();
           }
         } catch (_) {}
 
@@ -304,6 +304,7 @@
     toast.classList.add("show");
 
     clearTimeout(toastTimer);
+
     toastTimer = setTimeout(
       () => toast.classList.remove("show"),
       2600
@@ -314,16 +315,134 @@
     return roles.find(role => role.id === selectedId) || null;
   }
 
+  /* =========================================================
+     ROLE MEMBER COUNT FIX
+
+     Reads common role-assignment formats from server members.
+     Returns null when the backend does not provide enough data.
+     ========================================================= */
+
+  function getMemberRoleIDs(member) {
+    if (!member || typeof member !== "object") return [];
+
+    const result = [];
+
+    // Common formats: roles: ["member", "moderator"]
+    if (Array.isArray(member.roles)) {
+      member.roles.forEach(role => {
+        if (typeof role === "string" || typeof role === "number") {
+          result.push(String(role));
+        } else if (role && typeof role === "object") {
+          const id = role.roleID || role.roleId || role.id;
+          if (id != null) result.push(String(id));
+        }
+      });
+    }
+
+    // Common single-role formats
+    [
+      "roleID",
+      "roleId",
+      "role",
+      "serverRoleID",
+      "serverRoleId"
+    ].forEach(key => {
+      const value = member[key];
+
+      if (typeof value === "string" || typeof value === "number") {
+        result.push(String(value));
+      } else if (value && typeof value === "object") {
+        const id = value.roleID || value.roleId || value.id;
+        if (id != null) result.push(String(id));
+      }
+    });
+
+    // Alternative role ID arrays
+    [
+      "roleIDs",
+      "roleIds",
+      "serverRoles"
+    ].forEach(key => {
+      if (Array.isArray(member[key])) {
+        member[key].forEach(value => {
+          if (typeof value === "string" || typeof value === "number") {
+            result.push(String(value));
+          } else if (value && typeof value === "object") {
+            const id = value.roleID || value.roleId || value.id;
+            if (id != null) result.push(String(id));
+          }
+        });
+      }
+    });
+
+    return [...new Set(result)];
+  }
+
+  function getRoleMemberCount(role) {
+    const members = currentServer?.members;
+
+    // Do not falsely report zero when member data is unavailable.
+    if (!Array.isArray(members)) return null;
+
+    // Owner may be stored separately from ordinary member roles.
+    if (role.id.toLowerCase() === "owner") {
+      const ownerID =
+        currentServer.ownerID ||
+        currentServer.ownerId ||
+        currentServer.owner ||
+        currentServer.createdBy ||
+        currentServer.createdByID;
+
+      const ownerKey = typeof ownerID === "object" && ownerID
+        ? String(ownerID.userID || ownerID.userId || ownerID.id || "")
+        : String(ownerID || "");
+
+      const ownerIsInMembers = ownerKey && members.some(member => {
+        const memberID = String(
+          member?.userID ||
+          member?.userId ||
+          member?.memberID ||
+          member?.memberId ||
+          member?.id ||
+          ""
+        );
+
+        return memberID.toUpperCase() === ownerKey.toUpperCase();
+      });
+
+      // Owner is counted through the role assignment when available.
+      const assignedCount = members.filter(member =>
+        getMemberRoleIDs(member).some(id =>
+          id.toLowerCase() === role.id.toLowerCase()
+        )
+      ).length;
+
+      if (assignedCount > 0) return assignedCount;
+      if (ownerKey && !ownerIsInMembers) return 1;
+      if (ownerKey && ownerIsInMembers) return 1;
+    }
+
+    return members.filter(member =>
+      getMemberRoleIDs(member).some(id =>
+        id.toLowerCase() === role.id.toLowerCase()
+      )
+    ).length;
+  }
+
   async function loadRolesFromBackend() {
     const serverID = getCurrentServerID();
     const userID = getCurrentUserID();
 
     if (!serverID) {
-      throw new Error("Server ID is missing. Open Roles from your server page.");
+      throw new Error(
+        "Server ID is missing. Open Roles from your server page."
+      );
     }
 
     if (!userID) {
-      throw new Error("Your FriendChat user ID is missing. Please log in again.");
+      throw new Error(
+        "Your FriendChat user ID is missing. Please log in again."
+      );
     }
 
     const data = await apiRequest(
@@ -355,12 +474,11 @@
     if (backendRoles.length) {
       roles = backendRoles.map(normalizeRole);
     } else {
-      // These are starter roles for a server with no saved roles yet.
-      roles = SEED_ROLES.map(role => normalizeRole(role));
+      roles = SEED_ROLES.map(normalizeRole);
     }
 
     if (!roles.length) {
-      roles = SEED_ROLES.map(role => normalizeRole(role));
+      roles = SEED_ROLES.map(normalizeRole);
     }
 
     selectedId = roles[0]?.id || null;
@@ -406,9 +524,11 @@
         throw new Error("The backend did not confirm the saved roles.");
       }
 
-      currentServer = data.server;
+      currentServer = {
+        ...currentServer,
+        ...data.server
+      };
 
-      // Use the backend response as the confirmed saved version.
       if (Array.isArray(data.server.roles)) {
         roles = data.server.roles.map(normalizeRole);
       }
@@ -429,20 +549,31 @@
 
     roles.forEach(role => {
       const item = document.createElement("div");
+
       item.className =
         "role-item" + (role.id === selectedId ? " selected" : "");
+
       item.tabIndex = 0;
       item.setAttribute("role", "button");
       item.setAttribute("aria-pressed", String(role.id === selectedId));
       item.setAttribute("aria-label", "Select " + role.name + " role");
 
+      const count = getRoleMemberCount(role);
+      const countText = count === null ? "—" : String(count);
+
       item.innerHTML = `
-        <span class="role-color" style="background:${role.color}"></span>
+        <span class="role-color"
+          style="background:${role.color}"></span>
+
         <span class="role-item-info">
           <strong>${escapeHTML(role.name)}</strong>
           <span>${role.protected ? "Protected role" : "Custom role"}</span>
         </span>
-        <span class="role-count">0</span>
+
+        <span class="role-count" title="Members assigned to this role">
+          ${countText}
+        </span>
+
         <span class="role-arrow">›</span>
       `;
 
@@ -466,10 +597,10 @@
 
     $("roleCount").textContent = roles.length;
 
-    // This backend response doesn't provide member counts per custom role.
-    $("memberCount").textContent = Array.isArray(currentServer?.members)
-      ? currentServer.members.length
-      : "0";
+    $("memberCount").textContent =
+      Array.isArray(currentServer?.members)
+        ? currentServer.members.length
+        : "—";
   }
 
   function renderPermissionGroups(role) {
@@ -490,6 +621,7 @@
         row.className = "permission-row";
 
         const info = document.createElement("div");
+
         info.innerHTML = `
           <strong>${escapeHTML(name)}</strong>
           <small>${escapeHTML(description)}</small>
@@ -511,14 +643,16 @@
         checkbox.addEventListener("change", async () => {
           const currentRole = getSelectedRole();
 
-          if (!currentRole || currentRole.protected) return;
+          if (!currentRole || currentRole.protected || saving) return;
 
           const previous = currentRole.permissions[key];
           currentRole.permissions[key] = checkbox.checked;
 
           if (await saveRoles()) {
             renderAll();
-            showToast(name + (checkbox.checked ? " enabled." : " disabled."));
+            showToast(
+              name + (checkbox.checked ? " enabled." : " disabled.")
+            );
           } else {
             currentRole.permissions[key] = previous;
             renderAll();
@@ -601,7 +735,9 @@
   $("cancelCreate").addEventListener("click", closeCreateModal);
 
   $("createModal").addEventListener("click", event => {
-    if (event.target === $("createModal")) closeCreateModal();
+    if (event.target === $("createModal")) {
+      closeCreateModal();
+    }
   });
 
   document.addEventListener("keydown", event => {
@@ -633,7 +769,9 @@
       return;
     }
 
-    if (roles.some(role => role.name.toLowerCase() === name.toLowerCase())) {
+    if (roles.some(role =>
+      role.name.toLowerCase() === name.toLowerCase()
+    )) {
       showToast("A role with that name already exists.");
       return;
     }
@@ -693,7 +831,11 @@
       return;
     }
 
-    const previous = { name: role.name, color: role.color };
+    const previous = {
+      name: role.name,
+      color: role.color
+    };
+
     role.name = name;
     role.color = color;
 
@@ -717,6 +859,7 @@
     if (!button) return;
 
     const role = getSelectedRole();
+
     if (!role || role.protected || saving) return;
 
     $("roleColor").value = button.dataset.color;
@@ -726,6 +869,7 @@
 
   $("clearPermissions").addEventListener("click", async () => {
     const role = getSelectedRole();
+
     if (!role || role.protected || saving) return;
 
     const previous = { ...role.permissions };
@@ -742,6 +886,7 @@
 
   $("resetRoleBtn").addEventListener("click", async () => {
     const role = getSelectedRole();
+
     if (!role || role.protected || saving) return;
 
     const previous = {
@@ -774,7 +919,9 @@
 
     if (!role || role.protected || saving) return;
 
-    if (!confirm(`Delete the "${role.name}" role? This cannot be undone.`)) {
+    if (!confirm(
+      `Delete the "${role.name}" role? This cannot be undone.`
+    )) {
       return;
     }
 
@@ -794,7 +941,7 @@
     }
   });
 
-  // Start by loading the selected server from the backend.
+  // Load the selected server.
   (async function init() {
     try {
       $("serverName").textContent = "Loading server…";
@@ -806,4 +953,5 @@
       showToast(error.message || "Could not load server roles.");
     }
   })();
+
 })();
