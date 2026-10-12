@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070a10">
+  <title>Roles & Permissions | FriendChat</title>
+  <link rel="stylesheet" href="server-roles.css">
+  <script src="server-roles.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="server-home.html" aria-label="Back to server">
+        <span class="brand-icon">FC</span>
+        <span>Friend<span class="accent">Chat</span></span>
+      </a>
+
+      <div class="server-card">
+        <div class="server-icon">FC</div>
+        <div class="server-info">
+          <strong id="serverName">My Server</strong>
+          <span>Server settings</span>
+        </div>
+        <span class="online-dot"></span>
+      </div>
+
+      <div class="nav-heading">SERVER SETTINGS</div>
+      <a class="nav-link" href="server-home.html">
+        <span class="nav-icon">⌂</span> Overview
+      </a>
+      <a class="nav-link" href="server-home.html">
+        <span class="nav-icon">▤</span> Channels
+      </a>
+      <a class="nav-link" href="server-home.html">
+        <span class="nav-icon">♙</span> Members
+      </a>
+      <a class="nav-link active" href="server-roles.html">
+        <span class="nav-icon">♜</span> Roles & Permissions
+        <span class="active-mark"></span>
+      </a>
+
+      <div class="sidebar-bottom">
+        <div class="local-badge"><span></span> Local preview mode</div>
+        <p>Changes are saved in this browser only.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="breadcrumbs">
+          <span>Server settings</span>
+          <span class="crumb-separator">/</span>
+          <strong>Roles & Permissions</strong>
+        </div>
+        <a class="back-button" href="server-home.html">← Back to server</a>
+      </header>
+
+      <div class="page-content">
+        <section class="page-heading">
+          <div>
+            <div class="eyebrow">ACCESS CONTROL</div>
+            <h1>Roles & Permissions</h1>
+            <p>Control what each role can do in your community.</p>
+          </div>
+          <button id="addRoleBtn" class="primary-button">
+            <span>＋</span> Create Role
+          </button>
+        </section>
+
+        <div class="notice">
+          <span class="notice-icon">ⓘ</span>
+          <div>
+            <strong>Frontend preview</strong>
+            <p>These settings are for interface testing. Real access control
+              must be enforced by your backend when you connect it later.</p>
+          </div>
+        </div>
+
+        <section class="summary-grid">
+          <div class="summary-card">
+            <div class="summary-icon purple">♜</div>
+            <div><span>Total roles</span><strong id="roleCount">4</strong></div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon blue">♙</div>
+            <div><span>Members assigned</span><strong id="memberCount">0</strong></div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-icon green">✓</div>
+            <div><span>Permission groups</span><strong>4</strong></div>
+          </div>
+        </section>
+
+        <div class="workspace">
+          <section class="panel roles-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Server roles</h2>
+                <p>Select a role to edit its settings.</p>
+              </div>
+            </div>
+
+            <div class="role-list" id="roleList"></div>
+
+            <div class="role-tip">
+              <span>✦</span>
+              <p><strong>Role hierarchy</strong><br>
+                Roles higher in the list have higher priority in this preview.</p>
+            </div>
+          </section>
+
+          <section class="panel editor-panel">
+            <div id="emptyEditor" class="empty-editor" hidden>
+              <div class="empty-icon">♜</div>
+              <h2>Select a role</h2>
+              <p>Choose a role on the left to edit its name, color and permissions.</p>
+            </div>
+
+            <div id="roleEditor">
+              <div class="panel-header editor-header">
+                <div>
+                  <div class="eyebrow">ROLE CONFIGURATION</div>
+                  <h2 id="editorTitle">Edit role</h2>
+                </div>
+                <span id="roleStatus" class="status-pill">Selected</span>
+              </div>
+
+              <form id="roleForm">
+                <div class="form-section">
+                  <label for="roleName">Role name</label>
+                  <input id="roleName" maxlength="32" required
+                    placeholder="Enter role name">
+                  <small>Choose a clear name for this role.</small>
+                </div>
+
+                <div class="form-section">
+                  <label>Role color</label>
+                  <div class="color-row">
+                    <input id="roleColor" type="color" value="#8b7bff"
+                      aria-label="Choose role color">
+                    <div class="color-preview">
+                      <span id="colorSwatch"></span>
+                      <span id="colorText">#8B7BFF</span>
+                    </div>
+                  </div>
+                  <div class="color-presets" id="colorPresets">
+                    <button type="button" data-color="#8b7bff" style="--swatch:#8b7bff" aria-label="Purple"></button>
+                    <button type="button" data-color="#48a7ff" style="--swatch:#48a7ff" aria-label="Blue"></button>
+                    <button type="button" data-color="#45d6a1" style="--swatch:#45d6a1" aria-label="Green"></button>
+                    <button type="button" data-color="#ffbd59" style="--swatch:#ffbd59" aria-label="Orange"></button>
+                    <button type="button" data-color="#ff6f91" style="--swatch:#ff6f91" aria-label="Pink"></button>
+                    <button type="button" data-color="#b8c0d4" style="--swatch:#b8c0d4" aria-label="Gray"></button>
+                  </div>
+                </div>
+
+                <div class="permissions-heading">
+                  <div>
+                    <h3>Permissions</h3>
+                    <p>Choose the abilities this role should have.</p>
+                  </div>
+                  <button type="button" id="clearPermissions" class="text-button">
+                    Clear all
+                  </button>
+                </div>
+
+                <div id="permissionGroups"></div>
+
+                <div class="editor-actions">
+                  <button type="button" id="deleteRoleBtn" class="danger-button">
+                    Delete role
+                  </button>
+                  <div class="action-right">
+                    <button type="button" id="resetRoleBtn" class="secondary-button">
+                      Reset
+                    </button>
+                    <button type="submit" class="primary-button">
+                      Save changes
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+
+        <footer class="page-footer">
+          <span>FriendChat • Server configuration</span>
+          <span>Local preview · Not connected to backend</span>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="createModal" hidden>
+    <section class="modal" role="dialog" aria-modal="true"
+      aria-labelledby="modalTitle">
+      <button class="modal-close" id="closeModal" aria-label="Close">×</button>
+      <div class="modal-symbol">＋</div>
+      <h2 id="modalTitle">Create a role</h2>
+      <p>Create a role, choose a color and configure its permissions.</p>
+      <form id="createRoleForm">
+        <label for="newRoleName">Role name</label>
+        <input id="newRoleName" maxlength="32" required
+          placeholder="e.g. VIP Member">
+        <label for="newRoleColor">Role color</label>
+        <input id="newRoleColor" type="color" value="#8b7bff">
+        <div class="modal-actions">
+          <button type="button" id="cancelCreate" class="secondary-button">
+            Cancel
+          </button>
+          <button type="submit" class="primary-button">Create role</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
