@@ -1323,3 +1323,84 @@ textarea:focus-visible {
         max-width: 88%;
     }
 }
+
+/* =========================================
+   FRIENDCHAT — FIX MESSAGE BUBBLE WIDTH
+   ========================================= */
+
+/* Individual message container */
+.message-item,
+.chat-message,
+.message {
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+/* Message bubble: fit the content, not the screen */
+.message-bubble,
+.message-content,
+.message-body,
+.message-text-container {
+    width: fit-content !important;
+    max-width: min(75%, 700px) !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+/* Keep the message text readable */
+.message-bubble p,
+.message-content p,
+.message-body p {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* Keep the timestamp inside the bubble */
+.message-time,
+.message-timestamp {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+    .message-bubble,
+    .message-content,
+    .message-body,
+    .message-text-container {
+        max-width: 88% !important;
+    }
+}
+
+/* =========================================
+   FRIENDCHAT — OWNER IDENTITY
+   ========================================= */
+
+.message-author.role-owner,
+.message-author.owner,
+.message-username.role-owner,
+.message-username.owner {
+    color: #ffd166 !important;
+    font-weight: 800 !important;
+    text-shadow: 0 0 10px rgba(255, 209, 102, 0.55);
+}
+
+.owner-badge,
+.message-role-owner {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    margin-left: 6px;
+    border: 1px solid rgba(255, 209, 102, 0.5);
+    border-radius: 6px;
+    background: rgba(255, 209, 102, 0.12);
+    color: #ffd166;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    vertical-align: middle;
+}
