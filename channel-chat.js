@@ -104,47 +104,83 @@
         return "";
     }
 
-    function getUserFromStorage() {
-        let id = getStorageValue(USER_ID_KEYS);
-        let name = getStorageValue(USER_NAME_KEYS);
+    
+function getUserFromStorage() {
+    let id = "";
+    let name = "";
 
-        const objectKeys = [
-            "friendchat_user",
-            "currentUser",
-            "user",
-            "friendchat_current_user"
-        ];
+    const idKeys = [
+        "friendchat_user_id",
+        "userId",
+        "userID",
+        "currentUserId",
+        "currentUserID"
+    ];
 
-        for (const key of objectKeys) {
-            try {
-                const raw = localStorage.getItem(key);
-                if (!raw) continue;
+    const nameKeys = [
+        "friendchat_user_name",
+        "friendchat_username",
+        "userName",
+        "username",
+        "currentUserName",
+        "displayName"
+    ];
 
-                const parsed = JSON.parse(raw);
-
-                if (!parsed || typeof parsed !== "object") continue;
-
-                id = id || clean(
-                    parsed.userID ||
-                    parsed.userId ||
-                    parsed.id ||
-                    parsed.uid
-                );
-
-                name = name || clean(
-                    parsed.name ||
-                    parsed.username ||
-                    parsed.userName ||
-                    parsed.displayName
-                );
-            } catch (_) {}
+    // Read saved user ID and username.
+    for (const key of idKeys) {
+        const value = localStorage.getItem(key);
+        if (value && value.trim()) {
+            id = value.trim();
+            break;
         }
-
-        return {
-            id: normalizeID(id),
-            name: name || "FriendChat User"
-        };
     }
+
+    for (const key of nameKeys) {
+        const value = localStorage.getItem(key);
+        if (value && value.trim()) {
+            name = value.trim();
+            break;
+        }
+    }
+
+    // Check user objects used by different FriendChat pages.
+    const objectKeys = [
+        "friendchat_user",
+        "friendchat_current_user",
+        "currentUser",
+        "user"
+    ];
+
+    for (const key of objectKeys) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) continue;
+
+            const user = JSON.parse(raw);
+            if (!user || typeof user !== "object") continue;
+
+            id = id ||
+                user.userID ||
+                user.userId ||
+                user.id ||
+                user.uid ||
+                "";
+
+            name = name ||
+                user.displayName ||
+                user.userName ||
+                user.username ||
+                user.name ||
+                "";
+        } catch (_) {}
+    }
+
+    return {
+        id: String(id).trim().toUpperCase(),
+        name: String(name).trim()
+    };
+}
+
 
     function saveCurrentLocation() {
         try {
