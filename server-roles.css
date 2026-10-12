@@ -356,3 +356,59 @@ input[type="color"] { width: 42px; height: 39px; padding: 4px; background: var(-
   #roleForm { padding: 17px 13px 0; }
   .panel-header { padding: 16px; }
 }
+
+/* FIX: Keep the sidebar locked while the page scrolls */
+:root {
+    --fc-sidebar-width: 165px;
+}
+
+.server-sidebar,
+.sidebar,
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: 1000;
+}
+
+/* Keep the main page content beside the fixed sidebar */
+.server-main,
+.main-content,
+#mainContent {
+    margin-left: var(--fc-sidebar-width);
+    min-width: 0;
+}
+
+/* Keep scrolling inside the content area */
+@media (min-width: 769px) {
+    .server-main,
+    .main-content,
+    #mainContent {
+        height: 100vh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+}
+
+/* Mobile: let the existing mobile layout handle itself */
+@media (max-width: 768px) {
+    .server-sidebar,
+    .sidebar,
+    #sidebar {
+        position: relative;
+        height: auto;
+        width: 100%;
+    }
+
+    .server-main,
+    .main-content,
+    #mainContent {
+        margin-left: 0;
+        height: auto;
+        overflow: visible;
+    }
+}
