@@ -1,8 +1,7 @@
 
 /* =========================================================
    FRIENDCHAT — SERVER ROLES
-   BACKEND CONNECTED VERSION
-   Role counts + role editing + permissions + saving
+   Backend connected • Default roles • Member counts
    ========================================================= */
 
 (() => {
@@ -54,23 +53,25 @@
     group.permissions.map(permission => permission[0])
   );
 
+  function allPermissions(value) {
+    return Object.fromEntries(
+      ALL_PERMISSION_KEYS.map(key => [key, value])
+    );
+  }
+
   const SEED_ROLES = [
     {
       id: "owner",
       name: "Owner",
-      color: "#ffbd59",
+      color: "#806cff",
       protected: true,
-      permissions: Object.fromEntries(
-        ALL_PERMISSION_KEYS.map(key => [key, true])
-      )
+      permissions: allPermissions(true)
     },
     {
       id: "admin",
       name: "Admin",
       color: "#ff6f91",
-      permissions: Object.fromEntries(
-        ALL_PERMISSION_KEYS.map(key => [key, true])
-      )
+      permissions: allPermissions(true)
     },
     {
       id: "moderator",
@@ -93,7 +94,7 @@
     {
       id: "member",
       name: "Member",
-      color: "#45d6a1",
+      color: "#a0a7b4",
       permissions: {
         viewChannels: true,
         sendMessages: true,
@@ -120,12 +121,12 @@
   }
 
   function emptyPermissions() {
-    return Object.fromEntries(
-      ALL_PERMISSION_KEYS.map(key => [key, false])
-    );
+    return allPermissions(false);
   }
 
   function normalizeRole(role) {
+    role = role && typeof role === "object" ? role : {};
+
     const permissions = emptyPermissions();
 
     if (Array.isArray(role.permissions)) {
@@ -134,10 +135,7 @@
           permissions[key] = true;
         }
       });
-    } else if (
-      role.permissions &&
-      typeof role.permissions === "object"
-    ) {
+    } else if (role.permissions && typeof role.permissions === "object") {
       ALL_PERMISSION_KEYS.forEach(key => {
         permissions[key] = role.permissions[key] === true;
       });
@@ -152,8 +150,9 @@
       name: String(role.name || "New Role").slice(0, 32),
       color: /^#[0-9a-f]{6}$/i.test(role.color || "")
         ? role.color
-        : "#8b7bff",
-      protected: role.protected === true || id.toLowerCase() === "owner",
+        : "#806cff",
+      protected: role.protected === true ||
+        id.toLowerCase() === "owner",
       permissions
     };
   }
@@ -163,6 +162,7 @@
       roleID: role.id,
       name: role.name,
       color: role.color,
+      protected: role.protected,
       permissions: ALL_PERMISSION_KEYS.filter(
         key => role.permissions[key] === true
       )
@@ -182,9 +182,7 @@
     try {
       for (const key of directKeys) {
         const value = localStorage.getItem(key);
-        if (value && value.trim()) {
-          return value.trim().toUpperCase();
-        }
+        if (value && value.trim()) return value.trim().toUpperCase();
       }
 
       const objectKeys = [
@@ -251,9 +249,7 @@
       ...(options.headers || {})
     };
 
-    if (userID) {
-      headers["x-friendchat-user-id"] = userID;
-    }
+    if (userID) headers["x-friendchat-user-id"] = userID;
 
     let response;
 
@@ -307,7 +303,7 @@
 
     toastTimer = setTimeout(
       () => toast.classList.remove("show"),
-      2600
+      2800
     );
   }
 
@@ -315,118 +311,26 @@
     return roles.find(role => role.id === selectedId) || null;
   }
 
-  /* =========================================================
-     ROLE MEMBER COUNT FIX
+  /*
+   * Merge default roles into existing roles.
+   * Never delete or replace a user's custom roles.
+   */
+  function mergeDefaultRoles(existingRoles) {
+    const result = existingRoles.map(normalizeRole);
 
-     Reads common role-assignment formats from server members.
-     Returns null when the backend does not provide enough data.
-     ========================================================= */
+    for (const defaultRole of SEED_ROLES) {
+      const exists = result.some(role =>
+        role.id.toLowerCase() === defaultRole.id.toLowerCase() ||
+        role.name.trim().toLowerCase() ===
+          defaultRole.name.trim().toLowerCase()
+      );
 
-  function getMemberRoleIDs(member) {
-    if (!member || typeof member !== "object") return [];
-
-    const result = [];
-
-    // Common formats: roles: ["member", "moderator"]
-    if (Array.isArray(member.roles)) {
-      member.roles.forEach(role => {
-        if (typeof role === "string" || typeof role === "number") {
-          result.push(String(role));
-        } else if (role && typeof role === "object") {
-          const id = role.roleID || role.roleId || role.id;
-          if (id != null) result.push(String(id));
-        }
-      });
+      if (!exists) {
+        result.push(normalizeRole(defaultRole));
+      }
     }
 
-    // Common single-role formats
-    [
-      "roleID",
-      "roleId",
-      "role",
-      "serverRoleID",
-      "serverRoleId"
-    ].forEach(key => {
-      const value = member[key];
-
-      if (typeof value === "string" || typeof value === "number") {
-        result.push(String(value));
-      } else if (value && typeof value === "object") {
-        const id = value.roleID || value.roleId || value.id;
-        if (id != null) result.push(String(id));
-      }
-    });
-
-    // Alternative role ID arrays
-    [
-      "roleIDs",
-      "roleIds",
-      "serverRoles"
-    ].forEach(key => {
-      if (Array.isArray(member[key])) {
-        member[key].forEach(value => {
-          if (typeof value === "string" || typeof value === "number") {
-            result.push(String(value));
-          } else if (value && typeof value === "object") {
-            const id = value.roleID || value.roleId || value.id;
-            if (id != null) result.push(String(id));
-          }
-        });
-      }
-    });
-
-    return [...new Set(result)];
-  }
-
-  function getRoleMemberCount(role) {
-    const members = currentServer?.members;
-
-    // Do not falsely report zero when member data is unavailable.
-    if (!Array.isArray(members)) return null;
-
-    // Owner may be stored separately from ordinary member roles.
-    if (role.id.toLowerCase() === "owner") {
-      const ownerID =
-        currentServer.ownerID ||
-        currentServer.ownerId ||
-        currentServer.owner ||
-        currentServer.createdBy ||
-        currentServer.createdByID;
-
-      const ownerKey = typeof ownerID === "object" && ownerID
-        ? String(ownerID.userID || ownerID.userId || ownerID.id || "")
-        : String(ownerID || "");
-
-      const ownerIsInMembers = ownerKey && members.some(member => {
-        const memberID = String(
-          member?.userID ||
-          member?.userId ||
-          member?.memberID ||
-          member?.memberId ||
-          member?.id ||
-          ""
-        );
-
-        return memberID.toUpperCase() === ownerKey.toUpperCase();
-      });
-
-      // Owner is counted through the role assignment when available.
-      const assignedCount = members.filter(member =>
-        getMemberRoleIDs(member).some(id =>
-          id.toLowerCase() === role.id.toLowerCase()
-        )
-      ).length;
-
-      if (assignedCount > 0) return assignedCount;
-      if (ownerKey && !ownerIsInMembers) return 1;
-      if (ownerKey && ownerIsInMembers) return 1;
-    }
-
-    return members.filter(member =>
-      getMemberRoleIDs(member).some(id =>
-        id.toLowerCase() === role.id.toLowerCase()
-      )
-    ).length;
+    return result;
   }
 
   async function loadRolesFromBackend() {
@@ -457,13 +361,6 @@
 
     currentServer = data.server;
 
-    if (
-      String(currentServer.serverID || "").toUpperCase() !==
-      String(serverID).toUpperCase()
-    ) {
-      console.warn("Returned server ID differs from the requested ID.");
-    }
-
     $("serverName").textContent =
       String(currentServer.name || "FriendChat Server").slice(0, 80);
 
@@ -471,20 +368,30 @@
       ? currentServer.roles
       : [];
 
-    if (backendRoles.length) {
-      roles = backendRoles.map(normalizeRole);
-    } else {
-      roles = SEED_ROLES.map(normalizeRole);
-    }
+    const oldSelectedID = selectedId;
+    roles = mergeDefaultRoles(backendRoles);
 
-    if (!roles.length) {
-      roles = SEED_ROLES.map(normalizeRole);
-    }
+    selectedId = roles.some(role => role.id === oldSelectedID)
+      ? oldSelectedID
+      : roles.find(role => role.id.toLowerCase() === "member")?.id ||
+        roles[0]?.id ||
+        null;
 
-    selectedId = roles[0]?.id || null;
     loadFailed = false;
-
     renderAll();
+
+    // Save newly added default roles so they can persist after refresh.
+    const defaultsWereAdded = roles.length !== backendRoles.length;
+
+    if (defaultsWereAdded) {
+      const saved = await saveRoles();
+
+      if (!saved) {
+        showToast(
+          "Default roles are shown, but the backend did not save them."
+        );
+      }
+    }
   }
 
   async function saveRoles() {
@@ -498,7 +405,11 @@
       return false;
     }
 
-    const serverID = currentServer.serverID || getCurrentServerID();
+    const serverID =
+      currentServer.serverID ||
+      currentServer.serverId ||
+      getCurrentServerID();
+
     const userID = getCurrentUserID();
 
     if (!serverID || !userID) {
@@ -529,8 +440,22 @@
         ...data.server
       };
 
+      /*
+       * Only accept the response's role array if it includes
+       * all roles we attempted to save. This prevents an incomplete
+       * response from silently removing defaults from the UI.
+       */
       if (Array.isArray(data.server.roles)) {
-        roles = data.server.roles.map(normalizeRole);
+        const returnedRoles = data.server.roles.map(normalizeRole);
+
+        const allReturned = roles.every(role =>
+          returnedRoles.some(savedRole =>
+            savedRole.id === role.id ||
+            savedRole.name.toLowerCase() === role.name.toLowerCase()
+          )
+        );
+
+        if (allReturned) roles = returnedRoles;
       }
 
       return true;
@@ -541,6 +466,68 @@
     } finally {
       saving = false;
     }
+  }
+
+  /*
+   * Count members assigned to each role.
+   * A dash is displayed when member data is unavailable.
+   */
+  function getMemberRoleIDs(member) {
+    if (!member || typeof member !== "object") return [];
+
+    const ids = [];
+
+    function addRole(value) {
+      if (typeof value === "string" || typeof value === "number") {
+        ids.push(String(value));
+      } else if (value && typeof value === "object") {
+        const id = value.roleID || value.roleId || value.id;
+        if (id != null) ids.push(String(id));
+      }
+    }
+
+    if (Array.isArray(member.roles)) member.roles.forEach(addRole);
+    if (Array.isArray(member.roleIDs)) member.roleIDs.forEach(addRole);
+    if (Array.isArray(member.roleIds)) member.roleIds.forEach(addRole);
+    if (Array.isArray(member.serverRoles)) member.serverRoles.forEach(addRole);
+
+    [
+      "roleID",
+      "roleId",
+      "serverRoleID",
+      "serverRoleId"
+    ].forEach(key => {
+      if (member[key] != null) addRole(member[key]);
+    });
+
+    return [...new Set(ids)];
+  }
+
+  function getRoleMemberCount(role) {
+    const members = currentServer?.members;
+
+    if (!Array.isArray(members)) return null;
+
+    const roleID = String(role.id).toLowerCase();
+
+    let count = members.filter(member =>
+      getMemberRoleIDs(member).some(id =>
+        id.toLowerCase() === roleID
+      )
+    ).length;
+
+    // Some backends store the owner separately from member roles.
+    if (roleID === "owner" && count === 0) {
+      const owner = currentServer.ownerID ||
+        currentServer.ownerId ||
+        currentServer.owner ||
+        currentServer.createdBy ||
+        currentServer.createdByID;
+
+      if (owner) count = 1;
+    }
+
+    return count;
   }
 
   function renderRoles() {
@@ -621,7 +608,6 @@
         row.className = "permission-row";
 
         const info = document.createElement("div");
-
         info.innerHTML = `
           <strong>${escapeHTML(name)}</strong>
           <small>${escapeHTML(description)}</small>
@@ -720,7 +706,7 @@
     }
 
     $("createRoleForm").reset();
-    $("newRoleColor").value = "#8b7bff";
+    $("newRoleColor").value = "#806cff";
     $("createModal").hidden = false;
     $("newRoleName").focus();
   }
@@ -735,9 +721,7 @@
   $("cancelCreate").addEventListener("click", closeCreateModal);
 
   $("createModal").addEventListener("click", event => {
-    if (event.target === $("createModal")) {
-      closeCreateModal();
-    }
+    if (event.target === $("createModal")) closeCreateModal();
   });
 
   document.addEventListener("keydown", event => {
@@ -831,10 +815,7 @@
       return;
     }
 
-    const previous = {
-      name: role.name,
-      color: role.color
-    };
+    const previous = { name: role.name, color: role.color };
 
     role.name = name;
     role.color = color;
@@ -859,7 +840,6 @@
     if (!button) return;
 
     const role = getSelectedRole();
-
     if (!role || role.protected || saving) return;
 
     $("roleColor").value = button.dataset.color;
@@ -869,7 +849,6 @@
 
   $("clearPermissions").addEventListener("click", async () => {
     const role = getSelectedRole();
-
     if (!role || role.protected || saving) return;
 
     const previous = { ...role.permissions };
@@ -886,7 +865,6 @@
 
   $("resetRoleBtn").addEventListener("click", async () => {
     const role = getSelectedRole();
-
     if (!role || role.protected || saving) return;
 
     const previous = {
@@ -895,7 +873,9 @@
       permissions: { ...role.permissions }
     };
 
-    const defaults = SEED_ROLES.find(item => item.id === role.id);
+    const defaults = SEED_ROLES.find(item =>
+      item.id === role.id
+    );
 
     if (defaults) {
       role.name = defaults.name;
@@ -921,9 +901,7 @@
 
     if (!confirm(
       `Delete the "${role.name}" role? This cannot be undone.`
-    )) {
-      return;
-    }
+    )) return;
 
     const previousRoles = roles;
     const previousSelectedId = selectedId;
@@ -941,7 +919,7 @@
     }
   });
 
-  // Load the selected server.
+  // Start by loading the selected server from the backend.
   (async function init() {
     try {
       $("serverName").textContent = "Loading server…";
