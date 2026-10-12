@@ -1034,3 +1034,241 @@ textarea:focus-visible {
     }
 }
 ```
+
+/* =========================================================
+   FRIENDCHAT — ROLE IDENTITY EFFECTS
+   Add this block at the END of channel-chat.css.
+   ========================================================= */
+
+/* Let custom server backgrounds show through. */
+body {
+    background-color: var(--fc-custom-bg, #070a10);
+    background-image: var(--fc-server-background-image, none);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+/* Keep chat content above the background. */
+.channel-app,
+.channel-main,
+.messages {
+    background-color: transparent;
+}
+
+/* Consistent message identity layout. */
+.message-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.message-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+/* Optional user ID shown beside the display name. */
+.message-author-id {
+    color: var(--fc-custom-text-muted);
+    font-size: 10px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+/* Small role badge. */
+.message-role-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1.5;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* OWNER — royal signature. */
+.message-author.role-owner {
+    color: #ffe5a0;
+    text-shadow: 0 0 12px rgb(255 196 75 / 35%);
+}
+
+.role-owner .message-role-badge {
+    color: #ffe9ad;
+    background: linear-gradient(135deg, #6d4812, #b88a32);
+    border: 1px solid rgb(255 218 130 / 55%);
+}
+
+.message-author.role-owner .owner-crown {
+    display: inline-block;
+    animation: fcCrownFloat 2.8s ease-in-out infinite;
+}
+
+/* ADMIN — subtle red energy. */
+.message-author.role-admin {
+    color: #ff9cba;
+}
+
+.role-admin .message-role-badge {
+    color: #ffd4df;
+    background: rgb(190 45 89 / 22%);
+    border: 1px solid rgb(255 95 140 / 45%);
+}
+
+.message-author.role-admin {
+    animation: fcAdminPulse 3s ease-in-out infinite;
+}
+
+/* MODERATOR — blue scanner accent. */
+.message-author.role-moderator {
+    color: #8fd7ff;
+}
+
+.role-moderator .message-role-badge {
+    color: #bdeaff;
+    background: rgb(35 131 191 / 22%);
+    border: 1px solid rgb(81 185 255 / 45%);
+}
+
+.message-author.role-moderator::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgb(76 190 255 / 85%),
+        transparent
+    );
+    transform-origin: left;
+    animation: fcModeratorScan 3s ease-in-out infinite;
+}
+
+/* VIP — cosmic gradient. */
+.message-author.role-vip {
+    color: #d8b5ff;
+    background: linear-gradient(
+        90deg,
+        #bba0ff,
+        #ffb4e5,
+        #9fe8ff,
+        #bba0ff
+    );
+    background-size: 250% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fcCosmicTrail 4s linear infinite;
+}
+
+.role-vip .message-role-badge {
+    color: #eedcff;
+    background: rgb(145 76 219 / 20%);
+    border: 1px solid rgb(190 130 255 / 48%);
+    -webkit-text-fill-color: initial;
+}
+
+/* First-appearance effect: add this class only when desired. */
+.message-author.role-entrance {
+    animation: fcRoleEntrance 650ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+/* Keyframes. */
+@keyframes fcCrownFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0);
+    }
+    50% {
+        transform: translateY(-2px) rotate(-4deg);
+    }
+}
+
+@keyframes fcAdminPulse {
+    0%, 100% {
+        text-shadow: 0 0 0 transparent;
+    }
+    50% {
+        text-shadow: 0 0 10px rgb(255 75 125 / 32%);
+    }
+}
+
+@keyframes fcModeratorScan {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scaleX(0.35);
+    }
+    50% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+@keyframes fcCosmicTrail {
+    from {
+        background-position: 0% 50%;
+    }
+    to {
+        background-position: 250% 50%;
+    }
+}
+
+@keyframes fcRoleEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+        filter: brightness(1.5);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: brightness(1);
+    }
+}
+
+/* Improve keyboard visibility. */
+button:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--fc-custom-accent-light, #8179ff);
+    outline-offset: 3px;
+}
+
+/* Prevent animations for people who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+    .message-author,
+    .message-author::after,
+    .message-author .owner-crown {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* Small-screen safety. */
+@media (max-width: 700px) {
+    .message-header {
+        gap: 5px;
+    }
+
+    .message-author-id {
+        font-size: 9px;
+    }
+
+    .message-role-badge {
+        font-size: 8px;
+        padding: 2px 5px;
+    }
+}
