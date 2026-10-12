@@ -1,8 +1,20 @@
 
+/* =========================================================
+   FRIENDCHAT — SERVER ROLES
+   BACKEND CONNECTED VERSION
+
+   Uses existing backend:
+   GET /api/servers/:id
+   PUT /api/servers/:id
+
+   Backend role format:
+   { roleID, name, color, permissions: ["sendMessages", ...] }
+   ========================================================= */
+
 (() => {
   "use strict";
 
-  const STORAGE_KEY = "friendchat_roles_preview_v1";
+  const API_BASE = "";
 
   const PERMISSION_GROUPS = [
     {
@@ -54,13 +66,17 @@
       name: "Owner",
       color: "#ffbd59",
       protected: true,
-      permissions: Object.fromEntries(ALL_PERMISSION_KEYS.map(key => [key, true]))
+      permissions: Object.fromEntries(
+        ALL_PERMISSION_KEYS.map(key => [key, true])
+      )
     },
     {
       id: "admin",
       name: "Admin",
       color: "#ff6f91",
-      permissions: Object.fromEntries(ALL_PERMISSION_KEYS.map(key => [key, true]))
+      permissions: Object.fromEntries(
+        ALL_PERMISSION_KEYS.map(key => [key, true])
+      )
     },
     {
       id: "moderator",
@@ -95,11 +111,14 @@
     }
   ];
 
-  let roles = loadRoles();
-  let selectedId = roles[0]?.id || null;
-  let toastTimer;
-
   const $ = id => document.getElementById(id);
+
+  let roles = [];
+  let selectedId = null;
+  let currentServer = null;
+  let toastTimer = null;
+  let saving = false;
+  let loadFailed = false;
 
   function makeId() {
     return "role-" + Date.now().toString(36) +
@@ -107,58 +126,160 @@
   }
 
   function emptyPermissions() {
-    return Object.fromEntries(ALL_PERMISSION_KEYS.map(key => [key, false]));
+    return Object.fromEntries(
+      ALL_PERMISSION_KEYS.map(key => [key, false])
+    );
   }
 
   function normalizeRole(role) {
     const permissions = emptyPermissions();
 
-    if (role.permissions && typeof role.permissions === "object") {
+    if (Array.isArray(role.permissions)) {
+      role.permissions.forEach(key => {
+        if (ALL_PERMISSION_KEYS.includes(key)) {
+          permissions[key] = true;
+        }
+      });
+    } else if (
+      role.permissions &&
+      typeof role.permissions === "object"
+    ) {
       ALL_PERMISSION_KEYS.forEach(key => {
         permissions[key] = role.permissions[key] === true;
       });
     }
 
+    const id = String(
+      role.id || role.roleID || role.roleId || makeId()
+    );
+
     return {
-      id: String(role.id || makeId()),
+      id,
       name: String(role.name || "New Role").slice(0, 32),
       color: /^#[0-9a-f]{6}$/i.test(role.color || "")
         ? role.color
         : "#8b7bff",
-      protected: role.protected === true,
+      protected: role.protected === true || id.toLowerCase() === "owner",
       permissions
     };
   }
 
-  function loadRoles() {
+  // Convert the UI format into the exact role format
+  // accepted by server.js.
+  function rolesForBackend() {
+    return roles.map(role => ({
+      roleID: role.id,
+      name: role.name,
+      color: role.color,
+      permissions: ALL_PERMISSION_KEYS.filter(
+        key => role.permissions[key] === true
+      )
+    }));
+  }
+
+  function getCurrentUserID() {
+    const directKeys = [
+      "friendchat_user_id",
+      "userID",
+      "userId",
+      "currentUserID",
+      "currentUserId",
+      "fc_user_id"
+    ];
+
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length) {
-          return parsed.map(normalizeRole);
-        }
+      for (const key of directKeys) {
+        const value = localStorage.getItem(key);
+        if (value && value.trim()) return value.trim().toUpperCase();
+      }
+
+      const objectKeys = [
+        "friendchat_user",
+        "friendchat_current_user",
+        "currentUser",
+        "user",
+        "friendchat_account"
+      ];
+
+      for (const key of objectKeys) {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+
+        try {
+          const obj = JSON.parse(raw);
+          const id = obj && (obj.userID || obj.userId || obj.id || obj.ID);
+          if (id) return String(id).trim().toUpperCase();
+        } catch (_) {}
       }
     } catch (error) {
-      console.warn("Could not load preview roles:", error);
+      console.error("Could not read current user ID:", error);
     }
 
-    return SEED_ROLES.map(role => normalizeRole(role));
+    return "";
   }
 
-  function saveRoles() {
+  function getCurrentServerID() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(roles));
-      return true;
+      const params = new URLSearchParams(window.location.search);
+      const fromURL = params.get("server") || params.get("serverID");
+
+      if (fromURL && fromURL.trim()) return fromURL.trim();
+
+      const saved = localStorage.getItem("friendchat_current_server");
+      if (saved && saved.trim()) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && typeof parsed === "object") {
+            return String(parsed.serverID || parsed.serverId || parsed.id || "").trim();
+          }
+        } catch (_) {}
+
+        return saved.trim();
+      }
     } catch (error) {
-      console.error("Could not save roles:", error);
-      showToast("Could not save. Check browser storage settings.");
-      return false;
+      console.error("Could not read server ID:", error);
     }
+
+    return "";
   }
 
-  function getSelectedRole() {
-    return roles.find(role => role.id === selectedId) || null;
+  async function apiRequest(url, options = {}) {
+    const userID = getCurrentUserID();
+
+    const headers = {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    };
+
+    if (userID) {
+      headers["x-friendchat-user-id"] = userID;
+    }
+
+    let response;
+
+    try {
+      response = await fetch(API_BASE + url, {
+        ...options,
+        headers
+      });
+    } catch (error) {
+      console.error("FriendChat API connection failed:", error);
+      throw new Error("Cannot connect to the FriendChat backend.");
+    }
+
+    let data = null;
+
+    try {
+      data = await response.json();
+    } catch (_) {}
+
+    if (!response.ok) {
+      throw new Error(
+        (data && data.error) || "The backend rejected the request."
+      );
+    }
+
+    return data;
   }
 
   function escapeHTML(value) {
@@ -171,13 +292,145 @@
     })[character]);
   }
 
+  function showToast(message) {
+    const toast = $("toast");
+
+    if (!toast) {
+      console.log("FriendChat:", message);
+      return;
+    }
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(
+      () => toast.classList.remove("show"),
+      2600
+    );
+  }
+
+  function getSelectedRole() {
+    return roles.find(role => role.id === selectedId) || null;
+  }
+
+  async function loadRolesFromBackend() {
+    const serverID = getCurrentServerID();
+    const userID = getCurrentUserID();
+
+    if (!serverID) {
+      throw new Error("Server ID is missing. Open Roles from your server page.");
+    }
+
+    if (!userID) {
+      throw new Error("Your FriendChat user ID is missing. Please log in again.");
+    }
+
+    const data = await apiRequest(
+      "/api/servers/" + encodeURIComponent(serverID) +
+      "?user=" + encodeURIComponent(userID),
+      { method: "GET" }
+    );
+
+    if (!data || !data.server) {
+      throw new Error("The backend did not return the server.");
+    }
+
+    currentServer = data.server;
+
+    if (
+      String(currentServer.serverID || "").toUpperCase() !==
+      String(serverID).toUpperCase()
+    ) {
+      console.warn("Returned server ID differs from the requested ID.");
+    }
+
+    $("serverName").textContent =
+      String(currentServer.name || "FriendChat Server").slice(0, 80);
+
+    const backendRoles = Array.isArray(currentServer.roles)
+      ? currentServer.roles
+      : [];
+
+    if (backendRoles.length) {
+      roles = backendRoles.map(normalizeRole);
+    } else {
+      // These are starter roles for a server with no saved roles yet.
+      roles = SEED_ROLES.map(role => normalizeRole(role));
+    }
+
+    if (!roles.length) {
+      roles = SEED_ROLES.map(role => normalizeRole(role));
+    }
+
+    selectedId = roles[0]?.id || null;
+    loadFailed = false;
+
+    renderAll();
+  }
+
+  async function saveRoles() {
+    if (saving) {
+      showToast("Please wait for the current save to finish.");
+      return false;
+    }
+
+    if (loadFailed || !currentServer) {
+      showToast("Roles were not loaded. Reload the page and try again.");
+      return false;
+    }
+
+    const serverID = currentServer.serverID || getCurrentServerID();
+    const userID = getCurrentUserID();
+
+    if (!serverID || !userID) {
+      showToast("Server ID or user ID is missing.");
+      return false;
+    }
+
+    saving = true;
+
+    try {
+      const data = await apiRequest(
+        "/api/servers/" + encodeURIComponent(serverID),
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            requesterID: userID,
+            roles: rolesForBackend()
+          })
+        }
+      );
+
+      if (!data || !data.server) {
+        throw new Error("The backend did not confirm the saved roles.");
+      }
+
+      currentServer = data.server;
+
+      // Use the backend response as the confirmed saved version.
+      if (Array.isArray(data.server.roles)) {
+        roles = data.server.roles.map(normalizeRole);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Could not save FriendChat roles:", error);
+      showToast(error.message || "Could not save roles.");
+      return false;
+    } finally {
+      saving = false;
+    }
+  }
+
   function renderRoles() {
     const list = $("roleList");
     list.replaceChildren();
 
     roles.forEach(role => {
       const item = document.createElement("div");
-      item.className = "role-item" + (role.id === selectedId ? " selected" : "");
+      item.className =
+        "role-item" + (role.id === selectedId ? " selected" : "");
       item.tabIndex = 0;
       item.setAttribute("role", "button");
       item.setAttribute("aria-pressed", String(role.id === selectedId));
@@ -200,6 +453,7 @@
       };
 
       item.addEventListener("click", select);
+
       item.addEventListener("keydown", event => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
@@ -211,7 +465,11 @@
     });
 
     $("roleCount").textContent = roles.length;
-    $("memberCount").textContent = "0";
+
+    // This backend response doesn't provide member counts per custom role.
+    $("memberCount").textContent = Array.isArray(currentServer?.members)
+      ? currentServer.members.length
+      : "0";
   }
 
   function renderPermissionGroups(role) {
@@ -244,20 +502,26 @@
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = role.permissions[key] === true;
-        checkbox.disabled = role.protected;
+        checkbox.disabled = role.protected || saving;
         checkbox.setAttribute("aria-label", name);
 
         const track = document.createElement("span");
         track.className = "switch-track";
 
-        checkbox.addEventListener("change", () => {
+        checkbox.addEventListener("change", async () => {
           const currentRole = getSelectedRole();
+
           if (!currentRole || currentRole.protected) return;
 
+          const previous = currentRole.permissions[key];
           currentRole.permissions[key] = checkbox.checked;
 
-          if (saveRoles()) {
-            showToast(name + (checkbox.checked ? " enabled" : " disabled"));
+          if (await saveRoles()) {
+            renderAll();
+            showToast(name + (checkbox.checked ? " enabled." : " disabled."));
+          } else {
+            currentRole.permissions[key] = previous;
+            renderAll();
           }
         });
 
@@ -284,21 +548,24 @@
     editor.hidden = false;
     empty.hidden = true;
 
-    $("editorTitle").textContent = role.protected
-      ? "Protected role"
-      : "Edit role";
+    $("editorTitle").textContent =
+      role.protected ? "Protected role" : "Edit role";
 
-    $("roleStatus").textContent = role.protected ? "Protected" : "Editable";
+    $("roleStatus").textContent =
+      role.protected ? "Protected" : "Editable";
+
     $("roleName").value = role.name;
-    $("roleName").disabled = role.protected;
+    $("roleName").disabled = role.protected || saving;
+
     $("roleColor").value = role.color;
-    $("roleColor").disabled = role.protected;
+    $("roleColor").disabled = role.protected || saving;
+
     $("colorSwatch").style.background = role.color;
     $("colorText").textContent = role.color.toUpperCase();
 
-    $("deleteRoleBtn").disabled = role.protected;
-    $("resetRoleBtn").disabled = role.protected;
-    $("clearPermissions").disabled = role.protected;
+    $("deleteRoleBtn").disabled = role.protected || saving;
+    $("resetRoleBtn").disabled = role.protected || saving;
+    $("clearPermissions").disabled = role.protected || saving;
 
     $("deleteRoleBtn").style.opacity = role.protected ? ".45" : "1";
     $("resetRoleBtn").style.opacity = role.protected ? ".45" : "1";
@@ -312,16 +579,12 @@
     renderEditor();
   }
 
-  function showToast(message) {
-    const toast = $("toast");
-    toast.textContent = message;
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
-  }
-
   function openCreateModal() {
+    if (loadFailed || !currentServer) {
+      showToast("Load your server before creating roles.");
+      return;
+    }
+
     $("createRoleForm").reset();
     $("newRoleColor").value = "#8b7bff";
     $("createModal").hidden = false;
@@ -347,14 +610,26 @@
     }
   });
 
-  $("createRoleForm").addEventListener("submit", event => {
+  $("createRoleForm").addEventListener("submit", async event => {
     event.preventDefault();
+
+    if (saving) return;
 
     const name = $("newRoleName").value.trim();
     const color = $("newRoleColor").value;
 
     if (!name) {
       showToast("Enter a role name first.");
+      return;
+    }
+
+    if (name.length > 32) {
+      showToast("Role names must be 32 characters or fewer.");
+      return;
+    }
+
+    if (roles.length >= 200) {
+      showToast("This server has reached the role limit.");
       return;
     }
 
@@ -374,20 +649,24 @@
     roles.push(role);
     selectedId = role.id;
 
-    if (!saveRoles()) {
-      roles.pop();
-      return;
+    if (await saveRoles()) {
+      closeCreateModal();
+      renderAll();
+      showToast("Role created and saved.");
+    } else {
+      roles = roles.filter(item => item.id !== role.id);
+      selectedId = roles[0]?.id || null;
+      renderAll();
     }
-
-    closeCreateModal();
-    renderAll();
-    showToast("Role created successfully.");
   });
 
-  $("roleForm").addEventListener("submit", event => {
+  $("roleForm").addEventListener("submit", async event => {
     event.preventDefault();
 
+    if (saving) return;
+
     const role = getSelectedRole();
+
     if (!role || role.protected) {
       showToast("This role cannot be edited.");
       return;
@@ -398,6 +677,11 @@
 
     if (!name) {
       showToast("Enter a role name first.");
+      return;
+    }
+
+    if (name.length > 32) {
+      showToast("Role names must be 32 characters or fewer.");
       return;
     }
 
@@ -413,14 +697,14 @@
     role.name = name;
     role.color = color;
 
-    if (!saveRoles()) {
+    if (await saveRoles()) {
+      renderAll();
+      showToast("Role settings saved.");
+    } else {
       role.name = previous.name;
       role.color = previous.color;
-      return;
+      renderAll();
     }
-
-    renderAll();
-    showToast("Role settings saved.");
   });
 
   $("roleColor").addEventListener("input", () => {
@@ -433,30 +717,41 @@
     if (!button) return;
 
     const role = getSelectedRole();
-    if (!role || role.protected) return;
+    if (!role || role.protected || saving) return;
 
     $("roleColor").value = button.dataset.color;
     $("colorSwatch").style.background = button.dataset.color;
     $("colorText").textContent = button.dataset.color.toUpperCase();
   });
 
-  $("clearPermissions").addEventListener("click", () => {
+  $("clearPermissions").addEventListener("click", async () => {
     const role = getSelectedRole();
-    if (!role || role.protected) return;
+    if (!role || role.protected || saving) return;
 
+    const previous = { ...role.permissions };
     role.permissions = emptyPermissions();
 
-    if (saveRoles()) {
-      renderEditor();
-      showToast("All permissions cleared.");
+    if (await saveRoles()) {
+      renderAll();
+      showToast("All permissions cleared and saved.");
+    } else {
+      role.permissions = previous;
+      renderAll();
     }
   });
 
-  $("resetRoleBtn").addEventListener("click", () => {
+  $("resetRoleBtn").addEventListener("click", async () => {
     const role = getSelectedRole();
-    if (!role || role.protected) return;
+    if (!role || role.protected || saving) return;
+
+    const previous = {
+      name: role.name,
+      color: role.color,
+      permissions: { ...role.permissions }
+    };
 
     const defaults = SEED_ROLES.find(item => item.id === role.id);
+
     if (defaults) {
       role.name = defaults.name;
       role.color = defaults.color;
@@ -465,48 +760,50 @@
       role.permissions = emptyPermissions();
     }
 
-    if (saveRoles()) {
+    if (await saveRoles()) {
       renderAll();
-      showToast("Role reset to its defaults.");
+      showToast("Role reset and saved.");
+    } else {
+      Object.assign(role, previous);
+      renderAll();
     }
   });
 
-  $("deleteRoleBtn").addEventListener("click", () => {
+  $("deleteRoleBtn").addEventListener("click", async () => {
     const role = getSelectedRole();
-    if (!role || role.protected) return;
 
-    if (!confirm(`Delete the "${role.name}" role? This cannot be undone in this preview.`)) {
+    if (!role || role.protected || saving) return;
+
+    if (!confirm(`Delete the "${role.name}" role? This cannot be undone.`)) {
       return;
     }
 
     const previousRoles = roles;
+    const previousSelectedId = selectedId;
+
     roles = roles.filter(item => item.id !== role.id);
     selectedId = roles[0]?.id || null;
 
-    if (!saveRoles()) {
+    if (await saveRoles()) {
+      renderAll();
+      showToast("Role deleted and saved.");
+    } else {
       roles = previousRoles;
-      selectedId = role.id;
-      return;
+      selectedId = previousSelectedId;
+      renderAll();
     }
-
-    renderAll();
-    showToast("Role deleted.");
   });
 
-  // Show a server name if the existing preview saved one.
-  try {
-    const savedServer = JSON.parse(
-      localStorage.getItem("friendchat_current_server") || "null"
-    );
-
-    if (savedServer && typeof savedServer === "object" && savedServer.name) {
-      $("serverName").textContent = String(savedServer.name).slice(0, 80);
-    } else if (typeof savedServer === "string" && savedServer.trim()) {
-      $("serverName").textContent = savedServer.slice(0, 80);
+  // Start by loading the selected server from the backend.
+  (async function init() {
+    try {
+      $("serverName").textContent = "Loading server…";
+      await loadRolesFromBackend();
+    } catch (error) {
+      loadFailed = true;
+      console.error("Could not load roles:", error);
+      $("serverName").textContent = "Could not load server";
+      showToast(error.message || "Could not load server roles.");
     }
-  } catch (_) {
-    // Keep the default server name if no usable preview value exists.
-  }
-
-  renderAll();
+  })();
 })();
