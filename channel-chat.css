@@ -1272,3 +1272,54 @@ textarea:focus-visible {
         padding: 2px 5px;
     }
 }
+
+/* ==========================================
+   FRIENDCHAT — MESSAGE BUBBLE WIDTH FIX
+   Short messages = small bubbles
+   Long messages = wrapped bubbles
+   ========================================== */
+
+/* Each message should take only the width it needs */
+.message-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Prevent the purple bubble from filling the screen */
+.message-bubble {
+    display: inline-block;
+    width: fit-content;
+    max-width: min(75%, 700px);
+    min-width: 0;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+/* Keep message text inside the bubble */
+.message-bubble p,
+.message-bubble .message-text {
+    max-width: 100%;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* Keep timestamps inside the bubble */
+.message-bubble .message-time {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+/* Small screens */
+@media (max-width: 600px) {
+    .message-bubble {
+        max-width: 88%;
+    }
+}
