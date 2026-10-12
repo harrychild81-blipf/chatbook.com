@@ -1,15 +1,14 @@
 
 /* =========================================================
-   FRIENDCHAT - CHANNEL CHAT
-   BACKEND CONNECTED + SERVER APPEARANCE FIX
+   FRIENDCHAT — CHANNEL CHAT
+   Backend connected + natural message bubbles
+   Server appearance + owner identity
    ========================================================= */
 
 (() => {
     "use strict";
 
-    /* =========================================================
-       CONFIG
-       ========================================================= */
+    /* ================= CONFIG ================= */
 
     const API_BASE = "";
 
@@ -45,9 +44,7 @@
     let isSending = false;
     let isLoadingMessages = false;
 
-    /* =========================================================
-       DOM
-       ========================================================= */
+    /* ================= DOM ================= */
 
     const $ = id => document.getElementById(id);
 
@@ -70,9 +67,7 @@
     const characterCount = $("characterCount");
     const toast = $("toast");
 
-    /* =========================================================
-       BASIC HELPERS
-       ========================================================= */
+    /* ================= HELPERS ================= */
 
     function clean(value) {
         return String(value ?? "").trim();
@@ -80,15 +75,6 @@
 
     function normalizeID(value) {
         return clean(value).toUpperCase();
-    }
-
-    function escapeHTML(value) {
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
     }
 
     function showToast(message, duration = 3000) {
@@ -122,35 +108,35 @@
         let id = getStorageValue(USER_ID_KEYS);
         let name = getStorageValue(USER_NAME_KEYS);
 
-        const possibleObjects = [
+        const objectKeys = [
             "friendchat_user",
             "currentUser",
             "user",
             "friendchat_current_user"
         ];
 
-        for (const key of possibleObjects) {
+        for (const key of objectKeys) {
             try {
                 const raw = localStorage.getItem(key);
                 if (!raw) continue;
 
                 const parsed = JSON.parse(raw);
 
-                if (parsed && typeof parsed === "object") {
-                    id = id || clean(
-                        parsed.userID ||
-                        parsed.userId ||
-                        parsed.id ||
-                        parsed.uid
-                    );
+                if (!parsed || typeof parsed !== "object") continue;
 
-                    name = name || clean(
-                        parsed.name ||
-                        parsed.username ||
-                        parsed.userName ||
-                        parsed.displayName
-                    );
-                }
+                id = id || clean(
+                    parsed.userID ||
+                    parsed.userId ||
+                    parsed.id ||
+                    parsed.uid
+                );
+
+                name = name || clean(
+                    parsed.name ||
+                    parsed.username ||
+                    parsed.userName ||
+                    parsed.displayName
+                );
             } catch (_) {}
         }
 
@@ -208,24 +194,29 @@
             : fallback;
     }
 
-    /* =========================================================
-       IMAGE URL VALIDATION
-       Supports uploaded data URLs and HTTP/HTTPS URLs.
-       ========================================================= */
+    function getReadableTextColor(hexColor) {
+        const hex = validColor(hexColor, "#6c63ff").slice(1);
+
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+
+        const brightness =
+            (r * 299 + g * 587 + b * 114) / 1000;
+
+        return brightness >= 155 ? "#151525" : "#ffffff";
+    }
+
+    /* ================= SERVER APPEARANCE ================= */
 
     function safeImageURL(value) {
         const text = clean(value);
-
         if (!text) return "";
 
-        // Support common uploaded image formats stored as data URLs.
-        if (
-            /^data:image\/(?:png|jpeg|jpg|webp|gif|avif);base64,[a-z0-9+/=\s]+$/i.test(text)
-        ) {
+        if (/^data:image\/(?:png|jpeg|jpg|webp|gif|avif);base64,[a-z0-9+/=\s]+$/i.test(text)) {
             return text;
         }
 
-        // Support normal absolute URLs and relative server paths.
         try {
             const url = new URL(text, location.href);
 
@@ -240,70 +231,6 @@
         return "";
     }
 
-    /* =========================================================
-       APPEARANCE HELPERS
-       ========================================================= */
-
-    function getFontScale(settings) {
-        const value = settings.fontScale;
-
-        if (value === "small") return 0.92;
-        if (value === "large") return 1.08;
-
-        return 1;
-    }
-
-    function getSpacingScale(settings) {
-        const value = settings.spacing;
-
-        if (value === "compact") return 0.78;
-        if (value === "relaxed") return 1.2;
-
-        return 1;
-    }
-
-    function getCornerRadius(settings) {
-        if (settings.corners === "square") return "3px";
-        if (settings.corners === "soft") return "18px";
-
-        return "12px";
-    }
-
-    function getFontFamily(settings) {
-        const fonts = {
-            system:
-                "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-
-            rounded:
-                "'Trebuchet MS', 'Segoe UI', sans-serif",
-
-            mono:
-                "ui-monospace, SFMono-Regular, Consolas, monospace",
-
-            serif:
-                "Georgia, 'Times New Roman', serif"
-        };
-
-        return fonts[settings.fontFamily] || fonts.system;
-    }
-
-    function getReadableTextColor(hexColor) {
-        const hex = validColor(hexColor, "#6c63ff").slice(1);
-
-        const r = parseInt(hex.slice(0, 2), 16);
-        const g = parseInt(hex.slice(2, 4), 16);
-        const b = parseInt(hex.slice(4, 6), 16);
-
-        const brightness =
-            (r * 299 + g * 587 + b * 114) / 1000;
-
-        return brightness >= 155 ? "#151525" : "#ffffff";
-    }
-
-    /*
-     * Customization versions may use different names for the
-     * same background image setting. Check the known aliases.
-     */
     function getBackgroundImageSetting(settings) {
         const keys = [
             "background",
@@ -322,17 +249,23 @@
         ];
 
         for (const key of keys) {
-            const image = safeImageURL(settings?.[key]);
-
-            if (image) return image;
+            const url = safeImageURL(settings?.[key]);
+            if (url) return url;
         }
 
         return "";
     }
 
-    /* =========================================================
-       SERVER APPEARANCE
-       ========================================================= */
+    function getFontFamily(settings) {
+        const fonts = {
+            system: "Inter, system-ui, -apple-system, 'Segoe UI', sans-serif",
+            rounded: "'Trebuchet MS', 'Segoe UI', sans-serif",
+            mono: "ui-monospace, Consolas, monospace",
+            serif: "Georgia, 'Times New Roman', serif"
+        };
+
+        return fonts[settings.fontFamily] || fonts.system;
+    }
 
     function applyServerAppearance() {
         if (!document.documentElement || !document.body) return;
@@ -347,27 +280,22 @@
 
         const colors = {
             accent: validColor(settings.accentColor, "#6c63ff"),
-
             background: validColor(
                 settings.backgroundColor,
                 isLight ? "#f3f5fb" : "#070a10"
             ),
-
             panel: validColor(
                 settings.panelColor,
                 isLight ? "#ffffff" : "#0d121b"
             ),
-
             sidebar: validColor(
                 settings.sidebarColor,
                 isLight ? "#eef1f8" : "#111824"
             ),
-
             text: validColor(
                 settings.textColor,
                 isLight ? "#182033" : "#f4f5ff"
             ),
-
             border: validColor(
                 settings.borderColor,
                 isLight ? "#d9dfeb" : "#252d3a"
@@ -375,21 +303,27 @@
         };
 
         const fontFamily = getFontFamily(settings);
-        const fontScale = getFontScale(settings);
-        const spacingScale = getSpacingScale(settings);
-        const radius = getCornerRadius(settings);
-        const ownMessageText = getReadableTextColor(colors.accent);
+        const fontScale =
+            settings.fontScale === "small" ? 0.92 :
+            settings.fontScale === "large" ? 1.08 : 1;
+
+        const spacingScale =
+            settings.spacing === "compact" ? 0.78 :
+            settings.spacing === "relaxed" ? 1.2 : 1;
+
+        const radius =
+            settings.corners === "square" ? "3px" :
+            settings.corners === "soft" ? "18px" : "12px";
+
+        const ownText = getReadableTextColor(colors.accent);
 
         const shadowOpacity =
-            settings.shadow === "none"
-                ? "0"
-                : settings.shadow === "strong"
-                    ? "0.42"
-                    : "0.20";
+            settings.shadow === "none" ? "0" :
+            settings.shadow === "strong" ? "0.42" : "0.20";
 
         const backgroundURL = getBackgroundImageSetting(settings);
 
-        const overlayColor = isLight
+        const overlay = isLight
             ? "rgba(243,245,251,0.18)"
             : "rgba(7,10,16,0.18)";
 
@@ -397,9 +331,8 @@
             ? "rgba(243,245,251,0.30)"
             : "rgba(7,10,16,0.32)";
 
-        /*
-         * Shared CSS variables.
-         */
+        const root = document.documentElement;
+
         const variables = {
             "--fc-accent": colors.accent,
             "--accent": colors.accent,
@@ -418,26 +351,20 @@
             "--fc-chat-background": colors.background,
             "--fc-chat-panel": colors.panel,
             "--fc-chat-own-message": colors.accent,
-            "--fc-chat-own-text": ownMessageText,
+            "--fc-chat-own-text": ownText,
             "--fc-chat-other-message": colors.sidebar,
             "--fc-chat-other-text": colors.text,
             "--fc-chat-text": colors.text,
             "--fc-chat-border": colors.border
         };
 
-        const root = document.documentElement;
-
-        Object.entries(variables).forEach(([name, value]) => {
-            root.style.setProperty(name, value);
+        Object.entries(variables).forEach(([key, value]) => {
+            root.style.setProperty(key, value);
         });
 
-        /*
-         * Apply background image to the page.
-         * CSS backgrounds on inner containers are handled below.
-         */
         document.body.style.backgroundColor = colors.background;
         document.body.style.backgroundImage = backgroundURL
-            ? `linear-gradient(${overlayColor}, ${overlayEnd}), url("${backgroundURL}")`
+            ? `linear-gradient(${overlay}, ${overlayEnd}), url("${backgroundURL}")`
             : "none";
 
         document.body.style.backgroundSize = "cover";
@@ -446,20 +373,10 @@
         document.body.style.backgroundAttachment = "fixed";
         document.body.style.color = colors.text;
         document.body.style.fontFamily = fontFamily;
-        document.body.style.fontSize = `${fontScale}rem`;
-        document.body.style.minHeight = "100vh";
-
-        document.documentElement.style.backgroundColor = colors.background;
 
         document.body.dataset.serverTheme = isLight ? "light" : "dark";
-        document.body.dataset.serverCorners = settings.corners || "rounded";
-        document.body.dataset.serverSpacing = settings.spacing || "normal";
 
-        /*
-         * Use one stylesheet so repeated WebSocket updates do not
-         * create duplicate style elements.
-         */
-        let style = document.getElementById("fc-chat-server-appearance");
+        let style = $("fc-chat-server-appearance");
 
         if (!style) {
             style = document.createElement("style");
@@ -467,17 +384,13 @@
             document.head.appendChild(style);
         }
 
-        /*
-         * URL is validated by safeImageURL().
-         * Escape CSS-string characters before inserting the URL.
-         */
         const cssSafeURL = backgroundURL
             .replace(/\\/g, "\\\\")
             .replace(/"/g, '\\"')
             .replace(/[\n\r\f]/g, "");
 
-        const cssBackgroundImage = backgroundURL
-            ? `linear-gradient(${overlayColor}, ${overlayEnd}), url("${cssSafeURL}")`
+        const backgroundImage = backgroundURL
+            ? `linear-gradient(${overlay}, ${overlayEnd}), url("${cssSafeURL}")`
             : "none";
 
         style.textContent = `
@@ -499,47 +412,38 @@
                 --fc-chat-background: ${colors.background};
                 --fc-chat-panel: ${colors.panel};
                 --fc-chat-own-message: ${colors.accent};
-                --fc-chat-own-text: ${ownMessageText};
+                --fc-chat-own-text: ${ownText};
                 --fc-chat-other-message: ${colors.sidebar};
                 --fc-chat-other-text: ${colors.text};
                 --fc-chat-text: ${colors.text};
                 --fc-chat-border: ${colors.border};
             }
 
-            html {
-                min-height: 100%;
-                background-color: ${colors.background} !important;
+            html, body {
+                background-color: ${colors.background};
+                color: ${colors.text};
+                font-family: ${fontFamily};
             }
 
             body {
-                min-height: 100vh !important;
-                color: ${colors.text} !important;
-                font-family: ${fontFamily} !important;
-                font-size: ${fontScale}rem !important;
-                background-color: ${colors.background} !important;
-                background-image: ${cssBackgroundImage} !important;
-                background-size: cover !important;
-                background-position: center center !important;
-                background-repeat: no-repeat !important;
-                background-attachment: fixed !important;
+                background-image: ${backgroundImage};
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
             }
 
-            /*
-             * IMPORTANT:
-             * These are the actual channel-chat layout selectors.
-             * Keep them transparent so the body wallpaper is visible.
-             */
             .channel-app,
             .channel-main,
             #messages,
-            .messages {
+            .messages,
+            .message-list,
+            #messageList,
+            .chat-messages {
                 background-color: transparent !important;
                 background-image: none !important;
             }
 
-            /*
-             * Other possible chat layout containers.
-             */
             .chat-layout,
             .chat-shell,
             .chat-container,
@@ -549,14 +453,10 @@
             .chat-panel,
             .messages-area,
             .chat-messages-wrapper {
-                background-color: transparent !important;
-                color: ${colors.text} !important;
-                border-color: ${colors.border} !important;
+                color: ${colors.text};
+                border-color: ${colors.border};
             }
 
-            /*
-             * Keep the header and composer readable.
-             */
             .channel-topbar,
             .chat-header,
             .channel-header,
@@ -566,183 +466,146 @@
             .chat-input-area,
             .message-composer,
             .message-input-area {
-                color: ${colors.text} !important;
-                background-color: ${colors.panel} !important;
-                border-color: ${colors.border} !important;
-            }
-
-            /*
-             * The message list must not cover the page image.
-             */
-            #messages,
-            .messages,
-            .message-list,
-            #messageList,
-            .chat-messages {
-                background-color: transparent !important;
-                background-image: none !important;
-                color: ${colors.text} !important;
-                border-color: ${colors.border} !important;
-            }
-
-            .message {
                 color: ${colors.text};
+                background-color: ${colors.panel};
+                border-color: ${colors.border};
+            }
+
+            /* NATURAL MESSAGE WIDTH — main fix */
+            #messages .message,
+            .messages .message {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+                min-width: 0;
+                box-sizing: border-box;
                 margin-top: calc(8px * ${spacingScale});
                 margin-bottom: calc(8px * ${spacingScale});
-                border-radius: ${radius};
             }
 
-            /*
-             * Received messages.
-             */
-            .message.other .message-content,
-            .message.received .message-content {
-                background-color: ${colors.sidebar} !important;
+            #messages .message-content,
+            .messages .message-content {
+                display: block !important;
+                flex: 0 1 auto !important;
+                width: fit-content !important;
+                max-width: min(75%, 700px) !important;
+                min-width: 0 !important;
+                box-sizing: border-box;
+                align-self: flex-start;
+                border-radius: ${radius};
+                overflow-wrap: anywhere;
+                padding: calc(10px * ${spacingScale})
+                         calc(12px * ${spacingScale});
+            }
+
+            #messages .message-text,
+            .messages .message-text {
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+                color: inherit;
+            }
+
+            #messages .message.other .message-content,
+            #messages .message.received .message-content,
+            .messages .message.other .message-content,
+            .messages .message.received .message-content {
+                background: ${colors.sidebar} !important;
                 color: ${colors.text} !important;
                 border: 1px solid ${colors.border};
-                border-radius: ${radius};
-                padding: calc(10px * ${spacingScale})
-                         calc(12px * ${spacingScale});
             }
 
-            .message.other .message-text,
-            .message.received .message-text {
-                color: ${colors.text} !important;
-            }
-
-            /*
-             * Sent messages.
-             */
-            .message.own .message-content,
-            .message.sent .message-content {
-                background-color: ${colors.accent} !important;
-                color: ${ownMessageText} !important;
+            #messages .message.own .message-content,
+            #messages .message.sent .message-content,
+            .messages .message.own .message-content,
+            .messages .message.sent .message-content {
+                background: ${colors.accent} !important;
+                color: ${ownText} !important;
                 border: 1px solid ${colors.accent};
-                border-radius: ${radius};
-                padding: calc(10px * ${spacingScale})
-                         calc(12px * ${spacingScale});
-            }
-
-            .message.own .message-text,
-            .message.sent .message-text {
-                color: ${ownMessageText} !important;
             }
 
             .message-sender {
-                color: ${colors.text} !important;
-                font-family: ${fontFamily} !important;
+                color: ${colors.text};
+                font-family: ${fontFamily};
             }
 
             .message-time {
-                color: ${colors.text} !important;
-                opacity: 0.72;
+                display: block;
+                margin-top: 8px;
+                color: inherit;
+                font-size: 11px;
+                opacity: 0.75;
             }
 
-            .message.own .message-time,
-            .message.sent .message-time {
-                color: ${ownMessageText} !important;
-                opacity: 0.82;
-            }
-
-            .message-reaction {
-                color: ${colors.text} !important;
-            }
-
-            /*
-             * Inputs.
-             */
             #messageInput,
             .message-input,
-            textarea,
-            input[type="text"] {
-                font-family: ${fontFamily} !important;
-                color: ${colors.text} !important;
-                border-color: ${colors.border} !important;
+            textarea {
+                color: ${colors.text};
+                border-color: ${colors.border};
+                font-family: ${fontFamily};
             }
 
             #messageInput,
             .message-input {
-                background-color: ${colors.panel} !important;
+                background-color: ${colors.panel};
             }
 
             #messageInput::placeholder,
             .message-input::placeholder,
             textarea::placeholder {
-                color: ${colors.text} !important;
-                opacity: 0.60;
+                color: ${colors.text};
+                opacity: 0.6;
             }
 
-            #sendButton,
-            .send-button {
-                border-color: ${colors.accent} !important;
+            #messages .message-sender.role-owner,
+            .messages .message-sender.role-owner {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 7px;
+                color: #ffd166 !important;
+                font-weight: 800;
+                text-shadow: 0 0 10px rgba(255,209,102,.3);
             }
 
-            button:focus-visible,
-            input:focus-visible,
-            textarea:focus-visible,
-            select:focus-visible {
-                outline-color: ${colors.accent} !important;
-            }
-
-            a,
-            .accent,
-            .channel-active,
-            .active-channel {
-                --fc-accent: ${colors.accent};
-            }
-
-            .message-content,
-            .chat-header,
-            .channel-header,
-            .channel-topbar,
-            .composer-area,
-            .composer,
-            .chat-input-area,
-            .message-composer,
-            #messageInput,
-            .message-input,
-            .emoji-picker {
-                border-radius: ${radius};
-            }
-
-            .message-content,
-            .message-text,
-            .message-sender,
-            .message-time,
-            #messageInput {
-                font-family: ${fontFamily} !important;
+            #messages .owner-badge,
+            .messages .owner-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 3px 7px;
+                border: 1px solid rgba(255,209,102,.55);
+                border-radius: 6px;
+                background: rgba(255,209,102,.12);
+                color: #ffd166;
+                font-size: 10px;
+                font-weight: 800;
+                letter-spacing: .5px;
+                text-shadow: none;
             }
 
             #messages,
-            .messages,
-            .message-list,
-            #messageList {
+            .messages {
                 scrollbar-color: ${colors.accent} transparent;
+            }
+
+            @media (max-width: 600px) {
+                #messages .message-content,
+                .messages .message-content {
+                    max-width: 88% !important;
+                }
             }
         `;
 
-        /*
-         * Update input styles without replacing event handlers.
-         */
         if (messageInput) {
             messageInput.style.color = colors.text;
             messageInput.style.borderColor = colors.border;
             messageInput.style.fontFamily = fontFamily;
         }
-
-        console.log("FriendChat appearance applied:", {
-            theme: settings.theme || "dark",
-            backgroundImageConfigured: Boolean(backgroundURL),
-            backgroundImageURL: backgroundURL || "(none)"
-        });
     }
 
-    /* =========================================================
-       API
-       ========================================================= */
+    /* ================= API ================= */
 
     async function apiRequest(path, options = {}) {
-        const method = options.method || "GET";
         const headers = { ...(options.headers || {}) };
 
         if (currentUserID) {
@@ -753,39 +616,31 @@
             headers["Content-Type"] = "application/json";
         }
 
-        let requestURL = API_BASE + path;
+        let url = API_BASE + path;
         const separator = path.includes("?") ? "&" : "?";
 
-        if (
-            currentUserID &&
-            !/[?&]user=/.test(requestURL)
-        ) {
-            requestURL += separator +
-                "user=" + encodeURIComponent(currentUserID);
+        if (currentUserID && !/[?&]user=/.test(url)) {
+            url += separator + "user=" + encodeURIComponent(currentUserID);
         }
 
-        const response = await fetch(requestURL, {
-            method,
+        const response = await fetch(url, {
+            method: options.method || "GET",
             headers,
             body: options.body
         });
 
+        const contentType = response.headers.get("content-type") || "";
         let data;
-        const contentType =
-            response.headers.get("content-type") || "";
 
         if (contentType.includes("application/json")) {
             data = await response.json();
         } else {
-            const responseText = await response.text();
+            const raw = await response.text();
 
             try {
-                data = JSON.parse(responseText);
+                data = JSON.parse(raw);
             } catch (_) {
-                data = {
-                    ok: response.ok,
-                    text: responseText
-                };
+                data = { ok: response.ok, text: raw };
             }
         }
 
@@ -801,9 +656,7 @@
         return data;
     }
 
-    /* =========================================================
-       SERVER LOADING
-       ========================================================= */
+    /* ================= SERVER LOADING ================= */
 
     async function loadServer() {
         if (!currentServerID) {
@@ -814,11 +667,7 @@
             `/api/servers/${encodeURIComponent(currentServerID)}`
         );
 
-        if (!data) {
-            throw new Error("Empty server response.");
-        }
-
-        const server = data.server || data.data || data;
+        const server = data?.server || data?.data || data;
 
         if (!server) {
             throw new Error("Server could not be found.");
@@ -827,22 +676,14 @@
         currentServer = server;
 
         currentServerID = clean(
-            server.serverID ||
-            server.serverId ||
-            server.id ||
-            currentServerID
+            server.serverID || server.serverId || server.id || currentServerID
         );
 
         saveCurrentLocation();
-
         applyServerAppearance();
 
         return currentServer;
     }
-
-    /* =========================================================
-       CHANNEL FINDER
-       ========================================================= */
 
     function getServerChannels(server) {
         if (!server) return [];
@@ -851,10 +692,7 @@
             return server.channels;
         }
 
-        if (
-            server.channels &&
-            typeof server.channels === "object"
-        ) {
+        if (server.channels && typeof server.channels === "object") {
             return Object.values(server.channels);
         }
 
@@ -865,42 +703,19 @@
         const channels = getServerChannels(server);
         const wanted = clean(channelID);
 
-        return (
-            channels.find(channel =>
-                clean(
-                    channel.channelID ||
-                    channel.channelId ||
-                    channel.id
-                ) === wanted
-            ) ||
-            channels.find(channel =>
-                normalizeID(
-                    channel.channelID ||
-                    channel.channelId ||
-                    channel.id
-                ) === normalizeID(wanted)
-            ) ||
-            null
-        );
+        return channels.find(channel =>
+            clean(channel.channelID || channel.channelId || channel.id) === wanted
+        ) || channels.find(channel =>
+            normalizeID(channel.channelID || channel.channelId || channel.id) ===
+            normalizeID(wanted)
+        ) || null;
     }
 
-    /* =========================================================
-       LOAD CHANNEL
-       ========================================================= */
-
     async function loadChannel() {
-        if (!currentServer) {
-            throw new Error("Server is not loaded.");
-        }
+        if (!currentServer) throw new Error("Server is not loaded.");
+        if (!currentChannelID) throw new Error("Channel ID is missing.");
 
-        if (!currentChannelID) {
-            throw new Error("Channel ID is missing.");
-        }
-
-        currentChannel = findChannel(
-            currentServer,
-            currentChannelID
-        );
+        currentChannel = findChannel(currentServer, currentChannelID);
 
         if (!currentChannel) {
             throw new Error("Channel could not be found.");
@@ -919,73 +734,54 @@
         return currentChannel;
     }
 
-    /* =========================================================
-       CHANNEL HEADER
-       ========================================================= */
+    /* ================= CHANNEL HEADER ================= */
 
     function updateChannelHeader() {
         if (!currentChannel) return;
 
         const type = clean(
-            currentChannel.type ||
-            currentChannel.channelType ||
-            "text"
+            currentChannel.type || currentChannel.channelType || "text"
         ).toLowerCase();
 
         const name = clean(currentChannel.name) || "Channel";
-        const description = clean(currentChannel.description);
 
         if (channelName) channelName.textContent = name;
 
         if (channelDescription) {
             channelDescription.textContent =
-                description || `Welcome to #${name}`;
+                clean(currentChannel.description) || `Welcome to #${name}`;
         }
 
         if (serverName) {
             serverName.textContent =
-                clean(currentServer?.name) ||
-                "FriendChat Server";
+                clean(currentServer?.name) || "FriendChat Server";
         }
 
         if (channelType) {
             channelType.textContent =
-                type === "voice"
-                    ? "Voice Channel"
-                    : "Text Channel";
+                type === "voice" ? "Voice Channel" : "Text Channel";
         }
 
         if (channelIcon) {
-            channelIcon.textContent =
-                type === "voice" ? "🔊" : "#";
+            channelIcon.textContent = type === "voice" ? "🔊" : "#";
         }
 
         if (emptyChannelName) {
             emptyChannelName.textContent = name;
         }
 
-        if (type === "voice") {
-            if (messageInput) {
-                messageInput.disabled = true;
-                messageInput.placeholder = "Voice channel";
-            }
+        if (messageInput) {
+            messageInput.disabled = type === "voice";
+            messageInput.placeholder =
+                type === "voice" ? "Voice channel" : `Message #${name}`;
+        }
 
-            if (sendButton) sendButton.disabled = true;
-        } else {
-            if (messageInput) {
-                messageInput.disabled = false;
-                messageInput.placeholder = `Message #${name}`;
-            }
-
-            if (sendButton && !isSending) {
-                sendButton.disabled = false;
-            }
+        if (sendButton) {
+            sendButton.disabled = type === "voice" || isSending;
         }
     }
 
-    /* =========================================================
-       MESSAGE NORMALIZATION
-       ========================================================= */
+    /* ================= MESSAGE NORMALIZATION ================= */
 
     function normalizeMessage(message) {
         if (!message) return null;
@@ -994,21 +790,17 @@
             message.id ||
             message.messageID ||
             message.messageId ||
-            `${message.serverID || currentServerID}-${message.channelID || currentChannelID}-${message.time || message.createdAt || Date.now()}`;
+            `${message.serverID || currentServerID}-${message.channelID || currentChannelID}-${message.createdAt || message.time || Date.now()}`;
 
         return {
             id: String(id),
 
             serverID: clean(
-                message.serverID ||
-                message.serverId ||
-                currentServerID
+                message.serverID || message.serverId || currentServerID
             ),
 
             channelID: clean(
-                message.channelID ||
-                message.channelId ||
-                currentChannelID
+                message.channelID || message.channelId || currentChannelID
             ),
 
             from: clean(
@@ -1023,10 +815,10 @@
                 message.senderName ||
                 message.name ||
                 message.fromName ||
-                "FriendChat User"
+                ""
             ),
 
-            text: String(message.text || message.message || ""),
+            text: String(message.text ?? message.message ?? ""),
 
             createdAt:
                 message.createdAt ||
@@ -1039,23 +831,17 @@
         };
     }
 
-    /* =========================================================
-       LOAD MESSAGES
-       ========================================================= */
+    /* ================= LOAD MESSAGES ================= */
 
     async function loadMessages() {
-        if (
-            isLoadingMessages ||
-            !currentServerID ||
-            !currentChannelID
-        ) {
+        if (isLoadingMessages || !currentServerID || !currentChannelID) {
             return;
         }
 
         isLoadingMessages = true;
 
-        const serverIDAtStart = currentServerID;
-        const channelIDAtStart = currentChannelID;
+        const serverAtStart = currentServerID;
+        const channelAtStart = currentChannelID;
 
         const path =
             `/api/servers/${encodeURIComponent(currentServerID)}/messages` +
@@ -1065,72 +851,49 @@
             const data = await apiRequest(path);
 
             if (
-                serverIDAtStart !== currentServerID ||
-                channelIDAtStart !== currentChannelID
+                serverAtStart !== currentServerID ||
+                channelAtStart !== currentChannelID
             ) {
                 return;
             }
 
-            let serverMessages = [];
+            const list = Array.isArray(data)
+                ? data
+                : Array.isArray(data?.messages)
+                    ? data.messages
+                    : Array.isArray(data?.data)
+                        ? data.data
+                        : [];
 
-            if (Array.isArray(data)) {
-                serverMessages = data;
-            } else if (Array.isArray(data.messages)) {
-                serverMessages = data.messages;
-            } else if (Array.isArray(data.data)) {
-                serverMessages = data.data;
-            }
-
-            messages = serverMessages
+            messages = list
                 .map(normalizeMessage)
                 .filter(Boolean)
                 .filter(message =>
-                    normalizeID(message.serverID) ===
-                        normalizeID(currentServerID) &&
-                    clean(message.channelID) ===
-                        clean(currentChannelID)
+                    normalizeID(message.serverID) === normalizeID(currentServerID) &&
+                    clean(message.channelID) === clean(currentChannelID)
                 );
 
             sortMessages();
             renderMessages();
         } catch (error) {
-            console.error(
-                "FriendChat: Could not load messages:",
-                error
-            );
-
-            showToast(
-                error.message || "Could not load messages."
-            );
+            console.error("FriendChat: Could not load messages:", error);
+            showToast(error.message || "Could not load messages.");
         } finally {
             isLoadingMessages = false;
         }
     }
 
-    /* =========================================================
-       MESSAGE SORTING
-       ========================================================= */
-
     function getMessageTime(message) {
-        const value = message.createdAt || message.time || 0;
-        const time = new Date(value).getTime();
-
+        const time = new Date(message.createdAt || message.time || 0).getTime();
         return Number.isFinite(time) ? time : 0;
     }
 
     function sortMessages() {
-        messages.sort(
-            (a, b) => getMessageTime(a) - getMessageTime(b)
-        );
+        messages.sort((a, b) => getMessageTime(a) - getMessageTime(b));
     }
-
-    /* =========================================================
-       MESSAGE RENDERING
-       ========================================================= */
 
     function formatTime(value) {
         const date = new Date(value);
-
         if (Number.isNaN(date.getTime())) return "";
 
         return date.toLocaleTimeString([], {
@@ -1138,6 +901,27 @@
             minute: "2-digit"
         });
     }
+
+    /* ================= OWNER DETECTION ================= */
+
+    function getServerOwnerID() {
+        if (!currentServer) return "";
+
+        return normalizeID(
+            currentServer.ownerID ||
+            currentServer.ownerId ||
+            currentServer.ownerUserID ||
+            currentServer.ownerUserId ||
+            currentServer.createdBy ||
+            currentServer.creatorID ||
+            currentServer.creatorId ||
+            currentServer.userID ||
+            currentServer.userId ||
+            ""
+        );
+    }
+
+    /* ================= RENDER MESSAGES ================= */
 
     function renderMessages() {
         if (!messagesBox) return;
@@ -1152,30 +936,53 @@
         if (emptyState) emptyState.style.display = "none";
 
         const fragment = document.createDocumentFragment();
+        const ownerID = getServerOwnerID();
 
         messages.forEach(message => {
             const wrapper = document.createElement("div");
             wrapper.className = "message";
 
-            const isOwnMessage =
-                normalizeID(message.from) ===
-                normalizeID(currentUserID);
+            const senderID = normalizeID(message.from);
+            const isOwn = senderID === normalizeID(currentUserID);
+            const isOwner = Boolean(ownerID && senderID === ownerID);
 
-            if (isOwnMessage) {
-                wrapper.classList.add("own", "sent");
-            } else {
-                wrapper.classList.add("other", "received");
-            }
+            wrapper.classList.add(
+                isOwn ? "own" : "other",
+                isOwn ? "sent" : "received"
+            );
+
+            if (isOwner) wrapper.classList.add("owner-message");
 
             wrapper.dataset.messageId = message.id;
 
             const sender = document.createElement("div");
             sender.className = "message-sender";
+
             sender.textContent =
-                message.senderName || "FriendChat User";
+                (isOwn && currentUserName) ||
+                message.senderName ||
+                "FriendChat User";
+
+            if (isOwner) {
+                sender.classList.add("role-owner");
+
+                const badge = document.createElement("span");
+                badge.className = "owner-badge";
+                badge.textContent = "♛ OWNER";
+                badge.setAttribute("aria-label", "Server owner");
+
+                sender.appendChild(badge);
+            }
 
             const content = document.createElement("div");
             content.className = "message-content";
+
+            // Prevent a short message from stretching to full width.
+            content.style.width = "fit-content";
+            content.style.maxWidth = "min(75%, 700px)";
+            content.style.minWidth = "0";
+            content.style.boxSizing = "border-box";
+            content.style.flex = "0 1 auto";
 
             const text = document.createElement("div");
             text.className = "message-text";
@@ -1213,54 +1020,28 @@
         });
     }
 
-    /* =========================================================
-       SEND MESSAGE
-       ========================================================= */
+    /* ================= SEND MESSAGE ================= */
 
     async function sendMessage() {
         if (isSending) return;
 
-        if (!currentServerID) {
-            showToast("Server is missing.");
-            return;
-        }
-
-        if (!currentChannelID) {
-            showToast("Channel is missing.");
-            return;
-        }
-
-        if (!currentChannel) {
-            showToast("Channel is not loaded.");
-            return;
-        }
+        if (!currentServerID) return showToast("Server is missing.");
+        if (!currentChannelID) return showToast("Channel is missing.");
+        if (!currentChannel) return showToast("Channel is not loaded.");
 
         const type = clean(
-            currentChannel.type ||
-            currentChannel.channelType ||
-            "text"
+            currentChannel.type || currentChannel.channelType || "text"
         ).toLowerCase();
 
         if (type === "voice") {
-            showToast(
-                "Voice channels cannot receive text messages."
-            );
-            return;
+            return showToast("Voice channels cannot receive text messages.");
         }
 
         const text = clean(messageInput?.value);
 
         if (!text) return;
-
-        if (text.length > 5000) {
-            showToast("Message is too long.");
-            return;
-        }
-
-        if (!currentUserID) {
-            showToast("You are not logged in.");
-            return;
-        }
+        if (text.length > 5000) return showToast("Message is too long.");
+        if (!currentUserID) return showToast("You are not logged in.");
 
         isSending = true;
         if (sendButton) sendButton.disabled = true;
@@ -1283,13 +1064,12 @@
                 }
             );
 
-            const serverMessage =
-                data?.message || data?.data || data;
+            const result = data?.message || data?.data || data;
 
-            if (serverMessage) {
-                addOrUpdateMessage(
-                    normalizeMessage(serverMessage)
-                );
+            if (result) {
+                const message = normalizeMessage(result);
+
+                if (message) addOrUpdateMessage(message);
             }
 
             if (messageInput) messageInput.value = "";
@@ -1297,25 +1077,14 @@
             updateCharacterCount();
             scrollMessagesToBottom();
         } catch (error) {
-            console.error(
-                "FriendChat: Send message failed:",
-                error
-            );
-
-            showToast(
-                error.message || "Could not send message."
-            );
+            console.error("FriendChat: Send message failed:", error);
+            showToast(error.message || "Could not send message.");
         } finally {
             isSending = false;
 
-            if (
-                sendButton &&
-                clean(
-                    currentChannel?.type ||
-                    currentChannel?.channelType ||
-                    "text"
-                ).toLowerCase() !== "voice"
-            ) {
+            if (sendButton && clean(
+                currentChannel?.type || currentChannel?.channelType || "text"
+            ).toLowerCase() !== "voice") {
                 sendButton.disabled = false;
             }
 
@@ -1323,17 +1092,10 @@
         }
     }
 
-    /* =========================================================
-       ADD / UPDATE MESSAGE
-       ========================================================= */
-
     function addOrUpdateMessage(message) {
         if (!message) return;
 
-        if (
-            normalizeID(message.serverID) !==
-            normalizeID(currentServerID)
-        ) {
+        if (normalizeID(message.serverID) !== normalizeID(currentServerID)) {
             return;
         }
 
@@ -1346,10 +1108,7 @@
         );
 
         if (index >= 0) {
-            messages[index] = {
-                ...messages[index],
-                ...message
-            };
+            messages[index] = { ...messages[index], ...message };
         } else {
             messages.push(message);
         }
@@ -1358,9 +1117,7 @@
         renderMessages();
     }
 
-    /* =========================================================
-       DELETE MESSAGE
-       ========================================================= */
+    /* ================= DELETE MESSAGE ================= */
 
     async function deleteMessage(messageID) {
         if (!messageID) return;
@@ -1380,45 +1137,28 @@
 
             removeMessage(messageID);
         } catch (error) {
-            console.error(
-                "FriendChat: Delete message failed:",
-                error
-            );
-
-            showToast(
-                error.message || "Could not delete message."
-            );
+            console.error("FriendChat: Delete failed:", error);
+            showToast(error.message || "Could not delete message.");
         }
     }
 
     function removeMessage(messageID) {
-        const wanted = String(messageID);
-
         messages = messages.filter(
-            message => String(message.id) !== wanted
+            message => String(message.id) !== String(messageID)
         );
 
         renderMessages();
     }
 
-    /* =========================================================
-       WEBSOCKET
-       ========================================================= */
+    /* ================= WEBSOCKET ================= */
 
     function getWebSocketURL() {
-        const protocol =
-            location.protocol === "https:" ? "wss:" : "ws:";
-
+        const protocol = location.protocol === "https:" ? "wss:" : "ws:";
         return `${protocol}//${location.host}`;
     }
 
     function connectWebSocket() {
-        if (!currentUserID) {
-            console.warn(
-                "FriendChat: Cannot connect WebSocket without user ID."
-            );
-            return;
-        }
+        if (!currentUserID) return;
 
         if (
             socket &&
@@ -1439,7 +1179,6 @@
         }
 
         socket.addEventListener("open", () => {
-            console.log("FriendChat WebSocket connected.");
             clearTimeout(reconnectTimer);
 
             sendSocket({
@@ -1459,10 +1198,7 @@
             handleSocketMessage(event.data);
         });
 
-        socket.addEventListener("close", () => {
-            console.warn("FriendChat WebSocket disconnected.");
-            scheduleWebSocketReconnect();
-        });
+        socket.addEventListener("close", scheduleWebSocketReconnect);
 
         socket.addEventListener("error", error => {
             console.warn("FriendChat WebSocket error:", error);
@@ -1478,28 +1214,16 @@
     }
 
     function sendSocket(payload) {
-        if (
-            !socket ||
-            socket.readyState !== WebSocket.OPEN
-        ) {
-            return false;
-        }
+        if (!socket || socket.readyState !== WebSocket.OPEN) return false;
 
         try {
             socket.send(JSON.stringify(payload));
             return true;
         } catch (error) {
-            console.error(
-                "FriendChat: WebSocket send failed:",
-                error
-            );
+            console.error("FriendChat WebSocket send failed:", error);
             return false;
         }
     }
-
-    /* =========================================================
-       WEBSOCKET MESSAGE HANDLER
-       ========================================================= */
 
     function handleSocketMessage(rawData) {
         let data;
@@ -1508,11 +1232,8 @@
             data = typeof rawData === "string"
                 ? JSON.parse(rawData)
                 : rawData;
-        } catch (error) {
-            console.warn(
-                "FriendChat: Invalid WebSocket data:",
-                rawData
-            );
+        } catch (_) {
+            console.warn("FriendChat: Invalid WebSocket data.");
             return;
         }
 
@@ -1520,80 +1241,61 @@
 
         const type = clean(data.type).toLowerCase();
 
-        if (
-            type === "server_message" ||
-            type === "server_chat" ||
-            type === "channel_message"
-        ) {
-            const rawMessage =
-                data.message || data.data || data;
-
-            const message = normalizeMessage(rawMessage);
+        if ([
+            "server_message",
+            "server_chat",
+            "channel_message"
+        ].includes(type)) {
+            const message = normalizeMessage(
+                data.message || data.data || data
+            );
 
             if (message) addOrUpdateMessage(message);
             return;
         }
 
-        if (
-            type === "server_message_deleted" ||
-            type === "server_message_delete"
-        ) {
-            const messageID =
+        if ([
+            "server_message_deleted",
+            "server_message_delete"
+        ].includes(type)) {
+            const id =
                 data.messageID ||
                 data.messageId ||
                 data.id ||
                 data.message?.id;
 
-            if (messageID) removeMessage(messageID);
+            if (id) removeMessage(id);
             return;
         }
 
-        if (
-            type === "server_updated" ||
-            type === "server_update"
-        ) {
-            const incomingServer = data.server || data.data;
+        if (["server_updated", "server_update"].includes(type)) {
+            const incoming = data.server || data.data;
 
-            if (
-                !incomingServer ||
-                typeof incomingServer !== "object"
-            ) {
-                return;
-            }
+            if (!incoming || typeof incoming !== "object") return;
 
             const incomingID = clean(
-                incomingServer.serverID ||
-                incomingServer.serverId ||
-                incomingServer.id
+                incoming.serverID || incoming.serverId || incoming.id
             );
 
             if (
                 incomingID &&
-                normalizeID(incomingID) !==
-                normalizeID(currentServerID)
+                normalizeID(incomingID) !== normalizeID(currentServerID)
             ) {
                 return;
             }
 
-            /*
-             * Merge settings and preserve existing channels
-             * when the incoming WebSocket update is partial.
-             */
-            const previousServer = currentServer || {};
+            const previous = currentServer || {};
 
             currentServer = {
-                ...previousServer,
-                ...incomingServer,
-
+                ...previous,
+                ...incoming,
                 settings: {
-                    ...(previousServer.settings || {}),
-                    ...(incomingServer.settings || {})
+                    ...(previous.settings || {}),
+                    ...(incoming.settings || {})
                 },
-
-                channels:
-                    incomingServer.channels !== undefined
-                        ? incomingServer.channels
-                        : previousServer.channels
+                channels: incoming.channels !== undefined
+                    ? incoming.channels
+                    : previous.channels
             };
 
             currentServerID = clean(
@@ -1603,45 +1305,34 @@
                 currentServerID
             );
 
-            currentChannel = findChannel(
-                currentServer,
-                currentChannelID
-            );
+            currentChannel = findChannel(currentServer, currentChannelID);
 
             applyServerAppearance();
             updateChannelHeader();
-
+            renderMessages();
             return;
         }
 
-        if (
-            type === "server_removed" ||
-            type === "server_deleted" ||
-            type === "server_delete"
-        ) {
-            const serverID = clean(
+        if ([
+            "server_removed",
+            "server_deleted",
+            "server_delete"
+        ].includes(type)) {
+            const id = clean(
                 data.serverID ||
                 data.serverId ||
                 data.id ||
                 data.server?.serverID
             );
 
-            if (
-                normalizeID(serverID) ===
-                normalizeID(currentServerID)
-            ) {
-                showToast(
-                    "This server is no longer available."
-                );
-
+            if (normalizeID(id) === normalizeID(currentServerID)) {
+                showToast("This server is no longer available.");
                 setTimeout(goToServer, 1200);
             }
         }
     }
 
-    /* =========================================================
-       POLLING FALLBACK
-       ========================================================= */
+    /* ================= POLLING FALLBACK ================= */
 
     function startMessagePolling() {
         clearInterval(messagePollTimer);
@@ -1649,20 +1340,13 @@
         messagePollTimer = setInterval(async () => {
             if (!currentServerID || !currentChannelID) return;
 
-            if (
-                socket &&
-                socket.readyState === WebSocket.OPEN
-            ) {
-                return;
-            }
+            if (socket && socket.readyState === WebSocket.OPEN) return;
 
             await loadMessages();
         }, 5000);
     }
 
-    /* =========================================================
-       CHARACTER COUNT
-       ========================================================= */
+    /* ================= CHARACTER COUNT ================= */
 
     function updateCharacterCount() {
         if (!characterCount) return;
@@ -1671,9 +1355,7 @@
         characterCount.textContent = `${length}/5000`;
     }
 
-    /* =========================================================
-       EMOJI BUTTON
-       ========================================================= */
+    /* ================= EMOJI PICKER ================= */
 
     function setupEmojiButton() {
         if (!emojiButton) return;
@@ -1681,11 +1363,10 @@
         emojiButton.addEventListener("click", event => {
             event.preventDefault();
 
-            const existingPicker =
-                document.querySelector(".emoji-picker");
+            const existing = document.querySelector(".emoji-picker");
 
-            if (existingPicker) {
-                existingPicker.remove();
+            if (existing) {
+                existing.remove();
                 return;
             }
 
@@ -1743,10 +1424,7 @@
                         event.target !== emojiButton
                     ) {
                         picker.remove();
-                        document.removeEventListener(
-                            "click",
-                            closePicker
-                        );
+                        document.removeEventListener("click", closePicker);
                     }
                 };
 
@@ -1758,32 +1436,22 @@
     function insertEmoji(emoji) {
         if (!messageInput) return;
 
-        const start =
-            messageInput.selectionStart ??
-            messageInput.value.length;
-
-        const end =
-            messageInput.selectionEnd ??
-            messageInput.value.length;
-
+        const start = messageInput.selectionStart ?? messageInput.value.length;
+        const end = messageInput.selectionEnd ?? messageInput.value.length;
         const value = messageInput.value;
 
         messageInput.value =
-            value.slice(0, start) +
-            emoji +
-            value.slice(end);
+            value.slice(0, start) + emoji + value.slice(end);
 
         messageInput.focus();
 
         const cursor = start + emoji.length;
-
         messageInput.setSelectionRange(cursor, cursor);
+
         updateCharacterCount();
     }
 
-    /* =========================================================
-       ATTACHMENT BUTTON
-       ========================================================= */
+    /* ================= ATTACHMENT BUTTON ================= */
 
     function setupAttachmentButton() {
         if (!attachButton) return;
@@ -1791,9 +1459,7 @@
         attachButton.addEventListener("click", event => {
             event.preventDefault();
 
-            const existing = document.querySelector(
-                'input[type="file"]'
-            );
+            const existing = document.querySelector('input[type="file"]');
 
             if (existing) {
                 existing.click();
@@ -1804,9 +1470,7 @@
         });
     }
 
-    /* =========================================================
-       NAVIGATION
-       ========================================================= */
+    /* ================= NAVIGATION ================= */
 
     function goToServer() {
         if (!currentServerID) {
@@ -1815,10 +1479,7 @@
         }
 
         try {
-            localStorage.setItem(
-                CURRENT_SERVER_KEY,
-                currentServerID
-            );
+            localStorage.setItem(CURRENT_SERVER_KEY, currentServerID);
         } catch (_) {}
 
         location.href =
@@ -1835,23 +1496,15 @@
         }
     }
 
-    /* =========================================================
-       INPUT EVENTS
-       ========================================================= */
+    /* ================= INPUT EVENTS ================= */
 
     function setupInput() {
         if (!messageInput) return;
 
-        messageInput.addEventListener(
-            "input",
-            updateCharacterCount
-        );
+        messageInput.addEventListener("input", updateCharacterCount);
 
         messageInput.addEventListener("keydown", event => {
-            if (
-                event.key === "Enter" &&
-                !event.shiftKey
-            ) {
+            if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
                 sendMessage();
             }
@@ -1867,47 +1520,37 @@
         });
     }
 
-    /* =========================================================
-       MESSAGE CONTEXT MENU
-       ========================================================= */
+    /* ================= MESSAGE ACTIONS ================= */
 
     function setupMessageActions() {
         if (!messagesBox) return;
 
         messagesBox.addEventListener("contextmenu", event => {
-            const messageElement =
-                event.target.closest(".message");
-
-            if (!messageElement) return;
+            const element = event.target.closest(".message");
+            if (!element) return;
 
             event.preventDefault();
 
-            const messageID =
-                messageElement.dataset.messageId;
+            const id = element.dataset.messageId;
 
             const message = messages.find(
-                item => String(item.id) === String(messageID)
+                item => String(item.id) === String(id)
             );
 
             if (!message) return;
 
-            if (
-                normalizeID(message.from) !==
-                normalizeID(currentUserID)
-            ) {
+            if (normalizeID(message.from) !== normalizeID(currentUserID)) {
                 showToast("You can only delete your own messages.");
                 return;
             }
 
             if (window.confirm("Delete this message?")) {
-                deleteMessage(messageID);
+                deleteMessage(id);
             }
         });
     }
 
-    /* =========================================================
-       INITIALIZATION
-       ========================================================= */
+    /* ================= INITIALIZATION ================= */
 
     async function initialize() {
         console.log("FriendChat channel chat starting...");
@@ -1958,24 +1601,16 @@
             console.log("FriendChat channel ready:", {
                 userID: currentUserID,
                 serverID: currentServerID,
-                channelID: currentChannelID
+                channelID: currentChannelID,
+                ownerID: getServerOwnerID()
             });
         } catch (error) {
-            console.error(
-                "FriendChat channel initialization failed:",
-                error
-            );
-
-            showToast(
-                error.message || "Could not load this channel.",
-                5000
-            );
+            console.error("FriendChat channel initialization failed:", error);
+            showToast(error.message || "Could not load this channel.", 5000);
         }
     }
 
-    /* =========================================================
-       CLEANUP
-       ========================================================= */
+    /* ================= CLEANUP ================= */
 
     window.addEventListener("beforeunload", () => {
         clearTimeout(reconnectTimer);
@@ -1988,9 +1623,7 @@
         }
     });
 
-    /* =========================================================
-       START
-       ========================================================= */
+    /* ================= START ================= */
 
     setupNavigation();
     setupInput();
@@ -2001,5 +1634,4 @@
     updateCharacterCount();
 
     initialize();
-
 })();
