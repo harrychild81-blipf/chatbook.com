@@ -1,8 +1,7 @@
-
 /* =========================================================
    FRIENDCHAT
    SERVER HOME
-   BACKEND CONNECTED VERSION — SETTINGS BUTTON FIXED
+   BACKEND CONNECTED VERSION — ROLES BUTTON FIXED
    ========================================================= */
 
 const API_BASE = "";
@@ -962,14 +961,8 @@ const activityCard = document.getElementById("activityCard");
 const channelsCard = document.getElementById("channelsCard");
 
 /* =========================================================
-   SERVER SETTINGS — FIXED
+   SERVER SETTINGS
    ========================================================= */
-
-/*
-   IMPORTANT:
-   There must be ONLY ONE click handler for settingsButton.
-   Do not add another handler that displays "coming soon".
-*/
 
 const serverSettingsCard = document.getElementById("serverSettingsCard");
 const settingsButton = document.getElementById("settingsButton");
@@ -985,14 +978,7 @@ function openServerSettingsPage(event) {
         return;
     }
 
-    // Save the selected server before opening its settings.
     saveCurrentServerID(currentServer.serverID);
-
-    /*
-       The customization script may expose openServerSettings().
-       Call it if it exists. Otherwise navigate to the standalone
-       customization page, preserving the current server ID.
-    */
 
     if (typeof window.openServerSettings === "function") {
         try {
@@ -1044,9 +1030,34 @@ if (rulesCard) {
     });
 }
 
+/* =========================================================
+   ROLES BUTTON — FIXED
+   Opens the standalone roles page for this server.
+   ========================================================= */
+
 if (rolesCard) {
-    rolesCard.addEventListener("click", function () {
-        showToast("Roles will be added later.");
+    rolesCard.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const selectedServerID =
+            currentServer && currentServer.serverID
+                ? currentServer.serverID
+                : getCurrentServerID();
+
+        if (!selectedServerID) {
+            showToast("Please wait for the server to finish loading.");
+            return;
+        }
+
+        saveCurrentServerID(selectedServerID);
+
+        const rolesURL =
+            "server-roles.html?server=" +
+            encodeURIComponent(String(selectedServerID));
+
+        console.log("FriendChat opening Roles:", rolesURL);
+        window.location.href = rolesURL;
     });
 }
 
