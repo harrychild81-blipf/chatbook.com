@@ -1494,3 +1494,135 @@ header .back:hover{
     box-sizing: border-box !important;
   }
 }
+
+/* FRIENDCHAT — RIGHT SERVER ICON BAR ONLY */
+@media (min-width: 900px) {
+
+  /* Restore the friends area and leave room for a slim bar */
+  #homeScreen .profileRow,
+  #homeScreen .search,
+  #homeScreen #friendList {
+    width: calc(100% - 90px) !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+
+  #homeScreen .profileRow,
+  #homeScreen .search {
+    margin-left: 22px !important;
+  }
+
+  #homeScreen #friendList {
+    padding-left: 22px !important;
+    padding-right: 0 !important;
+  }
+
+  /* Narrow server bar on the right */
+  #fcServerNav {
+    position: fixed !important;
+    top: 132px !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: auto !important;
+
+    width: 76px !important;
+    height: calc(100vh - 132px) !important;
+    max-width: 76px !important;
+    min-width: 76px !important;
+
+    padding: 12px 8px !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    background: #080d15 !important;
+    border-left: 1px solid rgba(255,255,255,.10) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  /* Hide the big title */
+  #fcServerNav .fc-server-nav-head {
+    display: none !important;
+  }
+
+  /* Create button becomes a small plus button */
+  #fcServerNav .fc-server-create {
+    width: 48px !important;
+    min-height: 48px !important;
+    height: 48px !important;
+    flex: 0 0 48px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+    justify-content: center !important;
+
+    border-radius: 15px !important;
+    background: #171f35 !important;
+  }
+
+  #fcServerNav .fc-server-create .fc-server-plus {
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 36px !important;
+  }
+
+  /* Hide Create Server text */
+  #fcServerNav .fc-server-create {
+    font-size: 0 !important;
+  }
+
+  /* Server icons stack vertically */
+  #fcServerNav .fc-server-list {
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+
+    padding: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  #fcServerNav .fc-server-item {
+    width: 48px !important;
+    min-width: 48px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    flex: 0 0 48px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 5px !important;
+    margin: 0 !important;
+    border-radius: 15px !important;
+  }
+
+  #fcServerNav .fc-server-icon {
+    width: 38px !important;
+    height: 38px !important;
+    flex: 0 0 38px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Icons only — hide server names */
+  #fcServerNav .fc-server-name {
+    display: none !important;
+  }
+
+  /* No large empty-state box in the narrow bar */
+  #fcServerNav .fc-server-empty {
+    display: none !important;
+  }
+}
