@@ -1249,3 +1249,248 @@ header .back:hover{
     scroll-behavior:auto !important;
   }
 }
+
+/* =========================================================
+   FRIENDCHAT — TWO-PANEL HOME LAYOUT
+   Header: full width
+   Left: existing profile and friends
+   Right: full server panel
+   ========================================================= */
+
+@media (min-width: 900px) {
+  #homeScreen {
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100vh !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+  }
+
+  #homeScreen > header {
+    position: relative !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    z-index: 31 !important;
+  }
+
+  /* LEFT HALF: keep the existing FriendChat home */
+  #homeScreen .profileRow,
+  #homeScreen .search,
+  #homeScreen #friendList {
+    width: calc(50% - 22px) !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+
+  #homeScreen .profileRow,
+  #homeScreen .search {
+    margin-left: 22px !important;
+    margin-right: 0 !important;
+  }
+
+  #homeScreen #friendList {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    padding-left: 22px !important;
+    padding-right: 0 !important;
+    padding-bottom: 24px !important;
+    overflow-y: auto !important;
+  }
+
+  /* RIGHT HALF: server navigation */
+  #fcServerNav {
+    position: fixed !important;
+    top: 76px !important;
+    right: 0 !important;
+    left: auto !important;
+    bottom: 0 !important;
+
+    width: 50vw !important;
+    height: calc(100vh - 76px) !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-width: 0 !important;
+
+    transform: none !important;
+    z-index: 30 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+
+    padding: 22px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+
+    background: linear-gradient(
+      160deg,
+      #0d1420 0%,
+      #080d15 100%
+    ) !important;
+
+    border: 0 !important;
+    border-left: 1px solid rgba(255,255,255,.10) !important;
+    border-radius: 0 !important;
+    box-shadow: -18px 0 45px rgba(0,0,0,.20) !important;
+  }
+
+  #fcServerNav .fc-server-nav-head {
+    display: flex !important;
+    align-items: center !important;
+    flex: 0 0 auto !important;
+    min-height: 42px !important;
+
+    padding: 0 4px 12px !important;
+    border-bottom: 1px solid rgba(255,255,255,.09) !important;
+
+    color: #f5f7ff !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    letter-spacing: .04em !important;
+  }
+
+  #fcServerNav .fc-server-create {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-height: 54px !important;
+    padding: 10px 14px !important;
+    box-sizing: border-box !important;
+
+    border-radius: 14px !important;
+    background: rgba(108,124,255,.13) !important;
+    border: 1px solid rgba(108,124,255,.25) !important;
+
+    color: #f5f7ff !important;
+    text-align: left !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+  }
+
+  #fcServerNav .fc-server-plus {
+    display: grid !important;
+    place-items: center !important;
+
+    width: 34px !important;
+    height: 34px !important;
+    flex: 0 0 34px !important;
+
+    border-radius: 10px !important;
+    background: #6c7cff !important;
+    color: #fff !important;
+    font-size: 24px !important;
+  }
+
+  #fcServerNav .fc-server-list {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    padding: 2px 4px 20px 0 !important;
+    box-sizing: border-box !important;
+    scrollbar-width: thin !important;
+  }
+
+  #fcServerNav .fc-server-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 13px !important;
+
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-height: 66px !important;
+    padding: 10px 13px !important;
+    box-sizing: border-box !important;
+
+    border: 1px solid rgba(255,255,255,.07) !important;
+    border-radius: 15px !important;
+    background: #111a27 !important;
+
+    color: #f5f7ff !important;
+    text-align: left !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+
+    transition:
+      background .18s ease,
+      border-color .18s ease,
+      transform .18s ease !important;
+  }
+
+  #fcServerNav .fc-server-item:hover {
+    background: #18243a !important;
+    border-color: rgba(108,124,255,.38) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  #fcServerNav .fc-server-icon {
+    display: grid !important;
+    place-items: center !important;
+
+    width: 44px !important;
+    height: 44px !important;
+    flex: 0 0 44px !important;
+
+    overflow: hidden !important;
+    border-radius: 12px !important;
+    background: #202c42 !important;
+    color: #fff !important;
+  }
+
+  #fcServerNav .fc-server-icon img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  #fcServerNav .fc-server-name {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+
+    color: #f5f7ff !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  #fcServerNav .fc-server-empty {
+    padding: 24px 16px !important;
+    border: 1px dashed rgba(255,255,255,.14) !important;
+    border-radius: 14px !important;
+
+    color: #9aacc3 !important;
+    text-align: center !important;
+    line-height: 1.7 !important;
+  }
+}
+
+/* Smaller screens: preserve usable navigation */
+@media (max-width: 899px) {
+  #fcServerNav {
+    max-width: calc(100vw - 20px) !important;
+    box-sizing: border-box !important;
+  }
+}
