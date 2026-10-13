@@ -650,17 +650,16 @@ function connectSocket() {
           "SERVER:",
           msg
         );
+      
       /* -----------------------------------------------
          SERVER LIST
          ----------------------------------------------- */
 
-      if (
-        msg.type ===
-        "server_list"
-      ) {
+      if (msg.type === "server_list") {
+        console.log("SERVER LIST RECEIVED:", msg.servers);
 
         saveServerListFromServer(
-          msg.servers || []
+          Array.isArray(msg.servers) ? msg.servers : []
         );
 
         return;
