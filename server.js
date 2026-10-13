@@ -406,38 +406,34 @@ function saveUsers() {
    MEMBERS
    ===================================================== */
 
+
 function normalizeMember(member) {
-    if (!member || typeof member !== "object") {
-        return null;
+    if (typeof member === "string") {
+        const userID = normalizeId(member);
+
+        if (!userID) {
+            return null;
+        }
+
+        const user = users.get(userID);
+
+        return {
+            userID,
+            name: user?.name || "Friend",
+            role: "member",
+            joinedAt: Date.now()
+        };
     }
 
-    const userID = normalizeId(
-        member.userID ||
-        member.userId ||
-        member.memberID ||
-        member.memberId ||
-        member.member_id ||
-        member.targetUserID ||
-        member.targetUserId ||
-        member.id
-    );
-
-    if (!userID) {
-        return null;
-    }
-
-    return {
-        ...member,
-        userID
-    };
-}
-    if (
-        member &&
-        typeof member === "object"
-    ) {
+    if (member && typeof member === "object") {
         const userID = normalizeId(
             member.userID ||
             member.userId ||
+            member.memberID ||
+            member.memberId ||
+            member.member_id ||
+            member.targetUserID ||
+            member.targetUserId ||
             member.id
         );
 
@@ -449,21 +445,20 @@ function normalizeMember(member) {
 
         return {
             userID,
-            name:
-                cleanText(
-                    member.name ||
-                    member.username ||
-                    user?.name ||
-                    "Friend",
-                    100
-                ) || "Friend",
+            name: cleanText(
+                member.name ||
+                member.username ||
+                user?.name ||
+                "Friend",
+                100
+            ) || "Friend",
 
-          role:
-    member.role === "owner"
-        ? "owner"
-        : member.role === "admin"
-            ? "admin"
-            : "member",
+            role:
+                member.role === "owner"
+                    ? "owner"
+                    : member.role === "admin"
+                        ? "admin"
+                        : "member",
 
             joinedAt:
                 Number(member.joinedAt) ||
@@ -473,6 +468,7 @@ function normalizeMember(member) {
 
     return null;
 }
+
 
 /* =====================================================
    CHANNEL
