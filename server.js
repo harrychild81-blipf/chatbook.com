@@ -127,7 +127,13 @@ REQUEST USER
 =====================================================
 */
 
+
 function getRequestUserID(req, url = null) {
+    const headerUser =
+        req.headers["x-friendchat-user-id"] ||
+        req.headers["x-friendchat-userid"] ||
+        req.headers["x-user-id"];
+
     const queryUser = url
         ? (
             url.searchParams.get("user") ||
@@ -139,16 +145,18 @@ function getRequestUserID(req, url = null) {
         )
         : "";
 
-    const headerUser =
-        req.headers["x-friendchat-user-id"];
-
     return normalizeId(
-        queryUser || headerUser
+        headerUser || queryUser || ""
     );
 }
 
 function getBodyRequesterID(body, req) {
     body = body || {};
+
+    const headerUser =
+        req.headers["x-friendchat-user-id"] ||
+        req.headers["x-friendchat-userid"] ||
+        req.headers["x-user-id"];
 
     return normalizeId(
         body.requesterID ||
@@ -163,9 +171,11 @@ function getBodyRequesterID(body, req) {
         body.fromId ||
         body.senderID ||
         body.senderId ||
-        req.headers["x-friendchat-user-id"]
+        headerUser ||
+        ""
     );
 }
+
 
 /* =====================================================
    JSON
