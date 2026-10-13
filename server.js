@@ -150,31 +150,29 @@ function getRequestUserID(req, url = null) {
     );
 }
 
-function getBodyRequesterID(body, req) {
-    body = body || {};
 
+function getRequestUserID(req, url = null) {
     const headerUser =
         req.headers["x-friendchat-user-id"] ||
         req.headers["x-friendchat-userid"] ||
         req.headers["x-user-id"];
 
+    const queryUser = url
+        ? (
+            url.searchParams.get("user") ||
+            url.searchParams.get("userID") ||
+            url.searchParams.get("userId") ||
+            url.searchParams.get("requester") ||
+            url.searchParams.get("requesterID") ||
+            url.searchParams.get("ownerID")
+        )
+        : "";
+
     return normalizeId(
-        body.requesterID ||
-        body.requesterId ||
-        body.userID ||
-        body.userId ||
-        body.ownerID ||
-        body.ownerId ||
-        body.currentUserID ||
-        body.currentUserId ||
-        body.fromID ||
-        body.fromId ||
-        body.senderID ||
-        body.senderId ||
-        headerUser ||
-        ""
+        headerUser || queryUser || ""
     );
 }
+
 
 
 /* =====================================================
