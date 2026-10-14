@@ -1626,8 +1626,8 @@ body.fc-theme-open {
    FRIENDCHAT SERVERS NAVIGATION
    Added without changing existing chat UI
    ===================================================== */
-#fcServerNav{position:fixed;left:12px;top:50%;width:185px;max-width:185px;max-height:calc(100dvh - 40px);transform:translate(-110%,-50%);z-index:2147483001;pointer-events:none;opacity:0;visibility:hidden;overflow:hidden;border:1px solid var(--fc-border,rgba(255,255,255,.08));border-radius:18px;background:var(--fc-panel,#0d121b);box-shadow:0 20px 60px rgba(0,0,0,.45);transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .2s ease,visibility .2s ease;color:var(--fc-text,#f5f7ff)}
-#fcServerNav.fc-server-open{transform:translate(0,-50%);pointer-events:auto;opacity:1;visibility:visible}
+#fcServerNav{position:fixed;top:84px;right:16px;left:auto;width:185px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 104px);transform:translateX(110%);z-index:2147483001;pointer-events:none;opacity:0;visibility:hidden;overflow:hidden;border:1px solid var(--fc-border,rgba(255,255,255,.08));border-radius:18px;background:var(--fc-panel,#0d121b);box-shadow:0 20px 60px rgba(0,0,0,.45);transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .2s ease,visibility .2s ease;color:var(--fc-text,#f5f7ff)}
+#fcServerNav.fc-server-open{transform:translateX(0);pointer-events:auto;opacity:1;visibility:visible}
 #fcServerNav .fc-server-nav-head{padding:14px 14px 9px;border-bottom:1px solid var(--fc-border,rgba(255,255,255,.08));font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--fc-muted,#8d97aa)}
 #fcServerNav .fc-server-create{width:calc(100% - 16px);margin:8px;min-height:42px;border:1px dashed color-mix(in srgb,var(--fc-accent,#6c7cff) 65%,transparent);border-radius:12px;background:color-mix(in srgb,var(--fc-accent,#6c7cff) 9%,transparent);color:var(--fc-text,#f5f7ff);display:flex;align-items:center;gap:9px;padding:0 11px;cursor:pointer;font:inherit;font-weight:700;text-align:left}
 #fcServerNav .fc-server-create:hover{background:color-mix(in srgb,var(--fc-accent,#6c7cff) 16%,transparent);transform:translateY(-1px)}
@@ -1639,9 +1639,9 @@ body.fc-theme-open {
 #fcServerNav .fc-server-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
 #fcServerNav .fc-server-empty{padding:9px 7px 12px;color:var(--fc-muted,#8d97aa);font-size:11px;line-height:1.4}
 #fcServerNav .fc-server-create:active,#fcServerNav .fc-server-item:active{transform:scale(.98)}
-@media(max-width:600px){#fcServerNav{left:8px;width:180px;max-width:180px}.fc-server-list{max-height:calc(100dvh - 150px)!important}}
-@media(max-width:420px){#fcServerNav{width:175px;max-width:175px}}
-body:has(#loginScreen:not(.hidden)) #fcServerNav,body:has(#signupScreen:not(.hidden)) #fcServerNav{display:none!important}
+@media(max-width:600px){#fcServerNav{right:8px;left:auto;width:180px;max-width:calc(100vw - 16px)}.fc-server-list{max-height:calc(100dvh - 150px)!important}}
+@media(max-width:420px){#fcServerNav{width:175px;max-width:calc(100vw - 16px)}}
+body:has(#loginScreen:not(.hidden)) #fcServerNav,body:has(#signupScreen:not(.hidden)) #fcServerNav
 </style>\n
 </head>
 
