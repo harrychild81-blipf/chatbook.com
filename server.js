@@ -17,6 +17,7 @@ const profilePhotos = new Map();
 const friendchatServers = new Map();
 const directMessages = new Map();
 const serverMessages = new Map();
+const mediaTransfers = new Map();
 
 /* =====================================================
    WEBSITE ROOT
@@ -3968,7 +3969,91 @@ wss.on(
                     }
 
                     /* =====================================
-                       DIRECT IMAGE / VIDEO MEDIA
+                       CHUNKED IMAGE / VIDEO MEDIA
+                    ===================================== */
+
+                    if (msg.type === "media_transfer_start") {
+                        const senderID = normalizeId(socket.userId);
+                        const claimedSenderID = normalizeId(msg.from);
+                        const targetID = normalizeId(msg.to);
+                        const messageID = String(msg.messageId || msg.id || "").slice(0, 160);
+                        const mediaType = msg.mediaType === "image" ? "image" : msg.mediaType === "video" ? "video" : "";
+                        const size = Number(msg.size) || 0;
+                        if (!senderID || claimedSenderID !== senderID || !targetID || targetID === senderID || !messageID || !mediaType || size <= 0 || size > 150 * 1024 * 1024) {
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Invalid media. Maximum file size is 150 MB." });
+                            return;
+                        }
+                        if (!sockets.has(targetID) || sockets.get(targetID).readyState !== WebSocket.OPEN) {
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Friend is offline. Keep FriendChat open and send the video again." });
+                            return;
+                        }
+                        const key = senderID + ":" + messageID;
+                        mediaTransfers.set(key, {
+                            senderID, targetID, messageID, mediaType, size,
+                            mimeType: String(msg.mimeType || "").slice(0, 120),
+                            name: cleanText(msg.name || "media", 255),
+                            time: Number(msg.time) || Date.now(), nextIndex: 0,
+                            startedAt: Date.now()
+                        });
+                        const sent = sendToUser(targetID, {
+                            type: "media_transfer_start", id: messageID, messageId: messageID,
+                            from: senderID, to: targetID, mediaType,
+                            mimeType: String(msg.mimeType || "").slice(0, 120),
+                            name: cleanText(msg.name || "media", 255), size,
+                            time: Number(msg.time) || Date.now()
+                        });
+                        if (!sent) {
+                            mediaTransfers.delete(key);
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Could not reach your friend. Please try again." });
+                            return;
+                        }
+                        sendToUser(senderID, { type: "media_upload_ready", id: messageID, messageId: messageID });
+                        return;
+                    }
+
+                    if (msg.type === "media_transfer_chunk") {
+                        const senderID = normalizeId(socket.userId);
+                        const messageID = String(msg.messageId || msg.id || "").slice(0, 160);
+                        const key = senderID + ":" + messageID;
+                        const transfer = mediaTransfers.get(key);
+                        const chunk = msg.chunk;
+                        if (!transfer || typeof chunk !== "string" || chunk.length > 300 * 1024 || Number(msg.index) !== transfer.nextIndex) {
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Video upload chunk was invalid or out of order. Please retry." });
+                            if (transfer) mediaTransfers.delete(key);
+                            return;
+                        }
+                        const sent = sendToUser(transfer.targetID, {
+                            type: "media_transfer_chunk", id: messageID, messageId: messageID,
+                            index: transfer.nextIndex, chunk
+                        });
+                        if (!sent) {
+                            mediaTransfers.delete(key);
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Your friend disconnected during the video upload." });
+                            return;
+                        }
+                        transfer.nextIndex++;
+                        sendToUser(senderID, { type: "media_chunk_ack", id: messageID, messageId: messageID });
+                        return;
+                    }
+
+                    if (msg.type === "media_transfer_end") {
+                        const senderID = normalizeId(socket.userId);
+                        const messageID = String(msg.messageId || msg.id || "").slice(0, 160);
+                        const key = senderID + ":" + messageID;
+                        const transfer = mediaTransfers.get(key);
+                        if (!transfer) {
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Video upload session expired. Please retry." });
+                            return;
+                        }
+                        const sent = sendToUser(transfer.targetID, { type: "media_transfer_end", id: messageID, messageId: messageID });
+                        mediaTransfers.delete(key);
+                        if (sent) sendToUser(senderID, { type: "delivered", id: messageID, messageId: messageID });
+                        else sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Your friend disconnected before the video finished." });
+                        return;
+                    }
+
+                    /* =====================================
+                       DIRECT IMAGE / VIDEO MEDIA (legacy)
                     ===================================== */
 
                     if (msg.type === "media") {
