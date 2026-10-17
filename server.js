@@ -3227,13 +3227,10 @@ if (!canManageMembers) {
    WEBSOCKET SERVER
    ===================================================== */
 
-
 const wss =
     new WebSocket.Server({
-        server,
-        maxPayload: 210 * 1024 * 1024
+        server
     });
-
 
 wss.on(
     "connection",
@@ -3969,6 +3966,55 @@ wss.on(
                     }
 
                     /* =====================================
+                       DIRECT IMAGE / VIDEO MEDIA
+                    ===================================== */
+
+                    if (msg.type === "media") {
+                        const senderID = normalizeId(socket.userId);
+                        const claimedSenderID = normalizeId(msg.from);
+                        const targetID = normalizeId(msg.to);
+                        const messageID = String(msg.messageId || msg.id || "").slice(0, 160);
+                        const data = msg.data;
+                        const mediaType = msg.mediaType === "image" ? "image" : msg.mediaType === "video" ? "video" : "";
+
+                        // Trust the authenticated WebSocket registration, not the sender ID supplied by the browser.
+                        if (!senderID || claimedSenderID !== senderID || !targetID || targetID === senderID || !messageID || !mediaType) {
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Invalid media message." });
+                            return;
+                        }
+
+                        // 20 MiB original files become roughly 27 MiB data URLs; reject oversized payloads.
+                        if (typeof data !== "string" || data.length > 29 * 1024 * 1024 ||
+                            (mediaType === "image" && !data.startsWith("data:image/")) ||
+                            (mediaType === "video" && !data.startsWith("data:video/"))) {
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Invalid or oversized media. Maximum file size is 20 MB." });
+                            return;
+                        }
+
+                        const delivered = sendToUser(targetID, {
+                            type: "media",
+                            id: messageID,
+                            messageId: messageID,
+                            from: senderID,
+                            to: targetID,
+                            data,
+                            mediaType,
+                            mimeType: String(msg.mimeType || "").slice(0, 120),
+                            name: cleanText(msg.name || "media", 255),
+                            size: Number(msg.size) || 0,
+                            time: Number(msg.time) || Date.now()
+                        });
+
+                        if (delivered) {
+                            sendToUser(senderID, { type: "delivered", id: messageID, messageId: messageID });
+                        } else {
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Friend is offline. Media was saved on your device but was not delivered." });
+                        }
+
+                        return;
+                    }
+
+                    /* =====================================
                        PRIVATE CHAT
                     ===================================== */
 
@@ -4085,96 +4131,6 @@ wss.on(
                                         messageID
                                 }
                             );
-                        }
-
-                        return;
-                    }
-
-                    /* =====================================
-                       PRIVATE CHAT MEDIA
-                    ===================================== */
-
-                    if (msg.type === "media") {
-                        const from = normalizeId(socket.userId);
-                        const to = normalizeId(msg.to);
-
-                        const messageID = String(
-                            msg.messageId || msg.id || ""
-                        );
-
-                        const size = Number(msg.size);
-                        const data = msg.data;
-                        const mediaType = msg.mediaType;
-                        const mimeType = String(msg.mimeType || "");
-
-                        const MAX_FILE_SIZE = 150 * 1024 * 1024;
-
-                        // Require a registered socket and valid recipient.
-                        if (!from || !to || from === to || !messageID) {
-                            return;
-                        }
-
-                        // Validate the declared file size and media type.
-                        if (
-                            !Number.isFinite(size) ||
-                            size <= 0 ||
-                            size > MAX_FILE_SIZE ||
-                            !["image", "video"].includes(mediaType) ||
-                            !/^(image|video)\//i.test(mimeType) ||
-                            typeof data !== "string" ||
-                            !data.startsWith("data:")
-                        ) {
-                            sendToUser(from, {
-                                type: "delivery_error",
-                                id: messageID,
-                                messageId: messageID,
-                                reason: "Invalid media or file exceeds 150 MB."
-                            });
-                            return;
-                        }
-
-                        // Prevent the sender from claiming another user's ID.
-                        // The sender ID comes from the registered WebSocket.
-                        const record = {
-                            id: messageID,
-                            from,
-                            to,
-                            text: "",
-                            time: Number(msg.time) || Date.now(),
-                            read: false,
-                            media: true
-                        };
-
-                        directMessages.set(messageID, record);
-
-                        const delivered = sendToUser(to, {
-                            type: "media",
-                            id: messageID,
-                            messageId: messageID,
-                            from,
-                            data,
-                            mediaType,
-                            mimeType,
-                            name: String(msg.name || "media").slice(0, 255),
-                            size,
-                            time: record.time
-                        });
-
-                        if (delivered) {
-                            sendToUser(from, {
-                                type: "delivered",
-                                id: messageID,
-                                messageId: messageID
-                            });
-                        } else {
-                            directMessages.delete(messageID);
-
-                            sendToUser(from, {
-                                type: "delivery_error",
-                                id: messageID,
-                                messageId: messageID,
-                                reason: "Friend is offline. Media was not delivered."
-                            });
                         }
 
                         return;
