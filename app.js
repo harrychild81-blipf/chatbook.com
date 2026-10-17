@@ -2807,11 +2807,11 @@ function sendMedia() {
     return;
   }
 
-  // Maximum file size: 20 MB (base64 expands the payload over WebSocket).
-  const MAX_FILE_SIZE = 20 * 1024 * 1024;
+  // Maximum original file size: 150 MB. Base64 expands the WebSocket payload.
+  const MAX_FILE_SIZE = 1150 * 1024 * 1024;
 
   if (file.size > MAX_FILE_SIZE) {
-    alert("Maximum file size is 20 MB per image or video.");
+    alert("Maximum file size is 150 MB per image or video.");
     input.value = "";
     return;
   }
@@ -3192,11 +3192,11 @@ function uploadProfileMedia() {
 
   if (
     file.size >
-    50 * 1024 * 1024
+    150 * 1024 * 1024
   ) {
 
     alert(
-      "Maximum file size is 50 MB."
+      "Maximum file size is 150 MB."
     );
 
     return;
