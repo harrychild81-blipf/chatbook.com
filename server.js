@@ -4091,6 +4091,96 @@ wss.on(
                     }
 
                     /* =====================================
+                       PRIVATE CHAT MEDIA
+                    ===================================== */
+
+                    if (msg.type === "media") {
+                        const from = normalizeId(socket.userId);
+                        const to = normalizeId(msg.to);
+
+                        const messageID = String(
+                            msg.messageId || msg.id || ""
+                        );
+
+                        const size = Number(msg.size);
+                        const data = msg.data;
+                        const mediaType = msg.mediaType;
+                        const mimeType = String(msg.mimeType || "");
+
+                        const MAX_FILE_SIZE = 150 * 1024 * 1024;
+
+                        // Require a registered socket and valid recipient.
+                        if (!from || !to || from === to || !messageID) {
+                            return;
+                        }
+
+                        // Validate the declared file size and media type.
+                        if (
+                            !Number.isFinite(size) ||
+                            size <= 0 ||
+                            size > MAX_FILE_SIZE ||
+                            !["image", "video"].includes(mediaType) ||
+                            !/^(image|video)\//i.test(mimeType) ||
+                            typeof data !== "string" ||
+                            !data.startsWith("data:")
+                        ) {
+                            sendToUser(from, {
+                                type: "delivery_error",
+                                id: messageID,
+                                messageId: messageID,
+                                reason: "Invalid media or file exceeds 150 MB."
+                            });
+                            return;
+                        }
+
+                        // Prevent the sender from claiming another user's ID.
+                        // The sender ID comes from the registered WebSocket.
+                        const record = {
+                            id: messageID,
+                            from,
+                            to,
+                            text: "",
+                            time: Number(msg.time) || Date.now(),
+                            read: false,
+                            media: true
+                        };
+
+                        directMessages.set(messageID, record);
+
+                        const delivered = sendToUser(to, {
+                            type: "media",
+                            id: messageID,
+                            messageId: messageID,
+                            from,
+                            data,
+                            mediaType,
+                            mimeType,
+                            name: String(msg.name || "media").slice(0, 255),
+                            size,
+                            time: record.time
+                        });
+
+                        if (delivered) {
+                            sendToUser(from, {
+                                type: "delivered",
+                                id: messageID,
+                                messageId: messageID
+                            });
+                        } else {
+                            directMessages.delete(messageID);
+
+                            sendToUser(from, {
+                                type: "delivery_error",
+                                id: messageID,
+                                messageId: messageID,
+                                reason: "Friend is offline. Media was not delivered."
+                            });
+                        }
+
+                        return;
+                    }
+
+                    /* =====================================
                        DIRECT READ
                     ===================================== */
 
