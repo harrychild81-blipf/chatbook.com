@@ -220,7 +220,7 @@ function readJSONBody(req) {
         let body = "";
         let size = 0;
 
-        const MAX_BODY = 30 * 1024 * 1024;
+        const MAX_BODY = 220 * 1024 * 1024; // Allows a 150 MB file encoded as a data URL plus JSON overhead.
 
         req.on("data", chunk => {
             size += chunk.length;
@@ -3229,7 +3229,9 @@ if (!canManageMembers) {
 
 const wss =
     new WebSocket.Server({
-        server
+        server,
+        // 150 MiB files become roughly 200 MiB when base64 encoded, plus JSON overhead.
+        maxPayload: 220 * 1024 * 1024
     });
 
 wss.on(
@@ -3983,11 +3985,11 @@ wss.on(
                             return;
                         }
 
-                        // 20 MiB original files become roughly 27 MiB data URLs; reject oversized payloads.
-                        if (typeof data !== "string" || data.length > 29 * 1024 * 1024 ||
+                        // 150 MiB original files become roughly 200 MiB data URLs; allow some header overhead.
+                        if (typeof data !== "string" || data.length > 210 * 1024 * 1024 ||
                             (mediaType === "image" && !data.startsWith("data:image/")) ||
                             (mediaType === "video" && !data.startsWith("data:video/"))) {
-                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Invalid or oversized media. Maximum file size is 20 MB." });
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Invalid or oversized media. Maximum file size is 150 MB." });
                             return;
                         }
 
