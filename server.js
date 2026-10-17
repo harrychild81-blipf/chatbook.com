@@ -3227,10 +3227,13 @@ if (!canManageMembers) {
    WEBSOCKET SERVER
    ===================================================== */
 
+
 const wss =
     new WebSocket.Server({
-        server
+        server,
+        maxPayload: 210 * 1024 * 1024
     });
+
 
 wss.on(
     "connection",
