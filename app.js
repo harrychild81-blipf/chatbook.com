@@ -10,6 +10,103 @@ let currentChatUserId = null;
 let selectedMessageId = null;
 let presence = {};
 
+/* Media files are stored in IndexedDB, not localStorage.
+   localStorage remains responsible for lightweight chat metadata. */
+const FC_MEDIA_DB_NAME = "friendchat-media-v1";
+const FC_MEDIA_STORE_NAME = "media";
+let fcMediaDBPromise = null;
+const fcMediaWrites = new Map();
+const fcMediaStoredKeys = new Set();
+
+function openFriendChatMediaDB() {
+  if (!("indexedDB" in window)) {
+    return Promise.reject(new Error("This browser does not support IndexedDB."));
+  }
+
+  if (!fcMediaDBPromise) {
+    fcMediaDBPromise = new Promise((resolve, reject) => {
+      const request = indexedDB.open(FC_MEDIA_DB_NAME, 1);
+
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(FC_MEDIA_STORE_NAME)) {
+          db.createObjectStore(FC_MEDIA_STORE_NAME, { keyPath: "key" });
+        }
+      };
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error("Could not open media storage."));
+      request.onblocked = () => reject(new Error("Media storage upgrade is blocked by another FriendChat tab."));
+    });
+  }
+
+  return fcMediaDBPromise;
+}
+
+function storeFriendChatMedia(key, data) {
+  const mediaKey = String(key || "");
+  if (!mediaKey || typeof data !== "string" || !data) {
+    return Promise.reject(new Error("Invalid media data."));
+  }
+
+  if (fcMediaStoredKeys.has(mediaKey)) {
+    return Promise.resolve(true);
+  }
+
+  if (fcMediaWrites.has(mediaKey)) {
+    return fcMediaWrites.get(mediaKey);
+  }
+
+  const job = openFriendChatMediaDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(FC_MEDIA_STORE_NAME, "readwrite");
+    tx.objectStore(FC_MEDIA_STORE_NAME).put({ key: mediaKey, data });
+    tx.oncomplete = () => { fcMediaStoredKeys.add(mediaKey); resolve(true); };
+    tx.onerror = () => reject(tx.error || new Error("Could not save media."));
+    tx.onabort = () => reject(tx.error || new Error("Media save was cancelled."));
+  })).finally(() => {
+    fcMediaWrites.delete(mediaKey);
+  });
+
+  fcMediaWrites.set(mediaKey, job);
+  return job;
+}
+
+function readFriendChatMedia(key) {
+  const mediaKey = String(key || "");
+  if (!mediaKey) return Promise.resolve(null);
+
+  return openFriendChatMediaDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(FC_MEDIA_STORE_NAME, "readonly");
+    const request = tx.objectStore(FC_MEDIA_STORE_NAME).get(mediaKey);
+    request.onsuccess = () => resolve(request.result?.data || null);
+    request.onerror = () => reject(request.error || new Error("Could not load media."));
+  }));
+}
+
+async function hydrateChatMedia() {
+  let changed = false;
+
+  for (const messages of Object.values(chats)) {
+    for (const message of messages || []) {
+      if (message && !message.media && message.mediaStoredElsewhere && message.mediaStorageKey) {
+        try {
+          const data = await readFriendChatMedia(message.mediaStorageKey);
+          if (data) {
+            message.media = data;
+            changed = true;
+          }
+        } catch (error) {
+          console.warn("Could not restore saved media:", error);
+        }
+      }
+    }
+  }
+
+  if (changed && currentChatUserId) {
+    renderMessages();
+  }
+}
+
 
 /* =========================================================
    STORAGE
@@ -63,6 +160,9 @@ function loadChats() {
   } catch {
     chats = {};
   }
+
+  // Restore images/videos asynchronously without blocking text chat startup.
+  hydrateChatMedia();
 }
 
 
@@ -71,12 +171,22 @@ function saveChats() {
     const chatsToSave = {};
 
     for (const [chatId, messages] of Object.entries(chats)) {
-      chatsToSave[chatId] = messages.map(message => {
-        if (message.media) {
+      chatsToSave[chatId] = (messages || []).map(message => {
+        if (message && typeof message.media === "string" && message.media) {
+          const mediaKey = String(message.mediaStorageKey || message.id || message.messageId || "");
+          if (mediaKey) {
+            message.mediaStorageKey = mediaKey;
+            message.mediaStoredElsewhere = true;
+            storeFriendChatMedia(mediaKey, message.media).catch(error => {
+              console.error("MEDIA STORAGE ERROR:", error);
+            });
+          }
+
           return {
             ...message,
             media: "",
-            mediaStoredElsewhere: true
+            mediaStoredElsewhere: true,
+            mediaStorageKey: mediaKey
           };
         }
 
@@ -84,16 +194,12 @@ function saveChats() {
       });
     }
 
-    localStorage.setItem(
-      "friendchat_chats",
-      JSON.stringify(chatsToSave)
-    );
+    localStorage.setItem("friendchat_chats", JSON.stringify(chatsToSave));
   } catch (error) {
     console.error("SAVE CHATS ERROR:", error);
     alert("Could not save chat history. Please check browser storage.");
   }
 }
-
 
 
 /* =========================================================
@@ -1753,6 +1859,60 @@ function receiveMessage(
 
 
 /* =========================================================
+   RECEIVE MEDIA
+   ========================================================= */
+
+function receiveMedia(msg) {
+  if (!currentUser) return;
+
+  const from = normalizeId(msg.from);
+  const to = normalizeId(msg.to);
+  const messageId = String(msg.messageId || msg.id || "");
+  const data = msg.data;
+  const mediaType = msg.mediaType === "image" ? "image" : msg.mediaType === "video" ? "video" : "";
+
+  if (!from || !messageId || to !== normalizeId(currentUser.id) || !mediaType || typeof data !== "string") {
+    console.warn("Ignored invalid incoming media message.");
+    return;
+  }
+
+  if (!data.startsWith("data:image/") && !data.startsWith("data:video/")) {
+    console.warn("Ignored media with an invalid data URL.");
+    return;
+  }
+
+  if (!chats[from]) chats[from] = [];
+
+  const existing = chats[from].find(item => String(item.id || item.messageId) === messageId);
+  if (existing) return;
+
+  const message = {
+    id: messageId,
+    messageId,
+    from,
+    to: normalizeId(currentUser.id),
+    time: Number(msg.time) || Date.now(),
+    media: data,
+    mediaType,
+    fileName: String(msg.name || "media").slice(0, 255),
+    status: "delivered",
+    mine: false,
+    mediaStorageKey: messageId
+  };
+
+  chats[from].push(message);
+  saveChats();
+
+  if (currentChatUserId === from) {
+    renderMessages();
+    sendRead(messageId);
+  } else {
+    renderFriends();
+  }
+}
+
+
+/* =========================================================
    DELIVERY
    ========================================================= */
 
@@ -1988,12 +2148,13 @@ function renderMessages() {
 
       } else {
 
+        const fallbackText = message.mediaStoredElsewhere
+          ? "Media could not be restored on this device. New media will be saved automatically."
+          : (message.text || "");
+
         content =
           `<div class="fc-message-text">
-             ${escapeHtml(
-               message.text ||
-               ""
-             )}
+             ${escapeHtml(fallbackText)}
            </div>`;
       }
 
@@ -2646,11 +2807,11 @@ function sendMedia() {
     return;
   }
 
-  // Maximum file size: 150 MB
-  const MAX_FILE_SIZE = 150 * 1024 * 1024;
+  // Maximum file size: 20 MB (base64 expands the payload over WebSocket).
+  const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
   if (file.size > MAX_FILE_SIZE) {
-    alert("Maximum file size is 150 MB.");
+    alert("Maximum file size is 20 MB per image or video.");
     input.value = "";
     return;
   }
@@ -2687,6 +2848,8 @@ function sendMedia() {
       media: reader.result,
       mediaType: mediaType,
       fileName: file.name,
+      mediaStorageKey: id,
+      mediaStoredElsewhere: true,
       status: "sent",
       mine: true
     };
