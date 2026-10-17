@@ -3993,6 +3993,7 @@ wss.on(
                             mimeType: String(msg.mimeType || "").slice(0, 120),
                             name: cleanText(msg.name || "media", 255),
                             time: Number(msg.time) || Date.now(), nextIndex: 0,
+                            awaitingIndex: null,
                             startedAt: Date.now()
                         });
                         const sent = sendToUser(targetID, {
@@ -4017,7 +4018,7 @@ wss.on(
                         const key = senderID + ":" + messageID;
                         const transfer = mediaTransfers.get(key);
                         const chunk = msg.chunk;
-                        if (!transfer || typeof chunk !== "string" || chunk.length > 300 * 1024 || Number(msg.index) !== transfer.nextIndex) {
+                        if (!transfer || typeof chunk !== "string" || chunk.length > 300 * 1024 || Number(msg.index) !== transfer.nextIndex || transfer.awaitingIndex !== null) {
                             sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Video upload chunk was invalid or out of order. Please retry." });
                             if (transfer) mediaTransfers.delete(key);
                             return;
@@ -4028,11 +4029,28 @@ wss.on(
                         });
                         if (!sent) {
                             mediaTransfers.delete(key);
-                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Your friend disconnected during the video upload." });
+                            sendToUser(senderID, { type: "delivery_error", id: messageID, messageId: messageID, reason: "Your friend disconnected during the video upload. Ask them to reconnect, then retry." });
+                            return;
+                        }
+
+                        // Wait for the receiving browser to confirm the chunk before
+                        // allowing the sender to transmit another one.
+                        transfer.awaitingIndex = transfer.nextIndex;
+                        return;
+                    }
+
+                    if (msg.type === "media_chunk_received") {
+                        const receiverID = normalizeId(socket.userId);
+                        const senderID = normalizeId(msg.from);
+                        const messageID = String(msg.messageId || msg.id || "").slice(0, 160);
+                        const key = senderID + ":" + messageID;
+                        const transfer = mediaTransfers.get(key);
+                        if (!transfer || transfer.targetID !== receiverID || transfer.awaitingIndex === null || Number(msg.index) !== transfer.awaitingIndex) {
                             return;
                         }
                         transfer.nextIndex++;
-                        sendToUser(senderID, { type: "media_chunk_ack", id: messageID, messageId: messageID });
+                        transfer.awaitingIndex = null;
+                        sendToUser(transfer.senderID, { type: "media_chunk_ack", id: messageID, messageId: messageID });
                         return;
                     }
 
