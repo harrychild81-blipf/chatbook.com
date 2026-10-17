@@ -2596,293 +2596,112 @@ function toggleEmojiPicker() {
 }
 
 
+
 /* =========================================================
    MEDIA
    ========================================================= */
 
 function sendMedia() {
-
-  if (
-    !currentUser ||
-    !currentChatUserId
-  ) {
+  if (!currentUser || !currentChatUserId) {
     return;
   }
 
-
-  if (
-    !socket ||
-    socket.readyState !==
-      WebSocket.OPEN
-  ) {
-
-    alert(
-      "Not connected to server."
-    );
-
+  if (!socket || socket.readyState !== WebSocket.OPEN) {
+    alert("Not connected to server.");
     return;
   }
 
-
-  const input =
-    document.getElementById(
-      "mediaInput"
-    );
-
-
-  const file =
-    input?.files?.[0];
-
+  const input = document.getElementById("mediaInput");
+  const file = input?.files?.[0];
 
   if (!file) {
     return;
   }
 
+  // Maximum file size: 150 MB
+  const MAX_FILE_SIZE = 150 * 1024 * 1024;
 
-  if (
-    file.size >
-    20 * 1024 * 1024
-  ) {
-
-    alert(
-      "Maximum file size is 20 MB."
-    );
-
-    input.value =
-      "";
-
+  if (file.size > MAX_FILE_SIZE) {
+    alert("Maximum file size is 150 MB.");
+    input.value = "";
     return;
   }
 
+  if (
+    !file.type.startsWith("image/") &&
+    !file.type.startsWith("video/")
+  ) {
+    alert("Please select an image or video.");
+    input.value = "";
+    return;
+  }
 
-  const reader =
-    new FileReader();
+  const reader = new FileReader();
 
+  reader.onload = () => {
+    if (!reader.result) {
+      alert("Could not read this file.");
+      input.value = "";
+      return;
+    }
 
-  reader.onload =
-    () => {
+    const id = generateMessageId();
+    const mediaType = file.type.startsWith("image/")
+      ? "image"
+      : "video";
 
-      const id =
-        generateMessageId();
-
-
-      const mediaType =
-        file.type.startsWith(
-          "image/"
-        )
-          ? "image"
-          : "video";
-
-
-      const message = {
-
-        id:
-          id,
-
-        messageId:
-          id,
-
-        from:
-          currentUser.id,
-
-        to:
-          currentChatUserId,
-
-        time:
-          Date.now(),
-
-        media:
-          reader.result,
-
-        mediaType:
-          mediaType,
-
-        fileName:
-          file.name,
-
-        status:
-          "sent",
-
-        mine:
-          true
-      };
-
-
-      if (
-        !chats[
-          currentChatUserId
-        ]
-      ) {
-
-        chats[
-          currentChatUserId
-        ] = [];
-      }
-
-
-      chats[
-        currentChatUserId
-      ].push(
-        message
-      );
-
-
-      saveChats();
-
-      renderMessages();
-
-
-      socket.send(
-        JSON.stringify({
-
-          type:
-            "media",
-
-          id:
-            id,
-
-          messageId:
-            id,
-
-          from:
-            currentUser.id,
-
-          to:
-            currentChatUserId,
-
-          data:
-            reader.result,
-
-          mediaType:
-            mediaType,
-
-          mimeType:
-            file.type,
-
-          name:
-            file.name,
-
-          size:
-            file.size,
-
-          time:
-            message.time
-        })
-      );
-
-
-      input.value =
-        "";
+    const message = {
+      id: id,
+      messageId: id,
+      from: currentUser.id,
+      to: currentChatUserId,
+      time: Date.now(),
+      media: reader.result,
+      mediaType: mediaType,
+      fileName: file.name,
+      status: "sent",
+      mine: true
     };
 
+    if (!chats[currentChatUserId]) {
+      chats[currentChatUserId] = [];
+    }
 
-  reader.readAsDataURL(
-    file
-  );
-}
+    chats[currentChatUserId].push(message);
 
+    saveChats();
+    renderMessages();
 
-function receiveMedia(
-  msg
-) {
+    try {
+      socket.send(
+        JSON.stringify({
+          type: "media",
+          id: id,
+          messageId: id,
+          from: currentUser.id,
+          to: currentChatUserId,
+          data: reader.result,
+          mediaType: mediaType,
+          mimeType: file.type,
+          name: file.name,
+          size: file.size,
+          time: message.time
+        })
+      );
+    } catch (error) {
+      console.error("Media send failed:", error);
+      alert("Could not send the file. Please try again.");
+    }
 
-  const from =
-    normalizeId(
-      msg.from
-    );
-
-
-  const id =
-    String(
-      msg.messageId ||
-      msg.id
-    );
-
-
-  if (
-    !chats[from]
-  ) {
-    chats[from] = [];
-  }
-
-
-  const isOpen =
-    currentChatUserId ===
-    from;
-
-
-  const message = {
-
-    id:
-      id,
-
-    messageId:
-      id,
-
-    from:
-      from,
-
-    to:
-      currentUser.id,
-
-    media:
-      msg.data,
-
-    mediaType:
-      msg.mediaType,
-
-    fileName:
-      msg.name,
-
-    time:
-      Number(
-        msg.time
-      ) ||
-      Date.now(),
-
-    status:
-      isOpen
-        ? "read"
-        : "delivered",
-
-    mine:
-      false
+    input.value = "";
   };
 
+  reader.onerror = () => {
+    alert("Could not read this file.");
+    input.value = "";
+  };
 
-  const exists =
-    chats[from].some(
-      item =>
-        String(
-          item.id
-        ) === id
-    );
-
-
-  if (!exists) {
-
-    chats[from].push(
-      message
-    );
-  }
-
-
-  saveChats();
-
-  sendDelivered(
-    id
-  );
-
-
-  if (isOpen) {
-
-    sendRead(
-      id
-    );
-  }
-
-
-  renderMessages();
+  reader.readAsDataURL(file);
 }
 
 
