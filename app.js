@@ -986,9 +986,21 @@ function connectSocket() {
         if (msg.type === "media_transfer_chunk") {
           const messageId = String(msg.messageId || msg.id || "");
           const transfer = fcIncomingMediaTransfers.get(messageId);
-          if (!transfer || typeof msg.chunk !== "string" || msg.index !== transfer.nextIndex) return;
+          if (!transfer || typeof msg.chunk !== "string" || Number(msg.index) !== transfer.nextIndex) return;
           transfer.chunks.push(msg.chunk);
           transfer.nextIndex++;
+
+          // Confirm receipt only after this browser has accepted the chunk.
+          // The server uses this acknowledgement to apply backpressure.
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({
+              type: "media_chunk_received",
+              id: messageId,
+              messageId,
+              from: transfer.from,
+              index: Number(msg.index)
+            }));
+          }
           return;
         }
 
