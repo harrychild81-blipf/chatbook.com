@@ -1330,7 +1330,12 @@ function openChat(
     normalizeId(
       friend.id
     );
-
+console.log("OPEN CHAT DEBUG:", {
+  friendName: friend.name,
+  friendId: friend.id,
+  selectedChatId: currentChatUserId,
+  savedChatIds: Object.keys(chats)
+});
   hideAllScreens();
   hideBottomNav();
 
