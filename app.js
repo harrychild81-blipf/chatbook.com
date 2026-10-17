@@ -65,12 +65,35 @@ function loadChats() {
   }
 }
 
+
 function saveChats() {
-  localStorage.setItem(
-    "friendchat_chats",
-    JSON.stringify(chats)
-  );
+  try {
+    const chatsToSave = {};
+
+    for (const [chatId, messages] of Object.entries(chats)) {
+      chatsToSave[chatId] = messages.map(message => {
+        if (message.media) {
+          return {
+            ...message,
+            media: "",
+            mediaStoredElsewhere: true
+          };
+        }
+
+        return message;
+      });
+    }
+
+    localStorage.setItem(
+      "friendchat_chats",
+      JSON.stringify(chatsToSave)
+    );
+  } catch (error) {
+    console.error("SAVE CHATS ERROR:", error);
+    alert("Could not save chat history. Please check browser storage.");
+  }
 }
+
 
 
 /* =========================================================
