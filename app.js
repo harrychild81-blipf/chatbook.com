@@ -17,6 +17,8 @@ const FC_MEDIA_STORE_NAME = "media";
 let fcMediaDBPromise = null;
 const fcMediaWrites = new Map();
 const fcMediaStoredKeys = new Set();
+const fcIncomingMediaTransfers = new Map();
+const fcOutgoingMediaTransfers = new Map();
 
 function openFriendChatMediaDB() {
   if (!("indexedDB" in window)) {
@@ -956,18 +958,62 @@ function connectSocket() {
 
 
         /* -----------------------------------------------
-           MEDIA
+           CHUNKED MEDIA TRANSFER (large videos/images)
            ----------------------------------------------- */
 
-        if (
-          msg.type ===
-          "media"
-        ) {
+        if (msg.type === "media_upload_ready" || msg.type === "media_chunk_ack") {
+          continueFriendChatMediaUpload(msg.messageId || msg.id);
+          return;
+        }
 
-          receiveMedia(
-            msg
-          );
+        if (msg.type === "media_transfer_start") {
+          const from = normalizeId(msg.from);
+          const to = normalizeId(msg.to);
+          const messageId = String(msg.messageId || msg.id || "");
+          const mediaType = msg.mediaType === "video" ? "video" : msg.mediaType === "image" ? "image" : "";
+          if (!currentUser || !from || to !== normalizeId(currentUser.id) || !messageId || !mediaType) return;
+          fcIncomingMediaTransfers.set(messageId, {
+            from, to, messageId, mediaType,
+            mimeType: String(msg.mimeType || "").slice(0, 120),
+            name: String(msg.name || "media").slice(0, 255),
+            size: Number(msg.size) || 0,
+            time: Number(msg.time) || Date.now(),
+            chunks: [], nextIndex: 0
+          });
+          return;
+        }
 
+        if (msg.type === "media_transfer_chunk") {
+          const messageId = String(msg.messageId || msg.id || "");
+          const transfer = fcIncomingMediaTransfers.get(messageId);
+          if (!transfer || typeof msg.chunk !== "string" || msg.index !== transfer.nextIndex) return;
+          transfer.chunks.push(msg.chunk);
+          transfer.nextIndex++;
+          return;
+        }
+
+        if (msg.type === "media_transfer_end") {
+          const messageId = String(msg.messageId || msg.id || "");
+          const transfer = fcIncomingMediaTransfers.get(messageId);
+          if (!transfer) return;
+          fcIncomingMediaTransfers.delete(messageId);
+          const data = transfer.chunks.join("");
+          transfer.chunks = [];
+          receiveMedia({
+            type: "media", id: messageId, messageId,
+            from: transfer.from, to: transfer.to, data,
+            mediaType: transfer.mediaType, mimeType: transfer.mimeType,
+            name: transfer.name, size: transfer.size, time: transfer.time
+          });
+          return;
+        }
+
+        /* -----------------------------------------------
+           LEGACY SMALL MEDIA
+           ----------------------------------------------- */
+
+        if (msg.type === "media") {
+          receiveMedia(msg);
           return;
         }
 
@@ -2790,6 +2836,35 @@ function toggleEmojiPicker() {
    MEDIA
    ========================================================= */
 
+function continueFriendChatMediaUpload(messageId) {
+  const id = String(messageId || "");
+  const transfer = fcOutgoingMediaTransfers.get(id);
+  if (!transfer || !socket || socket.readyState !== WebSocket.OPEN) return;
+
+  try {
+    if (transfer.nextOffset < transfer.data.length) {
+      const chunk = transfer.data.slice(transfer.nextOffset, transfer.nextOffset + transfer.chunkSize);
+      const index = transfer.chunkIndex;
+      socket.send(JSON.stringify({
+        type: "media_transfer_chunk",
+        id, messageId: id, index, chunk
+      }));
+      transfer.nextOffset += chunk.length;
+      transfer.chunkIndex++;
+      return;
+    }
+
+    socket.send(JSON.stringify({ type: "media_transfer_end", id, messageId: id }));
+    transfer.data = "";
+    fcOutgoingMediaTransfers.delete(id);
+  } catch (error) {
+    console.error("Media chunk send failed:", error);
+    fcOutgoingMediaTransfers.delete(id);
+    updateMessageStatus(id, "error");
+    alert("Video upload was interrupted. Please try again with a stable connection.");
+  }
+}
+
 function sendMedia() {
   if (!currentUser || !currentChatUserId) {
     return;
@@ -2808,7 +2883,7 @@ function sendMedia() {
   }
 
   // Maximum original file size: 150 MB. Base64 expands the WebSocket payload.
-  const MAX_FILE_SIZE = 1150 * 1024 * 1024;
+  const MAX_FILE_SIZE = 150 * 1024 * 1024;
 
   if (file.size > MAX_FILE_SIZE) {
     alert("Maximum file size is 150 MB per image or video.");
@@ -2864,24 +2939,27 @@ function sendMedia() {
     renderMessages();
 
     try {
-      socket.send(
-        JSON.stringify({
-          type: "media",
-          id: id,
-          messageId: id,
-          from: currentUser.id,
-          to: currentChatUserId,
-          data: reader.result,
-          mediaType: mediaType,
-          mimeType: file.type,
-          name: file.name,
-          size: file.size,
-          time: message.time
-        })
-      );
+      const data = String(reader.result);
+      const chunkSize = 256 * 1024;
+      fcOutgoingMediaTransfers.set(id, {
+        id, to: currentChatUserId, data, chunkSize,
+        nextOffset: 0, chunkIndex: 0, time: message.time,
+        mediaType, mimeType: file.type, name: file.name, size: file.size
+      });
+      socket.send(JSON.stringify({
+        type: "media_transfer_start",
+        id, messageId: id,
+        from: currentUser.id,
+        to: currentChatUserId,
+        mediaType, mimeType: file.type,
+        name: file.name, size: file.size,
+        time: message.time
+      }));
     } catch (error) {
       console.error("Media send failed:", error);
-      alert("Could not send the file. Please try again.");
+      fcOutgoingMediaTransfers.delete(id);
+      updateMessageStatus(id, "error");
+      alert("Could not start the upload. Please try again.");
     }
 
     input.value = "";
