@@ -40,7 +40,7 @@ console.log("Website root:", ROOT_DIR);
    DATA FILES
    ===================================================== */
 
-const DATA_DIR = path.join(PARENT_FOLDER, ".friendchat-data");
+const DATA_DIR = "F:\\FriendChat-Storage";
 
 const USERS_FILE = path.join(DATA_DIR, "users.json");
 const SERVERS_FILE = path.join(DATA_DIR, "servers.json");
