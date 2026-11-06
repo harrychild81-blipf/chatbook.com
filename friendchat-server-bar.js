@@ -1,360 +1,377 @@
+
+/* =========================================================
+   FRIENDCHAT - SERVER BAR
+   File: friendchat-server-bar.js
+   ========================================================= */
+
 (function () {
   "use strict";
 
-  const SERVERS_KEY = "friendchat_servers";
+  const NAV_ID = "fcServerNav";
+  const LIST_ID = "fcServerList";
+  const STYLE_ID = "fcServerBarInjectedStyle";
 
-  let nav = null;
+  const SERVER_STORAGE_KEY = "friendchat_servers";
+  const CURRENT_SERVER_KEY = "friendchat_current_server";
 
-  /* =========================================
-     READ LOCAL DATA
-     ========================================= */
+  /* ---------- Helpers ---------- */
 
-  function readJSON(key, fallback) {
+  function readJSON(key, fallback = null) {
     try {
-      const value = JSON.parse(
-        localStorage.getItem(key) || "null"
-      );
-
-      return value == null ? fallback : value;
-    } catch (_) {
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : fallback;
+    } catch (error) {
+      console.warn("[FriendChat Server Bar] Storage read error:", error);
       return fallback;
     }
   }
 
-  /* =========================================
-     CURRENT ACCOUNT
-     ========================================= */
+  function getCurrentUser() {
+    const possibleKeys = [
+      "friendchat_session",
+      "friendchat_current_user",
+      "friendchat_user",
+      "currentUser",
+      "user"
+    ];
 
-  function currentAccount() {
-    if (
-      typeof currentUser !== "undefined" &&
-      currentUser
-    ) {
-      return currentUser;
+    for (const key of possibleKeys) {
+      const value = readJSON(key);
+
+      if (value && typeof value === "object") {
+        return value.user || value.currentUser || value;
+      }
     }
 
-    return readJSON("friendchat_session", {}) || {};
+    return null;
   }
 
-  function userID() {
-    const user = currentAccount();
+  function getUserID(user) {
+    if (!user) return "";
 
     return String(
       user.id ||
       user.userID ||
       user.userId ||
       user.uid ||
+      user.username ||
+      user.email ||
       ""
-    ).trim().toLowerCase();
-  }
-
-  /* =========================================
-     SERVER HELPERS
-     ========================================= */
-
-  function serverID(server) {
-    return String(
-      server &&
-      (server.serverID || server.id) ||
-      ""
-    ).trim();
-  }
-
-  function serverName(server) {
-    return String(
-      server && server.name ||
-      "Server"
-    ).trim();
-  }
-
-  function safe(value) {
-    return String(value || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-  }
-
-  /* =========================================
-     GET USER ROLE
-     ========================================= */
-
-  function roleFor(server, uid) {
-    if (!server || !uid) {
-      return "";
-    }
-
-    const owner = String(
-      server.ownerID ||
-      server.ownerId ||
-      ""
-    ).trim().toLowerCase();
-
-    if (owner && owner === uid) {
-      return "owner";
-    }
-
-    const members = Array.isArray(server.members)
-      ? server.members
-      : [];
-
-    const found = members.find(member =>
-      String(
-        member &&
-        (
-          member.userID ||
-          member.userId ||
-          member.id ||
-          member.uid
-        ) ||
-        ""
-      ).trim().toLowerCase() === uid
     );
-
-    if (!found) {
-      return "";
-    }
-
-    return String(
-      found.role || "member"
-    ).trim().toLowerCase();
   }
 
-  /* =========================================
-     REGULAR MEMBER SERVERS
-     ========================================= */
+  function getServerID(server) {
+    if (!server) return "";
 
-  function allowedMemberServers() {
-    const uid = userID();
-
-    const servers = readJSON(
-      SERVERS_KEY,
-      []
+    return String(
+      server.id ||
+      server.serverID ||
+      server.serverId ||
+      server._id ||
+      ""
     );
+  }
 
-    if (!uid || !Array.isArray(servers)) {
-      return [];
+  function getServerName(server) {
+    return (
+      server.name ||
+      server.serverName ||
+      server.title ||
+      "Unnamed Server"
+    );
+  }
+
+  function getServerIcon(server) {
+    return (
+      server.icon ||
+      server.iconURL ||
+      server.image ||
+      server.avatar ||
+      ""
+    );
+  }
+
+  /* ---------- Server list ---------- */
+
+  function getServers() {
+    const data = readJSON(SERVER_STORAGE_KEY, []);
+
+    if (Array.isArray(data)) {
+      return data;
     }
 
-    return servers.filter(server => {
-      const role = roleFor(server, uid);
+    if (data && Array.isArray(data.servers)) {
+      return data.servers;
+    }
 
-      // Regular members only.
-      // Owners, admins and moderators use the
-      // existing full server management sidebar.
+    return [];
+  }
 
-      return (
-        role === "member" &&
-        !!serverID(server)
-      );
+  /*
+   * IMPORTANT:
+   * Do not filter by role here.
+   * Owners, admins, moderators and members can all appear.
+   */
+  function getVisibleServers() {
+    return getServers().filter(function (server) {
+      return !!getServerID(server);
     });
   }
 
-  /* =========================================
-     SERVER ICON
-     ========================================= */
+  /* ---------- CSS fallback ---------- */
 
-  function iconMarkup(server) {
-    const icon =
-      server &&
-      typeof server.icon === "string"
-        ? server.icon.trim()
-        : "";
+  function injectStyle() {
+    if (document.getElementById(STYLE_ID)) return;
 
-    if (icon) {
-      return (
-        '<img src="' +
-        safe(icon) +
-        '" alt="">'
-      );
-    }
+    const style = document.createElement("style");
+    style.id = STYLE_ID;
 
-    const words = serverName(server)
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2);
+    style.textContent = `
+      #${NAV_ID} {
+        position: fixed;
+        top: 0;
+        left: 76px;
+        bottom: 0;
+        width: 76px;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #111111;
+        border-right: 1px solid rgba(255,255,255,.08);
+        padding: 12px 0;
+        box-sizing: border-box;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
 
-    return safe(
-      words
-        .map(word => word[0] || "")
-        .join("")
-        .toUpperCase() || "S"
-    );
+      #${NAV_ID}.fc-server-hidden {
+        display: none !important;
+      }
+
+      #${NAV_ID} .fc-server-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+      }
+
+      #${NAV_ID} .fc-server-item {
+        position: relative;
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        border: 0;
+        border-radius: 16px;
+        background: #242424;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: visible;
+        transition: border-radius .18s ease, background .18s ease;
+      }
+
+      #${NAV_ID} .fc-server-item:hover {
+        border-radius: 12px;
+        background: #5865f2;
+      }
+
+      #${NAV_ID} .fc-server-item.active {
+        border-radius: 12px;
+        background: #5865f2;
+      }
+
+      #${NAV_ID} .fc-server-icon {
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        object-fit: cover;
+      }
+
+      #${NAV_ID} .fc-server-letter {
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      #${NAV_ID} .fc-server-tooltip {
+        position: absolute;
+        left: 62px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #080808;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 7px;
+        font-size: 13px;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        z-index: 100000;
+      }
+
+      #${NAV_ID} .fc-server-item:hover .fc-server-tooltip {
+        opacity: 1;
+        visibility: visible;
+      }
+    `;
+
+    document.head.appendChild(style);
   }
 
-  /* =========================================
-     RENDER SERVER BAR
-     ========================================= */
+  /* ---------- Create navigation ---------- */
+
+  function createNav() {
+    let nav = document.getElementById(NAV_ID);
+
+    if (nav) return nav;
+
+    nav = document.createElement("aside");
+    nav.id = NAV_ID;
+
+    const list = document.createElement("div");
+    list.id = LIST_ID;
+    list.className = "fc-server-list";
+
+    nav.appendChild(list);
+    document.body.appendChild(nav);
+
+    return nav;
+  }
+
+  /* ---------- Open server ---------- */
+
+  function openServer(server) {
+    const id = getServerID(server);
+
+    if (!id) return;
+
+    try {
+      localStorage.setItem(CURRENT_SERVER_KEY, id);
+    } catch (error) {
+      console.warn("[FriendChat Server Bar] Could not save current server:", error);
+    }
+
+    const destination =
+      "server-home.html?serverID=" +
+      encodeURIComponent(id) +
+      "&view=messages";
+
+    window.location.href = destination;
+  }
+
+  /* ---------- Render server icons ---------- */
 
   function render() {
-    if (!nav) {
-      return;
-    }
+    if (!document.body || !document.head) return;
 
-    const list = nav.querySelector(
-      ".fc-server-list"
+    injectStyle();
+
+    const nav = createNav();
+    const list = document.getElementById(LIST_ID);
+
+    if (!list) return;
+
+    const servers = getVisibleServers();
+    const currentServer = String(
+      localStorage.getItem(CURRENT_SERVER_KEY) || ""
     );
 
-    if (!list) {
-      return;
-    }
+    list.replaceChildren();
 
-    const servers =
-      allowedMemberServers();
+    nav.classList.remove("fc-server-hidden");
 
-    nav.classList.toggle(
-      "fc-server-visible",
-      servers.length > 0
-    );
+    servers.forEach(function (server) {
+      const serverID = getServerID(server);
+      const serverName = getServerName(server);
+      const serverIcon = getServerIcon(server);
 
-    if (!servers.length) {
-      list.innerHTML = "";
-      return;
-    }
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "fc-server-item";
 
-    list.innerHTML = servers
-      .map(server => {
-        const id = serverID(server);
+      if (serverID === currentServer) {
+        button.classList.add("active");
+      }
 
-        return `
-          <button
-            type="button"
-            class="fc-server-item"
-            title="${safe(serverName(server))}"
-            aria-label="Open messages for ${safe(serverName(server))}"
-            data-server-id="${safe(id)}"
-          >
-            <span class="fc-server-icon">
-              ${iconMarkup(server)}
-            </span>
+      button.setAttribute("aria-label", serverName);
+      button.title = serverName;
 
-            <span class="fc-server-name">
-              ${safe(serverName(server))}
-            </span>
-          </button>
-        `;
-      })
-      .join("");
+      if (serverIcon) {
+        const image = document.createElement("img");
+        image.className = "fc-server-icon";
+        image.src = serverIcon;
+        image.alt = serverName;
 
-    list
-      .querySelectorAll(".fc-server-item")
-      .forEach(button => {
-        button.addEventListener(
-          "click",
-          () => {
-            const id =
-              button.dataset.serverId;
+        image.onerror = function () {
+          image.remove();
 
-            if (!id) {
-              return;
-            }
+          const letter = document.createElement("span");
+          letter.className = "fc-server-letter";
+          letter.textContent = serverName.charAt(0).toUpperCase();
 
-            localStorage.setItem(
-              "friendchat_current_server",
-              id
-            );
+          button.prepend(letter);
+        };
 
-            window.location.href =
-              "server-home.html?serverID=" +
-              encodeURIComponent(id) +
-              "&view=messages";
-          }
-        );
+        button.appendChild(image);
+      } else {
+        const letter = document.createElement("span");
+        letter.className = "fc-server-letter";
+        letter.textContent = serverName.charAt(0).toUpperCase();
+
+        button.appendChild(letter);
+      }
+
+      const tooltip = document.createElement("span");
+      tooltip.className = "fc-server-tooltip";
+      tooltip.textContent = serverName;
+
+      button.appendChild(tooltip);
+
+      button.addEventListener("click", function () {
+        openServer(server);
       });
+
+      list.appendChild(button);
+    });
   }
 
-  /* =========================================
-     INITIALIZE
-     ========================================= */
+  /* ---------- Start ---------- */
 
-  function init() {
-    if (nav) {
-      render();
-      return;
-    }
-
-    nav = document.getElementById(
-      "fcServerNav"
-    );
-
-    if (!nav) {
-      nav = document.createElement("aside");
-
-      nav.id = "fcServerNav";
-
-      nav.setAttribute(
-        "aria-label",
-        "Your joined servers"
-      );
-
-      nav.innerHTML = `
-        <div class="fc-server-nav-head">
-          SERVERS
-        </div>
-
-        <div class="fc-server-list"></div>
-      `;
-
-      document.body.appendChild(nav);
-    }
-
+  function start() {
     render();
-  }
 
-  /* =========================================
-     UPDATE EVENTS
-     ========================================= */
+    // Re-render when the user returns to the page.
+    window.addEventListener("focus", render);
 
-  window.addEventListener(
-    "friendchat-server-list-updated",
-    render
-  );
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) render();
+    });
 
-  window.addEventListener(
-    "storage",
-    event => {
+    // Refresh if another tab changes server storage.
+    window.addEventListener("storage", function (event) {
       if (
-        !event.key ||
-        event.key === SERVERS_KEY ||
-        event.key === "friendchat_session"
+        event.key === SERVER_STORAGE_KEY ||
+        event.key === CURRENT_SERVER_KEY
       ) {
         render();
       }
-    }
-  );
+    });
 
-  window.addEventListener(
-    "focus",
-    render
-  );
-
-  document.addEventListener(
-    "visibilitychange",
-    () => {
-      if (!document.hidden) {
-        render();
-      }
-    }
-  );
-
-  /* =========================================
-     START
-     ========================================= */
-
-  if (
-    document.readyState === "loading"
-  ) {
-    document.addEventListener(
-      "DOMContentLoaded",
-      init
-    );
-  } else {
-    init();
+    // Re-render after a short delay for apps that load servers late.
+    setTimeout(render, 1000);
+    setTimeout(render, 3000);
   }
 
-  // Refresh after login/account data loads.
-  setTimeout(render, 400);
-  setTimeout(render, 1400);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
 
 })();
+
