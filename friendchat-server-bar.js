@@ -7,7 +7,13 @@
 (function () {
   "use strict";
 
-  
+  const NAV_ID = "fcServerNav";
+  const LIST_ID = "fcServerList";
+  const STYLE_ID = "fcServerBarInjectedStyle";
+
+  const SERVER_STORAGE_KEY = "friendchat_servers";
+  const CURRENT_SERVER_KEY = "friendchat_current_server";
+
   /* ---------- Helpers ---------- */
 
   function readJSON(key, fallback = null) {
