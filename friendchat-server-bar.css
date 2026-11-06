@@ -1,0 +1,325 @@
+/* =========================================================
+   FRIENDCHAT — SECOND SERVER BAR
+   friendchat-server-bar.css
+   ========================================================= */
+
+:root {
+  --fc-server-bar-width: 76px;
+  --fc-server-bar-bg: #111318;
+  --fc-server-bar-border: #262932;
+  --fc-server-bar-item: #20232b;
+  --fc-server-bar-hover: #303541;
+  --fc-server-bar-active: #5865f2;
+  --fc-server-bar-text: #f4f5f7;
+  --fc-server-bar-muted: #9ca3af;
+}
+
+/* =========================================================
+   MAIN BAR
+   ========================================================= */
+
+#fcServerNav {
+  position: fixed;
+
+  top: 0;
+  left: 76px;
+  bottom: 0;
+
+  width: var(--fc-server-bar-width);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background: var(--fc-server-bar-bg);
+  border-right: 1px solid var(--fc-server-bar-border);
+
+  padding: 14px 8px;
+
+  box-sizing: border-box;
+
+  z-index: 900;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: thin;
+
+  font-family:
+    Inter,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  transition:
+    width 0.2s ease,
+    background 0.2s ease;
+}
+
+/* Hidden if no member servers */
+
+#fcServerNav:not(.fc-server-visible) {
+  display: none;
+}
+
+/* =========================================================
+   BAR HEADER
+   ========================================================= */
+
+.fc-server-nav-head {
+  width: 100%;
+
+  text-align: center;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+
+  color: var(--fc-server-bar-muted);
+
+  margin-bottom: 16px;
+
+  user-select: none;
+}
+
+/* =========================================================
+   SERVER LIST
+   ========================================================= */
+
+.fc-server-list {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+}
+
+/* =========================================================
+   SERVER ITEM
+   ========================================================= */
+
+.fc-server-item {
+  position: relative;
+
+  width: 48px;
+  height: 48px;
+
+  min-width: 48px;
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  outline: none;
+
+  border-radius: 16px;
+
+  background: var(--fc-server-bar-item);
+
+  color: var(--fc-server-bar-text);
+
+  cursor: pointer;
+
+  padding: 0;
+
+  box-sizing: border-box;
+
+  transition:
+    border-radius 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* Hover */
+
+.fc-server-item:hover {
+  background: var(--fc-server-bar-hover);
+
+  border-radius: 13px;
+
+  transform: translateY(-1px);
+}
+
+/* Active server */
+
+.fc-server-item.active,
+.fc-server-item[aria-current="page"] {
+  background: var(--fc-server-bar-active);
+
+  border-radius: 13px;
+
+  box-shadow:
+    0 4px 14px
+    rgba(88, 101, 242, 0.25);
+}
+
+/* Keyboard focus */
+
+.fc-server-item:focus-visible {
+  outline: 2px solid #ffffff;
+
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   SERVER ICON
+   ========================================================= */
+
+.fc-server-icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: inherit;
+
+  background: #2a2d36;
+
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 800;
+
+  user-select: none;
+}
+
+/* Uploaded server icon */
+
+.fc-server-icon img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+
+  border-radius: inherit;
+}
+
+/* =========================================================
+   SERVER NAME
+   ========================================================= */
+
+.fc-server-name {
+  position: absolute;
+
+  left: 58px;
+
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    translateX(-5px);
+
+  background: #08090c;
+
+  color: #ffffff;
+
+  padding: 7px 11px;
+
+  border-radius: 7px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+
+  z-index: 9999;
+
+  box-shadow:
+    0 4px 14px
+    rgba(0, 0, 0, 0.3);
+}
+
+/* Tooltip */
+
+.fc-server-item:hover .fc-server-name {
+  opacity: 1;
+
+  transform:
+    translateY(-50%)
+    translateX(0);
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+#fcServerNav::-webkit-scrollbar {
+  width: 4px;
+}
+
+#fcServerNav::-webkit-scrollbar-thumb {
+  background: #343844;
+
+  border-radius: 10px;
+}
+
+#fcServerNav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  :root {
+    --fc-server-bar-width: 60px;
+  }
+
+  #fcServerNav {
+    left: 60px;
+
+    padding: 12px 5px;
+  }
+
+  .fc-server-item,
+  .fc-server-icon {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+    min-height: 42px;
+  }
+
+  .fc-server-list {
+    gap: 10px;
+  }
+
+  .fc-server-name {
+    left: 50px;
+  }
+}
+
+/* =========================================================
+   REDUCE MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  #fcServerNav,
+  .fc-server-item,
+  .fc-server-name {
+    transition: none !important;
+  }
+}
